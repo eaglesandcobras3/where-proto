@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { events, townBySlug } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Events">
+  <h1>Events</h1>
+  <p>What's happening on 30A. Fake calendar only.</p>
+  <LinkList
+    items={events.map((item) => ({
+      href: href(`/events/${item.slug}`),
+      label: item.name,
+      meta: `${item.when}${item.townSlug ? ` · ${townBySlug(item.townSlug)?.name}` : ""}`,
+    }))}
+  />
+</Layout>

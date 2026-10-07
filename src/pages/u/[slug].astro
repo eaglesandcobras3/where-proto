@@ -1,0 +1,27 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { userBySlug, users } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+export function getStaticPaths() {
+  return users.map((item) => ({ params: { slug: item.slug } }));
+}
+
+const user = userBySlug(Astro.params.slug!);
+if (!user) {
+  throw new Error(`Missing user: ${Astro.params.slug}`);
+}
+---
+
+<Layout
+  title={`${user.name} (public)`}
+  note="External facing profile is still to be defined. This route is a stub so the link exists."
+>
+  <h1>External facing profile: {user.name}</h1>
+  <p>Still need to be defined. Showing only the fake user record.</p>
+  <ul>
+    <li>Role: {user.role}</li>
+    <li>{user.bio}</li>
+  </ul>
+  <p><a href={href("/profile")}>User facing profile (signed-in)</a></p>
+</Layout>

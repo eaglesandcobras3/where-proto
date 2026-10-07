@@ -1,0 +1,37 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { businessBySlug, businesses, photos } from "../../../data/catalog";
+import { href } from "../../../lib/href";
+
+export function getStaticPaths() {
+  return businesses
+    .filter((item) => item.ownerUserSlug)
+    .map((item) => ({ params: { business: item.slug } }));
+}
+
+const business = businessBySlug(Astro.params.business!);
+if (!business) {
+  throw new Error(`Missing business: ${Astro.params.business}`);
+}
+
+const shots = photos.filter(
+  (item) => item.attachedTo.type === "business" && item.attachedTo.slug === business.slug,
+);
+---
+
+<Layout title={`Photos · ${business.name}`}>
+  <p><a href={href(`/manage/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>Photos</h1>
+  <ul>
+    {shots.map((item) => (
+      <li>{item.caption}</li>
+    ))}
+  </ul>
+  <form>
+    <label>
+      Caption
+      <input type="text" name="caption" />
+    </label>
+    <button type="button">Upload placeholder</button>
+  </form>
+</Layout>

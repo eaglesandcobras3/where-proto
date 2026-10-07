@@ -1,0 +1,78 @@
+---
+import { href } from "../lib/href";
+
+interface Props {
+  title: string;
+  note?: string;
+}
+
+const { title, note } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} · WhereTo30A wireframe</title>
+  </head>
+  <body>
+    <header>
+      <p>WhereTo30A · wireframe only · fake data · no styled UI</p>
+      <nav aria-label="Primary">
+        <a href={href("/")}>Homepage (Logo)</a>
+        ·
+        <a href={href("/towns")}>Towns</a>
+        ·
+        <a href={href("/businesses")}>Businesses</a>
+        ·
+        <a href={href("/events")}>Events</a>
+        ·
+        <a href={href("/guides")}>Guides</a>
+        ·
+        <a href={href("/community")}>Community (Ask)</a>
+      </nav>
+      <nav aria-label="Account">
+        <a href={href("/add-business")}>Add Business</a>
+        ·
+        <a href={href("/search")}>Search</a>
+        ·
+        <a href={href("/profile")}>User Profile</a>
+        ·
+        <a href={href("/auth/login")}>Login</a>
+        ·
+        <a href={href("/admin")}>Admin</a>
+      </nav>
+    </header>
+    <hr />
+    <main>
+      <slot />
+      {
+        note && (
+          <>
+            <hr />
+            <p>
+              <strong>Open question / note:</strong> {note}
+            </p>
+          </>
+        )
+      }
+    </main>
+    <hr />
+    <footer>
+      <nav aria-label="Footer">
+        <a href={href("/about")}>About</a>
+        ·
+        <a href={href("/legal")}>Legal</a>
+        ·
+        <a href={href("/advertise")}>Advertise</a>
+        ·
+        <a href={href("/newsletters/visitor")}>Visitor newsletter</a>
+        ·
+        <a href={href("/newsletters/business")}>Business newsletter</a>
+        ·
+        <a href={href("/ia")}>All routes / IA</a>
+      </nav>
+    </footer>
+  </body>
+</html>

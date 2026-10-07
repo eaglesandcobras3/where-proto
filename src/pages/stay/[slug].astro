@@ -1,0 +1,39 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { stayBySlug, stays, townBySlug } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+export function getStaticPaths() {
+  return stays.map((item) => ({ params: { slug: item.slug } }));
+}
+
+const stay = stayBySlug(Astro.params.slug!);
+if (!stay) {
+  throw new Error(`Missing stay: ${Astro.params.slug}`);
+}
+
+const town = townBySlug(stay.townSlug);
+---
+
+<Layout title={stay.name}>
+  <p><a href={href("/stay")}>Stay</a></p>
+  <h1>Stay page: {stay.name}</h1>
+  <p>{stay.summary}</p>
+  <ul>
+    <li>Sleeps: {stay.sleeps}</li>
+    {
+      town && (
+        <li>
+          Town: <a href={href(`/towns/${town.slug}`)}>{town.name}</a>
+        </li>
+      )
+    }
+    {
+      stay.businessSlug && (
+        <li>
+          Business page: <a href={href(`/business/${stay.businessSlug}`)}>{stay.name}</a>
+        </li>
+      )
+    }
+  </ul>
+</Layout>

@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { guides } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Guides">
+  <h1>Guides</h1>
+  <p>Editorial planning guides. Fake titles and summaries.</p>
+  <LinkList
+    items={guides.map((item) => ({
+      href: href(`/guides/${item.slug}`),
+      label: item.title,
+      meta: item.summary,
+    }))}
+  />
+</Layout>

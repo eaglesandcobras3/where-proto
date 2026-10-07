@@ -1,0 +1,66 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import {
+  comments,
+  questionBySlug,
+  questions,
+  townBySlug,
+  userBySlug,
+} from "../../../data/catalog";
+import { href } from "../../../lib/href";
+
+export function getStaticPaths() {
+  return questions.map((item) => ({ params: { slug: item.slug } }));
+}
+
+const question = questionBySlug(Astro.params.slug!);
+if (!question) {
+  throw new Error(`Missing question: ${Astro.params.slug}`);
+}
+
+const author = userBySlug(question.authorUserSlug);
+const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+const replies = comments.filter(
+  (item) => item.on.type === "question" && item.on.slug === question.slug,
+);
+---
+
+<Layout title={question.title}>
+  <p><a href={href("/community")}>Community</a></p>
+  <h1>Question: {question.title}</h1>
+  <p>{question.body}</p>
+  <ul>
+    {
+      author && (
+        <li>
+          Asked by: <a href={href(`/u/${author.slug}`)}>{author.name}</a>
+        </li>
+      )
+    }
+    {
+      town && (
+        <li>
+          Town: <a href={href(`/towns/${town.slug}`)}>{town.name}</a>
+        </li>
+      )
+    }
+  </ul>
+  <h2>Comments</h2>
+  <ul>
+    {
+      replies.map((item) => (
+        <li>
+          {item.body} — {userBySlug(item.authorUserSlug)?.name}
+        </li>
+      ))
+    }
+  </ul>
+  <h2>Reply</h2>
+  <form>
+    <label>
+      Comment
+      <textarea name="body"></textarea>
+    </label>
+    <button type="button">Add comment</button>
+  </form>
+</Layout>

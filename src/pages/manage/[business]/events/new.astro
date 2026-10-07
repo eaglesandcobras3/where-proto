@@ -1,0 +1,43 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import { businessBySlug, businesses } from "../../../../data/catalog";
+import { href } from "../../../../lib/href";
+
+export function getStaticPaths() {
+  return businesses
+    .filter((item) => item.ownerUserSlug)
+    .map((item) => ({ params: { business: item.slug } }));
+}
+
+const business = businessBySlug(Astro.params.business!);
+if (!business) {
+  throw new Error(`Missing business: ${Astro.params.business}`);
+}
+---
+
+<Layout title={`Post event · ${business.name}`}>
+  <p><a href={href(`/manage/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>Post event</h1>
+  <p>Wireframe form. Goes onto the review queue in a later pass.</p>
+  <form>
+    <p>
+      <label>
+        Name
+        <input type="text" name="name" />
+      </label>
+    </p>
+    <p>
+      <label>
+        When
+        <input type="text" name="when" />
+      </label>
+    </p>
+    <p>
+      <label>
+        Summary
+        <textarea name="summary"></textarea>
+      </label>
+    </p>
+    <button type="button">Submit event</button>
+  </form>
+</Layout>

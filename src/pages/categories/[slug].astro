@@ -1,0 +1,27 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { categories, categoryBySlug } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+export function getStaticPaths() {
+  return categories.map((category) => ({ params: { slug: category.slug } }));
+}
+
+const category = categoryBySlug(Astro.params.slug!);
+if (!category) {
+  throw new Error(`Missing category: ${Astro.params.slug}`);
+}
+---
+
+<Layout title={category.name}>
+  <p><a href={href("/businesses")}>Businesses</a></p>
+  <h1>Category: {category.name}</h1>
+  <p>Leaf pages hold the listings.</p>
+  <LinkList
+    items={category.leaves.map((leaf) => ({
+      href: href(`/categories/${category.slug}/${leaf.slug}`),
+      label: leaf.name,
+    }))}
+  />
+</Layout>

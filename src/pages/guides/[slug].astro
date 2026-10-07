@@ -1,0 +1,44 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { comments, guideBySlug, guides, townBySlug } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+export function getStaticPaths() {
+  return guides.map((item) => ({ params: { slug: item.slug } }));
+}
+
+const guide = guideBySlug(Astro.params.slug!);
+if (!guide) {
+  throw new Error(`Missing guide: ${Astro.params.slug}`);
+}
+
+const town = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
+const guideComments = comments.filter(
+  (item) => item.on.type === "guide" && item.on.slug === guide.slug,
+);
+---
+
+<Layout title={guide.title}>
+  <p><a href={href("/guides")}>Guides</a></p>
+  <h1>Guide page: {guide.title}</h1>
+  <p>{guide.summary}</p>
+  {
+    town && (
+      <p>
+        Related town: <a href={href(`/towns/${town.slug}`)}>{town.name}</a>
+      </p>
+    )
+  }
+  <h2>Comments</h2>
+  {
+    guideComments.length === 0 ? (
+      <p>No fake comments on this guide.</p>
+    ) : (
+      <ul>
+        {guideComments.map((item) => (
+          <li>{item.body}</li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>
