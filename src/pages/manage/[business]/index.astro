@@ -1,18 +1,18 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import { businessBySlug, businesses } from "../../../data/catalog";
+import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
-  return businesses
-    .filter((item) => item.ownerUserSlug)
-    .map((item) => ({ params: { business: item.slug } }));
+  return ownedBusinessPaths();
 }
 
-const business = businessBySlug(Astro.params.business!);
-if (!business) {
-  throw new Error(`Missing business: ${Astro.params.business}`);
+interface Props {
+  business: Business;
 }
+
+const { business } = Astro.props;
 ---
 
 <Layout

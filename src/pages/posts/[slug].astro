@@ -1,16 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { businessBySlug, postBySlug, posts, townBySlug, userBySlug } from "../../data/catalog";
+import { businessBySlug, posts, townBySlug, userBySlug } from "../../data/catalog";
+import type { Post } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return posts.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(posts);
 }
 
-const post = postBySlug(Astro.params.slug!);
-if (!post) {
-  throw new Error(`Missing post: ${Astro.params.slug}`);
+interface Props {
+  item: Post;
 }
+
+const { item: post } = Astro.props;
 
 const user = post.authorUserSlug ? userBySlug(post.authorUserSlug) : undefined;
 const business = post.authorBusinessSlug ? businessBySlug(post.authorBusinessSlug) : undefined;
@@ -43,7 +46,7 @@ const targetHref =
     {
       target && (
         <li>
-          On {post.on.type}: <a href={targetHref}>{"name" in target ? target.name : post.on.slug}</a>
+          On {post.on.type}: <a href={targetHref}>{target.name}</a>
         </li>
       )
     }

@@ -1,16 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { comments, guideBySlug, guides, townBySlug } from "../../data/catalog";
+import { comments, guides, townBySlug } from "../../data/catalog";
+import type { Guide } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return guides.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(guides);
 }
 
-const guide = guideBySlug(Astro.params.slug!);
-if (!guide) {
-  throw new Error(`Missing guide: ${Astro.params.slug}`);
+interface Props {
+  item: Guide;
 }
+
+const { item: guide } = Astro.props;
 
 const town = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
 const guideComments = comments.filter(

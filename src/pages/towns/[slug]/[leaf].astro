@@ -1,29 +1,34 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import LinkList from "../../../components/LinkList.astro";
-import { businesses, categories, townBySlug, towns } from "../../../data/catalog";
+import { businesses, categories, towns } from "../../../data/catalog";
+import type { Town } from "../../../data/types";
 import { href } from "../../../lib/href";
 
-const leafNames = new Map(
-  categories.flatMap((category) => category.leaves.map((leaf) => [leaf.slug, leaf.name])),
-);
-
 export function getStaticPaths() {
-  const leafSlugs = ["restaurants", "coffee-shops", "boutiques"];
+  const leafNames = new Map(
+    categories.flatMap((category) => category.leaves.map((leaf) => [leaf.slug, leaf.name])),
+  );
+  const leafSlugs = ["restaurants", "coffee-shops", "boutiques"] as const;
   return towns.flatMap((town) =>
     leafSlugs.map((leaf) => ({
       params: { slug: town.slug, leaf },
+      props: {
+        town,
+        leafSlug: leaf,
+        leafName: leafNames.get(leaf) ?? leaf,
+      },
     })),
   );
 }
 
-const town = townBySlug(Astro.params.slug!);
-if (!town) {
-  throw new Error(`Missing town: ${Astro.params.slug}`);
+interface Props {
+  town: Town;
+  leafSlug: string;
+  leafName: string;
 }
 
-const leafSlug = Astro.params.leaf!;
-const leafName = leafNames.get(leafSlug) ?? leafSlug;
+const { town, leafSlug, leafName } = Astro.props;
 const listings = businesses.filter(
   (item) => item.townSlug === town.slug && item.leafSlug === leafSlug,
 );

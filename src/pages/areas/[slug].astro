@@ -1,17 +1,20 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { areaBySlug, areas, businesses, townBySlug } from "../../data/catalog";
+import { areas, businesses, townBySlug } from "../../data/catalog";
+import type { Area } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return areas.map((area) => ({ params: { slug: area.slug } }));
+  return slugPaths(areas);
 }
 
-const area = areaBySlug(Astro.params.slug!);
-if (!area) {
-  throw new Error(`Missing area: ${Astro.params.slug}`);
+interface Props {
+  item: Area;
 }
+
+const { item: area } = Astro.props;
 
 const town = townBySlug(area.townSlug);
 const listings = businesses.filter((item) => item.areaSlug === area.slug);

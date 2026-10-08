@@ -1,22 +1,19 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
-import {
-  comments,
-  questionBySlug,
-  questions,
-  townBySlug,
-  userBySlug,
-} from "../../../data/catalog";
+import { comments, questions, townBySlug, userBySlug } from "../../../data/catalog";
+import type { Question } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { slugPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
-  return questions.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(questions);
 }
 
-const question = questionBySlug(Astro.params.slug!);
-if (!question) {
-  throw new Error(`Missing question: ${Astro.params.slug}`);
+interface Props {
+  item: Question;
 }
+
+const { item: question } = Astro.props;
 
 const author = userBySlug(question.authorUserSlug);
 const town = question.townSlug ? townBySlug(question.townSlug) : undefined;

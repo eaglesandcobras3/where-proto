@@ -1,16 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { userBySlug, users } from "../../data/catalog";
+import { users } from "../../data/catalog";
+import type { User } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return users.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(users);
 }
 
-const user = userBySlug(Astro.params.slug!);
-if (!user) {
-  throw new Error(`Missing user: ${Astro.params.slug}`);
+interface Props {
+  item: User;
 }
+
+const { item: user } = Astro.props;
 ---
 
 <Layout

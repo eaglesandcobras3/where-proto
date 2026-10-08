@@ -8,19 +8,21 @@ import {
   guides,
   postsFor,
   questions,
-  townBySlug,
   towns,
 } from "../../data/catalog";
+import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return towns.map((town) => ({ params: { slug: town.slug } }));
+  return slugPaths(towns);
 }
 
-const town = townBySlug(Astro.params.slug!);
-if (!town) {
-  throw new Error(`Missing town: ${Astro.params.slug}`);
+interface Props {
+  item: Town;
 }
+
+const { item: town } = Astro.props;
 
 const townAreas = areas.filter((area) => area.townSlug === town.slug);
 const townBusinesses = businessesForTown(town.slug);

@@ -1,16 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { businessBySlug, eventBySlug, events, townBySlug } from "../../data/catalog";
+import { businessBySlug, events, townBySlug } from "../../data/catalog";
+import type { EventItem } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return events.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(events);
 }
 
-const event = eventBySlug(Astro.params.slug!);
-if (!event) {
-  throw new Error(`Missing event: ${Astro.params.slug}`);
+interface Props {
+  item: EventItem;
 }
+
+const { item: event } = Astro.props;
 
 const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
 const business = event.businessSlug ? businessBySlug(event.businessSlug) : undefined;

@@ -1,16 +1,19 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { stayBySlug, stays, townBySlug } from "../../data/catalog";
+import { stays, townBySlug } from "../../data/catalog";
+import type { Stay } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return stays.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(stays);
 }
 
-const stay = stayBySlug(Astro.params.slug!);
-if (!stay) {
-  throw new Error(`Missing stay: ${Astro.params.slug}`);
+interface Props {
+  item: Stay;
 }
+
+const { item: stay } = Astro.props;
 
 const town = townBySlug(stay.townSlug);
 ---

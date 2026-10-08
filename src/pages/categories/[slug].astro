@@ -1,17 +1,20 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { categories, categoryBySlug } from "../../data/catalog";
+import { categories } from "../../data/catalog";
+import type { Category } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return categories.map((category) => ({ params: { slug: category.slug } }));
+  return slugPaths(categories);
 }
 
-const category = categoryBySlug(Astro.params.slug!);
-if (!category) {
-  throw new Error(`Missing category: ${Astro.params.slug}`);
+interface Props {
+  item: Category;
 }
+
+const { item: category } = Astro.props;
 ---
 
 <Layout title={category.name}>

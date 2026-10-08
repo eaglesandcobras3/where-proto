@@ -3,7 +3,6 @@ import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
 import {
   areaBySlug,
-  businessBySlug,
   businesses,
   events,
   photos,
@@ -11,16 +10,19 @@ import {
   townBySlug,
   userBySlug,
 } from "../../data/catalog";
+import type { Business } from "../../data/types";
 import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
-  return businesses.map((item) => ({ params: { slug: item.slug } }));
+  return slugPaths(businesses);
 }
 
-const business = businessBySlug(Astro.params.slug!);
-if (!business) {
-  throw new Error(`Missing business: ${Astro.params.slug}`);
+interface Props {
+  item: Business;
 }
+
+const { item: business } = Astro.props;
 
 const town = townBySlug(business.townSlug);
 const area = business.areaSlug ? areaBySlug(business.areaSlug) : undefined;
