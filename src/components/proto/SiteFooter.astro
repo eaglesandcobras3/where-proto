@@ -1,0 +1,70 @@
+---
+import { areas, categories, towns } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <div class="site-footer__brand">
+      <a class="site-logo" href={href("/")}>WhereTo30A</a>
+      <p>
+        Your local guide to 30A and Florida's Emerald Coast. Curated listings, town guides, and
+        hand-picked local favorites.
+      </p>
+    </div>
+    <div class="site-footer__cols">
+      <nav class="site-footer__col" aria-label="Towns">
+        <h2>Towns</h2>
+        <ul>
+          {
+            towns.map((town) => (
+              <li>
+                <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <nav class="site-footer__col" aria-label="Areas">
+        <h2>Areas</h2>
+        <ul>
+          {
+            areas.map((area) => (
+              <li>
+                <a href={href(`/area/${area.slug}`)}>{area.name}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <nav class="site-footer__col" aria-label="Business categories">
+        <h2>Businesses</h2>
+        <ul>
+          {
+            categories.map((category) => (
+              <li>
+                <a href={href(`/search?category=${category.leaves[0]?.slug ?? ""}`)}>
+                  {category.name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+      <nav class="site-footer__col" aria-label="Company">
+        <h2>Company</h2>
+        <ul>
+          <li><a href={href("/about")}>About</a></li>
+          <li><a href={href("/guides")}>Travel guides</a></li>
+          <li><a href={href("/events")}>Events</a></li>
+          <li><a href={href("/search")}>Search</a></li>
+          <li><a href={href("/add-business")}>List your business</a></li>
+          <li><a href={href("/advertise")}>Advertise</a></li>
+          <li><a href={href("/legal/privacy")}>Privacy</a></li>
+          <li><a href={href("/legal/terms")}>Terms</a></li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+  <div class="site-footer__bottom">© 2026 WhereTo30A · Terms · Privacy</div>
+</footer>

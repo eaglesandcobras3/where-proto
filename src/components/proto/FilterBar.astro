@@ -1,0 +1,20 @@
+---
+interface Props {
+  primary: string;
+  secondary: string;
+}
+
+const { primary, secondary } = Astro.props;
+---
+
+<div class="filter-band">
+  <div class="filter-bar" aria-label="Filters">
+    <div class="filter-bar__copy">
+      <p class="filter-bar__primary">{primary}</p>
+      <p class="filter-bar__secondary">{secondary}</p>
+    </div>
+    <button class="filter-bar__btn" type="button" aria-label="Open filters" disabled>
+      ☰
+    </button>
+  </div>
+</div>

@@ -1,22 +1,13 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import LinkList from "../../components/LinkList.astro";
-import Box from "../../components/Box.astro";
-import Placeholder from "../../components/Placeholder.astro";
-import FeedList from "../../components/FeedList.astro";
+import ProtoLayout from "../../layouts/ProtoLayout.astro";
+import TwoPaneMap from "../../components/proto/TwoPaneMap.astro";
 import {
-  allLeaves,
-  areaKindLabel,
   areasForTown,
-  events,
-  guides,
-  photosFor,
-  postsFor,
-  questions,
+  businessesForTown,
+  categories,
   towns,
   updatesForTown,
 } from "../../data/catalog";
-import UpdatesList from "../../components/UpdatesList.astro";
 import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -30,126 +21,135 @@ interface Props {
 }
 
 const { item: town } = Astro.props;
+const townBusinesses = businessesForTown(town.slug);
 const townAreas = areasForTown(town.slug);
-const shopping = townAreas.filter((item) => item.kind === "shopping");
-const neighborhoods = townAreas.filter((item) => item.kind === "neighborhood");
 const townUpdates = updatesForTown(town.slug);
-const townEvents = events.filter((item) => item.townSlug === town.slug);
-const townGuides = guides.filter((item) => item.townSlug === town.slug);
-const townQuestions = questions.filter((item) => item.townSlug === town.slug);
-const townPosts = postsFor("town", town.slug);
-const townPhotos = photosFor("town", town.slug);
-const leaves = allLeaves();
+
+const categoryCounts = categories
+  .map((category) => {
+    const count = townBusinesses.filter((item) => item.categorySlug === category.slug).length;
+    const firstLeaf = category.leaves[0];
+    return {
+      slug: category.slug,
+      name: category.name,
+      count,
+      href: firstLeaf ? href(`/town/${town.slug}/${firstLeaf.slug}`) : href(`/town/${town.slug}`),
+    };
+  })
+  .filter((item) => item.count > 0);
+
+const currentIndex = towns.findIndex((item) => item.slug === town.slug);
 ---
 
-<Layout
+<ProtoLayout
   title={town.name}
-  note="Posting to the feed as a user happens on this town page. Posting as a business happens from the dashboard. How a signed-in owner chooses user vs business is still an open question."
+  activeNav="towns"
+  filterPrimary={town.name}
+  filterSecondary="Any category"
 >
-  <p><a href={href("/towns")}>Towns</a></p>
-  <h1>Town: {town.name}</h1>
-  <p>{town.summary}</p>
+  <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(8, townBusinesses.length * 3)}>
+    <section class="corridor" aria-label="The 30A corridor">
+      <p class="corridor__label">The 30A Corridor</p>
+      <div class="corridor__track">
+        {
+          towns.map((item, index) => {
+            const here = item.slug === town.slug;
+            const delta = index - currentIndex;
+            const meta = here
+              ? "You are here"
+              : delta < 0
+                ? `${Math.abs(delta)} west`
+                : `${delta} east`;
+            return (
+              <a
+                class="corridor__item"
+                href={href(`/town/${item.slug}`)}
+                aria-current={here ? "true" : undefined}
+              >
+                <div class="corridor__dot">{here ? "●" : ""}</div>
+                <p class="corridor__name">{item.name}</p>
+                <p class="corridor__meta">{meta}</p>
+              </a>
+            );
+          })
+        }
+      </div>
+    </section>
 
-  <Box label="Facts">
-    <ul>
-      <li>Walkability: {town.walkability}</li>
-      <li>Beach access: {town.beachAccess}</li>
-    </ul>
-  </Box>
+    <section class="town-hero">
+      <div class="town-hero__media" role="img" aria-label={`${town.name} photo placeholder`}></div>
+      <div>
+        <h1 class="town-hero__title">{town.name}</h1>
+        <span class="town-hero__tag">All 30A</span>
+        <p class="town-hero__summary">{town.summary}</p>
+        <a class="town-hero__suggest" href={href("/ask")}>Suggest an update</a>
+      </div>
+    </section>
 
-  <Box label="Map">
-    <Placeholder kind="map" caption={town.name} />
-  </Box>
-
-  <Box label="Photos">
     {
-      townPhotos.length === 0 ? (
-        <Placeholder caption="No town photos yet" />
-      ) : (
-        <div class="row">
-          {townPhotos.map((photo) => (
-            <Placeholder caption={photo.caption} />
-          ))}
-        </div>
+      categoryCounts.length > 0 && (
+        <section>
+          <p class="section-label">Categories in {town.name}</p>
+          <div class="pill-row">
+            {categoryCounts.map((item) => (
+              <a class="pill" href={item.href}>
+                {item.name} ({item.count})
+              </a>
+            ))}
+          </div>
+        </section>
       )
     }
-  </Box>
 
-  <Box label="Categories in this town">
-    <p>Leaf pages hold listings. This hub does not render business cards.</p>
-    <ul>
-      {
-        leaves.map((leaf) => (
-          <li>
-            <a href={href(`/town/${town.slug}/${leaf.slug}`)}>{leaf.name}</a>
-          </li>
-        ))
-      }
-    </ul>
-  </Box>
+    <section class="glance">
+      <h2 class="glance__title">{town.name} at a glance</h2>
+      <div class="glance__grid">
+        <div class="glance__card">
+          <div class="glance__icon" aria-hidden="true"></div>
+          <strong>Walkability</strong>
+          <span>{town.walkability}</span>
+        </div>
+        <div class="glance__card">
+          <div class="glance__icon" aria-hidden="true"></div>
+          <strong>Beach access</strong>
+          <span>{town.beachAccess}</span>
+        </div>
+        <div class="glance__card">
+          <div class="glance__icon" aria-hidden="true"></div>
+          <strong>Areas</strong>
+          <span>{townAreas.length} in this town</span>
+        </div>
+      </div>
+    </section>
 
-  <Box label="Areas in this town">
-    <p>Shopping areas and neighborhoods. An area is an extension of this town.</p>
-    <LinkList
-      items={[
-        ...shopping.map((item) => ({
-          href: href(`/area/${item.slug}`),
-          label: item.name,
-          meta: `${areaKindLabel(item.kind)} · ${item.summary}`,
-        })),
-        ...neighborhoods.map((item) => ({
-          href: href(`/area/${item.slug}`),
-          label: item.name,
-          meta: `${areaKindLabel(item.kind)} · ${item.summary}`,
-        })),
-      ]}
-    />
-  </Box>
+    {
+      townAreas.length > 0 && (
+        <section>
+          <p class="section-label">Areas in {town.name}</p>
+          <div class="pill-row">
+            {townAreas.map((area) => (
+              <a class="pill" href={href(`/area/${area.slug}`)}>
+                {area.name}
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
 
-  <Box label="Updates">
-    <UpdatesList items={townUpdates} />
-  </Box>
-
-  <Box label="Related">
-    <LinkList
-      items={[
-        ...townEvents.map((item) => ({
-          href: href(`/event/${item.slug}`),
-          label: item.name,
-          meta: "event",
-        })),
-        ...townGuides.map((item) => ({
-          href: href(`/guide/${item.slug}`),
-          label: item.title,
-          meta: "guide",
-        })),
-        ...townQuestions.map((item) => ({
-          href: href(`/ask/${item.slug}`),
-          label: item.title,
-          meta: "ask",
-        })),
-      ]}
-    />
-  </Box>
-
-  <Box label="Stay">
-    <p>
-      Stay is ship-dark. <a href={href("/stays")}>Stays hub</a>
-    </p>
-  </Box>
-
-  <Box label="Feed posts">
-    <FeedList items={townPosts} />
-  </Box>
-
-  <Box label="Post to this town feed (as user)">
-    <p>Wireframe form. Submit does nothing.</p>
-    <form>
-      <label>
-        Post
-        <input type="text" name="body" />
-      </label>
-      <button type="button">Post as user</button>
-    </form>
-  </Box>
-</Layout>
+    {
+      townUpdates.length > 0 && (
+        <section class="updates-block">
+          <p class="section-label">Updates</p>
+          <ul>
+            {townUpdates.map((item) => (
+              <li>
+                <strong>{item.title}</strong> — {item.body}
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </TwoPaneMap>
+</ProtoLayout>
