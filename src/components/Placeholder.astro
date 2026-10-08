@@ -1,0 +1,13 @@
+---
+interface Props {
+  kind?: "photo" | "map";
+  caption?: string;
+}
+
+const { kind = "photo", caption } = Astro.props;
+const text = caption ? `[${kind}: ${caption}]` : `[${kind}]`;
+---
+
+<div class={`placeholder ${kind}`} role="img" aria-label={caption ?? kind}>
+  {text}
+</div>

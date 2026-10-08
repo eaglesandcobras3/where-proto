@@ -1,5 +1,6 @@
 ---
 import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
 import { stories } from "../../data/catalog";
 import type { Story } from "../../data/types";
 import { href } from "../../lib/href";
@@ -20,4 +21,7 @@ const { item: story } = Astro.props;
   <p><a href={href("/stories")}>Stories</a></p>
   <h1>Story: {story.title}</h1>
   <p>{story.summary}</p>
+  <Box label="Body">
+    <p>{story.body}</p>
+  </Box>
 </Layout>

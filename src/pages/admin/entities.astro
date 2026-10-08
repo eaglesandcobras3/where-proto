@@ -1,0 +1,32 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Entities">
+  <p><a href={href("/admin")}>Admin</a></p>
+  <h1>Entities</h1>
+  <Box label="Named in the IA">
+    <p>Most do not have their own admin CRUD yet.</p>
+    <ul>
+      <li>User</li>
+      <li>Business</li>
+      <li>Town</li>
+      <li>Area</li>
+      <li>Post (Feed)</li>
+      <li>Photo</li>
+      <li>Event</li>
+      <li>Guide</li>
+      <li>Category</li>
+      <li>Tag</li>
+      <li>Question</li>
+      <li>Comment</li>
+      <li>Reactions</li>
+      <li>Favorites</li>
+      <li>Knowledge</li>
+      <li>Review Queue</li>
+      <li>SEO Overrides</li>
+    </ul>
+  </Box>
+</Layout>

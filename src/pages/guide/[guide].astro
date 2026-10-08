@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { comments, guides, townBySlug } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import { commentsFor, guides, reactionsFor, townBySlug, userBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -15,9 +16,8 @@ interface Props {
 
 const { item: guide } = Astro.props;
 const town = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
-const guideComments = comments.filter(
-  (item) => item.on.type === "guide" && item.on.slug === guide.slug,
-);
+const guideComments = commentsFor("guide", guide.slug);
+const guideReactions = reactionsFor("guide", guide.slug);
 ---
 
 <Layout title={guide.title}>
@@ -31,16 +31,40 @@ const guideComments = comments.filter(
       </p>
     )
   }
-  <h2>Comments</h2>
-  {
-    guideComments.length === 0 ? (
-      <p>No fake comments on this guide.</p>
-    ) : (
-      <ul>
-        {guideComments.map((item) => (
-          <li>{item.body}</li>
-        ))}
-      </ul>
-    )
-  }
+
+  <Box label="Body">
+    <p>{guide.body}</p>
+  </Box>
+
+  <Box label="Reactions">
+    {
+      guideReactions.length === 0 ? (
+        <p>No fake reactions on this guide.</p>
+      ) : (
+        <ul>
+          {guideReactions.map((item) => (
+            <li>
+              {item.label}: {item.count}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Box>
+
+  <Box label="Comments">
+    {
+      guideComments.length === 0 ? (
+        <p>No fake comments on this guide.</p>
+      ) : (
+        <ul>
+          {guideComments.map((item) => (
+            <li>
+              {item.body} — {userBySlug(item.authorUserSlug)?.name}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Box>
 </Layout>

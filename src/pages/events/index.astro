@@ -1,17 +1,20 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
+import Box from "../../components/Box.astro";
 import { events, townBySlug } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
 <Layout title="Events">
   <h1>Events</h1>
-  <LinkList
-    items={events.map((item) => ({
-      href: href(`/event/${item.slug}`),
-      label: item.name,
-      meta: `${item.when}${item.townSlug ? ` · ${townBySlug(item.townSlug)?.name}` : ""}`,
-    }))}
-  />
+  <Box label="Upcoming">
+    <LinkList
+      items={events.map((item) => ({
+        href: href(`/event/${item.slug}`),
+        label: item.name,
+        meta: `${item.when}${item.townSlug ? ` · ${townBySlug(item.townSlug)?.name}` : ""}`,
+      }))}
+    />
+  </Box>
 </Layout>

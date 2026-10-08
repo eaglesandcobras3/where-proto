@@ -1,7 +1,9 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { allLeaves, areas, townBySlug } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import Placeholder from "../../components/Placeholder.astro";
+import { allLeaves, areas, photosFor, townBySlug } from "../../data/catalog";
 import type { Area } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -16,6 +18,7 @@ interface Props {
 
 const { item: area } = Astro.props;
 const town = townBySlug(area.townSlug);
+const areaPhotos = photosFor("area", area.slug);
 ---
 
 <Layout title={area.name}>
@@ -32,10 +35,28 @@ const town = townBySlug(area.townSlug);
   </p>
   <h1>Area: {area.name}</h1>
   <p>{area.summary}</p>
+
+  <Box label="Map">
+    <Placeholder kind="map" caption={area.name} />
+  </Box>
+
+  <Box label="Photos">
+    {
+      areaPhotos.length === 0 ? (
+        <Placeholder caption="No area photos yet" />
+      ) : (
+        <div class="row">
+          {areaPhotos.map((photo) => (
+            <Placeholder caption={photo.caption} />
+          ))}
+        </div>
+      )
+    }
+  </Box>
+
   {
     town && (
-      <>
-        <h2>Categories in {town.name}</h2>
+      <Box label={`Categories in ${town.name}`}>
         <p>Listings are on town leaf pages, not on this area page.</p>
         <LinkList
           items={allLeaves().map((leaf) => ({
@@ -43,7 +64,7 @@ const town = townBySlug(area.townSlug);
             label: leaf.name,
           }))}
         />
-      </>
+      </Box>
     )
   }
 </Layout>

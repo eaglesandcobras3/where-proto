@@ -1,19 +1,35 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import { happenings, townBySlug } from "../data/catalog";
+import Box from "../components/Box.astro";
+import { eventBySlug, happenings, townBySlug } from "../data/catalog";
+import { href } from "../lib/href";
 ---
 
 <Layout title="Happenings">
   <h1>Happenings</h1>
   <p>Corridor-level happening notes. No detail route in this scaffold.</p>
-  <ul>
-    {
-      happenings.map((item) => (
-        <li>
-          {item.title} — {item.summary}
-          {item.townSlug ? ` · ${townBySlug(item.townSlug)?.name}` : ""}
-        </li>
-      ))
-    }
-  </ul>
+  {
+    happenings.map((item) => {
+      const town = item.townSlug ? townBySlug(item.townSlug) : undefined;
+      const event = item.eventSlug ? eventBySlug(item.eventSlug) : undefined;
+      return (
+        <Box label="Happening">
+          <h2>{item.title}</h2>
+          <p>{item.summary}</p>
+          <ul>
+            {town && (
+              <li>
+                Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+              </li>
+            )}
+            {event && (
+              <li>
+                Related event: <a href={href(`/event/${event.slug}`)}>{event.name}</a>
+              </li>
+            )}
+          </ul>
+        </Box>
+      );
+    })
+  }
 </Layout>

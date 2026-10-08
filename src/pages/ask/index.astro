@@ -1,6 +1,7 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
+import Box from "../../components/Box.astro";
 import { questions, towns } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
@@ -8,39 +9,42 @@ import { href } from "../../lib/href";
 <Layout title="Ask">
   <h1>Ask</h1>
   <p>Community route. Threads live at /ask/{"{question}"}.</p>
-  <LinkList
-    items={questions.map((item) => ({
-      href: href(`/ask/${item.slug}`),
-      label: item.title,
-      meta: item.body,
-    }))}
-  />
-  <h2>Ask a question</h2>
-  <p>Wireframe form. Submit does nothing.</p>
-  <form>
-    <p>
-      <label>
-        Title
-        <input type="text" name="title" />
-      </label>
-    </p>
-    <p>
-      <label>
-        Town
-        <select name="town">
-          <option value="">None</option>
-          {towns.map((town) => (
-            <option value={town.slug}>{town.name}</option>
-          ))}
-        </select>
-      </label>
-    </p>
-    <p>
-      <label>
-        Question
-        <textarea name="body"></textarea>
-      </label>
-    </p>
-    <button type="button">Post question</button>
-  </form>
+  <Box label="Questions">
+    <LinkList
+      items={questions.map((item) => ({
+        href: href(`/ask/${item.slug}`),
+        label: item.title,
+        meta: item.body,
+      }))}
+    />
+  </Box>
+  <Box label="Ask a question">
+    <p>Wireframe form. Submit does nothing.</p>
+    <form>
+      <p>
+        <label>
+          Title
+          <input type="text" name="title" />
+        </label>
+      </p>
+      <p>
+        <label>
+          Town
+          <select name="town">
+            <option value="">None</option>
+            {towns.map((town) => (
+              <option value={town.slug}>{town.name}</option>
+            ))}
+          </select>
+        </label>
+      </p>
+      <p>
+        <label>
+          Question
+          <textarea name="body"></textarea>
+        </label>
+      </p>
+      <button type="button">Post question</button>
+    </form>
+  </Box>
 </Layout>

@@ -1,7 +1,10 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { allLeaves, areas, events, guides, questions, towns } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import Placeholder from "../../components/Placeholder.astro";
+import FeedList from "../../components/FeedList.astro";
+import { allLeaves, areas, events, guides, photosFor, postsFor, questions, towns } from "../../data/catalog";
 import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -19,57 +22,107 @@ const townAreas = areas.filter((area) => area.townSlug === town.slug);
 const townEvents = events.filter((item) => item.townSlug === town.slug);
 const townGuides = guides.filter((item) => item.townSlug === town.slug);
 const townQuestions = questions.filter((item) => item.townSlug === town.slug);
+const townPosts = postsFor("town", town.slug);
+const townPhotos = photosFor("town", town.slug);
 const leaves = allLeaves();
 ---
 
-<Layout title={town.name}>
+<Layout
+  title={town.name}
+  note="Posting to the feed as a user happens on this town page. Posting as a business happens from the dashboard. How a signed-in owner chooses user vs business is still an open question."
+>
   <p><a href={href("/towns")}>Towns</a></p>
   <h1>Town: {town.name}</h1>
   <p>{town.summary}</p>
-  <ul>
-    <li>Walkability: {town.walkability}</li>
-    <li>Beach access: {town.beachAccess}</li>
-  </ul>
 
-  <h2>Categories in this town</h2>
-  <p>Leaf pages hold listings. This hub does not render business cards.</p>
-  <ul>
+  <Box label="Facts">
+    <ul>
+      <li>Walkability: {town.walkability}</li>
+      <li>Beach access: {town.beachAccess}</li>
+    </ul>
+  </Box>
+
+  <Box label="Map">
+    <Placeholder kind="map" caption={town.name} />
+  </Box>
+
+  <Box label="Photos">
     {
-      leaves.map((leaf) => (
-        <li>
-          <a href={href(`/town/${town.slug}/${leaf.slug}`)}>{leaf.name}</a>
-        </li>
-      ))
+      townPhotos.length === 0 ? (
+        <Placeholder caption="No town photos yet" />
+      ) : (
+        <div class="row">
+          {townPhotos.map((photo) => (
+            <Placeholder caption={photo.caption} />
+          ))}
+        </div>
+      )
     }
-  </ul>
+  </Box>
 
-  <h2>Areas</h2>
-  <LinkList
-    items={townAreas.map((item) => ({
-      href: href(`/area/${item.slug}`),
-      label: item.name,
-      meta: item.summary,
-    }))}
-  />
+  <Box label="Categories in this town">
+    <p>Leaf pages hold listings. This hub does not render business cards.</p>
+    <ul>
+      {
+        leaves.map((leaf) => (
+          <li>
+            <a href={href(`/town/${town.slug}/${leaf.slug}`)}>{leaf.name}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </Box>
 
-  <h2>Related</h2>
-  <LinkList
-    items={[
-      ...townEvents.map((item) => ({
-        href: href(`/event/${item.slug}`),
+  <Box label="Areas">
+    <LinkList
+      items={townAreas.map((item) => ({
+        href: href(`/area/${item.slug}`),
         label: item.name,
-        meta: "event",
-      })),
-      ...townGuides.map((item) => ({
-        href: href(`/guide/${item.slug}`),
-        label: item.title,
-        meta: "guide",
-      })),
-      ...townQuestions.map((item) => ({
-        href: href(`/ask/${item.slug}`),
-        label: item.title,
-        meta: "ask",
-      })),
-    ]}
-  />
+        meta: item.summary,
+      }))}
+    />
+  </Box>
+
+  <Box label="Related">
+    <LinkList
+      items={[
+        ...townEvents.map((item) => ({
+          href: href(`/event/${item.slug}`),
+          label: item.name,
+          meta: "event",
+        })),
+        ...townGuides.map((item) => ({
+          href: href(`/guide/${item.slug}`),
+          label: item.title,
+          meta: "guide",
+        })),
+        ...townQuestions.map((item) => ({
+          href: href(`/ask/${item.slug}`),
+          label: item.title,
+          meta: "ask",
+        })),
+      ]}
+    />
+  </Box>
+
+  <Box label="Stay">
+    <p>
+      Stay is ship-dark. <a href={href("/stays")}>Stays hub</a>
+    </p>
+  </Box>
+
+  <Box label="Feed posts">
+    <FeedList items={townPosts} />
+  </Box>
+
+  <Box label="Post to this town feed (as user)">
+    <p>Wireframe form. Submit does nothing.</p>
+    <form>
+      <label>
+        Post
+        <input type="text" name="body" />
+      </label>
+      <button type="button">Post as user</button>
+    </form>
+  </Box>
 </Layout>

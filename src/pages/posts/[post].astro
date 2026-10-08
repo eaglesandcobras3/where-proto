@@ -1,0 +1,95 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
+import {
+  businessBySlug,
+  commentsFor,
+  posts,
+  reactionsFor,
+  townBySlug,
+  userBySlug,
+} from "../../data/catalog";
+import type { Post } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(posts, "post");
+}
+
+interface Props {
+  item: Post;
+}
+
+const { item: post } = Astro.props;
+const user = post.authorUserSlug ? userBySlug(post.authorUserSlug) : undefined;
+const business = post.authorBusinessSlug ? businessBySlug(post.authorBusinessSlug) : undefined;
+const target =
+  post.on.type === "town" ? townBySlug(post.on.slug) : businessBySlug(post.on.slug);
+const targetHref =
+  post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(`/business/${post.on.slug}`);
+const postComments = commentsFor("post", post.slug);
+const postReactions = reactionsFor("post", post.slug);
+---
+
+<Layout title="Post">
+  <h1>Post</h1>
+  <Box label="Body">
+    <p>{post.body}</p>
+    <ul>
+      <li>Posted as: {post.postedAs}</li>
+      <li>Created: {post.createdAt}</li>
+      {
+        user && (
+          <li>
+            User: <a href={href(`/u/${user.slug}`)}>{user.name}</a>
+          </li>
+        )
+      }
+      {
+        business && (
+          <li>
+            Business: <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+          </li>
+        )
+      }
+      {
+        target && (
+          <li>
+            On {post.on.type}: <a href={targetHref}>{target.name}</a>
+          </li>
+        )
+      }
+    </ul>
+  </Box>
+  <Box label="Reactions">
+    {
+      postReactions.length === 0 ? (
+        <p>No fake reactions.</p>
+      ) : (
+        <ul>
+          {postReactions.map((item) => (
+            <li>
+              {item.label}: {item.count}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Box>
+  <Box label="Comments">
+    {
+      postComments.length === 0 ? (
+        <p>No fake comments on this post.</p>
+      ) : (
+        <ul>
+          {postComments.map((item) => (
+            <li>
+              {item.body} — {userBySlug(item.authorUserSlug)?.name}
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Box>
+</Layout>

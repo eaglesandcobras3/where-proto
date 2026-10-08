@@ -1,8 +1,39 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import LinkList from "../components/LinkList.astro";
+import Box from "../components/Box.astro";
+import { businessesOwnedBy, currentUser, currentUserSlug } from "../data/catalog";
+import { href } from "../lib/href";
+
+const user = currentUser();
+const owned = businessesOwnedBy("brett");
 ---
 
-<Layout title="Dashboard">
+<Layout
+  title="Dashboard"
+  note="Business management is still being defined. Dashboard is the selector plus the manage surfaces from the IA."
+>
   <h1>Dashboard</h1>
-  <p>Account / manage surface. Details come later.</p>
+  <p>
+    Signed-in user on this wireframe is {user?.name}. Owned businesses are attached to Brett so
+    the selector has fake rows to click. Fake session slug: {currentUserSlug}.
+  </p>
+
+  <Box label="Business selector">
+    <LinkList
+      items={owned.map((item) => ({
+        href: href(`/dashboard/${item.slug}`),
+        label: item.name,
+        meta: item.summary,
+      }))}
+    />
+  </Box>
+
+  <Box label="Other account surfaces">
+    <ul>
+      <li><a href={href("/profile")}>Profile</a></li>
+      <li><a href={href("/admin")}>Admin</a></li>
+      <li><a href={href("/add-business")}>Add business</a></li>
+    </ul>
+  </Box>
 </Layout>

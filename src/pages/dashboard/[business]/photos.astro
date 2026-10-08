@@ -1,0 +1,47 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Box from "../../../components/Box.astro";
+import Placeholder from "../../../components/Placeholder.astro";
+import { photosFor } from "../../../data/catalog";
+import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+const shots = photosFor("business", business.slug);
+---
+
+<Layout title={`Photos · ${business.name}`}>
+  <p><a href={href(`/dashboard/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>Photos</h1>
+  <Box label="Current photos">
+    {
+      shots.length === 0 ? (
+        <p>No fake photos on this listing.</p>
+      ) : (
+        <div class="row">
+          {shots.map((item) => (
+            <Placeholder caption={item.caption} />
+          ))}
+        </div>
+      )
+    }
+  </Box>
+  <Box label="Upload">
+    <form>
+      <label>
+        Caption
+        <input type="text" name="caption" />
+      </label>
+      <button type="button">Upload placeholder</button>
+    </form>
+  </Box>
+</Layout>

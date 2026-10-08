@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Box from "../components/Box.astro";
 import { categories, towns } from "../data/catalog";
 ---
 
@@ -8,40 +9,42 @@ import { categories, towns } from "../data/catalog";
   note="Add business is still being defined. This is a public intake stub."
 >
   <h1>Add business</h1>
-  <p>Wireframe form. Submissions would land on the review queue later.</p>
-  <form>
-    <p>
-      <label>
-        Business name
-        <input type="text" name="name" />
-      </label>
-    </p>
-    <p>
-      <label>
-        Town
-        <select name="town">
-          {towns.map((town) => (
-            <option value={town.slug}>{town.name}</option>
-          ))}
-        </select>
-      </label>
-    </p>
-    <p>
-      <label>
-        Category
-        <select name="category">
-          {categories.map((category) => (
-            <option value={category.slug}>{category.name}</option>
-          ))}
-        </select>
-      </label>
-    </p>
-    <p>
-      <label>
-        Summary
-        <textarea name="summary"></textarea>
-      </label>
-    </p>
-    <button type="button">Submit listing</button>
-  </form>
+  <Box label="Intake form">
+    <p>Wireframe form. Submissions would land on the review queue later.</p>
+    <form>
+      <p>
+        <label>
+          Business name
+          <input type="text" name="name" />
+        </label>
+      </p>
+      <p>
+        <label>
+          Town
+          <select name="town">
+            {towns.map((town) => (
+              <option value={town.slug}>{town.name}</option>
+            ))}
+          </select>
+        </label>
+      </p>
+      <p>
+        <label>
+          Category
+          <select name="category">
+            {categories.map((category) => (
+              <option value={category.slug}>{category.name}</option>
+            ))}
+          </select>
+        </label>
+      </p>
+      <p>
+        <label>
+          Summary
+          <textarea name="summary"></textarea>
+        </label>
+      </p>
+      <button type="button">Submit listing</button>
+    </form>
+  </Box>
 </Layout>

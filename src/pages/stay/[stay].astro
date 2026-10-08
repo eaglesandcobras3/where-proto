@@ -1,0 +1,54 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
+import Placeholder from "../../components/Placeholder.astro";
+import { stays, townBySlug } from "../../data/catalog";
+import type { Stay } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(stays, "stay");
+}
+
+interface Props {
+  item: Stay;
+}
+
+const { item: stay } = Astro.props;
+const town = townBySlug(stay.townSlug);
+---
+
+<Layout title={stay.name} note="Stay detail is ship-dark with the rest of /stays.">
+  <p><a href={href("/stays")}>Stays</a></p>
+  <h1>Stay: {stay.name}</h1>
+  <p>{stay.summary}</p>
+
+  <Box label="Facts">
+    <ul>
+      <li>Sleeps: {stay.sleeps}</li>
+      {
+        town && (
+          <li>
+            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+            {" · "}
+            <a href={href(`/town/${town.slug}/vacation-rentals`)}>Vacation rentals</a>
+            {" / "}
+            <a href={href(`/town/${town.slug}/hotels`)}>Hotels</a>
+          </li>
+        )
+      }
+      {
+        stay.businessSlug && (
+          <li>
+            Business page: <a href={href(`/business/${stay.businessSlug}`)}>{stay.name}</a>
+          </li>
+        )
+      }
+    </ul>
+  </Box>
+
+  <Box label="Photos">
+    <Placeholder caption={stay.name} />
+  </Box>
+</Layout>

@@ -7,9 +7,7 @@ export default defineConfig({
     "/community": "/ask",
     "/community/ask": "/ask",
     "/stay": "/stays",
-    "/admin": "/dashboard",
     "/manage": "/dashboard",
-    "/auth/login": "/profile",
     "/businesses": "/search",
   },
 });
