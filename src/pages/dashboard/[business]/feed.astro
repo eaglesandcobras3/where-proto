@@ -1,0 +1,40 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import Box from "../../../components/Box.astro";
+import FeedList from "../../../components/FeedList.astro";
+import { postsFor } from "../../../data/catalog";
+import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+const feed = postsFor("business", business.slug).filter((item) => item.postedAs === "business");
+---
+
+<Layout
+  title={`Post feed · ${business.name}`}
+  note="Posting as a business happens here. Posting as a user happens on the town or business page. How a person with both roles switches is still an open question."
+>
+  <p><a href={href(`/dashboard/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>Post feed as business</h1>
+  <Box label="Existing posts">
+    <FeedList items={feed} />
+  </Box>
+  <Box label="New post">
+    <form>
+      <label>
+        New post
+        <input type="text" name="body" />
+      </label>
+      <button type="button">Post as {business.name}</button>
+    </form>
+  </Box>
+</Layout>

@@ -1,5 +1,6 @@
 ---
 import Layout from "../layouts/Layout.astro";
+import Box from "../components/Box.astro";
 import { href } from "../lib/href";
 
 const routes = [
@@ -8,23 +9,43 @@ const routes = [
   ["Town", "/town/rosemary-beach"],
   ["Town × category (indexable)", "/town/rosemary-beach/restaurants"],
   ["Areas hub", "/areas"],
-  ["Area", "/area/barrett-square"],
+  ["Shopping area", "/area/barrett-square"],
+  ["Neighborhood", "/area/east-rosemary"],
   ["Search (business finder)", "/search"],
   ["Search filtered", "/search?town=seaside&category=coffee-shops"],
   ["Business", "/business/edwards-fine-food-and-wine"],
   ["Events", "/events"],
   ["Event", "/event/sounds-of-seaside"],
-  ["Happenings", "/happenings"],
   ["Guides", "/guides"],
   ["Guide", "/guide/first-timers-guide"],
   ["Ask", "/ask"],
   ["Question", "/ask/parking-near-seaside"],
-  ["Stories", "/stories"],
-  ["Story", "/story/finding-30a"],
-  ["Stays (ship-dark)", "/stays"],
+  ["Stays", "/stays"],
+  ["Stay", "/stay/the-pearl-hotel"],
+  ["Post", "/posts/sunset-on-the-square"],
   ["Dashboard", "/dashboard"],
+  ["Manage business", "/dashboard/edwards-fine-food-and-wine"],
+  ["Post feed as business", "/dashboard/edwards-fine-food-and-wine/feed"],
+  ["Post event", "/dashboard/edwards-fine-food-and-wine/events/new"],
+  ["Mentions", "/dashboard/edwards-fine-food-and-wine/mentions"],
+  ["Edit listing", "/dashboard/edwards-fine-food-and-wine/listing"],
+  ["Photos", "/dashboard/edwards-fine-food-and-wine/photos"],
   ["Profile", "/profile"],
+  ["Favorites", "/profile/favorites"],
+  ["Posts (user)", "/profile/posts"],
+  ["Account settings", "/profile/settings"],
+  ["External profile", "/u/kelley"],
   ["Add business", "/add-business"],
+  ["Admin", "/admin"],
+  ["Review queue", "/admin/review-queue"],
+  ["SEO overrides", "/admin/seo"],
+  ["Knowledge", "/admin/knowledge"],
+  ["Entities", "/admin/entities"],
+  ["Login", "/auth/login"],
+  ["Sign up", "/auth/signup"],
+  ["Forgot password", "/auth/forgot-password"],
+  ["Visitor newsletter", "/newsletters/visitor"],
+  ["Business newsletter", "/newsletters/business"],
   ["About", "/about"],
   ["Legal", "/legal"],
   ["Advertise", "/advertise"],
@@ -35,29 +56,47 @@ const routes = [
   <h1>Route scaffold</h1>
   <p>No /businesses. /search is the finder. Town × category pages are the indexable leaves.</p>
 
-  <h2>Rules</h2>
-  <ol>
-    <li>There is no /businesses hub or /businesses/{"{category}"} leaf.</li>
-    <li>
-      /search is the business finder: town, category, tag, and open-now filters. Always noindex,
-      follow. If the filters are exactly town + category, canonical points at that combo page.
-    </li>
-    <li>Town pages link to /town/{"{town}"}/{'{category}'}.</li>
-    <li>
-      Listings on indexable pages live only on /town/{"{town}"}/{'{category}'}. /towns and
-      /town/{"{town}"} do not render business cards.
-    </li>
-    <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
-  </ol>
+  <Box label="Rules">
+    <ol>
+      <li>There is no /businesses hub or /businesses/{"{category}"} leaf.</li>
+      <li>
+        /search is the business finder: town, category, tag, and open-now filters. Always noindex,
+        follow. If the filters are exactly town + category, canonical points at that combo page.
+      </li>
+      <li>Town pages link to /town/{"{town}"}/{'{category}'}.</li>
+      <li>
+        Listings on indexable pages live only on /town/{"{town}"}/{'{category}'}. /towns and
+        /town/{"{town}"} do not render business cards.
+      </li>
+      <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
+      <li>User posts from a town or business page. Business posts from the dashboard.</li>
+      <li>Updates are not a top-level section. They only appear on town and business pages.</li>
+      <li>
+        Areas extend a town: shopping areas and neighborhoods. One town can have many areas.
+      </li>
+      <li>Stories are guides. There is no Stories nav item.</li>
+    </ol>
+  </Box>
 
-  <h2>Routes</h2>
-  <ul>
-    {
-      routes.map(([label, path]) => (
-        <li>
-          <a href={href(path)}>{label}</a> — {path}
-        </li>
-      ))
-    }
-  </ul>
+  <Box label="Still being defined">
+    <ul>
+      <li>External facing profile beyond the public stub</li>
+      <li>Business management beyond selector, post event, post feed, mentions, listing, photos</li>
+      <li>Admin beyond review queue, SEO, knowledge</li>
+      <li>Auth flow</li>
+      <li>How to post as business vs user</li>
+    </ul>
+  </Box>
+
+  <Box label="Routes">
+    <ul>
+      {
+        routes.map(([label, path]) => (
+          <li>
+            <a href={href(path)}>{label}</a> — {path}
+          </li>
+        ))
+      }
+    </ul>
+  </Box>
 </Layout>

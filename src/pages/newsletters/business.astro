@@ -1,0 +1,26 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
+---
+
+<Layout title="Business newsletter">
+  <h1>Business newsletter</h1>
+  <Box label="Subscribe">
+    <p>Fake subscribe form for business owners.</p>
+    <form>
+      <p>
+        <label>
+          Email
+          <input type="email" name="email" />
+        </label>
+      </p>
+      <p>
+        <label>
+          Business name
+          <input type="text" name="business" />
+        </label>
+      </p>
+      <button type="button">Subscribe</button>
+    </form>
+  </Box>
+</Layout>

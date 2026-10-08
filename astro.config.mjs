@@ -7,9 +7,11 @@ export default defineConfig({
     "/community": "/ask",
     "/community/ask": "/ask",
     "/stay": "/stays",
-    "/admin": "/dashboard",
     "/manage": "/dashboard",
-    "/auth/login": "/profile",
     "/businesses": "/search",
+    "/happenings": "/",
+    "/stories": "/guides",
+    "/story/finding-30a": "/guide/finding-30a",
+    "/story/town-vs-town": "/guide/town-vs-town",
   },
 });

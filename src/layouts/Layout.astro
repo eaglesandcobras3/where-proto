@@ -1,5 +1,6 @@
 ---
 import { absHref, href } from "../lib/href";
+import "../styles/wireframe.css";
 
 interface Props {
   title: string;
@@ -22,15 +23,20 @@ const { title, note, noindex, canonicalPath } = Astro.props;
   </head>
   <body>
     <header>
-      <p>WhereTo30A · wireframe only · fake data · no styled UI</p>
+      <p class="box-label">Site chrome</p>
+      <p>WhereTo30A · wireframe · fake data</p>
       <nav aria-label="Primary">
         <a href={href("/")}>Homepage (Logo)</a>
         ·
         <a href={href("/towns")}>Towns</a>
         ·
+        <a href={href("/areas")}>Areas</a>
+        ·
+        <a href={href("/search")}>Search</a>
+        ·
         <a href={href("/events")}>Events</a>
         ·
-        <a href={href("/happenings")}>Happenings</a>
+        <a href={href("/stays")}>Stays</a>
         ·
         <a href={href("/guides")}>Guides</a>
         ·
@@ -39,29 +45,24 @@ const { title, note, noindex, canonicalPath } = Astro.props;
       <nav aria-label="Account">
         <a href={href("/add-business")}>Add Business</a>
         ·
-        <a href={href("/search")}>Search</a>
-        ·
         <a href={href("/profile")}>Profile</a>
         ·
         <a href={href("/dashboard")}>Dashboard</a>
       </nav>
     </header>
-    <hr />
     <main>
       <slot />
       {
         note && (
-          <>
-            <hr />
-            <p>
-              <strong>Note:</strong> {note}
-            </p>
-          </>
+          <section class="box">
+            <p class="box-label">Note</p>
+            <p>{note}</p>
+          </section>
         )
       }
     </main>
-    <hr />
     <footer>
+      <p class="box-label">Footer</p>
       <nav aria-label="Footer">
         <a href={href("/about")}>About</a>
         ·
@@ -69,11 +70,15 @@ const { title, note, noindex, canonicalPath } = Astro.props;
         ·
         <a href={href("/advertise")}>Advertise</a>
         ·
-        <a href={href("/stays")}>Stays</a>
-        ·
-        <a href={href("/stories")}>Stories</a>
-        ·
         <a href={href("/areas")}>Areas</a>
+        ·
+        <a href={href("/newsletters/visitor")}>Visitor newsletter</a>
+        ·
+        <a href={href("/newsletters/business")}>Business newsletter</a>
+        ·
+        <a href={href("/auth/login")}>Login</a>
+        ·
+        <a href={href("/admin")}>Admin</a>
         ·
         <a href={href("/ia")}>All routes / IA</a>
       </nav>

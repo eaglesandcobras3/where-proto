@@ -1,18 +1,24 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
+import Box from "../../components/Box.astro";
 import { towns } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
 <Layout title="Towns">
   <h1>Towns</h1>
-  <p>Hub. Town names only. No business cards on this route.</p>
-  <LinkList
-    items={towns.map((item) => ({
-      href: href(`/town/${item.slug}`),
-      label: item.name,
-      meta: item.summary,
-    }))}
-  />
+  <Box label="Town hub">
+    <p>
+      Hub. Town names only. No business cards on this route. Shopping areas and neighborhoods live
+      under <a href={href("/areas")}>Areas</a>.
+    </p>
+    <LinkList
+      items={towns.map((item) => ({
+        href: href(`/town/${item.slug}`),
+        label: item.name,
+        meta: `${item.walkability} · ${item.summary}`,
+      }))}
+    />
+  </Box>
 </Layout>

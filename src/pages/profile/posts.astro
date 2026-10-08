@@ -1,0 +1,17 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
+import FeedList from "../../components/FeedList.astro";
+import { currentUserSlug, posts } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
+---
+
+<Layout title="My posts">
+  <p><a href={href("/profile")}>Profile</a></p>
+  <h1>Posts</h1>
+  <Box label="Posted as user">
+    <FeedList items={mine} />
+  </Box>
+</Layout>

@@ -1,0 +1,46 @@
+---
+import Layout from "../../../../layouts/Layout.astro";
+import Box from "../../../../components/Box.astro";
+import type { Business } from "../../../../data/types";
+import { href } from "../../../../lib/href";
+import { ownedBusinessPaths } from "../../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+---
+
+<Layout title={`Post event · ${business.name}`}>
+  <p><a href={href(`/dashboard/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>Post event</h1>
+  <Box label="Event form">
+    <p>Wireframe form. Goes onto the review queue in a later pass.</p>
+    <form>
+      <p>
+        <label>
+          Name
+          <input type="text" name="name" />
+        </label>
+      </p>
+      <p>
+        <label>
+          When
+          <input type="text" name="when" />
+        </label>
+      </p>
+      <p>
+        <label>
+          Summary
+          <textarea name="summary"></textarea>
+        </label>
+      </p>
+      <button type="button">Submit event</button>
+    </form>
+  </Box>
+</Layout>

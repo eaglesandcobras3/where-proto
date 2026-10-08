@@ -1,6 +1,8 @@
 # WhereTo30A wireframe
 
-Astro prototype of [whereto30a.com](https://whereto30a.com/). Routes and page types only. Fake data. No styled UI.
+Astro prototype of [whereto30a.com](https://whereto30a.com/). Fake data. Gray-box wireframe, not a designed UI.
+
+Phase 1 is routes. Phase 2 is page anatomy and richer fake data. Phase 3 is account, admin, auth, and newsletter surfaces.
 
 ## Local
 

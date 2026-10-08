@@ -9,10 +9,13 @@ export interface Town {
   areaSlugs: Slug[];
 }
 
+export type AreaKind = "shopping" | "neighborhood";
+
 export interface Area {
   slug: Slug;
   name: string;
   townSlug: Slug;
+  kind: AreaKind;
   summary: string;
 }
 
@@ -37,6 +40,11 @@ export interface Business {
   summary: string;
   tagSlugs: Slug[];
   openNow: boolean;
+  address?: string;
+  phone?: string;
+  website?: string;
+  hours?: string;
+  priceBand?: string;
   isStay?: boolean;
   ownerUserSlug?: Slug;
 }
@@ -57,26 +65,24 @@ export interface EventItem {
   businessSlug?: Slug;
   when: string;
   summary: string;
+  venue?: string;
 }
 
 export interface Guide {
   slug: Slug;
   title: string;
   summary: string;
+  body: string;
   townSlug?: Slug;
 }
 
-export interface Happening {
+export interface Update {
   slug: Slug;
   title: string;
-  summary: string;
+  body: string;
+  createdAt: string;
   townSlug?: Slug;
-}
-
-export interface Story {
-  slug: Slug;
-  title: string;
-  summary: string;
+  businessSlug?: Slug;
 }
 
 export interface User {
@@ -99,7 +105,7 @@ export interface Post {
 export interface Photo {
   slug: Slug;
   caption: string;
-  attachedTo: { type: "town" | "business" | "event" | "post"; slug: Slug };
+  attachedTo: { type: "town" | "business" | "event" | "post" | "area"; slug: Slug };
 }
 
 export interface Question {
@@ -115,6 +121,13 @@ export interface Comment {
   body: string;
   authorUserSlug: Slug;
   on: { type: "question" | "post" | "guide"; slug: Slug };
+}
+
+export interface Reaction {
+  slug: Slug;
+  label: string;
+  count: number;
+  on: { type: "post" | "question" | "guide"; slug: Slug };
 }
 
 export interface Tag {

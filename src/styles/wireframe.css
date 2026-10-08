@@ -1,0 +1,96 @@
+:root {
+  --line: #8a8a8a;
+  --fill: #f2f2f2;
+  --muted: #555;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0 auto;
+  max-width: 56rem;
+  padding: 1rem 1.25rem 2rem;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  line-height: 1.45;
+  color: #111;
+}
+
+header,
+footer,
+.box {
+  border: 1px solid var(--line);
+  background: var(--fill);
+  padding: 0.75rem 1rem;
+  margin: 0.85rem 0;
+}
+
+.box-label {
+  margin: 0 0 0.5rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+nav a,
+a {
+  color: #111;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 8rem;
+  margin: 0.5rem 0;
+  border: 1px dashed #6e6e6e;
+  background: #e6e6e6;
+  color: var(--muted);
+  text-align: center;
+}
+
+.placeholder.map {
+  min-height: 10rem;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.row > .placeholder {
+  flex: 1 1 10rem;
+  min-width: 8rem;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid var(--line);
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+}
+
+form label {
+  display: block;
+  margin: 0.35rem 0;
+}
+
+input,
+select,
+textarea,
+button {
+  font: inherit;
+}
+
+textarea {
+  width: 100%;
+  min-height: 5rem;
+}

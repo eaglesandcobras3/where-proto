@@ -1,61 +1,98 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import LinkList from "../components/LinkList.astro";
-import { events, guides, happenings, towns } from "../data/catalog";
+import Box from "../components/Box.astro";
+import Placeholder from "../components/Placeholder.astro";
+import { areaKindLabel, areas, events, guides, knowledge, townBySlug, towns } from "../data/catalog";
 import { href } from "../lib/href";
 ---
 
 <Layout title="Homepage">
   <h1>Homepage</h1>
-  <p>Local guide to 30A, Florida. Routes and fake data only.</p>
+  <p>Local guide to 30A, Florida. Wireframe with fake data.</p>
 
-  <h2>Towns</h2>
-  <p><a href={href("/towns")}>All towns</a></p>
-  <LinkList
-    items={towns.map((item) => ({
-      href: href(`/town/${item.slug}`),
-      label: item.name,
-      meta: item.summary,
-    }))}
-  />
+  <Box label="Hero">
+    <Placeholder caption="30A corridor" />
+    <p>Pick a town, then a category. Search is the finder; town × category pages are the indexable listings.</p>
+  </Box>
 
-  <h2>Find businesses</h2>
-  <p>
-    <a href={href("/search")}>Search</a> is the business finder (town, category, tag, open now).
-    Indexable listings are town × category pages such as
-    <a href={href("/town/rosemary-beach/restaurants")}>/town/rosemary-beach/restaurants</a>.
-  </p>
+  <Box label="Towns">
+    <p><a href={href("/towns")}>All towns</a></p>
+    <LinkList
+      items={towns.map((item) => ({
+        href: href(`/town/${item.slug}`),
+        label: item.name,
+        meta: `${item.walkability} · ${item.summary}`,
+      }))}
+    />
+  </Box>
 
-  <h2>Events</h2>
-  <p><a href={href("/events")}>All events</a></p>
-  <LinkList
-    items={events.map((item) => ({
-      href: href(`/event/${item.slug}`),
-      label: item.name,
-      meta: item.when,
-    }))}
-  />
+  <Box label="Find businesses">
+    <p>
+      <a href={href("/search")}>Search</a> filters town, category, tag, and open now.
+      Indexable listings live on pages such as
+      <a href={href("/town/rosemary-beach/restaurants")}>/town/rosemary-beach/restaurants</a>.
+    </p>
+  </Box>
 
-  <h2>Happenings</h2>
-  <p><a href={href("/happenings")}>All happenings</a></p>
-  <LinkList
-    items={happenings.map((item) => ({
-      href: href("/happenings"),
-      label: item.title,
-      meta: item.summary,
-    }))}
-  />
+  <Box label="Events">
+    <p><a href={href("/events")}>All events</a></p>
+    <LinkList
+      items={events.map((item) => ({
+        href: href(`/event/${item.slug}`),
+        label: item.name,
+        meta: item.when,
+      }))}
+    />
+  </Box>
 
-  <h2>Guides</h2>
-  <p><a href={href("/guides")}>All guides</a></p>
-  <LinkList
-    items={guides.map((item) => ({
-      href: href(`/guide/${item.slug}`),
-      label: item.title,
-      meta: item.summary,
-    }))}
-  />
+  <Box label="Areas">
+    <p>
+      <a href={href("/areas")}>All areas</a> — shopping areas and neighborhoods that sit inside a
+      town.
+    </p>
+    <LinkList
+      items={areas.map((item) => ({
+        href: href(`/area/${item.slug}`),
+        label: item.name,
+        meta: `${areaKindLabel(item.kind)} · ${townBySlug(item.townSlug)?.name ?? item.townSlug}`,
+      }))}
+    />
+  </Box>
 
-  <h2>Ask</h2>
-  <p><a href={href("/ask")}>Community questions</a></p>
+  <Box label="Guides">
+    <p><a href={href("/guides")}>All guides</a></p>
+    <LinkList
+      items={guides.map((item) => ({
+        href: href(`/guide/${item.slug}`),
+        label: item.title,
+        meta: item.summary,
+      }))}
+    />
+  </Box>
+
+  <Box label="Ask">
+    <p><a href={href("/ask")}>Community questions</a></p>
+  </Box>
+
+  <Box label="Knowledge">
+    <ul>
+      {knowledge.map((item) => (
+        <li>
+          <strong>{item.title}</strong> — {item.body}
+        </li>
+      ))}
+    </ul>
+  </Box>
+
+  <Box label="Visitor newsletter">
+    <p>Fake subscribe form. Full page at <a href={href("/newsletters/visitor")}>/newsletters/visitor</a>.</p>
+    <form>
+      <label>
+        Email
+        <input type="email" name="email" />
+      </label>
+      <button type="button">Subscribe</button>
+    </form>
+  </Box>
 </Layout>

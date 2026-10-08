@@ -1,0 +1,53 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import Box from "../../components/Box.astro";
+import FeedList from "../../components/FeedList.astro";
+import { posts, questions, users } from "../../data/catalog";
+import type { User } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(users, "user");
+}
+
+interface Props {
+  item: User;
+}
+
+const { item: user } = Astro.props;
+const userPosts = posts.filter((item) => item.authorUserSlug === user.slug);
+const userQuestions = questions.filter((item) => item.authorUserSlug === user.slug);
+---
+
+<Layout
+  title={`${user.name} (public)`}
+  note="External facing profile is still being defined. This route exists so owner and author links resolve."
+>
+  <h1>External facing profile: {user.name}</h1>
+  <Box label="Public record">
+    <ul>
+      <li>Role: {user.role}</li>
+      <li>{user.bio}</li>
+    </ul>
+  </Box>
+  <Box label="Posts">
+    <FeedList items={userPosts} />
+  </Box>
+  <Box label="Questions">
+    {
+      userQuestions.length === 0 ? (
+        <p>No fake questions from this user.</p>
+      ) : (
+        <ul>
+          {userQuestions.map((item) => (
+            <li>
+              <a href={href(`/ask/${item.slug}`)}>{item.title}</a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </Box>
+  <p><a href={href("/profile")}>User facing profile (signed-in)</a></p>
+</Layout>

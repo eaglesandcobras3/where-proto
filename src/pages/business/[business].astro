@@ -1,7 +1,23 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { areaBySlug, businesses, events, photos, townBySlug } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import Placeholder from "../../components/Placeholder.astro";
+import FeedList from "../../components/FeedList.astro";
+import {
+  areaBySlug,
+  businesses,
+  events,
+  leafBySlug,
+  photosFor,
+  postsFor,
+  stayBySlug,
+  tagBySlug,
+  townBySlug,
+  updatesForBusiness,
+  userBySlug,
+} from "../../data/catalog";
+import UpdatesList from "../../components/UpdatesList.astro";
 import type { Business } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -17,56 +33,133 @@ interface Props {
 const { item: business } = Astro.props;
 const town = townBySlug(business.townSlug);
 const area = business.areaSlug ? areaBySlug(business.areaSlug) : undefined;
+const owner = business.ownerUserSlug ? userBySlug(business.ownerUserSlug) : undefined;
+const leaf = leafBySlug(business.leafSlug);
+const stay = stayBySlug(business.slug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
-const businessPhotos = photos.filter(
-  (item) => item.attachedTo.type === "business" && item.attachedTo.slug === business.slug,
-);
+const businessPosts = postsFor("business", business.slug);
+const businessPhotos = photosFor("business", business.slug);
+const businessUpdates = updatesForBusiness(business.slug);
 ---
 
-<Layout title={business.name}>
+<Layout
+  title={business.name}
+  note="Posting to the feed as a user happens on this business page. Posting as the business happens from the dashboard. How to post as business vs user is still an open question."
+>
   <p><a href={href("/search")}>Search</a></p>
   <h1>Business: {business.name}</h1>
   <p>{business.summary}</p>
-  <ul>
-    {
-      town && (
-        <li>
-          Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-        </li>
-      )
-    }
-    {
-      area && (
-        <li>
-          Area: <a href={href(`/area/${area.slug}`)}>{area.name}</a>
-        </li>
-      )
-    }
-    {
-      town && (
-        <li>
-          Category page:{" "}
-          <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>
-            {business.leafSlug} in {town.name}
-          </a>
-        </li>
-      )
-    }
-  </ul>
 
-  <h2>Photos</h2>
-  <ul>
-    {businessPhotos.map((photo) => (
-      <li>{photo.caption}</li>
-    ))}
-  </ul>
+  <Box label="Facts">
+    <ul>
+      {
+        town && (
+          <li>
+            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+          </li>
+        )
+      }
+      {
+        area && (
+          <li>
+            Area: <a href={href(`/area/${area.slug}`)}>{area.name}</a>
+            {` (${area.kind === "shopping" ? "shopping area" : "neighborhood"})`}
+          </li>
+        )
+      }
+      {
+        town && (
+          <li>
+            Category page:{" "}
+            <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>
+              {leaf?.name ?? business.leafSlug} in {town.name}
+            </a>
+          </li>
+        )
+      }
+      {business.address && <li>Address: {business.address}</li>}
+      {business.phone && <li>Phone: {business.phone}</li>}
+      {business.website && <li>Website: {business.website}</li>}
+      {business.hours && <li>Hours: {business.hours}</li>}
+      {business.priceBand && <li>Price: {business.priceBand}</li>}
+      <li>{business.openNow ? "Open now" : "Closed now"} (fake flag)</li>
+      <li>
+        Tags:{" "}
+        {business.tagSlugs
+          .map((slug) => tagBySlug(slug)?.name ?? slug)
+          .join(", ") || "none"}
+      </li>
+      {
+        stay && (
+          <li>
+            Stay page: <a href={href(`/stay/${stay.slug}`)}>{stay.name}</a>
+          </li>
+        )
+      }
+      {
+        owner && (
+          <li>
+            Owner: <a href={href(`/u/${owner.slug}`)}>{owner.name}</a>
+          </li>
+        )
+      }
+    </ul>
+  </Box>
 
-  <h2>Events</h2>
-  <LinkList
-    items={businessEvents.map((item) => ({
-      href: href(`/event/${item.slug}`),
-      label: item.name,
-      meta: item.when,
-    }))}
-  />
+  <Box label="Map">
+    <Placeholder kind="map" caption={business.name} />
+  </Box>
+
+  <Box label="Photos">
+    {
+      businessPhotos.length === 0 ? (
+        <Placeholder caption="No listing photos yet" />
+      ) : (
+        <div class="row">
+          {businessPhotos.map((photo) => (
+            <Placeholder caption={photo.caption} />
+          ))}
+        </div>
+      )
+    }
+  </Box>
+
+  <Box label="Updates">
+    <UpdatesList items={businessUpdates} />
+  </Box>
+
+  <Box label="Events">
+    <LinkList
+      items={businessEvents.map((item) => ({
+        href: href(`/event/${item.slug}`),
+        label: item.name,
+        meta: item.when,
+      }))}
+    />
+  </Box>
+
+  <Box label="Feed posts">
+    <FeedList items={businessPosts} />
+  </Box>
+
+  <Box label="Post to this business feed (as user)">
+    <p>Wireframe form. Submit does nothing.</p>
+    <form>
+      <label>
+        Post
+        <input type="text" name="body" />
+      </label>
+      <button type="button">Post as user</button>
+    </form>
+  </Box>
+
+  {
+    owner && (
+      <Box label="Manage">
+        <p>
+          <a href={href(`/dashboard/${business.slug}`)}>Manage this business</a>
+        </p>
+      </Box>
+    )
+  }
 </Layout>

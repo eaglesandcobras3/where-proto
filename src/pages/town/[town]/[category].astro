@@ -1,7 +1,8 @@
 ---
 import Layout from "../../../layouts/Layout.astro";
 import LinkList from "../../../components/LinkList.astro";
-import { allLeaves, businesses, towns } from "../../../data/catalog";
+import Box from "../../../components/Box.astro";
+import { allLeaves, businesses, listingMeta, towns } from "../../../data/catalog";
 import type { Town } from "../../../data/types";
 import { href } from "../../../lib/href";
 
@@ -31,14 +32,24 @@ const listings = businesses.filter(
     <a href={href(`/town/${town.slug}`)}>{town.name}</a>
   </p>
   <h1>{leaf.name} in {town.name}</h1>
-  <p>Indexable town × category page. Listings live here. The finder is /search.</p>
-  <LinkList
-    items={listings.map((item) => ({
-      href: href(`/business/${item.slug}`),
-      label: item.name,
-      meta: item.summary,
-    }))}
-  />
+
+  <Box label="Indexable listing">
+    <p>
+      Town × category page. Listings live here. The finder is
+      <a href={href("/search")}>/search</a>.
+    </p>
+  </Box>
+
+  <Box label="Business cards">
+    <LinkList
+      items={listings.map((item) => ({
+        href: href(`/business/${item.slug}`),
+        label: item.name,
+        meta: `${listingMeta(item)}${item.summary ? ` — ${item.summary}` : ""}`,
+      }))}
+    />
+  </Box>
+
   <p>
     <a href={href(`/search?town=${town.slug}&category=${leaf.slug}`)}>
       Open this combo in search

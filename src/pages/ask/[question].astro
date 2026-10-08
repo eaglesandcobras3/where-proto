@@ -1,6 +1,13 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { comments, questions, townBySlug, userBySlug } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import {
+  commentsFor,
+  questions,
+  reactionsFor,
+  townBySlug,
+  userBySlug,
+} from "../../data/catalog";
 import type { Question } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -16,41 +23,67 @@ interface Props {
 const { item: question } = Astro.props;
 const author = userBySlug(question.authorUserSlug);
 const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
-const replies = comments.filter(
-  (item) => item.on.type === "question" && item.on.slug === question.slug,
-);
+const replies = commentsFor("question", question.slug);
+const questionReactions = reactionsFor("question", question.slug);
 ---
 
 <Layout title={question.title}>
   <p><a href={href("/ask")}>Ask</a></p>
   <h1>Question: {question.title}</h1>
-  <p>{question.body}</p>
-  <ul>
-    {author && <li>Asked by: {author.name}</li>}
-    {
-      town && (
+
+  <Box label="Question">
+    <p>{question.body}</p>
+    <ul>
+      {author && (
         <li>
-          Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+          Asked by: <a href={href(`/u/${author.slug}`)}>{author.name}</a>
         </li>
+      )}
+      {
+        town && (
+          <li>
+            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+          </li>
+        )
+      }
+    </ul>
+  </Box>
+
+  <Box label="Reactions">
+    {
+      questionReactions.length === 0 ? (
+        <p>No fake reactions.</p>
+      ) : (
+        <ul>
+          {questionReactions.map((item) => (
+            <li>
+              {item.label}: {item.count}
+            </li>
+          ))}
+        </ul>
       )
     }
-  </ul>
-  <h2>Comments</h2>
-  <ul>
-    {
-      replies.map((item) => (
-        <li>
-          {item.body} — {userBySlug(item.authorUserSlug)?.name}
-        </li>
-      ))
-    }
-  </ul>
-  <h2>Reply</h2>
-  <form>
-    <label>
-      Comment
-      <textarea name="body"></textarea>
-    </label>
-    <button type="button">Add comment</button>
-  </form>
+  </Box>
+
+  <Box label="Comments">
+    <ul>
+      {
+        replies.map((item) => (
+          <li>
+            {item.body} — <a href={href(`/u/${item.authorUserSlug}`)}>{userBySlug(item.authorUserSlug)?.name}</a>
+          </li>
+        ))
+      }
+    </ul>
+  </Box>
+
+  <Box label="Reply">
+    <form>
+      <label>
+        Comment
+        <textarea name="body"></textarea>
+      </label>
+      <button type="button">Add comment</button>
+    </form>
+  </Box>
 </Layout>

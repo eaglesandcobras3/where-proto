@@ -1,7 +1,18 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { allLeaves, areas, townBySlug } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import Placeholder from "../../components/Placeholder.astro";
+import {
+  allLeaves,
+  areaKindLabel,
+  areas,
+  areasForTown,
+  businessesForArea,
+  listingMeta,
+  photosFor,
+  townBySlug,
+} from "../../data/catalog";
 import type { Area } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -16,6 +27,9 @@ interface Props {
 
 const { item: area } = Astro.props;
 const town = townBySlug(area.townSlug);
+const areaPhotos = photosFor("area", area.slug);
+const inArea = businessesForArea(area.slug);
+const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area.slug);
 ---
 
 <Layout title={area.name}>
@@ -32,18 +46,70 @@ const town = townBySlug(area.townSlug);
   </p>
   <h1>Area: {area.name}</h1>
   <p>{area.summary}</p>
+
+  <Box label="Facts">
+    <ul>
+      <li>{areaKindLabel(area.kind)}</li>
+      {
+        town && (
+          <li>
+            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+          </li>
+        )
+      }
+    </ul>
+    <p>An area is an extension of a town, not a second directory. One town, many areas.</p>
+  </Box>
+
+  <Box label="Map">
+    <Placeholder kind="map" caption={area.name} />
+  </Box>
+
+  <Box label="Photos">
+    {
+      areaPhotos.length === 0 ? (
+        <Placeholder caption="No area photos yet" />
+      ) : (
+        <div class="row">
+          {areaPhotos.map((photo) => (
+            <Placeholder caption={photo.caption} />
+          ))}
+        </div>
+      )
+    }
+  </Box>
+
+  <Box label="In this area">
+    <p>These listings sit in this shopping area or neighborhood. Indexable category pages stay on the town.</p>
+    <LinkList
+      items={inArea.map((item) => ({
+        href: href(`/business/${item.slug}`),
+        label: item.name,
+        meta: listingMeta(item),
+      }))}
+    />
+  </Box>
+
   {
     town && (
-      <>
-        <h2>Categories in {town.name}</h2>
-        <p>Listings are on town leaf pages, not on this area page.</p>
+      <Box label={`Categories in ${town.name}`}>
         <LinkList
           items={allLeaves().map((leaf) => ({
             href: href(`/town/${town.slug}/${leaf.slug}`),
             label: leaf.name,
           }))}
         />
-      </>
+      </Box>
     )
   }
+
+  <Box label="Other areas in this town">
+    <LinkList
+      items={siblings.map((item) => ({
+        href: href(`/area/${item.slug}`),
+        label: item.name,
+        meta: areaKindLabel(item.kind),
+      }))}
+    />
+  </Box>
 </Layout>

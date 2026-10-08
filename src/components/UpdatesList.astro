@@ -1,0 +1,36 @@
+---
+import { businessBySlug } from "../data/catalog";
+import type { Update } from "../data/types";
+import { href } from "../lib/href";
+
+interface Props {
+  items: Update[];
+}
+
+const { items } = Astro.props;
+---
+
+{
+  items.length === 0 ? (
+    <p>No fake updates here yet.</p>
+  ) : (
+    <ul>
+      {items.map((item) => {
+        const business = item.businessSlug ? businessBySlug(item.businessSlug) : undefined;
+        return (
+          <li>
+            <strong>{item.title}</strong> — {item.body}
+            <br />
+            {item.createdAt}
+            {business && (
+              <>
+                {" · "}
+                <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+              </>
+            )}
+          </li>
+        );
+      })}
+    </ul>
+  )
+}
