@@ -1,15 +1,15 @@
 ---
 import Layout from "../../layouts/Layout.astro";
 import LinkList from "../../components/LinkList.astro";
-import { guides } from "../../data/catalog";
+import { stories } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
-<Layout title="Guides">
-  <h1>Guides</h1>
+<Layout title="Stories">
+  <h1>Stories</h1>
   <LinkList
-    items={guides.map((item) => ({
-      href: href(`/guide/${item.slug}`),
+    items={stories.map((item) => ({
+      href: href(`/story/${item.slug}`),
       label: item.title,
       meta: item.summary,
     }))}

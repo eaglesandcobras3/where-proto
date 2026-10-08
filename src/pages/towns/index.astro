@@ -7,10 +7,10 @@ import { href } from "../../lib/href";
 
 <Layout title="Towns">
   <h1>Towns</h1>
-  <p>Beach towns along Scenic Highway 30A. Fake summaries only.</p>
+  <p>Hub. Town names only. No business cards on this route.</p>
   <LinkList
     items={towns.map((item) => ({
-      href: href(`/towns/${item.slug}`),
+      href: href(`/town/${item.slug}`),
       label: item.name,
       meta: item.summary,
     }))}

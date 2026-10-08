@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { areas, townBySlug } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Areas">
+  <h1>Areas</h1>
+  <p>Squares and clusters inside towns.</p>
+  <LinkList
+    items={areas.map((item) => ({
+      href: href(`/area/${item.slug}`),
+      label: item.name,
+      meta: townBySlug(item.townSlug)?.name,
+    }))}
+  />
+</Layout>

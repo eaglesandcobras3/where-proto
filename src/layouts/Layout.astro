@@ -1,12 +1,14 @@
 ---
-import { href } from "../lib/href";
+import { absHref, href } from "../lib/href";
 
 interface Props {
   title: string;
   note?: string;
+  noindex?: boolean;
+  canonicalPath?: string;
 }
 
-const { title, note } = Astro.props;
+const { title, note, noindex, canonicalPath } = Astro.props;
 ---
 
 <!doctype html>
@@ -15,6 +17,8 @@ const { title, note } = Astro.props;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} · WhereTo30A wireframe</title>
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    {canonicalPath && <link rel="canonical" href={absHref(canonicalPath)} />}
   </head>
   <body>
     <header>
@@ -24,24 +28,22 @@ const { title, note } = Astro.props;
         ·
         <a href={href("/towns")}>Towns</a>
         ·
-        <a href={href("/businesses")}>Businesses</a>
-        ·
         <a href={href("/events")}>Events</a>
+        ·
+        <a href={href("/happenings")}>Happenings</a>
         ·
         <a href={href("/guides")}>Guides</a>
         ·
-        <a href={href("/community")}>Community (Ask)</a>
+        <a href={href("/ask")}>Ask</a>
       </nav>
       <nav aria-label="Account">
         <a href={href("/add-business")}>Add Business</a>
         ·
         <a href={href("/search")}>Search</a>
         ·
-        <a href={href("/profile")}>User Profile</a>
+        <a href={href("/profile")}>Profile</a>
         ·
-        <a href={href("/auth/login")}>Login</a>
-        ·
-        <a href={href("/admin")}>Admin</a>
+        <a href={href("/dashboard")}>Dashboard</a>
       </nav>
     </header>
     <hr />
@@ -52,7 +54,7 @@ const { title, note } = Astro.props;
           <>
             <hr />
             <p>
-              <strong>Open question / note:</strong> {note}
+              <strong>Note:</strong> {note}
             </p>
           </>
         )
@@ -67,9 +69,11 @@ const { title, note } = Astro.props;
         ·
         <a href={href("/advertise")}>Advertise</a>
         ·
-        <a href={href("/newsletters/visitor")}>Visitor newsletter</a>
+        <a href={href("/stays")}>Stays</a>
         ·
-        <a href={href("/newsletters/business")}>Business newsletter</a>
+        <a href={href("/stories")}>Stories</a>
+        ·
+        <a href={href("/areas")}>Areas</a>
         ·
         <a href={href("/ia")}>All routes / IA</a>
       </nav>

@@ -6,7 +6,9 @@ import type {
   EventItem,
   Favorite,
   Guide,
+  Happening,
   KnowledgeItem,
+  Story,
   Photo,
   Post,
   Question,
@@ -137,6 +139,8 @@ export const businesses: Business[] = [
     categorySlug: "food-and-drink",
     leafSlug: "restaurants",
     summary: "Gulf seafood, steaks, and courtyard seating in Rosemary Beach.",
+    tagSlugs: ["walkable", "family"],
+    openNow: true,
     ownerUserSlug: "brett",
   },
   {
@@ -147,6 +151,8 @@ export const businesses: Business[] = [
     categorySlug: "food-and-drink",
     leafSlug: "coffee-shops",
     summary: "Coffee and breakfast near the square. Fake listing for the wireframe.",
+    tagSlugs: ["walkable"],
+    openNow: true,
     ownerUserSlug: "brett",
   },
   {
@@ -157,6 +163,8 @@ export const businesses: Business[] = [
     categorySlug: "things-to-do",
     leafSlug: "outdoor",
     summary: "Live theater and performing arts in Seaside.",
+    tagSlugs: ["family", "live-music"],
+    openNow: false,
   },
   {
     slug: "the-pearl-hotel",
@@ -166,6 +174,8 @@ export const businesses: Business[] = [
     categorySlug: "stay",
     leafSlug: "hotels",
     summary: "Hotel stay in the Rosemary Beach town center.",
+    tagSlugs: ["walkable", "family"],
+    openNow: true,
     isStay: true,
   },
   {
@@ -175,6 +185,8 @@ export const businesses: Business[] = [
     categorySlug: "things-to-do",
     leafSlug: "rentals",
     summary: "Bike rentals for the Timpoochee Trail.",
+    tagSlugs: ["walkable"],
+    openNow: false,
     ownerUserSlug: "brett",
   },
   {
@@ -184,6 +196,8 @@ export const businesses: Business[] = [
     categorySlug: "shopping",
     leafSlug: "boutiques",
     summary: "Beachwear and town-logo goods in Alys Beach.",
+    tagSlugs: ["walkable"],
+    openNow: true,
   },
 ];
 
@@ -246,6 +260,34 @@ export const guides: Guide[] = [
     slug: "why-is-it-called-30a",
     title: "Why Is It Called 30A?",
     summary: "Short background on the scenic highway name.",
+  },
+];
+
+export const happenings: Happening[] = [
+  {
+    slug: "wednesday-in-seaside",
+    title: "Wednesday night in Seaside",
+    summary: "Fake happening: concert series and square traffic.",
+    townSlug: "seaside",
+  },
+  {
+    slug: "market-morning-grayton",
+    title: "Market morning in Grayton",
+    summary: "Fake happening: farmers market rhythm.",
+    townSlug: "grayton-beach",
+  },
+];
+
+export const stories: Story[] = [
+  {
+    slug: "finding-30a",
+    title: "Finding 30A without twenty tabs",
+    summary: "Fake story used to scaffold /story/{story}.",
+  },
+  {
+    slug: "town-vs-town",
+    title: "Rosemary feels different from Grayton",
+    summary: "Fake story about town character.",
   },
 ];
 
@@ -442,4 +484,22 @@ export function currentUser() {
 
 export function businessesOwnedBy(userSlug: string) {
   return businesses.filter((item) => item.ownerUserSlug === userSlug);
+}
+
+export function allLeaves() {
+  return categories.flatMap((group) =>
+    group.leaves.map((leaf) => ({
+      ...leaf,
+      groupSlug: group.slug,
+      groupName: group.name,
+    })),
+  );
+}
+
+export function leafBySlug(slug: string) {
+  return allLeaves().find((leaf) => leaf.slug === slug);
+}
+
+export function storyBySlug(slug: string) {
+  return stories.find((item) => item.slug === slug);
 }

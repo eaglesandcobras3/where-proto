@@ -35,6 +35,8 @@ export interface Business {
   categorySlug: Slug;
   leafSlug: Slug;
   summary: string;
+  tagSlugs: Slug[];
+  openNow: boolean;
   isStay?: boolean;
   ownerUserSlug?: Slug;
 }
@@ -62,6 +64,19 @@ export interface Guide {
   title: string;
   summary: string;
   townSlug?: Slug;
+}
+
+export interface Happening {
+  slug: Slug;
+  title: string;
+  summary: string;
+  townSlug?: Slug;
+}
+
+export interface Story {
+  slug: Slug;
+  title: string;
+  summary: string;
 }
 
 export interface User {

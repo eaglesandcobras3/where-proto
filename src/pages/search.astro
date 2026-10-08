@@ -1,61 +1,106 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import LinkList from "../components/LinkList.astro";
-import { businesses, events, guides, towns } from "../data/catalog";
+import { allLeaves, businesses, tags, towns } from "../data/catalog";
 import { href } from "../lib/href";
 
-const query = (Astro.url.searchParams.get("q") ?? "").trim().toLowerCase();
+const params = Astro.url.searchParams;
+const town = params.get("town") ?? "";
+const category = params.get("category") ?? "";
+const tag = params.get("tag") ?? "";
+const openNow = params.get("open") === "1";
+const filtered = Boolean(town || category || tag || openNow);
 
-function matches(text: string) {
-  return !query || text.toLowerCase().includes(query);
-}
+const hits = businesses.filter((item) => {
+  if (town && item.townSlug !== town) return false;
+  if (category && item.leafSlug !== category) return false;
+  if (tag && !item.tagSlugs.includes(tag)) return false;
+  if (openNow && !item.openNow) return false;
+  return true;
+});
 
-const townHits = towns.filter((item) => matches(`${item.name} ${item.summary}`));
-const businessHits = businesses.filter((item) => matches(`${item.name} ${item.summary}`));
-const eventHits = events.filter((item) => matches(`${item.name} ${item.summary}`));
-const guideHits = guides.filter((item) => matches(`${item.title} ${item.summary}`));
+const comboCanonical = town && category && !tag && !openNow;
+const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
 ---
 
-<Layout title="Search results">
-  <h1>Search results</h1>
+<Layout title="Search" noindex canonicalPath={canonicalPath}>
+  <h1>Search</h1>
+  <p>
+    Business finder. Filters: town, category, tag, open now. Indexable category pages are the
+    town × category combos, not this route.
+  </p>
   <form action={href("/search")} method="get">
-    <label>
-      Query
-      <input type="search" name="q" value={Astro.url.searchParams.get("q") ?? ""} />
-    </label>
-    <button type="submit">Search</button>
+    <p>
+      <label>
+        Town
+        <select name="town">
+          <option value="">Any</option>
+          {
+            towns.map((item) => (
+              <option value={item.slug} selected={item.slug === town}>
+                {item.name}
+              </option>
+            ))
+          }
+        </select>
+      </label>
+    </p>
+    <p>
+      <label>
+        Category
+        <select name="category">
+          <option value="">Any</option>
+          {
+            allLeaves().map((leaf) => (
+              <option value={leaf.slug} selected={leaf.slug === category}>
+                {leaf.groupName} / {leaf.name}
+              </option>
+            ))
+          }
+        </select>
+      </label>
+    </p>
+    <p>
+      <label>
+        Tag
+        <select name="tag">
+          <option value="">Any</option>
+          {
+            tags.map((item) => (
+              <option value={item.slug} selected={item.slug === tag}>
+                {item.name}
+              </option>
+            ))
+          }
+        </select>
+      </label>
+    </p>
+    <p>
+      <label>
+        <input type="checkbox" name="open" value="1" checked={openNow} />
+        Open now
+      </label>
+    </p>
+    <button type="submit">Find businesses</button>
   </form>
-  <p>{query ? `Showing fake matches for “${query}”.` : "No query yet. Lists all fake records."}</p>
 
-  <h2>Towns</h2>
-  <LinkList
-    items={townHits.map((item) => ({
-      href: href(`/towns/${item.slug}`),
-      label: item.name,
-    }))}
-  />
+  {
+    comboCanonical && (
+      <p>
+        Indexable page for this combo:{" "}
+        <a href={href(`/town/${town}/${category}`)}>
+          /town/{town}/{category}
+        </a>
+      </p>
+    )
+  }
 
-  <h2>Businesses</h2>
+  <p>{filtered ? `${hits.length} fake matches.` : "No filters. Showing all fake businesses."}</p>
   <LinkList
-    items={businessHits.map((item) => ({
+    items={hits.map((item) => ({
       href: href(`/business/${item.slug}`),
       label: item.name,
-    }))}
-  />
-
-  <h2>Events</h2>
-  <LinkList
-    items={eventHits.map((item) => ({
-      href: href(`/events/${item.slug}`),
-      label: item.name,
-    }))}
-  />
-
-  <h2>Guides</h2>
-  <LinkList
-    items={guideHits.map((item) => ({
-      href: href(`/guides/${item.slug}`),
-      label: item.title,
+      meta: `${item.leafSlug} · ${item.townSlug}${item.openNow ? " · open now" : ""}`,
     }))}
   />
 </Layout>
