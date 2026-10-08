@@ -19,7 +19,7 @@
 
 **Static:** `/about`, `/legal`, `/advertise`
 
-**Top nav:** Homepage (logo), Towns, Events, Happenings, Guides, Ask. Right side: Add Business, Search, Profile, Dashboard.
+**Top nav:** Homepage (logo), Towns, Search, Events, Happenings, Guides, Ask. Right side: Add Business, Profile, Dashboard.
 
 There is no `/businesses` route.
 
