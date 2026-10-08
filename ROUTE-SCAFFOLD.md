@@ -9,9 +9,9 @@
 
 **Directory:** `/` (homepage), `/towns`, `/town/{town}`, `/town/{town}/{category}`, `/areas`, `/area/{area}`, `/business/{business}`, `/search`
 
-**Content:** `/events`, `/event/{event}`, `/guides`, `/guide/{guide}`, `/ask`, `/ask/{question}`, `/stories`, `/story/{story}`, `/posts/{post}`
+**Content:** `/events`, `/event/{event}`, `/guides`, `/guide/{guide}`, `/ask`, `/ask/{question}`, `/posts/{post}`
 
-**Stays** (ship-dark): `/stays`, `/stay/{stay}`
+**Stays:** `/stays`, `/stay/{stay}`
 
 **Account:** `/dashboard`, `/dashboard/{business}`, `/dashboard/{business}/listing`, `/dashboard/{business}/feed`, `/dashboard/{business}/events/new`, `/dashboard/{business}/mentions`, `/dashboard/{business}/photos`, `/profile`, `/profile/favorites`, `/profile/posts`, `/profile/settings`, `/u/{user}`
 
@@ -25,7 +25,9 @@
 
 **Static:** `/about`, `/legal`, `/advertise`
 
-**Top nav:** Homepage (logo), Towns, Areas, Search, Events, Guides, Ask. Right side: Add Business, Profile, Dashboard.
+**Top nav:** Homepage (logo), Towns, Areas, Search, Events, Stays, Guides, Ask. Right side: Add Business, Profile, Dashboard.
+
+Stories are guides. `/stories` and `/story/{story}` redirect to `/guides`.
 
 Updates are not a route. They only render on `/town/{town}` and `/business/{business}`.
 

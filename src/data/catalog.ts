@@ -7,7 +7,6 @@ import type {
   Favorite,
   Guide,
   KnowledgeItem,
-  Story,
   Photo,
   Post,
   Question,
@@ -554,6 +553,18 @@ export const guides: Guide[] = [
     summary: "Short background on the scenic highway name.",
     body: "Fake guide body. 30A is the county road name for the scenic route along this stretch of coast.",
   },
+  {
+    slug: "finding-30a",
+    title: "Finding 30A without twenty tabs",
+    summary: "Compare towns first, then drill into a category.",
+    body: "Fake guide body. The point of this prototype is one place to compare towns, then drill into a category.",
+  },
+  {
+    slug: "town-vs-town",
+    title: "Rosemary feels different from Grayton",
+    summary: "Town character: planned and walkable vs older and looser.",
+    body: "Fake guide body. Rosemary is planned and walkable. Grayton is older and looser. Both are on the same road.",
+  },
 ];
 
 export const updates: Update[] = [
@@ -586,21 +597,6 @@ export const updates: Update[] = [
     createdAt: "2026-10-03",
     townSlug: "rosemary-beach",
     businessSlug: "the-pearl-hotel",
-  },
-];
-
-export const stories: Story[] = [
-  {
-    slug: "finding-30a",
-    title: "Finding 30A without twenty tabs",
-    summary: "Fake story used to scaffold /story/{story}.",
-    body: "Fake story body. The point of this prototype is one place to compare towns, then drill into a category.",
-  },
-  {
-    slug: "town-vs-town",
-    title: "Rosemary feels different from Grayton",
-    summary: "Fake story about town character.",
-    body: "Fake story body. Rosemary is planned and walkable. Grayton is older and looser. Both are on the same road.",
   },
 ];
 
@@ -920,10 +916,6 @@ export function allLeaves() {
 
 export function leafBySlug(slug: string) {
   return allLeaves().find((leaf) => leaf.slug === slug);
-}
-
-export function storyBySlug(slug: string) {
-  return stories.find((item) => item.slug === slug);
 }
 
 export function listingMeta(item: Business) {

@@ -85,13 +85,6 @@ export interface Update {
   businessSlug?: Slug;
 }
 
-export interface Story {
-  slug: Slug;
-  title: string;
-  summary: string;
-  body: string;
-}
-
 export interface User {
   slug: Slug;
   name: string;

@@ -10,5 +10,8 @@ export default defineConfig({
     "/manage": "/dashboard",
     "/businesses": "/search",
     "/happenings": "/",
+    "/stories": "/guides",
+    "/story/finding-30a": "/guide/finding-30a",
+    "/story/town-vs-town": "/guide/town-vs-town",
   },
 });
