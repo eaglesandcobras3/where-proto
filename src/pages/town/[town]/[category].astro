@@ -9,25 +9,45 @@ import {
   listingMeta,
   towns,
 } from "../../../data/catalog";
-import type { Town } from "../../../data/types";
+import type { Category, CategoryLeaf, Town } from "../../../data/types";
 import { href } from "../../../lib/href";
 
+type LeafWithGroup = CategoryLeaf & { groupSlug: string; groupName: string };
+
 export function getStaticPaths() {
-  return towns.flatMap((town) =>
-    allLeaves().map((leaf) => ({
-      params: { town: town.slug, category: leaf.slug },
-      props: { town, leaf },
+  return towns.flatMap((town) => [
+    ...categories.map((group) => ({
+      params: { town: town.slug, category: group.slug },
+      props: {
+        town,
+        group,
+        leaf: null as LeafWithGroup | null,
+        showAll: true,
+      },
     })),
-  );
+    ...allLeaves().map((leaf) => {
+      const group = categories.find((item) => item.slug === leaf.groupSlug) ?? categories[0];
+      return {
+        params: { town: town.slug, category: leaf.slug },
+        props: {
+          town,
+          group,
+          leaf,
+          showAll: false,
+        },
+      };
+    }),
+  ]);
 }
 
 interface Props {
   town: Town;
-  leaf: ReturnType<typeof allLeaves>[number];
+  group: Category;
+  leaf: LeafWithGroup | null;
+  showAll: boolean;
 }
 
-const { town, leaf } = Astro.props;
-const group = categories.find((item) => item.slug === leaf.groupSlug) ?? categories[0];
+const { town, group, leaf, showAll } = Astro.props;
 
 const groupListings = businesses.filter(
   (item) => item.townSlug === town.slug && item.categorySlug === group.slug,
@@ -40,8 +60,11 @@ const leafCounts = group.leaves
   }))
   .filter((item) => item.count > 0);
 
-const listings = groupListings.filter((item) => item.leafSlug === leaf.slug);
-const displayListings = listings.length > 0 ? listings : groupListings;
+const listings = leaf
+  ? groupListings.filter((item) => item.leafSlug === leaf.slug)
+  : groupListings;
+const displayListings = showAll ? groupListings : listings;
+const subcategoryLabel = showAll ? "All in selected group" : (leaf?.name ?? "All in selected group");
 
 const currentIndex = towns.findIndex((item) => item.slug === town.slug);
 ---
@@ -53,7 +76,7 @@ const currentIndex = towns.findIndex((item) => item.slug === town.slug);
   filterTown={town.name}
   filterCategory={group.name}
   filterGroup={group.name}
-  filterSubcategory="All in selected group"
+  filterSubcategory={subcategoryLabel}
   filterExpanded={true}
 >
   <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(6, displayListings.length * 2)}>
@@ -90,12 +113,12 @@ const currentIndex = towns.findIndex((item) => item.slug === town.slug);
         {group.name} in {town.name}
       </h1>
       <div class="pill-row">
-        <span class="pill pill--active">
+        <a class="pill pill--active" href={href(`/town/${town.slug}`)}>
           {town.name} <span aria-hidden="true">×</span>
-        </span>
-        <span class="pill pill--active">
+        </a>
+        <a class="pill pill--active" href={href(`/town/${town.slug}`)}>
           {group.name} <span aria-hidden="true">×</span>
-        </span>
+        </a>
       </div>
     </section>
 
@@ -104,9 +127,15 @@ const currentIndex = towns.findIndex((item) => item.slug === town.slug);
         <section>
           <p class="section-label">Types of {group.name} in {town.name}</p>
           <div class="pill-row">
+            <a
+              class:list={["pill", showAll && "pill--active"]}
+              href={href(`/town/${town.slug}/${group.slug}`)}
+            >
+              All ({groupListings.length})
+            </a>
             {leafCounts.map((item) => (
               <a
-                class:list={["pill", item.slug === leaf.slug && "pill--active"]}
+                class:list={["pill", !showAll && item.slug === leaf?.slug && "pill--active"]}
                 href={href(`/town/${town.slug}/${item.slug}`)}
               >
                 {item.name} ({item.count})
@@ -126,7 +155,7 @@ const currentIndex = towns.findIndex((item) => item.slug === town.slug);
               <h2 class="biz-card__title">{item.name}</h2>
               <p class="biz-card__town">{town.name}</p>
               <p class="biz-card__meta">
-                {(leafBySlug(item.leafSlug)?.name ?? leaf.name)} in {town.name}
+                {(leafBySlug(item.leafSlug)?.name ?? group.name)} in {town.name}
               </p>
               <p class="biz-card__summary">{item.summary || listingMeta(item)}</p>
               <a class="biz-card__link" href={href(`/business/${item.slug}`)}>

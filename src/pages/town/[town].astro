@@ -28,12 +28,11 @@ const townUpdates = updatesForTown(town.slug);
 const categoryCounts = categories
   .map((category) => {
     const count = townBusinesses.filter((item) => item.categorySlug === category.slug).length;
-    const firstLeaf = category.leaves[0];
     return {
       slug: category.slug,
       name: category.name,
       count,
-      href: firstLeaf ? href(`/town/${town.slug}/${firstLeaf.slug}`) : href(`/town/${town.slug}`),
+      href: href(`/town/${town.slug}/${category.slug}`),
     };
   })
   .filter((item) => item.count > 0);
