@@ -1,0 +1,19 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { questions } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Community / Ask">
+  <h1>Community / Ask</h1>
+  <p>Questions about towns, beaches, and local rules. Fake threads only.</p>
+  <p><a href={href("/community/ask")}>Ask a question</a></p>
+  <LinkList
+    items={questions.map((item) => ({
+      href: href(`/community/questions/${item.slug}`),
+      label: item.title,
+      meta: item.body,
+    }))}
+  />
+</Layout>

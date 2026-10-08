@@ -1,0 +1,17 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { href } from "../../lib/href";
+---
+
+<Layout
+  title="Admin"
+  note="Admin is still being defined. These are the entity and queue screens that already have names."
+>
+  <h1>Admin</h1>
+  <ul>
+    <li><a href={href("/admin/review-queue")}>Review queue</a></li>
+    <li><a href={href("/admin/seo")}>SEO overrides</a></li>
+    <li><a href={href("/admin/knowledge")}>Knowledge</a></li>
+    <li><a href={href("/admin/entities")}>Entities</a></li>
+  </ul>
+</Layout>

@@ -1,0 +1,38 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { areas, businesses, townBySlug } from "../../data/catalog";
+import type { Area } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(areas);
+}
+
+interface Props {
+  item: Area;
+}
+
+const { item: area } = Astro.props;
+
+const town = townBySlug(area.townSlug);
+const listings = businesses.filter((item) => item.areaSlug === area.slug);
+---
+
+<Layout title={area.name}>
+  <p>
+    <a href={href("/towns")}>Towns</a> /
+    {town && <a href={href(`/towns/${town.slug}`)}>{town.name}</a>}
+  </p>
+  <h1>Area page: {area.name}</h1>
+  <p>{area.summary}</p>
+  <h2>Businesses in this area</h2>
+  <LinkList
+    items={listings.map((item) => ({
+      href: href(`/business/${item.slug}`),
+      label: item.name,
+      meta: item.summary,
+    }))}
+  />
+</Layout>

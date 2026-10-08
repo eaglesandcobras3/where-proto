@@ -1,0 +1,30 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { reviewQueue } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Review queue">
+  <p><a href={href("/admin")}>Admin</a></p>
+  <h1>Review queue</h1>
+  <table>
+    <thead>
+      <tr>
+        <th>Kind</th>
+        <th>Target</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {
+        reviewQueue.map((item) => (
+          <tr>
+            <td>{item.kind}</td>
+            <td>{item.targetSlug}</td>
+            <td>{item.status}</td>
+          </tr>
+        ))
+      }
+    </tbody>
+  </table>
+</Layout>

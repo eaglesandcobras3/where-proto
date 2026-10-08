@@ -1,0 +1,32 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+---
+
+<Layout
+  title={`Manage ${business.name}`}
+  note="Anything under manage-my-business is still being defined. These links are placeholders."
+>
+  <p><a href={href("/manage")}>Business selector</a></p>
+  <h1>Manage: {business.name}</h1>
+  <p>Public listing: <a href={href(`/business/${business.slug}`)}>{business.name}</a></p>
+  <ul>
+    <li><a href={href(`/manage/${business.slug}/feed`)}>Post feed (as business)</a></li>
+    <li><a href={href(`/manage/${business.slug}/events/new`)}>Post event</a></li>
+    <li><a href={href(`/manage/${business.slug}/mentions`)}>See mentions</a></li>
+    <li><a href={href(`/manage/${business.slug}/listing`)}>Edit listing</a></li>
+    <li><a href={href(`/manage/${business.slug}/photos`)}>Photos</a></li>
+  </ul>
+</Layout>

@@ -1,0 +1,120 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import {
+  areas,
+  businessesForTown,
+  events,
+  guides,
+  postsFor,
+  questions,
+  towns,
+} from "../../data/catalog";
+import type { Town } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(towns);
+}
+
+interface Props {
+  item: Town;
+}
+
+const { item: town } = Astro.props;
+
+const townAreas = areas.filter((area) => area.townSlug === town.slug);
+const townBusinesses = businessesForTown(town.slug);
+const townEvents = events.filter((item) => item.townSlug === town.slug);
+const townGuides = guides.filter((item) => item.townSlug === town.slug);
+const townPosts = postsFor("town", town.slug);
+const townQuestions = questions.filter((item) => item.townSlug === town.slug);
+---
+
+<Layout
+  title={town.name}
+  note="Posting to the feed as a user happens on this town page. Posting as a business happens from business management. How a signed-in business owner chooses user vs business is still an open question."
+>
+  <p><a href={href("/towns")}>Towns</a></p>
+  <h1>Town page: {town.name}</h1>
+  <p>{town.summary}</p>
+  <ul>
+    <li>Walkability: {town.walkability}</li>
+    <li>Beach access: {town.beachAccess}</li>
+  </ul>
+
+  <h2>Areas</h2>
+  <LinkList
+    items={townAreas.map((item) => ({
+      href: href(`/areas/${item.slug}`),
+      label: item.name,
+      meta: item.summary,
+    }))}
+  />
+
+  <h2>Category leaves in this town</h2>
+  <ul>
+    <li><a href={href(`/towns/${town.slug}/restaurants`)}>Restaurants</a></li>
+    <li><a href={href(`/towns/${town.slug}/coffee-shops`)}>Coffee Shops</a></li>
+    <li><a href={href(`/towns/${town.slug}/boutiques`)}>Boutiques</a></li>
+  </ul>
+
+  <h2>Businesses</h2>
+  <LinkList
+    items={townBusinesses.map((item) => ({
+      href: href(`/business/${item.slug}`),
+      label: item.name,
+      meta: item.leafSlug,
+    }))}
+  />
+
+  <h2>Events</h2>
+  <LinkList
+    items={townEvents.map((item) => ({
+      href: href(`/events/${item.slug}`),
+      label: item.name,
+      meta: item.when,
+    }))}
+  />
+
+  <h2>Guides</h2>
+  <LinkList
+    items={townGuides.map((item) => ({
+      href: href(`/guides/${item.slug}`),
+      label: item.title,
+    }))}
+  />
+
+  <h2>Stay in this town</h2>
+  <p><a href={href("/stay")}>Stay listings</a></p>
+
+  <h2>Community questions</h2>
+  <LinkList
+    items={townQuestions.map((item) => ({
+      href: href(`/community/questions/${item.slug}`),
+      label: item.title,
+    }))}
+  />
+
+  <h2>Feed posts</h2>
+  <ul>
+    {
+      townPosts.map((post) => (
+        <li>
+          <a href={href(`/posts/${post.slug}`)}>{post.body}</a> — posted as {post.postedAs}
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Post to this town feed (as user)</h2>
+  <p>Wireframe form. Submit does nothing.</p>
+  <form>
+    <label>
+      Post
+      <input type="text" name="body" />
+    </label>
+    <button type="button">Post as user</button>
+  </form>
+</Layout>

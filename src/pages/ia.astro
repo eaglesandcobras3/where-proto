@@ -1,0 +1,86 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { href } from "../lib/href";
+
+const routes = [
+  ["Homepage", "/"],
+  ["Towns", "/towns"],
+  ["Town page", "/towns/rosemary-beach"],
+  ["Town + leaf", "/towns/rosemary-beach/restaurants"],
+  ["Area page", "/areas/barrett-square"],
+  ["Businesses", "/businesses"],
+  ["Category", "/categories/food-and-drink"],
+  ["Leaf", "/categories/food-and-drink/restaurants"],
+  ["Business page", "/business/edwards-fine-food-and-wine"],
+  ["Search results", "/search?q=seaside"],
+  ["Stay", "/stay"],
+  ["Stay page", "/stay/the-pearl-hotel"],
+  ["Events", "/events"],
+  ["Event page", "/events/sounds-of-seaside"],
+  ["Guides", "/guides"],
+  ["Guide page", "/guides/first-timers-guide"],
+  ["Community / Ask", "/community"],
+  ["Ask form", "/community/ask"],
+  ["Question", "/community/questions/parking-near-seaside"],
+  ["User facing profile", "/profile"],
+  ["Favorites", "/profile/favorites"],
+  ["Posts (user)", "/profile/posts"],
+  ["Account settings", "/profile/settings"],
+  ["External facing profile (undefined)", "/u/kelley"],
+  ["Post", "/posts/sunset-on-the-square"],
+  ["Business selector", "/manage"],
+  ["Manage business", "/manage/edwards-fine-food-and-wine"],
+  ["Post feed as business", "/manage/edwards-fine-food-and-wine/feed"],
+  ["Post event", "/manage/edwards-fine-food-and-wine/events/new"],
+  ["Mentions", "/manage/edwards-fine-food-and-wine/mentions"],
+  ["Edit listing", "/manage/edwards-fine-food-and-wine/listing"],
+  ["Photos", "/manage/edwards-fine-food-and-wine/photos"],
+  ["Admin", "/admin"],
+  ["Review queue", "/admin/review-queue"],
+  ["SEO overrides", "/admin/seo"],
+  ["Knowledge", "/admin/knowledge"],
+  ["Entities", "/admin/entities"],
+  ["About", "/about"],
+  ["Legal", "/legal"],
+  ["Terms", "/legal/terms"],
+  ["Privacy", "/legal/privacy"],
+  ["Add business", "/add-business"],
+  ["Advertise", "/advertise"],
+  ["Login", "/auth/login"],
+  ["Sign up", "/auth/signup"],
+  ["Forgot password", "/auth/forgot-password"],
+  ["Visitor newsletter", "/newsletters/visitor"],
+  ["Business newsletter", "/newsletters/business"],
+];
+---
+
+<Layout title="IA / all routes">
+  <h1>Information architecture</h1>
+  <p>Every route in this wireframe. Click through to confirm structure.</p>
+
+  <h2>Still need to be defined</h2>
+  <ul>
+    <li>External facing profile</li>
+    <li>Business management beyond selector, post event, post feed, mentions</li>
+    <li>Admin beyond review queue, SEO, knowledge</li>
+    <li>Legal copy</li>
+    <li>Add business intake</li>
+    <li>Advertise</li>
+    <li>Auth flow</li>
+    <li>How to post as business vs user</li>
+  </ul>
+
+  <h2>Feed note</h2>
+  <p>User posts from a town or business page. Business posts from business management.</p>
+
+  <h2>Routes</h2>
+  <ul>
+    {
+      routes.map(([label, path]) => (
+        <li>
+          <a href={href(path)}>{label}</a> — {path}
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

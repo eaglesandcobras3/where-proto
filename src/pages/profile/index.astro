@@ -1,0 +1,23 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { currentUser } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+const user = currentUser();
+---
+
+<Layout title="User profile">
+  <h1>User facing profile</h1>
+  <p>Signed-in view for {user?.name}. Fake session.</p>
+  <ul>
+    <li>Role: {user?.role}</li>
+    <li>{user?.bio}</li>
+  </ul>
+  <ul>
+    <li><a href={href("/profile/favorites")}>View favorites</a></li>
+    <li><a href={href("/profile/posts")}>Posts</a></li>
+    <li><a href={href("/profile/settings")}>Account settings</a></li>
+    <li><a href={href(`/u/${user?.slug}`)}>External facing profile (undefined)</a></li>
+    <li><a href={href("/manage")}>Business management</a></li>
+  </ul>
+</Layout>

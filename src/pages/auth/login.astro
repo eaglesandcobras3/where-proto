@@ -1,0 +1,27 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Login" note="Auth pages are still being defined.">
+  <h1>Login</h1>
+  <form>
+    <p>
+      <label>
+        Email
+        <input type="email" name="email" />
+      </label>
+    </p>
+    <p>
+      <label>
+        Password
+        <input type="password" name="password" />
+      </label>
+    </p>
+    <button type="button">Sign in</button>
+  </form>
+  <ul>
+    <li><a href={href("/auth/signup")}>Sign up</a></li>
+    <li><a href={href("/auth/forgot-password")}>Forgot password</a></li>
+  </ul>
+</Layout>

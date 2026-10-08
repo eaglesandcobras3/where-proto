@@ -1,0 +1,37 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+---
+
+<Layout title={`Edit listing · ${business.name}`}>
+  <p><a href={href(`/manage/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>Edit listing</h1>
+  <p>Placeholder for “anything manage my business.”</p>
+  <form>
+    <p>
+      <label>
+        Name
+        <input type="text" name="name" value={business.name} />
+      </label>
+    </p>
+    <p>
+      <label>
+        Summary
+        <textarea name="summary">{business.summary}</textarea>
+      </label>
+    </p>
+    <button type="button">Save draft</button>
+  </form>
+</Layout>

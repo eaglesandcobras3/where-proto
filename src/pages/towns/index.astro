@@ -1,0 +1,18 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { towns } from "../../data/catalog";
+import { href } from "../../lib/href";
+---
+
+<Layout title="Towns">
+  <h1>Towns</h1>
+  <p>Beach towns along Scenic Highway 30A. Fake summaries only.</p>
+  <LinkList
+    items={towns.map((item) => ({
+      href: href(`/towns/${item.slug}`),
+      label: item.name,
+      meta: item.summary,
+    }))}
+  />
+</Layout>

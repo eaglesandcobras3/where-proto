@@ -1,0 +1,50 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import LinkList from "../../../components/LinkList.astro";
+import { businesses, categories, towns } from "../../../data/catalog";
+import type { Town } from "../../../data/types";
+import { href } from "../../../lib/href";
+
+export function getStaticPaths() {
+  const leafNames = new Map(
+    categories.flatMap((category) => category.leaves.map((leaf) => [leaf.slug, leaf.name])),
+  );
+  const leafSlugs = ["restaurants", "coffee-shops", "boutiques"] as const;
+  return towns.flatMap((town) =>
+    leafSlugs.map((leaf) => ({
+      params: { slug: town.slug, leaf },
+      props: {
+        town,
+        leafSlug: leaf,
+        leafName: leafNames.get(leaf) ?? leaf,
+      },
+    })),
+  );
+}
+
+interface Props {
+  town: Town;
+  leafSlug: string;
+  leafName: string;
+}
+
+const { town, leafSlug, leafName } = Astro.props;
+const listings = businesses.filter(
+  (item) => item.townSlug === town.slug && item.leafSlug === leafSlug,
+);
+---
+
+<Layout title={`${leafName} in ${town.name}`}>
+  <p>
+    <a href={href("/towns")}>Towns</a> /
+    <a href={href(`/towns/${town.slug}`)}>{town.name}</a>
+  </p>
+  <h1>Category leaf: {leafName} in {town.name}</h1>
+  <LinkList
+    items={listings.map((item) => ({
+      href: href(`/business/${item.slug}`),
+      label: item.name,
+      meta: item.summary,
+    }))}
+  />
+</Layout>

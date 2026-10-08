@@ -1,0 +1,40 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import { posts } from "../../../data/catalog";
+import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+
+const mentions = posts.filter(
+  (item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user",
+);
+---
+
+<Layout title={`Mentions · ${business.name}`}>
+  <p><a href={href(`/manage/${business.slug}`)}>Manage {business.name}</a></p>
+  <h1>See mentions</h1>
+  <p>User posts that landed on this business page. Still to be defined.</p>
+  {
+    mentions.length === 0 ? (
+      <p>No fake user mentions on this listing.</p>
+    ) : (
+      <ul>
+        {mentions.map((item) => (
+          <li>
+            <a href={href(`/posts/${item.slug}`)}>{item.body}</a>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+</Layout>

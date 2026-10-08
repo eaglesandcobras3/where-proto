@@ -1,0 +1,22 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { currentUserSlug, posts } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
+---
+
+<Layout title="My posts">
+  <p><a href={href("/profile")}>User profile</a></p>
+  <h1>Posts</h1>
+  <p>Posts this user made on town or business pages.</p>
+  <ul>
+    {
+      mine.map((item) => (
+        <li>
+          <a href={href(`/posts/${item.slug}`)}>{item.body}</a> — on {item.on.type} / {item.on.slug}
+        </li>
+      ))
+    }
+  </ul>
+</Layout>

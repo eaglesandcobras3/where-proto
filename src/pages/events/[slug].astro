@@ -1,0 +1,43 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { businessBySlug, events, townBySlug } from "../../data/catalog";
+import type { EventItem } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(events);
+}
+
+interface Props {
+  item: EventItem;
+}
+
+const { item: event } = Astro.props;
+
+const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
+const business = event.businessSlug ? businessBySlug(event.businessSlug) : undefined;
+---
+
+<Layout title={event.name}>
+  <p><a href={href("/events")}>Events</a></p>
+  <h1>Event page: {event.name}</h1>
+  <p>{event.summary}</p>
+  <ul>
+    <li>When: {event.when}</li>
+    {
+      town && (
+        <li>
+          Town: <a href={href(`/towns/${town.slug}`)}>{town.name}</a>
+        </li>
+      )
+    }
+    {
+      business && (
+        <li>
+          Business: <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+        </li>
+      )
+    }
+  </ul>
+</Layout>
