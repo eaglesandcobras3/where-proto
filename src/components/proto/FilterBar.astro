@@ -1,0 +1,333 @@
+---
+import { categories, towns } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+interface Props {
+  town?: string;
+  category?: string;
+  group?: string;
+  subcategory?: string;
+  /** Start open to show the expanded panel */
+  expanded?: boolean;
+}
+
+const {
+  town = "Any town",
+  category = "Any category",
+  group = "",
+  subcategory = "All in selected group",
+  expanded = false,
+} = Astro.props;
+
+const selectedTown = towns.find((item) => item.name === town);
+const selectedGroup =
+  categories.find((item) => item.name === group || item.slug === group) ??
+  categories.find((item) => item.name === category) ??
+  null;
+
+const leaves = selectedGroup?.leaves ?? [];
+const selectedLeaf = leaves.find((item) => item.name === subcategory) ?? null;
+
+const hasTown = Boolean(selectedTown);
+const hasCategory = Boolean(selectedGroup || (category && category !== "Any category"));
+const categoryLabel = selectedGroup?.name ?? (hasCategory ? category : "Any category");
+
+const routeMap = {
+  baseTown: href("/town/"),
+  baseSearch: href("/search"),
+  towns: towns.map((item) => ({ slug: item.slug, name: item.name })),
+  categories: categories.map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    leaves: item.leaves.map((leaf) => ({ slug: leaf.slug, name: leaf.name })),
+  })),
+};
+---
+
+<div
+  class="filter-band"
+  data-filter-bar
+  data-expanded={expanded ? "true" : "false"}
+  data-routes={JSON.stringify(routeMap)}
+>
+  <!-- Collapsed: compact pill (town page style) -->
+  <div class="filter-bar filter-bar--collapsed" aria-label="Filters collapsed">
+    <button class="filter-bar__stack" type="button" data-filter-expand aria-expanded={expanded}>
+      <span class="filter-bar__primary" data-filter-town-label>{town}</span>
+      <span class="filter-bar__secondary" data-filter-category-label>{categoryLabel}</span>
+    </button>
+    <span class="filter-bar__divider" aria-hidden="true"></span>
+    <button
+      class="filter-bar__btn"
+      type="button"
+      aria-label="Expand filters"
+      data-filter-expand
+    >
+      <svg class="filter-bar__sliders" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M4 7h10.2a2.5 2.5 0 0 0 4.6 0H20v-2h-1.2a2.5 2.5 0 0 0-4.6 0H4V7zm0 12h2.2a2.5 2.5 0 0 0 4.6 0H20v-2H10.8a2.5 2.5 0 0 0-4.6 0H4v2zm0-6h6.2a2.5 2.5 0 0 0 4.6 0H20v-2h-5.2a2.5 2.5 0 0 0-4.6 0H4v2z"
+        ></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Expanded: town + category fields, Explore, and panel -->
+  <div class="filter-bar filter-bar--expanded" aria-label="Filters expanded" hidden={!expanded}>
+    <div class="filter-bar__shell">
+      <div class="filter-field">
+        <span class="filter-field__label">Town</span>
+        <div class="filter-chip">
+          <span data-filter-town-chip>{town}</span>
+          <button
+            class="filter-chip__x"
+            type="button"
+            data-filter-clear-town
+            aria-label="Clear town"
+            hidden={!hasTown}
+          >
+            ×
+          </button>
+        </div>
+        <label class="visually-hidden" for="filter-town">Town</label>
+        <select id="filter-town" class="filter-field__select" data-filter-town>
+          <option value="" selected={!hasTown}>Any town</option>
+          {
+            towns.map((item) => (
+              <option value={item.slug} selected={item.slug === selectedTown?.slug}>
+                {item.name}
+              </option>
+            ))
+          }
+        </select>
+      </div>
+
+      <div class="filter-field filter-field--category" data-filter-category>
+        <span class="filter-field__label">Category</span>
+        <div class="filter-chip">
+          <span data-filter-category-chip>{categoryLabel}</span>
+          <button
+            class="filter-chip__x"
+            type="button"
+            data-filter-clear-category
+            aria-label="Clear category"
+            hidden={!hasCategory}
+          >
+            ×
+          </button>
+        </div>
+        <label class="visually-hidden" for="filter-category-display">Category</label>
+        <select id="filter-category-display" class="filter-field__select" data-filter-group-trigger>
+          <option value="" selected={!hasCategory}>Any category</option>
+          {
+            categories.map((item) => (
+              <option value={item.slug} selected={item.slug === selectedGroup?.slug}>
+                {item.name}
+              </option>
+            ))
+          }
+        </select>
+
+        <div class="filter-panel" data-filter-panel hidden={!hasCategory}>
+          <label class="filter-panel__field">
+            <span>Group</span>
+            <select data-filter-group>
+              <option value="">Any category</option>
+              {
+                categories.map((item) => (
+                  <option value={item.slug} selected={item.slug === selectedGroup?.slug}>
+                    {item.name}
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+          <label class="filter-panel__field">
+            <span>Subcategory</span>
+            <select data-filter-leaf>
+              <option value="all" selected={!selectedLeaf}>All in selected group</option>
+              {
+                leaves.map((leaf) => (
+                  <option value={leaf.slug} selected={leaf.slug === selectedLeaf?.slug}>
+                    {leaf.name}
+                  </option>
+                ))
+              }
+            </select>
+          </label>
+        </div>
+      </div>
+
+      <button class="filter-bar__explore" type="button" data-filter-explore>Explore</button>
+    </div>
+
+    <button class="filter-bar__collapse" type="button" data-filter-collapse aria-label="Collapse filters">
+      Collapse
+    </button>
+  </div>
+</div>
+
+<script>
+  type RouteLeaf = { slug: string; name: string };
+  type RouteCategory = { slug: string; name: string; leaves: RouteLeaf[] };
+  type RouteMap = {
+    baseTown: string;
+    baseSearch: string;
+    towns: { slug: string; name: string }[];
+    categories: RouteCategory[];
+  };
+
+  function bindFilterBar(root: HTMLElement) {
+    const collapsed = root.querySelector<HTMLElement>(".filter-bar--collapsed");
+    const expanded = root.querySelector<HTMLElement>(".filter-bar--expanded");
+    if (!collapsed || !expanded) return;
+
+    const routes = JSON.parse(root.dataset.routes || "{}") as RouteMap;
+    const townSelect = root.querySelector<HTMLSelectElement>("[data-filter-town]");
+    const groupTrigger = root.querySelector<HTMLSelectElement>("[data-filter-group-trigger]");
+    const groupSelect = root.querySelector<HTMLSelectElement>("[data-filter-group]");
+    const leafSelect = root.querySelector<HTMLSelectElement>("[data-filter-leaf]");
+    const panel = root.querySelector<HTMLElement>("[data-filter-panel]");
+    const explore = root.querySelector<HTMLButtonElement>("[data-filter-explore]");
+
+    const townChip = root.querySelector<HTMLElement>("[data-filter-town-chip]");
+    const categoryChip = root.querySelector<HTMLElement>("[data-filter-category-chip]");
+    const townLabels = root.querySelectorAll<HTMLElement>("[data-filter-town-label]");
+    const categoryLabels = root.querySelectorAll<HTMLElement>("[data-filter-category-label]");
+    const clearTown = root.querySelector<HTMLButtonElement>("[data-filter-clear-town]");
+    const clearCategory = root.querySelector<HTMLButtonElement>("[data-filter-clear-category]");
+
+    const setExpanded = (open: boolean) => {
+      root.dataset.expanded = open ? "true" : "false";
+      expanded.hidden = !open;
+      collapsed.hidden = open;
+      root.querySelectorAll<HTMLButtonElement>("[data-filter-expand]").forEach((btn) => {
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    };
+
+    const townName = (slug: string) =>
+      routes.towns.find((item) => item.slug === slug)?.name ?? "Any town";
+
+    const categoryBySlug = (slug: string) => routes.categories.find((item) => item.slug === slug);
+
+    const syncLeafOptions = (groupSlug: string, preferredLeaf = "all") => {
+      if (!leafSelect) return;
+      const category = categoryBySlug(groupSlug);
+      const leaves = category?.leaves ?? [];
+      leafSelect.innerHTML = "";
+      const allOption = document.createElement("option");
+      allOption.value = "all";
+      allOption.textContent = "All in selected group";
+      leafSelect.append(allOption);
+      for (const leaf of leaves) {
+        const option = document.createElement("option");
+        option.value = leaf.slug;
+        option.textContent = leaf.name;
+        leafSelect.append(option);
+      }
+      leafSelect.value = leaves.some((leaf) => leaf.slug === preferredLeaf) ? preferredLeaf : "all";
+    };
+
+    const syncLabels = () => {
+      const townSlug = townSelect?.value ?? "";
+      const groupSlug = groupSelect?.value || groupTrigger?.value || "";
+      const category = categoryBySlug(groupSlug);
+      const nextTown = townName(townSlug);
+      const nextCategory = category?.name ?? "Any category";
+
+      if (townChip) townChip.textContent = nextTown;
+      if (categoryChip) categoryChip.textContent = nextCategory;
+      townLabels.forEach((el) => {
+        el.textContent = nextTown;
+      });
+      categoryLabels.forEach((el) => {
+        el.textContent = nextCategory;
+      });
+      if (clearTown) clearTown.hidden = !townSlug;
+      if (clearCategory) clearCategory.hidden = !groupSlug;
+      if (panel) panel.hidden = !groupSlug;
+      if (groupTrigger && groupSelect) groupTrigger.value = groupSelect.value;
+    };
+
+    const buildHref = () => {
+      const townSlug = townSelect?.value ?? "";
+      const groupSlug = groupSelect?.value || groupTrigger?.value || "";
+      const leafSlug = leafSelect?.value ?? "all";
+      const category = categoryBySlug(groupSlug);
+      const townBase = routes.baseTown.replace(/\/?$/, "/");
+
+      if (townSlug && groupSlug && category) {
+        const segment = leafSlug !== "all" ? leafSlug : groupSlug;
+        return `${townBase}${townSlug}/${segment}/`;
+      }
+
+      if (townSlug) {
+        return `${townBase}${townSlug}/`;
+      }
+
+      if (groupSlug) {
+        const params = new URLSearchParams({ category: groupSlug });
+        if (leafSlug !== "all") params.set("leaf", leafSlug);
+        return `${routes.baseSearch}?${params.toString()}`;
+      }
+
+      return routes.baseSearch;
+    };
+
+    const go = () => {
+      window.location.href = buildHref();
+    };
+
+    setExpanded(root.dataset.expanded === "true");
+    syncLabels();
+
+    root.querySelectorAll("[data-filter-expand]").forEach((el) => {
+      el.addEventListener("click", () => setExpanded(true));
+    });
+
+    root.querySelectorAll("[data-filter-collapse]").forEach((el) => {
+      el.addEventListener("click", () => setExpanded(false));
+    });
+
+    townSelect?.addEventListener("change", () => {
+      syncLabels();
+    });
+
+    const onGroupChange = (value: string) => {
+      if (groupSelect) groupSelect.value = value;
+      if (groupTrigger) groupTrigger.value = value;
+      syncLeafOptions(value, "all");
+      syncLabels();
+      if (value) setExpanded(true);
+    };
+
+    groupTrigger?.addEventListener("change", () => onGroupChange(groupTrigger.value));
+    groupSelect?.addEventListener("change", () => onGroupChange(groupSelect.value));
+    leafSelect?.addEventListener("change", () => {
+      syncLabels();
+    });
+
+    clearTown?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      if (townSelect) townSelect.value = "";
+      syncLabels();
+    });
+
+    clearCategory?.addEventListener("click", (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      onGroupChange("");
+    });
+
+    explore?.addEventListener("click", go);
+
+    // Open panel when focusing/clicking the category field while a group is chosen
+    root.querySelector("[data-filter-category]")?.addEventListener("click", () => {
+      if (panel && (groupSelect?.value || groupTrigger?.value)) panel.hidden = false;
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-filter-bar]").forEach(bindFilterBar);
+</script>
