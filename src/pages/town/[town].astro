@@ -1,0 +1,75 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { allLeaves, areas, events, guides, questions, towns } from "../../data/catalog";
+import type { Town } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(towns, "town");
+}
+
+interface Props {
+  item: Town;
+}
+
+const { item: town } = Astro.props;
+const townAreas = areas.filter((area) => area.townSlug === town.slug);
+const townEvents = events.filter((item) => item.townSlug === town.slug);
+const townGuides = guides.filter((item) => item.townSlug === town.slug);
+const townQuestions = questions.filter((item) => item.townSlug === town.slug);
+const leaves = allLeaves();
+---
+
+<Layout title={town.name}>
+  <p><a href={href("/towns")}>Towns</a></p>
+  <h1>Town: {town.name}</h1>
+  <p>{town.summary}</p>
+  <ul>
+    <li>Walkability: {town.walkability}</li>
+    <li>Beach access: {town.beachAccess}</li>
+  </ul>
+
+  <h2>Categories in this town</h2>
+  <p>Leaf pages hold listings. This hub does not render business cards.</p>
+  <ul>
+    {
+      leaves.map((leaf) => (
+        <li>
+          <a href={href(`/town/${town.slug}/${leaf.slug}`)}>{leaf.name}</a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <h2>Areas</h2>
+  <LinkList
+    items={townAreas.map((item) => ({
+      href: href(`/area/${item.slug}`),
+      label: item.name,
+      meta: item.summary,
+    }))}
+  />
+
+  <h2>Related</h2>
+  <LinkList
+    items={[
+      ...townEvents.map((item) => ({
+        href: href(`/event/${item.slug}`),
+        label: item.name,
+        meta: "event",
+      })),
+      ...townGuides.map((item) => ({
+        href: href(`/guide/${item.slug}`),
+        label: item.title,
+        meta: "guide",
+      })),
+      ...townQuestions.map((item) => ({
+        href: href(`/ask/${item.slug}`),
+        label: item.title,
+        meta: "ask",
+      })),
+    ]}
+  />
+</Layout>

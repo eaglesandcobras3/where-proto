@@ -7,10 +7,9 @@ import { href } from "../../lib/href";
 
 <Layout title="Events">
   <h1>Events</h1>
-  <p>What's happening on 30A. Fake calendar only.</p>
   <LinkList
     items={events.map((item) => ({
-      href: href(`/events/${item.slug}`),
+      href: href(`/event/${item.slug}`),
       label: item.name,
       meta: `${item.when}${item.townSlug ? ` · ${townBySlug(item.townSlug)?.name}` : ""}`,
     }))}

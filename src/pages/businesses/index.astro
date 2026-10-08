@@ -6,22 +6,22 @@ import { href } from "../../lib/href";
 
 <Layout title="Businesses">
   <h1>Businesses</h1>
-  <p>Directory hub. Groups open to category pages; listings live on leaf pages.</p>
+  <p>
+    Directory hub. Browse by category group, then open a leaf. No search box and no filters on
+    this route. Search is only at <a href={href("/search")}>/search</a>.
+  </p>
   {
-    categories.map((category) => (
+    categories.map((group) => (
       <section>
-        <h2>
-          <a href={href(`/categories/${category.slug}`)}>{category.name}</a>
-        </h2>
+        <h2>{group.name}</h2>
         <ul>
-          {category.leaves.map((leaf) => (
+          {group.leaves.map((leaf) => (
             <li>
-              <a href={href(`/categories/${category.slug}/${leaf.slug}`)}>{leaf.name}</a>
+              <a href={href(`/businesses/${leaf.slug}`)}>{leaf.name}</a>
             </li>
           ))}
         </ul>
       </section>
     ))
   }
-  <p><a href={href("/stay")}>Stay page</a> is a separate page type from this directory.</p>
 </Layout>

@@ -1,0 +1,49 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { allLeaves, areas, townBySlug } from "../../data/catalog";
+import type { Area } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(areas, "area");
+}
+
+interface Props {
+  item: Area;
+}
+
+const { item: area } = Astro.props;
+const town = townBySlug(area.townSlug);
+---
+
+<Layout title={area.name}>
+  <p>
+    <a href={href("/areas")}>Areas</a>
+    {
+      town && (
+        <>
+          {" / "}
+          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+        </>
+      )
+    }
+  </p>
+  <h1>Area: {area.name}</h1>
+  <p>{area.summary}</p>
+  {
+    town && (
+      <>
+        <h2>Categories in {town.name}</h2>
+        <p>Listings are on town leaf pages, not on this area page.</p>
+        <LinkList
+          items={allLeaves().map((leaf) => ({
+            href: href(`/town/${town.slug}/${leaf.slug}`),
+            label: leaf.name,
+          }))}
+        />
+      </>
+    )
+  }
+</Layout>

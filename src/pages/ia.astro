@@ -4,74 +4,50 @@ import { href } from "../lib/href";
 
 const routes = [
   ["Homepage", "/"],
-  ["Towns", "/towns"],
-  ["Town page", "/towns/rosemary-beach"],
-  ["Town + leaf", "/towns/rosemary-beach/restaurants"],
-  ["Area page", "/areas/barrett-square"],
-  ["Businesses", "/businesses"],
-  ["Category", "/categories/food-and-drink"],
-  ["Leaf", "/categories/food-and-drink/restaurants"],
-  ["Business page", "/business/edwards-fine-food-and-wine"],
-  ["Search results", "/search?q=seaside"],
-  ["Stay", "/stay"],
-  ["Stay page", "/stay/the-pearl-hotel"],
+  ["Towns hub", "/towns"],
+  ["Town", "/town/rosemary-beach"],
+  ["Town + category leaf", "/town/rosemary-beach/restaurants"],
+  ["Areas hub", "/areas"],
+  ["Area", "/area/barrett-square"],
+  ["Businesses hub", "/businesses"],
+  ["Businesses leaf", "/businesses/restaurants"],
+  ["Business", "/business/edwards-fine-food-and-wine"],
+  ["Search", "/search?q=seaside"],
   ["Events", "/events"],
-  ["Event page", "/events/sounds-of-seaside"],
+  ["Event", "/event/sounds-of-seaside"],
+  ["Happenings", "/happenings"],
   ["Guides", "/guides"],
-  ["Guide page", "/guides/first-timers-guide"],
-  ["Community / Ask", "/community"],
-  ["Ask form", "/community/ask"],
-  ["Question", "/community/questions/parking-near-seaside"],
-  ["User facing profile", "/profile"],
-  ["Favorites", "/profile/favorites"],
-  ["Posts (user)", "/profile/posts"],
-  ["Account settings", "/profile/settings"],
-  ["External facing profile (undefined)", "/u/kelley"],
-  ["Post", "/posts/sunset-on-the-square"],
-  ["Business selector", "/manage"],
-  ["Manage business", "/manage/edwards-fine-food-and-wine"],
-  ["Post feed as business", "/manage/edwards-fine-food-and-wine/feed"],
-  ["Post event", "/manage/edwards-fine-food-and-wine/events/new"],
-  ["Mentions", "/manage/edwards-fine-food-and-wine/mentions"],
-  ["Edit listing", "/manage/edwards-fine-food-and-wine/listing"],
-  ["Photos", "/manage/edwards-fine-food-and-wine/photos"],
-  ["Admin", "/admin"],
-  ["Review queue", "/admin/review-queue"],
-  ["SEO overrides", "/admin/seo"],
-  ["Knowledge", "/admin/knowledge"],
-  ["Entities", "/admin/entities"],
+  ["Guide", "/guide/first-timers-guide"],
+  ["Ask", "/ask"],
+  ["Question", "/ask/parking-near-seaside"],
+  ["Stories", "/stories"],
+  ["Story", "/story/finding-30a"],
+  ["Stays (ship-dark)", "/stays"],
+  ["Dashboard", "/dashboard"],
+  ["Profile", "/profile"],
+  ["Add business", "/add-business"],
   ["About", "/about"],
   ["Legal", "/legal"],
-  ["Terms", "/legal/terms"],
-  ["Privacy", "/legal/privacy"],
-  ["Add business", "/add-business"],
   ["Advertise", "/advertise"],
-  ["Login", "/auth/login"],
-  ["Sign up", "/auth/signup"],
-  ["Forgot password", "/auth/forgot-password"],
-  ["Visitor newsletter", "/newsletters/visitor"],
-  ["Business newsletter", "/newsletters/business"],
 ];
 ---
 
-<Layout title="IA / all routes">
-  <h1>Information architecture</h1>
-  <p>Every route in this wireframe. Click through to confirm structure.</p>
+<Layout title="Route scaffold">
+  <h1>Route scaffold</h1>
+  <p>Matches the 2026-10-07 handoff. Click through to confirm structure.</p>
 
-  <h2>Still need to be defined</h2>
-  <ul>
-    <li>External facing profile</li>
-    <li>Business management beyond selector, post event, post feed, mentions</li>
-    <li>Admin beyond review queue, SEO, knowledge</li>
-    <li>Legal copy</li>
-    <li>Add business intake</li>
-    <li>Advertise</li>
-    <li>Auth flow</li>
-    <li>How to post as business vs user</li>
-  </ul>
-
-  <h2>Feed note</h2>
-  <p>User posts from a town or business page. Business posts from business management.</p>
+  <h2>Rules</h2>
+  <ol>
+    <li>/businesses is a directory hub. Category groups only. No search box, no filters.</li>
+    <li>/search is the only search page.</li>
+    <li>Town pages own town-scoped category browsing via /town/{"{town}"}/{'{category}'}.</li>
+    <li>
+      Listings live on leaf pages only. /businesses, /towns, and /town/{"{town}"} never render
+      business cards.
+    </li>
+    <li>Filtered or searched views are noindex, follow, canonical to the unfiltered URL.</li>
+    <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
+  </ol>
 
   <h2>Routes</h2>
   <ul>

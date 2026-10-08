@@ -25,11 +25,6 @@ https://eaglesandcobras3.github.io/where-proto/
 
 If the repository stays private, GitHub Pages needs a paid plan. Making the repo public is the other option.
 
-## IA
+## Routes
 
-`/ia` lists every route. Open questions from the current IA:
-
-- External facing profile
-- Rest of business management
-- Rest of admin
-- How a signed-in owner posts as the business vs as themselves
+See `ROUTE-SCAFFOLD.md`. `/ia` lists every live wireframe route.

@@ -6,7 +6,9 @@ import type {
   EventItem,
   Favorite,
   Guide,
+  Happening,
   KnowledgeItem,
+  Story,
   Photo,
   Post,
   Question,
@@ -249,6 +251,34 @@ export const guides: Guide[] = [
   },
 ];
 
+export const happenings: Happening[] = [
+  {
+    slug: "wednesday-in-seaside",
+    title: "Wednesday night in Seaside",
+    summary: "Fake happening: concert series and square traffic.",
+    townSlug: "seaside",
+  },
+  {
+    slug: "market-morning-grayton",
+    title: "Market morning in Grayton",
+    summary: "Fake happening: farmers market rhythm.",
+    townSlug: "grayton-beach",
+  },
+];
+
+export const stories: Story[] = [
+  {
+    slug: "finding-30a",
+    title: "Finding 30A without twenty tabs",
+    summary: "Fake story used to scaffold /story/{story}.",
+  },
+  {
+    slug: "town-vs-town",
+    title: "Rosemary feels different from Grayton",
+    summary: "Fake story about town character.",
+  },
+];
+
 export const users: User[] = [
   {
     slug: "kelley",
@@ -442,4 +472,22 @@ export function currentUser() {
 
 export function businessesOwnedBy(userSlug: string) {
   return businesses.filter((item) => item.ownerUserSlug === userSlug);
+}
+
+export function allLeaves() {
+  return categories.flatMap((group) =>
+    group.leaves.map((leaf) => ({
+      ...leaf,
+      groupSlug: group.slug,
+      groupName: group.name,
+    })),
+  );
+}
+
+export function leafBySlug(slug: string) {
+  return allLeaves().find((leaf) => leaf.slug === slug);
+}
+
+export function storyBySlug(slug: string) {
+  return stories.find((item) => item.slug === slug);
 }

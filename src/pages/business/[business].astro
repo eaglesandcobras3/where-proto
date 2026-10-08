@@ -1,0 +1,75 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import LinkList from "../../components/LinkList.astro";
+import { areaBySlug, businesses, events, photos, townBySlug } from "../../data/catalog";
+import type { Business } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(businesses, "business");
+}
+
+interface Props {
+  item: Business;
+}
+
+const { item: business } = Astro.props;
+const town = townBySlug(business.townSlug);
+const area = business.areaSlug ? areaBySlug(business.areaSlug) : undefined;
+const businessEvents = events.filter((item) => item.businessSlug === business.slug);
+const businessPhotos = photos.filter(
+  (item) => item.attachedTo.type === "business" && item.attachedTo.slug === business.slug,
+);
+---
+
+<Layout title={business.name}>
+  <p><a href={href("/businesses")}>Businesses</a></p>
+  <h1>Business: {business.name}</h1>
+  <p>{business.summary}</p>
+  <ul>
+    {
+      town && (
+        <li>
+          Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+        </li>
+      )
+    }
+    {
+      area && (
+        <li>
+          Area: <a href={href(`/area/${area.slug}`)}>{area.name}</a>
+        </li>
+      )
+    }
+    <li>
+      Leaf: <a href={href(`/businesses/${business.leafSlug}`)}>{business.leafSlug}</a>
+      {
+        town && (
+          <>
+            {" · "}
+            <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>
+              {business.leafSlug} in {town.name}
+            </a>
+          </>
+        )
+      }
+    </li>
+  </ul>
+
+  <h2>Photos</h2>
+  <ul>
+    {businessPhotos.map((photo) => (
+      <li>{photo.caption}</li>
+    ))}
+  </ul>
+
+  <h2>Events</h2>
+  <LinkList
+    items={businessEvents.map((item) => ({
+      href: href(`/event/${item.slug}`),
+      label: item.name,
+      meta: item.when,
+    }))}
+  />
+</Layout>

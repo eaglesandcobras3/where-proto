@@ -1,40 +1,44 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import LinkList from "../components/LinkList.astro";
-import { businesses, events, guides, towns } from "../data/catalog";
+import { events, guides, happenings, towns } from "../data/catalog";
 import { href } from "../lib/href";
 ---
 
 <Layout title="Homepage">
   <h1>Homepage</h1>
-  <p>Local guide to 30A, Florida. This page is structure only.</p>
-
-  <h2>Featured businesses</h2>
-  <LinkList
-    items={businesses.slice(0, 3).map((item) => ({
-      href: href(`/business/${item.slug}`),
-      label: item.name,
-      meta: item.summary,
-    }))}
-  />
+  <p>Local guide to 30A, Florida. Routes and fake data only.</p>
 
   <h2>Towns</h2>
   <p><a href={href("/towns")}>All towns</a></p>
   <LinkList
     items={towns.map((item) => ({
-      href: href(`/towns/${item.slug}`),
+      href: href(`/town/${item.slug}`),
       label: item.name,
       meta: item.summary,
     }))}
   />
 
+  <h2>Browse businesses</h2>
+  <p><a href={href("/businesses")}>Businesses directory</a> — category groups only. Listings are on leaf pages.</p>
+
   <h2>Events</h2>
   <p><a href={href("/events")}>All events</a></p>
   <LinkList
     items={events.map((item) => ({
-      href: href(`/events/${item.slug}`),
+      href: href(`/event/${item.slug}`),
       label: item.name,
       meta: item.when,
+    }))}
+  />
+
+  <h2>Happenings</h2>
+  <p><a href={href("/happenings")}>All happenings</a></p>
+  <LinkList
+    items={happenings.map((item) => ({
+      href: href("/happenings"),
+      label: item.title,
+      meta: item.summary,
     }))}
   />
 
@@ -42,15 +46,12 @@ import { href } from "../lib/href";
   <p><a href={href("/guides")}>All guides</a></p>
   <LinkList
     items={guides.map((item) => ({
-      href: href(`/guides/${item.slug}`),
+      href: href(`/guide/${item.slug}`),
       label: item.title,
       meta: item.summary,
     }))}
   />
 
-  <h2>Stay</h2>
-  <p><a href={href("/stay")}>Stay page</a></p>
-
-  <h2>Add a business</h2>
-  <p><a href={href("/add-business")}>Add Business</a></p>
+  <h2>Ask</h2>
+  <p><a href={href("/ask")}>Community questions</a></p>
 </Layout>

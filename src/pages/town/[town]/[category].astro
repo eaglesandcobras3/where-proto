@@ -1,0 +1,45 @@
+---
+import Layout from "../../../layouts/Layout.astro";
+import LinkList from "../../../components/LinkList.astro";
+import { allLeaves, businesses, towns } from "../../../data/catalog";
+import type { Town } from "../../../data/types";
+import { href } from "../../../lib/href";
+
+export function getStaticPaths() {
+  return towns.flatMap((town) =>
+    allLeaves().map((leaf) => ({
+      params: { town: town.slug, category: leaf.slug },
+      props: { town, leaf },
+    })),
+  );
+}
+
+interface Props {
+  town: Town;
+  leaf: ReturnType<typeof allLeaves>[number];
+}
+
+const { town, leaf } = Astro.props;
+const listings = businesses.filter(
+  (item) => item.townSlug === town.slug && item.leafSlug === leaf.slug,
+);
+---
+
+<Layout title={`${leaf.name} in ${town.name}`}>
+  <p>
+    <a href={href("/towns")}>Towns</a> /
+    <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+  </p>
+  <h1>{leaf.name} in {town.name}</h1>
+  <p>Town-scoped leaf. Listings live here.</p>
+  <LinkList
+    items={listings.map((item) => ({
+      href: href(`/business/${item.slug}`),
+      label: item.name,
+      meta: item.summary,
+    }))}
+  />
+  <p>
+    Corridor-wide leaf: <a href={href(`/businesses/${leaf.slug}`)}>{leaf.name}</a>
+  </p>
+</Layout>

@@ -1,0 +1,56 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { comments, questions, townBySlug, userBySlug } from "../../data/catalog";
+import type { Question } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(questions, "question");
+}
+
+interface Props {
+  item: Question;
+}
+
+const { item: question } = Astro.props;
+const author = userBySlug(question.authorUserSlug);
+const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+const replies = comments.filter(
+  (item) => item.on.type === "question" && item.on.slug === question.slug,
+);
+---
+
+<Layout title={question.title}>
+  <p><a href={href("/ask")}>Ask</a></p>
+  <h1>Question: {question.title}</h1>
+  <p>{question.body}</p>
+  <ul>
+    {author && <li>Asked by: {author.name}</li>}
+    {
+      town && (
+        <li>
+          Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+        </li>
+      )
+    }
+  </ul>
+  <h2>Comments</h2>
+  <ul>
+    {
+      replies.map((item) => (
+        <li>
+          {item.body} — {userBySlug(item.authorUserSlug)?.name}
+        </li>
+      ))
+    }
+  </ul>
+  <h2>Reply</h2>
+  <form>
+    <label>
+      Comment
+      <textarea name="body"></textarea>
+    </label>
+    <button type="button">Add comment</button>
+  </form>
+</Layout>

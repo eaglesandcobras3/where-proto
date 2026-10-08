@@ -64,6 +64,19 @@ export interface Guide {
   townSlug?: Slug;
 }
 
+export interface Happening {
+  slug: Slug;
+  title: string;
+  summary: string;
+  townSlug?: Slug;
+}
+
+export interface Story {
+  slug: Slug;
+  title: string;
+  summary: string;
+}
+
 export interface User {
   slug: Slug;
   name: string;
