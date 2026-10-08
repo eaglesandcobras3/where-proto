@@ -13,10 +13,6 @@ interface Props {
   filterGroup?: string;
   filterSubcategory?: string;
   filterExpanded?: boolean;
-  /** @deprecated use filterTown */
-  filterPrimary?: string;
-  /** @deprecated use filterCategory */
-  filterSecondary?: string;
   headerTone?: "dark" | "light";
   noindex?: boolean;
   canonicalPath?: string;
@@ -26,21 +22,16 @@ interface Props {
 const {
   title,
   activeNav = "",
-  filterTown,
-  filterCategory,
+  filterTown = "Any town",
+  filterCategory = "Any category",
   filterGroup = "",
   filterSubcategory = "All in selected group",
   filterExpanded = false,
-  filterPrimary = "Any town",
-  filterSecondary = "Any category",
   headerTone = "dark",
   noindex,
   canonicalPath,
   showFilter = true,
 } = Astro.props;
-
-const townLabel = filterTown ?? filterPrimary;
-const categoryLabel = filterCategory ?? filterSecondary;
 ---
 
 <!doctype html>
@@ -58,8 +49,8 @@ const categoryLabel = filterCategory ?? filterSecondary;
       {
         showFilter && (
           <FilterBar
-            town={townLabel}
-            category={categoryLabel}
+            town={filterTown}
+            category={filterCategory}
             group={filterGroup}
             subcategory={filterSubcategory}
             expanded={filterExpanded}
