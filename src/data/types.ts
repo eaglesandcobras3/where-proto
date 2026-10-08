@@ -35,6 +35,8 @@ export interface Business {
   categorySlug: Slug;
   leafSlug: Slug;
   summary: string;
+  tagSlugs: Slug[];
+  openNow: boolean;
   isStay?: boolean;
   ownerUserSlug?: Slug;
 }

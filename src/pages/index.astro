@@ -19,8 +19,12 @@ import { href } from "../lib/href";
     }))}
   />
 
-  <h2>Browse businesses</h2>
-  <p><a href={href("/businesses")}>Businesses directory</a> — category groups only. Listings are on leaf pages.</p>
+  <h2>Find businesses</h2>
+  <p>
+    <a href={href("/search")}>Search</a> is the business finder (town, category, tag, open now).
+    Indexable listings are town × category pages such as
+    <a href={href("/town/rosemary-beach/restaurants")}>/town/rosemary-beach/restaurants</a>.
+  </p>
 
   <h2>Events</h2>
   <p><a href={href("/events")}>All events</a></p>

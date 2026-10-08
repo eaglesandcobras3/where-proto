@@ -24,7 +24,7 @@ const businessPhotos = photos.filter(
 ---
 
 <Layout title={business.name}>
-  <p><a href={href("/businesses")}>Businesses</a></p>
+  <p><a href={href("/search")}>Search</a></p>
   <h1>Business: {business.name}</h1>
   <p>{business.summary}</p>
   <ul>
@@ -42,19 +42,16 @@ const businessPhotos = photos.filter(
         </li>
       )
     }
-    <li>
-      Leaf: <a href={href(`/businesses/${business.leafSlug}`)}>{business.leafSlug}</a>
-      {
-        town && (
-          <>
-            {" · "}
-            <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>
-              {business.leafSlug} in {town.name}
-            </a>
-          </>
-        )
-      }
-    </li>
+    {
+      town && (
+        <li>
+          Category page:{" "}
+          <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>
+            {business.leafSlug} in {town.name}
+          </a>
+        </li>
+      )
+    }
   </ul>
 
   <h2>Photos</h2>

@@ -6,13 +6,12 @@ const routes = [
   ["Homepage", "/"],
   ["Towns hub", "/towns"],
   ["Town", "/town/rosemary-beach"],
-  ["Town + category leaf", "/town/rosemary-beach/restaurants"],
+  ["Town × category (indexable)", "/town/rosemary-beach/restaurants"],
   ["Areas hub", "/areas"],
   ["Area", "/area/barrett-square"],
-  ["Businesses hub", "/businesses"],
-  ["Businesses leaf", "/businesses/restaurants"],
+  ["Search (business finder)", "/search"],
+  ["Search filtered", "/search?town=seaside&category=coffee-shops"],
   ["Business", "/business/edwards-fine-food-and-wine"],
-  ["Search", "/search?q=seaside"],
   ["Events", "/events"],
   ["Event", "/event/sounds-of-seaside"],
   ["Happenings", "/happenings"],
@@ -34,18 +33,20 @@ const routes = [
 
 <Layout title="Route scaffold">
   <h1>Route scaffold</h1>
-  <p>Matches the 2026-10-07 handoff. Click through to confirm structure.</p>
+  <p>No /businesses. /search is the finder. Town × category pages are the indexable leaves.</p>
 
   <h2>Rules</h2>
   <ol>
-    <li>/businesses is a directory hub. Category groups only. No search box, no filters.</li>
-    <li>/search is the only search page.</li>
-    <li>Town pages own town-scoped category browsing via /town/{"{town}"}/{'{category}'}.</li>
+    <li>There is no /businesses hub or /businesses/{"{category}"} leaf.</li>
     <li>
-      Listings live on leaf pages only. /businesses, /towns, and /town/{"{town}"} never render
-      business cards.
+      /search is the business finder: town, category, tag, and open-now filters. Always noindex,
+      follow. If the filters are exactly town + category, canonical points at that combo page.
     </li>
-    <li>Filtered or searched views are noindex, follow, canonical to the unfiltered URL.</li>
+    <li>Town pages link to /town/{"{town}"}/{'{category}'}.</li>
+    <li>
+      Listings on indexable pages live only on /town/{"{town}"}/{'{category}'}. /towns and
+      /town/{"{town}"} do not render business cards.
+    </li>
     <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
   </ol>
 

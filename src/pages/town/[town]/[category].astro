@@ -31,7 +31,7 @@ const listings = businesses.filter(
     <a href={href(`/town/${town.slug}`)}>{town.name}</a>
   </p>
   <h1>{leaf.name} in {town.name}</h1>
-  <p>Town-scoped leaf. Listings live here.</p>
+  <p>Indexable town × category page. Listings live here. The finder is /search.</p>
   <LinkList
     items={listings.map((item) => ({
       href: href(`/business/${item.slug}`),
@@ -40,6 +40,8 @@ const listings = businesses.filter(
     }))}
   />
   <p>
-    Corridor-wide leaf: <a href={href(`/businesses/${leaf.slug}`)}>{leaf.name}</a>
+    <a href={href(`/search?town=${town.slug}&category=${leaf.slug}`)}>
+      Open this combo in search
+    </a>
   </p>
 </Layout>

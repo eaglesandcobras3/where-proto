@@ -10,5 +10,6 @@ export default defineConfig({
     "/admin": "/dashboard",
     "/manage": "/dashboard",
     "/auth/login": "/profile",
+    "/businesses": "/search",
   },
 });
