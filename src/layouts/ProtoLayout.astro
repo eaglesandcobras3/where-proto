@@ -8,7 +8,14 @@ import "../styles/proto.css";
 interface Props {
   title: string;
   activeNav?: string;
+  filterTown?: string;
+  filterCategory?: string;
+  filterGroup?: string;
+  filterSubcategory?: string;
+  filterExpanded?: boolean;
+  /** @deprecated use filterTown */
   filterPrimary?: string;
+  /** @deprecated use filterCategory */
   filterSecondary?: string;
   headerTone?: "dark" | "light";
   noindex?: boolean;
@@ -19,6 +26,11 @@ interface Props {
 const {
   title,
   activeNav = "",
+  filterTown,
+  filterCategory,
+  filterGroup = "",
+  filterSubcategory = "All in selected group",
+  filterExpanded = false,
   filterPrimary = "Any town",
   filterSecondary = "Any category",
   headerTone = "dark",
@@ -26,6 +38,9 @@ const {
   canonicalPath,
   showFilter = true,
 } = Astro.props;
+
+const townLabel = filterTown ?? filterPrimary;
+const categoryLabel = filterCategory ?? filterSecondary;
 ---
 
 <!doctype html>
@@ -40,7 +55,17 @@ const {
   <body class="proto-body">
     <div class="proto-page">
       <SiteHeader active={activeNav} tone={headerTone} />
-      {showFilter && <FilterBar primary={filterPrimary} secondary={filterSecondary} />}
+      {
+        showFilter && (
+          <FilterBar
+            town={townLabel}
+            category={categoryLabel}
+            group={filterGroup}
+            subcategory={filterSubcategory}
+            expanded={filterExpanded}
+          />
+        )
+      }
       <main class="proto-main">
         <slot />
       </main>

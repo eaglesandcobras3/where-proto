@@ -44,8 +44,8 @@ const currentIndex = towns.findIndex((item) => item.slug === town.slug);
 <ProtoLayout
   title={town.name}
   activeNav="towns"
-  filterPrimary={town.name}
-  filterSecondary="Any category"
+  filterTown={town.name}
+  filterCategory="Any category"
 >
   <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(8, townBusinesses.length * 3)}>
     <section class="corridor" aria-label="The 30A corridor">

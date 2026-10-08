@@ -1,20 +1,154 @@
 ---
+import { categories, towns } from "../../data/catalog";
+
 interface Props {
-  primary: string;
-  secondary: string;
+  town?: string;
+  category?: string;
+  group?: string;
+  subcategory?: string;
+  /** Start open to show the expanded panel */
+  expanded?: boolean;
 }
 
-const { primary, secondary } = Astro.props;
+const {
+  town = "Any town",
+  category = "Any category",
+  group = "",
+  subcategory = "All in selected group",
+  expanded = false,
+} = Astro.props;
+
+const selectedGroup =
+  categories.find((item) => item.name === group || item.slug === group) ??
+  categories.find((item) => item.name === category) ??
+  categories[0];
+
+const leaves = selectedGroup?.leaves ?? [];
+const hasTown = Boolean(town && town !== "Any town");
+const hasCategory = Boolean(category && category !== "Any category");
 ---
 
-<div class="filter-band">
-  <div class="filter-bar" aria-label="Filters">
-    <div class="filter-bar__copy">
-      <p class="filter-bar__primary">{primary}</p>
-      <p class="filter-bar__secondary">{secondary}</p>
-    </div>
-    <button class="filter-bar__btn" type="button" aria-label="Open filters" disabled>
+<div class="filter-band" data-filter-bar data-expanded={expanded ? "true" : "false"}>
+  <!-- Collapsed: compact pill (town page style) -->
+  <div class="filter-bar filter-bar--collapsed" aria-label="Filters collapsed">
+    <button class="filter-bar__stack" type="button" data-filter-expand aria-expanded={expanded}>
+      <span class="filter-bar__primary">{town}</span>
+      <span class="filter-bar__secondary">{category}</span>
+    </button>
+    <button
+      class="filter-bar__btn"
+      type="button"
+      aria-label="Expand filters"
+      data-filter-expand
+    >
       ☰
     </button>
   </div>
+
+  <!-- Expanded: town + category fields, Explore, and panel -->
+  <div class="filter-bar filter-bar--expanded" aria-label="Filters expanded" hidden={!expanded}>
+    <div class="filter-bar__fields">
+      <div class="filter-field">
+        <span class="filter-field__label">Town</span>
+        <div class="filter-chip">
+          <span>{town}</span>
+          {
+            hasTown && (
+              <span class="filter-chip__x" aria-hidden="true">
+                ×
+              </span>
+            )
+          }
+        </div>
+        <label class="visually-hidden" for="filter-town">Town</label>
+        <select id="filter-town" class="filter-field__select" disabled>
+          <option selected={!hasTown}>Any town</option>
+          {
+            towns.map((item) => (
+              <option selected={item.name === town}>{item.name}</option>
+            ))
+          }
+        </select>
+      </div>
+
+      <div class="filter-field filter-field--category" data-filter-category>
+        <span class="filter-field__label">Category</span>
+        <div class="filter-chip">
+          <span>{category}</span>
+          {
+            hasCategory && (
+              <span class="filter-chip__x" aria-hidden="true">
+                ×
+              </span>
+            )
+          }
+        </div>
+        <label class="visually-hidden" for="filter-category-display">Category</label>
+        <select id="filter-category-display" class="filter-field__select" disabled>
+          <option selected={!hasCategory}>Any category</option>
+          {
+            categories.map((item) => (
+              <option selected={item.name === category || item.name === selectedGroup?.name}>
+                {item.name}
+              </option>
+            ))
+          }
+        </select>
+
+        <div class="filter-panel" data-filter-panel>
+          <label class="filter-panel__field">
+            <span>Group</span>
+            <select disabled>
+              {
+                categories.map((item) => (
+                  <option selected={item.slug === selectedGroup?.slug}>{item.name}</option>
+                ))
+              }
+            </select>
+          </label>
+          <label class="filter-panel__field">
+            <span>Subcategory</span>
+            <select disabled>
+              <option selected>{subcategory}</option>
+              {leaves.map((leaf) => <option>{leaf.name}</option>)}
+            </select>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <button class="filter-bar__explore" type="button" disabled>Explore</button>
+    <button class="filter-bar__collapse" type="button" data-filter-collapse aria-label="Collapse filters">
+      −
+    </button>
+  </div>
 </div>
+
+<script>
+  function bindFilterBar(root: HTMLElement) {
+    const collapsed = root.querySelector<HTMLElement>(".filter-bar--collapsed");
+    const expanded = root.querySelector<HTMLElement>(".filter-bar--expanded");
+    if (!collapsed || !expanded) return;
+
+    const setExpanded = (open: boolean) => {
+      root.dataset.expanded = open ? "true" : "false";
+      expanded.hidden = !open;
+      collapsed.hidden = open;
+      root.querySelectorAll<HTMLButtonElement>("[data-filter-expand]").forEach((btn) => {
+        btn.setAttribute("aria-expanded", open ? "true" : "false");
+      });
+    };
+
+    setExpanded(root.dataset.expanded === "true");
+
+    root.querySelectorAll("[data-filter-expand]").forEach((el) => {
+      el.addEventListener("click", () => setExpanded(true));
+    });
+
+    root.querySelectorAll("[data-filter-collapse]").forEach((el) => {
+      el.addEventListener("click", () => setExpanded(false));
+    });
+  }
+
+  document.querySelectorAll<HTMLElement>("[data-filter-bar]").forEach(bindFilterBar);
+</script>
