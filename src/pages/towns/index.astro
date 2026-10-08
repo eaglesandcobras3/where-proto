@@ -9,7 +9,10 @@ import { href } from "../../lib/href";
 <Layout title="Towns">
   <h1>Towns</h1>
   <Box label="Town hub">
-    <p>Hub. Town names only. No business cards on this route.</p>
+    <p>
+      Hub. Town names only. No business cards on this route. Shopping areas and neighborhoods live
+      under <a href={href("/areas")}>Areas</a>.
+    </p>
     <LinkList
       items={towns.map((item) => ({
         href: href(`/town/${item.slug}`),

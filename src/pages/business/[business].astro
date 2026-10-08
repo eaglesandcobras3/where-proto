@@ -14,8 +14,10 @@ import {
   stayBySlug,
   tagBySlug,
   townBySlug,
+  updatesForBusiness,
   userBySlug,
 } from "../../data/catalog";
+import UpdatesList from "../../components/UpdatesList.astro";
 import type { Business } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -37,6 +39,7 @@ const stay = stayBySlug(business.slug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
 const businessPosts = postsFor("business", business.slug);
 const businessPhotos = photosFor("business", business.slug);
+const businessUpdates = updatesForBusiness(business.slug);
 ---
 
 <Layout
@@ -60,6 +63,7 @@ const businessPhotos = photosFor("business", business.slug);
         area && (
           <li>
             Area: <a href={href(`/area/${area.slug}`)}>{area.name}</a>
+            {` (${area.kind === "shopping" ? "shopping area" : "neighborhood"})`}
           </li>
         )
       }
@@ -118,6 +122,10 @@ const businessPhotos = photosFor("business", business.slug);
         </div>
       )
     }
+  </Box>
+
+  <Box label="Updates">
+    <UpdatesList items={businessUpdates} />
   </Box>
 
   <Box label="Events">

@@ -1,18 +1,35 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import LinkList from "../../components/LinkList.astro";
-import { areas, townBySlug } from "../../data/catalog";
+import Box from "../../components/Box.astro";
+import { areaKindLabel, areasForTown, towns } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
 <Layout title="Areas">
   <h1>Areas</h1>
-  <p>Squares and clusters inside towns.</p>
-  <LinkList
-    items={areas.map((item) => ({
-      href: href(`/area/${item.slug}`),
-      label: item.name,
-      meta: townBySlug(item.townSlug)?.name,
-    }))}
-  />
+  <p>
+    An area belongs to one town. Shopping areas and neighborhoods are both areas — a town can
+    have many of each.
+  </p>
+  {
+    towns.map((town) => {
+      const townAreas = areasForTown(town.slug);
+      return (
+        <Box label={town.name}>
+          <p>
+            <a href={href(`/town/${town.slug}`)}>{town.name}</a> town page
+          </p>
+          <ul>
+            {townAreas.map((item) => (
+              <li>
+                <a href={href(`/area/${item.slug}`)}>{item.name}</a> — {areaKindLabel(item.kind)}
+                {" · "}
+                {item.summary}
+              </li>
+            ))}
+          </ul>
+        </Box>
+      );
+    })
+  }
 </Layout>

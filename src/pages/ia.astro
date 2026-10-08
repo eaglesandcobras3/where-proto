@@ -9,13 +9,13 @@ const routes = [
   ["Town", "/town/rosemary-beach"],
   ["Town × category (indexable)", "/town/rosemary-beach/restaurants"],
   ["Areas hub", "/areas"],
-  ["Area", "/area/barrett-square"],
+  ["Shopping area", "/area/barrett-square"],
+  ["Neighborhood", "/area/east-rosemary"],
   ["Search (business finder)", "/search"],
   ["Search filtered", "/search?town=seaside&category=coffee-shops"],
   ["Business", "/business/edwards-fine-food-and-wine"],
   ["Events", "/events"],
   ["Event", "/event/sounds-of-seaside"],
-  ["Happenings", "/happenings"],
   ["Guides", "/guides"],
   ["Guide", "/guide/first-timers-guide"],
   ["Ask", "/ask"],
@@ -72,6 +72,10 @@ const routes = [
       </li>
       <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
       <li>User posts from a town or business page. Business posts from the dashboard.</li>
+      <li>Updates are not a top-level section. They only appear on town and business pages.</li>
+      <li>
+        Areas extend a town: shopping areas and neighborhoods. One town can have many areas.
+      </li>
     </ol>
   </Box>
 

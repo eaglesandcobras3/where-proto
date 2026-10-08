@@ -9,10 +9,13 @@ export interface Town {
   areaSlugs: Slug[];
 }
 
+export type AreaKind = "shopping" | "neighborhood";
+
 export interface Area {
   slug: Slug;
   name: string;
   townSlug: Slug;
+  kind: AreaKind;
   summary: string;
 }
 
@@ -73,12 +76,13 @@ export interface Guide {
   townSlug?: Slug;
 }
 
-export interface Happening {
+export interface Update {
   slug: Slug;
   title: string;
-  summary: string;
+  body: string;
+  createdAt: string;
   townSlug?: Slug;
-  eventSlug?: Slug;
+  businessSlug?: Slug;
 }
 
 export interface Story {

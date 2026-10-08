@@ -6,7 +6,6 @@ import type {
   EventItem,
   Favorite,
   Guide,
-  Happening,
   KnowledgeItem,
   Story,
   Photo,
@@ -18,6 +17,7 @@ import type {
   Stay,
   Tag,
   Town,
+  Update,
   User,
 } from "./types";
 
@@ -30,7 +30,7 @@ export const towns: Town[] = [
     summary: "Walkable town center, European-inspired streets, Barrett Square.",
     walkability: "Walkable",
     beachAccess: "Private for guests and residents",
-    areaSlugs: ["barrett-square"],
+    areaSlugs: ["barrett-square", "east-rosemary", "north-rosemary"],
   },
   {
     slug: "seaside",
@@ -38,7 +38,7 @@ export const towns: Town[] = [
     summary: "Classic 30A town around a central square and amphitheatre.",
     walkability: "Walkable",
     beachAccess: "Public access nearby",
-    areaSlugs: ["seaside-town-square"],
+    areaSlugs: ["seaside-town-square", "ruskin-place", "seaside-residential"],
   },
   {
     slug: "alys-beach",
@@ -46,7 +46,7 @@ export const towns: Town[] = [
     summary: "White Mediterranean-inspired architecture and a quieter pace.",
     walkability: "Walkable",
     beachAccess: "Private for guests and residents",
-    areaSlugs: [],
+    areaSlugs: ["alys-town-center", "caliza-courtyard"],
   },
   {
     slug: "grayton-beach",
@@ -54,7 +54,7 @@ export const towns: Town[] = [
     summary: "Older beach town, state park, and a local hangout feel.",
     walkability: "Mixed",
     beachAccess: "Public and state park",
-    areaSlugs: [],
+    areaSlugs: ["hotz-avenue", "grayton-residential"],
   },
   {
     slug: "watercolor",
@@ -62,7 +62,7 @@ export const towns: Town[] = [
     summary: "Family-oriented planned community west of Seaside.",
     walkability: "Walkable inside the community",
     beachAccess: "Private for guests and residents",
-    areaSlugs: [],
+    areaSlugs: ["watercolor-town-center", "western-lake"],
   },
   {
     slug: "inlet-beach",
@@ -70,7 +70,7 @@ export const towns: Town[] = [
     summary: "Eastern end of 30A with 30Avenue shops and dining.",
     walkability: "Mixed",
     beachAccess: "Public access points",
-    areaSlugs: ["30avenue"],
+    areaSlugs: ["30avenue", "camp-creek"],
   },
 ];
 
@@ -79,19 +79,99 @@ export const areas: Area[] = [
     slug: "barrett-square",
     name: "Barrett Square",
     townSlug: "rosemary-beach",
+    kind: "shopping",
     summary: "Town green, coffee, dining, and boutique cluster.",
+  },
+  {
+    slug: "east-rosemary",
+    name: "East Rosemary",
+    townSlug: "rosemary-beach",
+    kind: "neighborhood",
+    summary: "Residential streets east of the town center.",
+  },
+  {
+    slug: "north-rosemary",
+    name: "North of 30A",
+    townSlug: "rosemary-beach",
+    kind: "neighborhood",
+    summary: "Neighborhood north of the highway, still Rosemary Beach.",
   },
   {
     slug: "seaside-town-square",
     name: "Seaside Town Square",
     townSlug: "seaside",
+    kind: "shopping",
     summary: "Central square, amphitheatre, shops, and Airstream Row.",
+  },
+  {
+    slug: "ruskin-place",
+    name: "Ruskin Place",
+    townSlug: "seaside",
+    kind: "shopping",
+    summary: "Artist alley and galleries just off the square.",
+  },
+  {
+    slug: "seaside-residential",
+    name: "Seaside cottages",
+    townSlug: "seaside",
+    kind: "neighborhood",
+    summary: "Picket-fence cottage streets around the square.",
+  },
+  {
+    slug: "alys-town-center",
+    name: "Alys Town Center",
+    townSlug: "alys-beach",
+    kind: "shopping",
+    summary: "White-block shops and dining in the town core.",
+  },
+  {
+    slug: "caliza-courtyard",
+    name: "Caliza courtyard",
+    townSlug: "alys-beach",
+    kind: "neighborhood",
+    summary: "Pool and residential court on the gulf side.",
+  },
+  {
+    slug: "hotz-avenue",
+    name: "Hotz Avenue",
+    townSlug: "grayton-beach",
+    kind: "shopping",
+    summary: "Grayton's small commercial strip.",
+  },
+  {
+    slug: "grayton-residential",
+    name: "Grayton streets",
+    townSlug: "grayton-beach",
+    kind: "neighborhood",
+    summary: "Older beach-house blocks around the state park.",
+  },
+  {
+    slug: "watercolor-town-center",
+    name: "WaterColor Town Center",
+    townSlug: "watercolor",
+    kind: "shopping",
+    summary: "Shops and dining at the planned-community center.",
+  },
+  {
+    slug: "western-lake",
+    name: "Western Lake",
+    townSlug: "watercolor",
+    kind: "neighborhood",
+    summary: "Residential side toward the coastal dune lake.",
   },
   {
     slug: "30avenue",
     name: "30Avenue",
     townSlug: "inlet-beach",
+    kind: "shopping",
     summary: "Open-air shopping and dining at the east end of 30A.",
+  },
+  {
+    slug: "camp-creek",
+    name: "Camp Creek",
+    townSlug: "inlet-beach",
+    kind: "neighborhood",
+    summary: "Neighborhood and lake side east of 30Avenue.",
   },
 ];
 
@@ -198,6 +278,7 @@ export const businesses: Business[] = [
     slug: "grayton-bike-co",
     name: "Grayton Bike Co.",
     townSlug: "grayton-beach",
+    areaSlug: "hotz-avenue",
     categorySlug: "things-to-do",
     leafSlug: "rentals",
     summary: "Bike rentals for the Timpoochee Trail.",
@@ -212,6 +293,7 @@ export const businesses: Business[] = [
     slug: "alys-shoppe",
     name: "Alys Shoppe",
     townSlug: "alys-beach",
+    areaSlug: "alys-town-center",
     categorySlug: "shopping",
     leafSlug: "boutiques",
     summary: "Beachwear and town-logo goods in Alys Beach.",
@@ -240,6 +322,7 @@ export const businesses: Business[] = [
     slug: "the-red-bar",
     name: "The Red Bar",
     townSlug: "grayton-beach",
+    areaSlug: "hotz-avenue",
     categorySlug: "food-and-drink",
     leafSlug: "restaurants",
     summary: "Local hangout with food and music. Fake listing.",
@@ -253,6 +336,7 @@ export const businesses: Business[] = [
     slug: "fish-out-of-water",
     name: "Fish Out of Water",
     townSlug: "watercolor",
+    areaSlug: "watercolor-town-center",
     categorySlug: "food-and-drink",
     leafSlug: "restaurants",
     summary: "Hotel restaurant used as a WaterColor dining sample.",
@@ -294,6 +378,7 @@ export const businesses: Business[] = [
     slug: "cafe-thirty-a",
     name: "Cafe Thirty-A",
     townSlug: "watercolor",
+    areaSlug: "watercolor-town-center",
     categorySlug: "food-and-drink",
     leafSlug: "coffee-shops",
     summary: "Breakfast and coffee west of Seaside. Fake listing.",
@@ -332,7 +417,7 @@ export const businesses: Business[] = [
     slug: "seaside-style",
     name: "Seaside Style",
     townSlug: "seaside",
-    areaSlug: "seaside-town-square",
+    areaSlug: "ruskin-place",
     categorySlug: "shopping",
     leafSlug: "boutiques",
     summary: "Apparel around the square. Fake listing.",
@@ -345,6 +430,7 @@ export const businesses: Business[] = [
     slug: "watercolor-inn",
     name: "WaterColor Inn",
     townSlug: "watercolor",
+    areaSlug: "western-lake",
     categorySlug: "stay",
     leafSlug: "hotels",
     summary: "Inn on the gulf in WaterColor. Fake listing.",
@@ -358,6 +444,7 @@ export const businesses: Business[] = [
     slug: "seagrove-cottage",
     name: "Seagrove Cottage",
     townSlug: "watercolor",
+    areaSlug: "western-lake",
     categorySlug: "stay",
     leafSlug: "vacation-rentals",
     summary: "Fake vacation rental used for the Stay page type.",
@@ -369,6 +456,7 @@ export const businesses: Business[] = [
     slug: "30a-paddle",
     name: "30A Paddle Co.",
     townSlug: "inlet-beach",
+    areaSlug: "camp-creek",
     categorySlug: "things-to-do",
     leafSlug: "outdoor",
     summary: "Paddleboard and kayak outings. Fake listing.",
@@ -380,6 +468,7 @@ export const businesses: Business[] = [
     slug: "grayton-general",
     name: "Grayton General",
     townSlug: "grayton-beach",
+    areaSlug: "hotz-avenue",
     categorySlug: "shopping",
     leafSlug: "specialty-retail",
     summary: "Snacks, ice, and beach goods. Fake listing.",
@@ -467,20 +556,36 @@ export const guides: Guide[] = [
   },
 ];
 
-export const happenings: Happening[] = [
+export const updates: Update[] = [
   {
     slug: "wednesday-in-seaside",
-    title: "Wednesday night in Seaside",
-    summary: "Concert series and square traffic. Fake happening note.",
+    title: "Wednesday night concert traffic",
+    body: "Sounds of Seaside fills the square. Fake town update.",
+    createdAt: "2026-10-08",
     townSlug: "seaside",
-    eventSlug: "sounds-of-seaside",
   },
   {
     slug: "market-morning-grayton",
-    title: "Market morning in Grayton",
-    summary: "Farmers market rhythm. Fake happening note.",
+    title: "Market morning",
+    body: "Farmers market is running on the usual Thursday rhythm. Fake town update.",
+    createdAt: "2026-10-07",
     townSlug: "grayton-beach",
-    eventSlug: "grayton-farmers-market",
+  },
+  {
+    slug: "edwards-weekend-hours",
+    title: "Extended weekend hours",
+    body: "Courtyard seating open later Friday and Saturday. Fake business update.",
+    createdAt: "2026-10-05",
+    townSlug: "rosemary-beach",
+    businessSlug: "edwards-fine-food-and-wine",
+  },
+  {
+    slug: "pearl-pool-closed",
+    title: "Pool closed Friday",
+    body: "Maintenance day. Fake business update.",
+    createdAt: "2026-10-03",
+    townSlug: "rosemary-beach",
+    businessSlug: "the-pearl-hotel",
   },
 ];
 
@@ -750,6 +855,26 @@ export function tagBySlug(slug: string) {
 
 export function businessesForTown(townSlug: string) {
   return businesses.filter((item) => item.townSlug === townSlug);
+}
+
+export function areasForTown(townSlug: string) {
+  return areas.filter((item) => item.townSlug === townSlug);
+}
+
+export function businessesForArea(areaSlug: string) {
+  return businesses.filter((item) => item.areaSlug === areaSlug);
+}
+
+export function areaKindLabel(kind: Area["kind"]) {
+  return kind === "shopping" ? "Shopping area" : "Neighborhood";
+}
+
+export function updatesForTown(townSlug: string) {
+  return updates.filter((item) => item.townSlug === townSlug);
+}
+
+export function updatesForBusiness(businessSlug: string) {
+  return updates.filter((item) => item.businessSlug === businessSlug);
 }
 
 export function businessesForLeaf(leafSlug: string) {

@@ -9,5 +9,6 @@ export default defineConfig({
     "/stay": "/stays",
     "/manage": "/dashboard",
     "/businesses": "/search",
+    "/happenings": "/",
   },
 });

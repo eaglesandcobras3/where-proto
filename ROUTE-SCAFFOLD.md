@@ -9,7 +9,7 @@
 
 **Directory:** `/` (homepage), `/towns`, `/town/{town}`, `/town/{town}/{category}`, `/areas`, `/area/{area}`, `/business/{business}`, `/search`
 
-**Content:** `/events`, `/event/{event}`, `/happenings`, `/guides`, `/guide/{guide}`, `/ask`, `/ask/{question}`, `/stories`, `/story/{story}`, `/posts/{post}`
+**Content:** `/events`, `/event/{event}`, `/guides`, `/guide/{guide}`, `/ask`, `/ask/{question}`, `/stories`, `/story/{story}`, `/posts/{post}`
 
 **Stays** (ship-dark): `/stays`, `/stay/{stay}`
 
@@ -25,7 +25,11 @@
 
 **Static:** `/about`, `/legal`, `/advertise`
 
-**Top nav:** Homepage (logo), Towns, Search, Events, Happenings, Guides, Ask. Right side: Add Business, Profile, Dashboard.
+**Top nav:** Homepage (logo), Towns, Areas, Search, Events, Guides, Ask. Right side: Add Business, Profile, Dashboard.
+
+Updates are not a route. They only render on `/town/{town}` and `/business/{business}`.
+
+`/happenings` redirects to `/`.
 
 There is no `/businesses` route.
 
@@ -38,3 +42,5 @@ There is no `/businesses` route.
 5. `/search` is `noindex, follow`. If the active filters are exactly town + category, canonical points at `/town/{town}/{category}`. Otherwise canonical is the unfiltered `/search`.
 6. `/ask` is the community route (not `/community`). Question threads at `/ask/{question}`.
 7. User posts from a town or business page. Business posts from `/dashboard/{business}/feed`.
+8. Updates (formerly happenings) are not top-level. They only show on town and business pages.
+9. Areas extend a town. A town can have many areas. Area kinds are shopping area and neighborhood.

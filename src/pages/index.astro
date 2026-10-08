@@ -3,7 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import LinkList from "../components/LinkList.astro";
 import Box from "../components/Box.astro";
 import Placeholder from "../components/Placeholder.astro";
-import { events, guides, happenings, knowledge, towns } from "../data/catalog";
+import { areaKindLabel, areas, events, guides, knowledge, townBySlug, towns } from "../data/catalog";
 import { href } from "../lib/href";
 ---
 
@@ -46,13 +46,16 @@ import { href } from "../lib/href";
     />
   </Box>
 
-  <Box label="Happenings">
-    <p><a href={href("/happenings")}>All happenings</a></p>
+  <Box label="Areas">
+    <p>
+      <a href={href("/areas")}>All areas</a> — shopping areas and neighborhoods that sit inside a
+      town.
+    </p>
     <LinkList
-      items={happenings.map((item) => ({
-        href: href("/happenings"),
-        label: item.title,
-        meta: item.summary,
+      items={areas.map((item) => ({
+        href: href(`/area/${item.slug}`),
+        label: item.name,
+        meta: `${areaKindLabel(item.kind)} · ${townBySlug(item.townSlug)?.name ?? item.townSlug}`,
       }))}
     />
   </Box>

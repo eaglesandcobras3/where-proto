@@ -4,7 +4,19 @@ import LinkList from "../../components/LinkList.astro";
 import Box from "../../components/Box.astro";
 import Placeholder from "../../components/Placeholder.astro";
 import FeedList from "../../components/FeedList.astro";
-import { allLeaves, areas, events, guides, photosFor, postsFor, questions, towns } from "../../data/catalog";
+import {
+  allLeaves,
+  areaKindLabel,
+  areasForTown,
+  events,
+  guides,
+  photosFor,
+  postsFor,
+  questions,
+  towns,
+  updatesForTown,
+} from "../../data/catalog";
+import UpdatesList from "../../components/UpdatesList.astro";
 import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -18,7 +30,10 @@ interface Props {
 }
 
 const { item: town } = Astro.props;
-const townAreas = areas.filter((area) => area.townSlug === town.slug);
+const townAreas = areasForTown(town.slug);
+const shopping = townAreas.filter((item) => item.kind === "shopping");
+const neighborhoods = townAreas.filter((item) => item.kind === "neighborhood");
+const townUpdates = updatesForTown(town.slug);
 const townEvents = events.filter((item) => item.townSlug === town.slug);
 const townGuides = guides.filter((item) => item.townSlug === town.slug);
 const townQuestions = questions.filter((item) => item.townSlug === town.slug);
@@ -73,14 +88,26 @@ const leaves = allLeaves();
     </ul>
   </Box>
 
-  <Box label="Areas">
+  <Box label="Areas in this town">
+    <p>Shopping areas and neighborhoods. An area is an extension of this town.</p>
     <LinkList
-      items={townAreas.map((item) => ({
-        href: href(`/area/${item.slug}`),
-        label: item.name,
-        meta: item.summary,
-      }))}
+      items={[
+        ...shopping.map((item) => ({
+          href: href(`/area/${item.slug}`),
+          label: item.name,
+          meta: `${areaKindLabel(item.kind)} · ${item.summary}`,
+        })),
+        ...neighborhoods.map((item) => ({
+          href: href(`/area/${item.slug}`),
+          label: item.name,
+          meta: `${areaKindLabel(item.kind)} · ${item.summary}`,
+        })),
+      ]}
     />
+  </Box>
+
+  <Box label="Updates">
+    <UpdatesList items={townUpdates} />
   </Box>
 
   <Box label="Related">
