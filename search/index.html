@@ -1,4 +1,5 @@
-<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Search · WhereTo30A wireframe</title><meta name="robots" content="noindex, follow"><link rel="canonical" href="https://eaglesandcobras3.github.io/where-proto/search"></head> <body> <header> <p>WhereTo30A · wireframe only · fake data · no styled UI</p> <nav aria-label="Primary"> <a href="/where-proto/">Homepage (Logo)</a>
+<!DOCTYPE html><html lang="en"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Search · WhereTo30A wireframe</title><meta name="robots" content="noindex, follow"><link rel="canonical" href="https://eaglesandcobras3.github.io/where-proto/search"><style>:root{--line: #8a8a8a;--fill: #f2f2f2;--muted: #555}*{box-sizing:border-box}body{margin:0 auto;max-width:56rem;padding:1rem 1.25rem 2rem;font-family:ui-sans-serif,system-ui,sans-serif;line-height:1.45;color:#111}header,footer,.box{border:1px solid var(--line);background:var(--fill);padding:.75rem 1rem;margin:.85rem 0}.box-label{margin:0 0 .5rem;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}nav a,a{color:#111}.placeholder{display:flex;align-items:center;justify-content:center;min-height:8rem;margin:.5rem 0;border:1px dashed #6e6e6e;background:#e6e6e6;color:var(--muted);text-align:center}.placeholder.map{min-height:10rem}.row{display:flex;flex-wrap:wrap;gap:.75rem}.row>.placeholder{flex:1 1 10rem;min-width:8rem}table{width:100%;border-collapse:collapse}th,td{border:1px solid var(--line);padding:.35rem .5rem;text-align:left}form label{display:block;margin:.35rem 0}input,select,textarea,button{font:inherit}textarea{width:100%;min-height:5rem}
+</style></head> <body> <header> <p class="box-label">Site chrome</p> <p>WhereTo30A · wireframe · fake data</p> <nav aria-label="Primary"> <a href="/where-proto/">Homepage (Logo)</a>
 ·
 <a href="/where-proto/towns">Towns</a>
 ·
@@ -14,10 +15,10 @@
 ·
 <a href="/where-proto/profile">Profile</a>
 ·
-<a href="/where-proto/dashboard">Dashboard</a> </nav> </header> <hr> <main>  <h1>Search</h1> <p>
+<a href="/where-proto/dashboard">Dashboard</a> </nav> </header> <main>  <h1>Search</h1> <p>
 Business finder. Filters: town, category, tag, open now. Indexable category pages are the
     town × category combos, not this route.
-</p> <form action="/where-proto/search" method="get"> <p> <label>
+</p> <section class="box"> <p class="box-label">Filters</p>  <form action="/where-proto/search" method="get"> <p> <label>
 Town
 <select name="town"> <option value="">Any</option> <option value="rosemary-beach"> Rosemary Beach </option><option value="seaside"> Seaside </option><option value="alys-beach"> Alys Beach </option><option value="grayton-beach"> Grayton Beach </option><option value="watercolor"> WaterColor </option><option value="inlet-beach"> Inlet Beach </option> </select> </label> </p> <p> <label>
 Category
@@ -25,7 +26,7 @@ Category
 Tag
 <select name="tag"> <option value="">Any</option> <option value="family"> Family </option><option value="walkable"> Walkable </option><option value="live-music"> Live music </option><option value="first-timer"> First timer </option> </select> </label> </p> <p> <label> <input type="checkbox" name="open" value="1">
 Open now
-</label> </p> <button type="submit">Find businesses</button> </form> <p>No filters. Showing all fake businesses.</p> <ul><li><a href="/where-proto/business/edwards-fine-food-and-wine">Edward&#39;s Fine Food &amp; Wine</a> — restaurants · rosemary-beach · open now</li><li><a href="/where-proto/business/beachy-bean-coffee">Beachy Bean Coffee Co.</a> — coffee-shops · seaside · open now</li><li><a href="/where-proto/business/the-rep-theatre">The REP Theatre</a> — outdoor · seaside</li><li><a href="/where-proto/business/the-pearl-hotel">The Pearl Hotel</a> — hotels · rosemary-beach · open now</li><li><a href="/where-proto/business/grayton-bike-co">Grayton Bike Co.</a> — rentals · grayton-beach</li><li><a href="/where-proto/business/alys-shoppe">Alys Shoppe</a> — boutiques · alys-beach · open now</li></ul>   </main> <hr> <footer> <nav aria-label="Footer"> <a href="/where-proto/about">About</a>
+</label> </p> <button type="submit">Find businesses</button> </form>  </section> <section class="box"> <p class="box-label">Results</p>  <p>No filters. Showing all fake businesses.</p> <ul><li><a href="/where-proto/business/edwards-fine-food-and-wine">Edward&#39;s Fine Food &amp; Wine</a> — restaurants · Rosemary Beach · open now · Walkable, Family</li><li><a href="/where-proto/business/beachy-bean-coffee">Beachy Bean Coffee Co.</a> — coffee-shops · Seaside · open now · Walkable</li><li><a href="/where-proto/business/the-rep-theatre">The REP Theatre</a> — outdoor · Seaside · closed · Family, Live music</li><li><a href="/where-proto/business/the-pearl-hotel">The Pearl Hotel</a> — hotels · Rosemary Beach · open now · Walkable, Family</li><li><a href="/where-proto/business/grayton-bike-co">Grayton Bike Co.</a> — rentals · Grayton Beach · closed · Walkable</li><li><a href="/where-proto/business/alys-shoppe">Alys Shoppe</a> — boutiques · Alys Beach · open now · Walkable</li><li><a href="/where-proto/business/bud-and-alleys">Bud &amp; Alley&#39;s</a> — restaurants · Seaside · open now · Walkable, Family, Live music</li><li><a href="/where-proto/business/the-red-bar">The Red Bar</a> — restaurants · Grayton Beach · open now · Live music</li><li><a href="/where-proto/business/fish-out-of-water">Fish Out of Water</a> — restaurants · WaterColor · closed · Family</li><li><a href="/where-proto/business/cowgirl-kitchen">Cowgirl Kitchen</a> — restaurants · Inlet Beach · open now · Family</li><li><a href="/where-proto/business/amavida">Amavida Coffee and Tea</a> — coffee-shops · Rosemary Beach · open now · Walkable</li><li><a href="/where-proto/business/cafe-thirty-a">Cafe Thirty-A</a> — coffee-shops · WaterColor · closed · Family</li><li><a href="/where-proto/business/the-lawn">The Lawn at The Pearl</a> — bars · Rosemary Beach · open now · Walkable, Live music</li><li><a href="/where-proto/business/shunk-gulley">Shunk Gulley Pizza</a> — bars · Inlet Beach · open now · Family</li><li><a href="/where-proto/business/seaside-style">Seaside Style</a> — boutiques · Seaside · open now · Walkable</li><li><a href="/where-proto/business/watercolor-inn">WaterColor Inn</a> — hotels · WaterColor · open now · Family</li><li><a href="/where-proto/business/seagrove-cottage">Seagrove Cottage</a> — vacation-rentals · WaterColor · open now · Family</li><li><a href="/where-proto/business/30a-paddle">30A Paddle Co.</a> — outdoor · Inlet Beach · open now · Family</li><li><a href="/where-proto/business/grayton-general">Grayton General</a> — specialty-retail · Grayton Beach · open now · Walkable</li></ul>  </section>   </main> <footer> <p class="box-label">Footer</p> <nav aria-label="Footer"> <a href="/where-proto/about">About</a>
 ·
 <a href="/where-proto/legal">Legal</a>
 ·
@@ -36,5 +37,13 @@ Open now
 <a href="/where-proto/stories">Stories</a>
 ·
 <a href="/where-proto/areas">Areas</a>
+·
+<a href="/where-proto/newsletters/visitor">Visitor newsletter</a>
+·
+<a href="/where-proto/newsletters/business">Business newsletter</a>
+·
+<a href="/where-proto/auth/login">Login</a>
+·
+<a href="/where-proto/admin">Admin</a>
 ·
 <a href="/where-proto/ia">All routes / IA</a> </nav> </footer> </body></html>
