@@ -2,8 +2,6 @@
 ·
 <a href="/where-proto/towns">Towns</a>
 ·
-<a href="/where-proto/businesses">Businesses</a>
-·
 <a href="/where-proto/events">Events</a>
 ·
 <a href="/where-proto/happenings">Happenings</a>
@@ -16,9 +14,18 @@
 ·
 <a href="/where-proto/profile">Profile</a>
 ·
-<a href="/where-proto/dashboard">Dashboard</a> </nav> </header> <hr> <main>  <h1>Search</h1> <p>The only search page. Filtered views are noindex, follow, canonical to /search.</p> <form action="/where-proto/search" method="get"> <label>
-Query
-<input type="search" name="q" value> </label> <button type="submit">Search</button> </form> <p>No query yet.</p> <h2>Towns</h2> <ul><li><a href="/where-proto/town/rosemary-beach">Rosemary Beach</a></li><li><a href="/where-proto/town/seaside">Seaside</a></li><li><a href="/where-proto/town/alys-beach">Alys Beach</a></li><li><a href="/where-proto/town/grayton-beach">Grayton Beach</a></li><li><a href="/where-proto/town/watercolor">WaterColor</a></li><li><a href="/where-proto/town/inlet-beach">Inlet Beach</a></li></ul> <h2>Businesses</h2> <ul><li><a href="/where-proto/business/edwards-fine-food-and-wine">Edward&#39;s Fine Food &amp; Wine</a></li><li><a href="/where-proto/business/beachy-bean-coffee">Beachy Bean Coffee Co.</a></li><li><a href="/where-proto/business/the-rep-theatre">The REP Theatre</a></li><li><a href="/where-proto/business/the-pearl-hotel">The Pearl Hotel</a></li><li><a href="/where-proto/business/grayton-bike-co">Grayton Bike Co.</a></li><li><a href="/where-proto/business/alys-shoppe">Alys Shoppe</a></li></ul> <h2>Events</h2> <ul><li><a href="/where-proto/event/sounds-of-seaside">Sounds of Seaside Wednesday Night Concert Series</a></li><li><a href="/where-proto/event/grayton-farmers-market">Grayton Beach Farmers Market</a></li><li><a href="/where-proto/event/harvest-wine-food">Harvest Wine &amp; Food Festival</a></li></ul> <h2>Guides</h2> <ul><li><a href="/where-proto/guide/first-timers-guide">First Timer&#39;s Guide to 30A</a></li><li><a href="/where-proto/guide/guide-to-rosemary-beach">The Ultimate Guide to Rosemary Beach</a></li><li><a href="/where-proto/guide/why-is-it-called-30a">Why Is It Called 30A?</a></li></ul> <h2>Ask</h2> <ul><li><a href="/where-proto/ask/parking-near-seaside">Best beach access with parking near Seaside?</a></li><li><a href="/where-proto/ask/golf-carts-rosemary">Are golf carts allowed in Rosemary Beach?</a></li></ul>   </main> <hr> <footer> <nav aria-label="Footer"> <a href="/where-proto/about">About</a>
+<a href="/where-proto/dashboard">Dashboard</a> </nav> </header> <hr> <main>  <h1>Search</h1> <p>
+Business finder. Filters: town, category, tag, open now. Indexable category pages are the
+    town × category combos, not this route.
+</p> <form action="/where-proto/search" method="get"> <p> <label>
+Town
+<select name="town"> <option value="">Any</option> <option value="rosemary-beach"> Rosemary Beach </option><option value="seaside"> Seaside </option><option value="alys-beach"> Alys Beach </option><option value="grayton-beach"> Grayton Beach </option><option value="watercolor"> WaterColor </option><option value="inlet-beach"> Inlet Beach </option> </select> </label> </p> <p> <label>
+Category
+<select name="category"> <option value="">Any</option> <option value="restaurants"> Food &amp; Drink / Restaurants </option><option value="coffee-shops"> Food &amp; Drink / Coffee Shops </option><option value="bars"> Food &amp; Drink / Bars </option><option value="boutiques"> Shopping / Boutiques &amp; Apparel </option><option value="specialty-retail"> Shopping / Specialty Retail </option><option value="hotels"> Stay / Hotels </option><option value="vacation-rentals"> Stay / Vacation Rentals </option><option value="outdoor"> Things to Do / Outdoor Activities </option><option value="rentals"> Things to Do / Rentals </option> </select> </label> </p> <p> <label>
+Tag
+<select name="tag"> <option value="">Any</option> <option value="family"> Family </option><option value="walkable"> Walkable </option><option value="live-music"> Live music </option><option value="first-timer"> First timer </option> </select> </label> </p> <p> <label> <input type="checkbox" name="open" value="1">
+Open now
+</label> </p> <button type="submit">Find businesses</button> </form> <p>No filters. Showing all fake businesses.</p> <ul><li><a href="/where-proto/business/edwards-fine-food-and-wine">Edward&#39;s Fine Food &amp; Wine</a> — restaurants · rosemary-beach · open now</li><li><a href="/where-proto/business/beachy-bean-coffee">Beachy Bean Coffee Co.</a> — coffee-shops · seaside · open now</li><li><a href="/where-proto/business/the-rep-theatre">The REP Theatre</a> — outdoor · seaside</li><li><a href="/where-proto/business/the-pearl-hotel">The Pearl Hotel</a> — hotels · rosemary-beach · open now</li><li><a href="/where-proto/business/grayton-bike-co">Grayton Bike Co.</a> — rentals · grayton-beach</li><li><a href="/where-proto/business/alys-shoppe">Alys Shoppe</a> — boutiques · alys-beach · open now</li></ul>   </main> <hr> <footer> <nav aria-label="Footer"> <a href="/where-proto/about">About</a>
 ·
 <a href="/where-proto/legal">Legal</a>
 ·
