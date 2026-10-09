@@ -6,9 +6,20 @@ import AreasInTown from "../../components/AreasInTown.astro";
 import AtAGlance from "../../components/AtAGlance.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
+import BusinessCard from "../../components/BusinessCard.astro";
+import GuideCard from "../../components/GuideCard.astro";
+import EventCard from "../../components/EventCard.astro";
 import { isEnabled } from "../../config/flags";
-import { photosFor, towns, updatesForTown } from "../../data/catalog";
+import {
+  businessesForTown,
+  events,
+  guides,
+  photosFor,
+  towns,
+  updatesForTown,
+} from "../../data/catalog";
 import type { Town } from "../../data/types";
+import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -24,6 +35,9 @@ const { item: town } = Astro.props;
 const view = townView(town);
 const townUpdates = updatesForTown(town.slug);
 const photos = photosFor("town", town.slug);
+const localBusinesses = businessesForTown(town.slug);
+const townGuides = guides.filter((item) => item.townSlug === town.slug);
+const townEvents = events.filter((item) => item.townSlug === town.slug);
 ---
 
 <PlaceLayout
@@ -45,9 +59,51 @@ const photos = photosFor("town", town.slug);
       </div>
     </section>
 
+    <AtAGlance town={view} />
     <CategoriesInTown townSlug={town.slug} townName={town.name} />
     <AreasInTown townSlug={town.slug} townName={town.name} />
-    <AtAGlance town={view} />
+
+    {
+      localBusinesses.length > 0 && (
+        <section>
+          <h2 class="section-title">Local businesses in {town.name}</h2>
+          <div class="grid cards">
+            {localBusinesses.slice(0, 6).map((business) => (
+              <BusinessCard business={business} />
+            ))}
+          </div>
+          <p class="more">
+            <a href={href(`/search?town=${town.slug}`)}>Browse all businesses</a>
+          </p>
+        </section>
+      )
+    }
+
+    {
+      isEnabled("guides") && townGuides.length > 0 && (
+        <section>
+          <h2 class="section-title">Guides for {town.name}</h2>
+          <div class="grid tiles">
+            {townGuides.map((guide) => (
+              <GuideCard guide={guide} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    {
+      isEnabled("events") && townEvents.length > 0 && (
+        <section>
+          <h2 class="section-title">Events in {town.name}</h2>
+          <div class="grid tiles">
+            {townEvents.map((event) => (
+              <EventCard event={event} />
+            ))}
+          </div>
+        </section>
+      )
+    }
 
     <section>
       <h2 class="section-title">Photos</h2>
@@ -80,6 +136,19 @@ const photos = photosFor("town", town.slug);
   .desc {
     color: var(--brand-ink-soft);
     max-width: 64ch;
+  }
+  .grid {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .cards {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+  .tiles {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .more {
+    margin-top: var(--size-4);
   }
   @media (max-width: 640px) {
     .hero {

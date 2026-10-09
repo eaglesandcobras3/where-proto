@@ -1,6 +1,7 @@
 ---
 import PlaceLayout from "../../layouts/PlaceLayout.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
+import EventCard from "../../components/EventCard.astro";
 import { businessBySlug, events, photosFor, townBySlug } from "../../data/catalog";
 import type { EventItem } from "../../data/types";
 import { href } from "../../lib/href";
@@ -18,6 +19,29 @@ const { item: event } = Astro.props;
 const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
 const business = event.businessSlug ? businessBySlug(event.businessSlug) : undefined;
 const photos = photosFor("event", event.slug);
+const related = events.filter((item) => item.slug !== event.slug && item.townSlug === event.townSlug).slice(0, 3);
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Event",
+  name: event.name,
+  description: event.summary,
+  startDate: event.when,
+  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+  eventStatus: "https://schema.org/EventScheduled",
+  location: {
+    "@type": "Place",
+    name: event.venue ?? town?.name ?? "30A",
+    address: town?.name ? `${town.name}, FL` : "30A, FL",
+  },
+  offers: event.price
+    ? {
+        "@type": "Offer",
+        price: event.price.replace(/[^0-9.]/g, "") || "0",
+        priceCurrency: "USD",
+        url: event.ticketUrl,
+      }
+    : undefined,
+};
 ---
 
 <PlaceLayout
@@ -26,12 +50,19 @@ const photos = photosFor("event", event.slug);
   active="events"
   showBrowse={false}
   crumbs={[{ label: "Events", path: "/events" }, { label: event.name }]}
+  jsonLd={jsonLd}
 >
   <div class="container section">
     <p class="date">{event.when}</p>
     <h1>{event.name}</h1>
     <p class="lede">{event.summary}</p>
     <dl class="facts">
+      {event.time && (
+        <div>
+          <dt>Time</dt>
+          <dd>{event.time}</dd>
+        </div>
+      )}
       {event.venue && (
         <div>
           <dt>Venue</dt>
@@ -48,15 +79,51 @@ const photos = photosFor("event", event.slug);
       )}
       {business && (
         <div>
-          <dt>Host</dt>
+          <dt>Venue listing</dt>
           <dd>
             <a href={href(`/business/${business.slug}`)}>{business.name}</a>
           </dd>
         </div>
       )}
+      {event.category && (
+        <div>
+          <dt>Category</dt>
+          <dd>{event.category}</dd>
+        </div>
+      )}
+      {event.price && (
+        <div>
+          <dt>Price</dt>
+          <dd>{event.price}</dd>
+        </div>
+      )}
+      {event.ticketUrl && (
+        <div>
+          <dt>Tickets</dt>
+          <dd>
+            <a href={event.ticketUrl}>Buy tickets</a>
+          </dd>
+        </div>
+      )}
     </dl>
+    <p>
+      <a href={href(`/event/${event.slug}.ics`)}>Add to calendar (.ics)</a>
+      <span class="note"> — wireframe link; the real build emits an ICS file.</span>
+    </p>
     <h2 class="section-title">Photos</h2>
     <PhotoGrid photos={photos} />
+    {
+      related.length > 0 && (
+        <section>
+          <h2 class="section-title">Related events</h2>
+          <div class="grid">
+            {related.map((item) => (
+              <EventCard event={item} />
+            ))}
+          </div>
+        </section>
+      )
+    }
   </div>
 </PlaceLayout>
 
@@ -79,7 +146,7 @@ const photos = photosFor("event", event.slug);
   }
   .facts div {
     display: grid;
-    grid-template-columns: 90px 1fr;
+    grid-template-columns: 110px 1fr;
     font-size: var(--font-size-1);
   }
   .facts dt {
@@ -88,5 +155,14 @@ const photos = photosFor("event", event.slug);
   }
   .facts dd {
     margin: 0;
+  }
+  .note {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--size-4);
   }
 </style>

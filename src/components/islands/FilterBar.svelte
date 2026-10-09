@@ -25,6 +25,8 @@
     initialTag = "",
     initialOpenNow = false,
     base = "/",
+    searchHref = "",
+    totalCount,
   }: {
     businesses: Biz[];
     towns: Named[];
@@ -35,12 +37,15 @@
     initialTag?: string;
     initialOpenNow?: boolean;
     base?: string;
+    searchHref?: string;
+    totalCount?: number;
   } = $props();
 
   let town = $state(initialTown);
   let category = $state(initialCategory);
   let tag = $state(initialTag);
   let openNow = $state(initialOpenNow);
+  let query = $state("");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -53,6 +58,10 @@
       if (category && item.category !== category && item.leaf !== category) return false;
       if (tag && !item.tags.includes(tag)) return false;
       if (openNow && !item.openNow) return false;
+      if (query.trim()) {
+        const hay = `${item.name} ${item.description} ${item.town} ${item.leaf}`.toLowerCase();
+        if (!hay.includes(query.trim().toLowerCase())) return false;
+      }
       return true;
     }),
   );
@@ -74,11 +83,16 @@
     category = "";
     tag = "";
     openNow = false;
+    query = "";
   }
 </script>
 
 <div class="filter-bar">
   <div class="filters">
+    <label class="search">
+      Search
+      <input type="search" bind:value={query} placeholder="Business name or keyword" />
+    </label>
     <label>
       Town
       <select bind:value={town}>
@@ -114,7 +128,10 @@
   </div>
 
   <p class="count" aria-live="polite">
-    {results.length} {results.length === 1 ? "business" : "businesses"}
+    Showing {results.length} of {totalCount ?? businesses.length} listings
+    {#if searchHref}
+      · <a href={searchHref}>Browse all on Search</a>
+    {/if}
   </p>
 
   <div class="grid">
@@ -160,7 +177,8 @@
     letter-spacing: 0.08em;
     color: var(--brand-ink-soft);
   }
-  select {
+  select,
+  input[type="search"] {
     font: inherit;
     font-size: var(--font-size-1);
     text-transform: none;
@@ -170,6 +188,9 @@
     border-radius: var(--radius-2);
     background: white;
     min-width: 160px;
+  }
+  .search {
+    flex: 1 1 220px;
   }
   .check {
     flex-direction: row;

@@ -1,7 +1,9 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import DashboardNav from "../../../components/DashboardNav.astro";
+import BusinessPicker from "../../../components/BusinessPicker.astro";
 import ComposerCard from "../../../components/islands/ComposerCard.svelte";
+import { businessesOwnedBy } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
@@ -15,12 +17,14 @@ interface Props {
 }
 
 const { business } = Astro.props;
+const owned = businessesOwnedBy("local_owner");
 ---
 
 <BaseLayout title={`Manage ${business.name}`}>
   <div class="container section">
     <p class="eyebrow">Dashboard</p>
     <h1>{business.name}</h1>
+    <BusinessPicker businesses={owned} selectedSlug={business.slug} />
     <p>
       Public listing: <a href={href(`/business/${business.slug}`)}>{business.name}</a>
     </p>

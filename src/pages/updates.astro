@@ -1,10 +1,33 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHeader from "../components/PageHeader.astro";
-import UpdateCard from "../components/UpdateCard.astro";
+import UpdateFilters from "../components/islands/UpdateFilters.svelte";
 import { isEnabled } from "../config/flags";
-import { updates } from "../data/catalog";
+import { businessBySlug, liveUpdates, townBySlug, towns } from "../data/catalog";
+import { formatThrough, updateTypeLabels } from "../lib/labels";
 import { href } from "../lib/href";
+import type { Update } from "../data/types";
+
+const types = (Object.keys(updateTypeLabels) as Update["type"][]).map((slug) => ({
+  slug,
+  name: updateTypeLabels[slug],
+}));
+const base = import.meta.env.BASE_URL;
+const rows = liveUpdates().map((update) => {
+  const business = update.businessSlug ? businessBySlug(update.businessSlug) : undefined;
+  const town = update.townSlug ? townBySlug(update.townSlug) : undefined;
+  return {
+    slug: update.slug,
+    title: update.title,
+    body: update.body,
+    type: update.type,
+    typeLabel: updateTypeLabels[update.type],
+    throughLabel: formatThrough(update.through),
+    sourceName: business?.name ?? town?.name,
+    sourceHref: business ? href(`/business/${business.slug}`) : town ? href(`/town/${town.slug}`) : undefined,
+    town: update.townSlug,
+  };
+});
 ---
 
 <BaseLayout title="Updates around 30A" description="Short, timely updates from local businesses and towns around 30A.">
@@ -12,28 +35,15 @@ import { href } from "../lib/href";
     <PageHeader
       eyebrow="Updates"
       title="Updates around 30A"
-      lede="New menu items, hour changes, and small business news. This rollup is footer only. Town and business pages are the primary surface."
+      lede="Live updates only, newest first. Expired updates never list here, never appear in modules, and never enter the sitemap."
     />
-    <p class="cta"><a href={href("/add-business")}>Own a business? Share an update</a></p>
-    {
-      isEnabled("updates") && (
-        <div class="grid">
-          {updates.map((update) => (
-            <UpdateCard update={update} />
-          ))}
-        </div>
-      )
-    }
+    <p class="cta"><a href={href("/dashboard")}>Own a business? Share an update</a></p>
+    {isEnabled("updates") && <UpdateFilters updates={rows} towns={towns} types={types} base={base} client:load />}
   </div>
 </BaseLayout>
 
 <style>
   .cta {
     margin-bottom: var(--size-6);
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: var(--size-4);
   }
 </style>

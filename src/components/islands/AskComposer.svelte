@@ -4,8 +4,14 @@
     name: string;
   }
 
-  let { towns = [] }: { towns: Named[] } = $props();
+  let {
+    towns = [],
+    signedIn = true,
+    loginHref = "/auth/login",
+    signupHref = "/auth/signup",
+  }: { towns: Named[]; signedIn?: boolean; loginHref?: string; signupHref?: string } = $props();
   let submitted = $state(false);
+  let promptLogin = $state(false);
 
   function onSubmit(event: Event) {
     event.preventDefault();
@@ -13,7 +19,24 @@
   }
 </script>
 
-<form class="form" onsubmit={onSubmit}>
+{#if !signedIn && promptLogin}
+  <p class="note">
+    Log in or create an account to ask. Your question draft is kept. You can also post as anonymous after login.
+    <a href={loginHref}>Log in</a> · <a href={signupHref}>Create account</a>
+  </p>
+{/if}
+
+<form
+  class="form"
+  onsubmit={(event) => {
+    if (!signedIn) {
+      event.preventDefault();
+      promptLogin = true;
+      return;
+    }
+    onSubmit(event);
+  }}
+>
   <wa-input label="Title" name="title" required placeholder="Best beach access near Seaside?"></wa-input>
   <wa-select label="Town" name="town" placeholder="Optional town">
     <wa-option value="">None</wa-option>

@@ -18,6 +18,8 @@ const town = townBySlug(stay.townSlug);
     <p class="meta">{town?.name ?? stay.townSlug} &middot; Sleeps {stay.sleeps}</p>
     <p class="desc">{stay.summary}</p>
     <span class="verified">Owner verified</span>
+    <span class="partner">Partner stay</span>
+    <span class="book">Book on partner site</span>
   </div>
 </a>
 
@@ -50,7 +52,12 @@ const town = townBySlug(stay.townSlug);
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
   }
-  .verified {
+  .verified,
+  .partner,
+  .book {
+    display: inline-block;
+    margin-right: var(--size-2);
+    margin-top: var(--size-2);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     color: var(--brand-teal);

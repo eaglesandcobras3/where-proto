@@ -6,13 +6,20 @@ import { isEnabled } from "../config/flags";
 import { stays } from "../data/catalog";
 ---
 
-<BaseLayout title="Stays on 30A" description="Book direct with local 30A rental partners." active="stays">
+<BaseLayout title="Stays on 30A" description="Book direct with local 30A rental partners.">
   <div class="container section">
     <PageHeader
       eyebrow="Stays"
       title="Book direct on 30A"
-      lede="Vacation rentals and hotels from the catalog. The product is still early. This page renders because the stays flag is on."
+      lede="Hotels and rental properties. Ship-dark: not in the top nav until launch. No native booking, payments, or availability UI — click out to the partner."
     />
+    <div class="reserve">
+      <label>
+        Search stays
+        <input type="search" placeholder="Town, sleeps, or partner" />
+      </label>
+      <p class="note">Search, partner badges, and booking click-outs are reserved slots for the real build.</p>
+    </div>
     {
       isEnabled("stays") && (
         <div class="grid">
@@ -26,6 +33,30 @@ import { stays } from "../data/catalog";
 </BaseLayout>
 
 <style>
+  .reserve {
+    margin-bottom: var(--size-6);
+    max-width: 420px;
+  }
+  label {
+    display: grid;
+    gap: var(--size-1);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-ink-soft);
+  }
+  input {
+    font: inherit;
+    font-size: var(--font-size-1);
+    padding: var(--size-2) var(--size-3);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+  }
+  .note {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
   .grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

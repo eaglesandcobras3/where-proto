@@ -1,0 +1,29 @@
+---
+import { areas, businesses, towns } from "../data/catalog";
+import { href } from "../lib/href";
+
+interface Props {
+  text: string;
+}
+
+const { text } = Astro.props;
+
+const entities = [
+  ...businesses.map((item) => ({ name: item.name, path: `/business/${item.slug}` })),
+  ...towns.map((item) => ({ name: item.name, path: `/town/${item.slug}` })),
+  ...areas.map((item) => ({ name: item.name, path: `/area/${item.slug}` })),
+].sort((a, b) => b.name.length - a.name.length);
+
+const pattern = new RegExp(`(${entities.map((item) => item.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "g");
+const lookup = new Map(entities.map((item) => [item.name, item.path]));
+const parts = text.split(pattern);
+---
+
+<Fragment>
+  {
+    parts.map((part) => {
+      const path = lookup.get(part);
+      return path ? <a href={href(path)}>{part}</a> : part;
+    })
+  }
+</Fragment>

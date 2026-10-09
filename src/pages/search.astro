@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHeader from "../components/PageHeader.astro";
+import TwoPaneMap from "../components/TwoPaneMap.astro";
 import FilterBar from "../components/islands/FilterBar.svelte";
 import { allLeaves, businesses, categories, tags, towns } from "../data/catalog";
 import { toFilterBusiness } from "../lib/listing";
@@ -31,7 +32,7 @@ const base = import.meta.env.BASE_URL;
   <div class="container section">
     <PageHeader
       title="Find a business"
-      lede="Search is the finder. Indexable listings live on town plus category pages. This route stays noindex."
+      lede="Search is the only site-wide business finder. Town plus category pages stay indexable. Filtered views stay noindex, follow."
     />
     {
       comboCanonical && (
@@ -43,6 +44,8 @@ const base = import.meta.env.BASE_URL;
         </p>
       )
     }
+  </div>
+  <TwoPaneMap mapLabel="30A businesses map" pinCount={Math.max(8, businesses.length)}>
     <FilterBar
       businesses={businesses.map(toFilterBusiness)}
       towns={towns}
@@ -55,7 +58,7 @@ const base = import.meta.env.BASE_URL;
       base={base}
       client:load
     />
-  </div>
+  </TwoPaneMap>
 </BaseLayout>
 
 <style>

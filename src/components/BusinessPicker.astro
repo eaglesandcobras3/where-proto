@@ -1,0 +1,70 @@
+---
+import { href } from "../lib/href";
+import type { Business } from "../data/types";
+
+interface Props {
+  businesses: Business[];
+  selectedSlug: string;
+}
+
+const { businesses: owned, selectedSlug } = Astro.props;
+---
+
+{
+  owned.length > 1 && (
+    <nav class="picker" aria-label="Your businesses">
+      <p class="label">Switch business</p>
+      <div class="row">
+        {owned.map((item) => (
+          <a
+            class:list={["chip", { active: item.slug === selectedSlug }]}
+            href={href(`/dashboard/${item.slug}`)}
+          >
+            {item.name}
+          </a>
+        ))}
+      </div>
+      <p class="note">Selection persists as ?business={selectedSlug} on the live dashboard.</p>
+    </nav>
+  )
+}
+
+<style>
+  .picker {
+    margin-bottom: var(--size-6);
+  }
+  .label {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+    margin-bottom: var(--size-2);
+  }
+  .row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+  }
+  .chip {
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: var(--size-1) var(--size-3);
+    background: white;
+    color: var(--brand-ink);
+    font-size: var(--font-size-1);
+  }
+  .chip:hover {
+    text-decoration: none;
+    border-color: var(--brand-teal);
+  }
+  .chip.active {
+    border-color: var(--brand-deep);
+    font-weight: var(--font-weight-7);
+  }
+  .note {
+    margin: var(--size-2) 0 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+</style>

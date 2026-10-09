@@ -1,10 +1,26 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import QuestionCard from "../../components/QuestionCard.astro";
 import AskComposer from "../../components/islands/AskComposer.svelte";
-import { isEnabled } from "../../config/flags";
-import { questions, towns } from "../../data/catalog";
+import AskIndex from "../../components/islands/AskIndex.svelte";
+import { commentsFor, questions, townBySlug, towns, userBySlug } from "../../data/catalog";
+import { relativeTime } from "../../lib/labels";
+import { href } from "../../lib/href";
+
+const base = import.meta.env.BASE_URL;
+const rows = questions.map((question) => {
+  const author = userBySlug(question.authorUserSlug);
+  const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+  return {
+    slug: question.slug,
+    title: question.title,
+    author: author?.name ?? "a visitor",
+    createdAt: question.createdAt,
+    relative: relativeTime(question.createdAt),
+    answers: commentsFor("question", question.slug).length,
+    town: town?.name,
+  };
+});
 ---
 
 <BaseLayout title="Ask locals about 30A" description="Local Q and A about visiting or living on 30A." active="ask">
@@ -12,30 +28,25 @@ import { questions, towns } from "../../data/catalog";
     <PageHeader
       eyebrow="Ask"
       title="Ask locals"
-      lede="Real questions from visitors, answered by locals. Short and honest."
+      lede="Real questions from visitors, answered by locals. Newest first, or sort by most answered."
     />
-    <div class="list">
-      {questions.map((question) => <QuestionCard question={question} />)}
-    </div>
-    {
-      isEnabled("ask") && (
-        <section class="composer">
-          <h2 class="section-title">Ask a question</h2>
-          <AskComposer towns={towns} client:visible />
-        </section>
-      )
-    }
+    <section class="composer">
+      <h2 class="section-title">Ask a question</h2>
+      <AskComposer
+        towns={towns}
+        signedIn={true}
+        loginHref={href("/auth/login")}
+        signupHref={href("/auth/signup")}
+        client:visible
+      />
+    </section>
+    <AskIndex questions={rows} base={base} client:load />
   </div>
 </BaseLayout>
 
 <style>
-  .list {
-    display: grid;
-    gap: var(--size-3);
-    max-width: 720px;
-  }
   .composer {
-    margin-top: var(--size-8);
+    margin-bottom: var(--size-8);
     max-width: 640px;
   }
 </style>

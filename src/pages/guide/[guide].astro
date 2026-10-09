@@ -1,5 +1,8 @@
 ---
 import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import EntityText from "../../components/EntityText.astro";
+import ReactionBar from "../../components/ReactionBar.astro";
+import GuideCard from "../../components/GuideCard.astro";
 import { commentsFor, guides, reactionsFor, townBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
 import { href } from "../../lib/href";
@@ -17,6 +20,7 @@ const { item: guide } = Astro.props;
 const town = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
 const comments = commentsFor("guide", guide.slug);
 const reactions = reactionsFor("guide", guide.slug);
+const related = guides.filter((item) => item.slug !== guide.slug).slice(0, 3);
 ---
 
 <PlaceLayout
@@ -28,18 +32,15 @@ const reactions = reactionsFor("guide", guide.slug);
 >
   <article class="container section article">
     <h1>{guide.title}</h1>
+    <p class="byline">By a local editor · reading guide</p>
     <p class="lede">{guide.summary}</p>
     {town && (
       <p>
         Related town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
       </p>
     )}
-    <p>{guide.body}</p>
-    {
-      reactions.length > 0 && (
-        <p class="meta">{reactions.map((item) => `${item.label} ${item.count}`).join(" · ")}</p>
-      )
-    }
+    <p><EntityText text={guide.body} /></p>
+    <ReactionBar reactions={reactions} />
     {
       comments.length > 0 && (
         <section>
@@ -47,6 +48,18 @@ const reactions = reactionsFor("guide", guide.slug);
           {comments.map((item) => (
             <p class="comment">{item.body}</p>
           ))}
+        </section>
+      )
+    }
+    {
+      related.length > 0 && (
+        <section>
+          <h2 class="section-title">Related guides</h2>
+          <div class="related">
+            {related.map((item) => (
+              <GuideCard guide={item} />
+            ))}
+          </div>
         </section>
       )
     }
@@ -61,9 +74,14 @@ const reactions = reactionsFor("guide", guide.slug);
     font-size: var(--font-size-3);
     color: var(--brand-ink-soft);
   }
-  .meta,
+  .byline,
   .comment {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+  }
+  .related {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--size-4);
   }
 </style>

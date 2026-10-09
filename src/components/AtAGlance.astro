@@ -24,6 +24,10 @@ const { town } = Astro.props;
   <div class="highlights">
     {town.highlights.map((item) => <span class="chip">{item}</span>)}
   </div>
+  <p class="disclaimer">
+    Information provided is for general guidance only. Access rules, parking, and hours can change.
+    Confirm with the town or your stay before you go.
+  </p>
 </section>
 
 <style>
@@ -73,5 +77,11 @@ const { town } = Astro.props;
     padding: var(--size-1) var(--size-3);
     background: white;
     color: var(--brand-ink);
+  }
+  .disclaimer {
+    margin-top: var(--size-4);
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    max-width: 72ch;
   }
 </style>

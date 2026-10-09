@@ -1,31 +1,105 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PageHeader from "../components/PageHeader.astro";
-import { businessesOwnedBy, currentUser } from "../data/catalog";
+import BusinessPicker from "../components/BusinessPicker.astro";
+import ComposerCard from "../components/islands/ComposerCard.svelte";
+import { businessesOwnedBy, currentUser, posts, questions, userBySlug } from "../data/catalog";
 import { href } from "../lib/href";
 import { isEnabled } from "../config/flags";
 
+
 const user = currentUser();
-const owned = businessesOwnedBy("brett");
+const owned = businessesOwnedBy("local_owner");
+const selected = owned[0];
+const mentions = [
+  ...posts
+    .filter((item) => item.on.type === "business" && item.on.slug === selected?.slug && item.postedAs === "user")
+    .map((item) => ({
+      kind: "Community post",
+      excerpt: item.body,
+      time: item.createdAt,
+      username: userBySlug(item.authorUserSlug ?? "")?.name ?? "a visitor",
+      href: href(`/posts/${item.slug}`),
+    })),
+  ...questions
+    .filter((item) => item.body.toLowerCase().includes((selected?.name ?? "").split(" ")[0]?.toLowerCase() ?? "edward"))
+    .map((item) => ({
+      kind: "Ask thread",
+      excerpt: item.title,
+      time: item.createdAt,
+      username: userBySlug(item.authorUserSlug)?.name ?? "a visitor",
+      href: href(`/ask/${item.slug}`),
+    })),
+];
 ---
 
 <BaseLayout title="Business dashboard" description="Manage listings, posts, and mentions.">
   <div class="container section">
     <PageHeader
       title="Business dashboard"
-      lede={`Signed in as ${user?.name ?? "a member"}. Owned businesses are attached to Brett so the selector has rows to open.`}
+      lede={`Signed in as ${user?.name ?? "a member"}. One selected business at a time. Everything except inbox replies goes through the owner moderation queue.`}
     />
     {
-      isEnabled("businessDashboard") && (
-        <div class="cards">
-          {owned.map((business) => (
-            <a class="card" href={href(`/dashboard/${business.slug}`)}>
-              <h3>{business.name}</h3>
-              <p>{business.summary}</p>
-              <span>Manage listing</span>
-            </a>
-          ))}
-        </div>
+      isEnabled("businessDashboard") && selected && (
+        <>
+          <BusinessPicker businesses={owned} selectedSlug={selected.slug} />
+          <p>
+            Managing <a href={href(`/business/${selected.slug}`)}>{selected.name}</a>.
+            <a href={href(`/dashboard/${selected.slug}`)}>Open full workspace</a>
+          </p>
+          <div class="cards">
+            <ComposerCard
+              title="Post an update"
+              body="Creates an update draft for the selected business. Goes to the review queue."
+              action="Submit update"
+              kind="update"
+              client:visible
+            />
+            <ComposerCard
+              title="Post an event"
+              body="Creates an event draft plus the auto-linked update draft."
+              action="Submit event"
+              kind="event"
+              client:visible
+            />
+            <ComposerCard
+              title="Post an image"
+              body="Uploads to the gallery queue. Confirm you own the rights."
+              action="Choose image"
+              kind="photo"
+              client:visible
+            />
+          </div>
+          <section>
+            <h2 class="section-title">Mentions inbox</h2>
+            <p class="note">Replies go live immediately with the Owner badge, then follow the 3-flag auto-hide rule.</p>
+            <div class="stack">
+              {mentions.map((item) => (
+                <article class="mention">
+                  <p class="meta">
+                    {item.kind} · {item.username} · {item.time}
+                  </p>
+                  <p>{item.excerpt}</p>
+                  <p>
+                    <a href={item.href}>Open</a> · <button type="button">Reply as verified owner</button>
+                  </p>
+                </article>
+              ))}
+              {mentions.length === 0 && <p>No mentions yet.</p>}
+            </div>
+          </section>
+          <section>
+            <h2 class="section-title">Profile editor</h2>
+            <p class="note">Edits are proposed changes. Name and category always require review.</p>
+            <ComposerCard
+              title={selected.name}
+              body="Queued for owner review. Prototype only."
+              action="Propose changes"
+              kind="settings"
+              client:visible
+            />
+          </section>
+        </>
       )
     }
     <p>
@@ -40,30 +114,36 @@ const owned = businessesOwnedBy("brett");
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
     gap: var(--size-4);
-    margin-bottom: var(--size-6);
+    margin-block: var(--size-6);
   }
-  .card {
+  .note {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 720px;
+  }
+  .mention {
     background: white;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-card);
     padding: var(--size-4);
-    color: var(--brand-ink);
   }
-  .card:hover {
-    text-decoration: none;
-    box-shadow: var(--shadow-card);
-  }
-  .card h3 {
-    font-size: var(--font-size-3);
-    margin-bottom: var(--size-2);
-  }
-  .card p {
+  .meta {
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
-    font-size: var(--font-size-1);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
   }
-  .card span {
-    font-weight: var(--font-weight-7);
+  button {
+    border: 0;
+    background: none;
     color: var(--brand-teal);
-    font-size: var(--font-size-1);
+    font: inherit;
+    font-weight: var(--font-weight-7);
+    cursor: pointer;
+    padding: 0;
   }
 </style>

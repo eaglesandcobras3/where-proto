@@ -8,9 +8,9 @@ interface Props {
 const { active = "" } = Astro.props;
 
 const links = [
-  { label: "Profile", path: "/profile", key: "profile" },
-  { label: "Favorites", path: "/profile/favorites", key: "favorites" },
-  { label: "Posts", path: "/profile/posts", key: "posts" },
+  { label: "Saved", path: "/profile/favorites", key: "favorites" },
+  { label: "My Questions", path: "/profile/questions", key: "questions" },
+  { label: "My Posts", path: "/profile/posts", key: "posts" },
   { label: "Settings", path: "/profile/settings", key: "settings" },
 ];
 ---

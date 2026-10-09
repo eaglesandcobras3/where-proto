@@ -14,7 +14,7 @@ const items = areasForTown(townSlug);
 {
   items.length > 0 && (
     <section class="areas">
-      <p class="eyebrow">Areas in {townName}</p>
+      <h2 class="section-title">Areas in {townName}</h2>
       <div class="chips">
         {items.map((area) => (
           <a class="chip" href={href(`/area/${area.slug}`)}>

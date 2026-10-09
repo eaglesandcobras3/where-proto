@@ -1,0 +1,63 @@
+---
+import type { Reaction } from "../data/types";
+
+interface Props {
+  reactions?: Reaction[];
+}
+
+const { reactions = [] } = Astro.props;
+
+const icons: Record<Reaction["label"], string> = {
+  up: "👍",
+  heart: "❤️",
+  wow: "😮",
+};
+
+const names: Record<Reaction["label"], string> = {
+  up: "Thumbs up",
+  heart: "Love",
+  wow: "Surprised",
+};
+
+const shown: { label: Reaction["label"]; count: number }[] = [
+  { label: "up", count: reactions.find((item) => item.label === "up")?.count ?? 0 },
+  { label: "heart", count: reactions.find((item) => item.label === "heart")?.count ?? 0 },
+  { label: "wow", count: reactions.find((item) => item.label === "wow")?.count ?? 0 },
+];
+---
+
+<div class="reactions" role="group" aria-label="Reactions">
+  {
+    shown.map((item) => (
+      <button type="button" class="btn" aria-label={`${names[item.label]}, ${item.count}`}>
+        <span aria-hidden="true">{icons[item.label]}</span>
+        <span>{item.count}</span>
+      </button>
+    ))
+  }
+</div>
+
+<style>
+  .reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-1);
+    border: 1px solid var(--brand-line);
+    background: white;
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
+    font: inherit;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    cursor: pointer;
+  }
+  .btn:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-deep);
+  }
+</style>

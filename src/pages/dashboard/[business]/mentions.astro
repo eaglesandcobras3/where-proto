@@ -1,9 +1,9 @@
 ---
 import BaseLayout from "../../../layouts/BaseLayout.astro";
 import DashboardNav from "../../../components/DashboardNav.astro";
-import PostCard from "../../../components/PostCard.astro";
-import { postsFor } from "../../../data/catalog";
+import { postsFor, userBySlug } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -23,7 +23,18 @@ const mentions = postsFor("business", business.slug).filter((item) => item.poste
     <h1>Mentions inbox</h1>
     <DashboardNav businessSlug={business.slug} active="mentions" />
     <div class="stack">
-      {mentions.map((post) => <PostCard post={post} />)}
+      {mentions.map((post) => (
+        <article class="mention">
+          <p class="meta">
+            Community post · {userBySlug(post.authorUserSlug ?? "")?.name ?? "a visitor"} · {post.createdAt}
+          </p>
+          <p>{post.body}</p>
+          <p>
+            <a href={href(`/posts/${post.slug}`)}>Open</a> ·
+            <button type="button">Reply as verified owner</button>
+          </p>
+        </article>
+      ))}
       {mentions.length === 0 && <p class="empty">No visitor mentions yet.</p>}
     </div>
   </div>
@@ -34,6 +45,27 @@ const mentions = postsFor("business", business.slug).filter((item) => item.poste
     display: grid;
     gap: var(--size-3);
     max-width: 720px;
+  }
+  .mention {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+  }
+  .meta {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  button {
+    border: 0;
+    background: none;
+    color: var(--brand-teal);
+    font: inherit;
+    font-weight: var(--font-weight-7);
+    cursor: pointer;
+    padding: 0;
   }
   .empty {
     color: var(--brand-ink-soft);

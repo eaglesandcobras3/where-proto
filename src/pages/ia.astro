@@ -34,7 +34,9 @@ const routes = [
   ["Favorites", "/profile/favorites"],
   ["Posts (user)", "/profile/posts"],
   ["Account settings", "/profile/settings"],
-  ["External profile", "/u/kelley"],
+  ["External profile", "/u/beachlocal"],
+  ["Update detail", "/updates/edwards-weekend-hours"],
+  ["My questions", "/profile/questions"],
   ["Add business", "/add-business"],
   ["Admin", "/admin"],
   ["Review queue", "/admin/review-queue"],
@@ -44,8 +46,6 @@ const routes = [
   ["Login", "/auth/login"],
   ["Sign up", "/auth/signup"],
   ["Forgot password", "/auth/forgot-password"],
-  ["Visitor newsletter", "/newsletters/visitor"],
-  ["Business newsletter", "/newsletters/business"],
   ["About", "/about"],
   ["Legal", "/legal"],
   ["Advertise", "/advertise"],
@@ -59,7 +59,7 @@ const routes = [
     <ol>
       <li>There is no /businesses hub or /businesses/{"{category}"} leaf.</li>
       <li>/search is the business finder and stays noindex, follow.</li>
-      <li>Town hubs link to /town/{"{town}"}/{"{category}"} and do not render business cards.</li>
+      <li>Town hubs are discovery surfaces with local businesses, plus /town/{"{town}"}/{"{leaf}"} leaves.</li>
       <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
       <li>Updates appear on town and business pages. /updates is footer only.</li>
       <li>Areas extend a town: shopping areas and neighborhoods.</li>

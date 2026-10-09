@@ -4,6 +4,7 @@ import UpdatesModule from "../../components/UpdatesModule.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import EventCard from "../../components/EventCard.astro";
 import PostCard from "../../components/PostCard.astro";
+import BusinessCard from "../../components/BusinessCard.astro";
 import { isEnabled } from "../../config/flags";
 import {
   areaBySlug,
@@ -38,6 +39,13 @@ const businessEvents = events.filter((item) => item.businessSlug === business.sl
 const businessPosts = postsFor("business", business.slug);
 const businessPhotos = photosFor("business", business.slug);
 const businessUpdates = updatesForBusiness(business.slug);
+const similar = businesses
+  .filter(
+    (item) =>
+      item.slug !== business.slug &&
+      (item.townSlug === business.townSlug || item.leafSlug === business.leafSlug),
+  )
+  .slice(0, 3);
 ---
 
 <PlaceLayout
@@ -72,11 +80,18 @@ const businessUpdates = updatesForBusiness(business.slug);
         </p>
         {business.openNow && <span class="open">Open now</span>}
         <p class="desc">{business.summary}</p>
+        <p class="cta-row">
+          <a href={href("/dashboard")}>Own or manage this business? Verify this listing</a>
+        </p>
         <dl class="facts">
           {business.address && (
             <div>
               <dt>Address</dt>
-              <dd>{business.address}</dd>
+              <dd>
+                {business.address}
+                {" · "}
+                <a href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}>Open in Maps</a>
+              </dd>
             </div>
           )}
           {business.phone && (
@@ -155,7 +170,29 @@ const businessUpdates = updatesForBusiness(business.slug);
       )
     }
 
-    {isEnabled("updates") && <UpdatesModule title="Latest updates" updates={businessUpdates} />}
+    {
+      isEnabled("updates") && (
+        <UpdatesModule
+          title="Latest updates"
+          updates={businessUpdates}
+          ctaHref="/dashboard"
+          ctaLabel="Own this business? Share an update"
+        />
+      )
+    }
+
+    {
+      similar.length > 0 && (
+        <section>
+          <h2 class="section-title">Similar nearby</h2>
+          <div class="grid">
+            {similar.map((item) => (
+              <BusinessCard business={item} />
+            ))}
+          </div>
+        </section>
+      )
+    }
   </div>
 </PlaceLayout>
 
@@ -231,6 +268,11 @@ const businessUpdates = updatesForBusiness(business.slug);
   }
   .empty {
     color: var(--brand-ink-soft);
+  }
+  .cta-row {
+    margin: var(--size-3) 0;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
   }
   @media (max-width: 640px) {
     .hero {
