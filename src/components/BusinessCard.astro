@@ -76,4 +76,14 @@ const leaf = leafBySlug(business.leafSlug);
       height: 96px;
     }
   }
+  @media (max-width: 400px) {
+    .card {
+      flex-direction: column;
+    }
+    .thumb {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+  }
 </style>

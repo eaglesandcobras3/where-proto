@@ -111,7 +111,7 @@ import { href } from "../lib/href";
     text-align: center;
   }
   .hero h1 {
-    font-size: var(--font-size-8);
+    font-size: clamp(2rem, 8vw, 3rem);
   }
   .lede {
     font-size: var(--font-size-3);
@@ -131,7 +131,7 @@ import { href } from "../lib/href";
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
   .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
   .tiles-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

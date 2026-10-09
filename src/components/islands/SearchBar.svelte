@@ -54,13 +54,16 @@
 <style>
   .search-wrap {
     position: relative;
+    flex: 1;
+    min-width: 0;
   }
   input {
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-4);
     padding: var(--size-2) var(--size-3);
     font-size: var(--font-size-1);
-    width: 160px;
+    width: 100%;
+    min-height: 44px;
     background: white;
     font-family: inherit;
   }
@@ -71,8 +74,9 @@
   .dropdown {
     position: absolute;
     top: calc(100% + 4px);
+    left: 0;
     right: 0;
-    width: 280px;
+    width: auto;
     background: white;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-3);
@@ -102,7 +106,16 @@
     font-weight: var(--font-weight-7);
     color: var(--brand-teal);
   }
+  @media (min-width: 640px) {
+    .dropdown {
+      left: auto;
+      width: 280px;
+    }
+  }
   @media (min-width: 960px) {
+    .search-wrap {
+      flex: 0 0 auto;
+    }
     input {
       width: 200px;
     }

@@ -85,10 +85,28 @@
     openNow = false;
     query = "";
   }
+
+  let activeCount = $derived(
+    [town, category, tag, query.trim(), openNow ? "open" : ""].filter(Boolean).length,
+  );
+  let filtersOpen = $state(true);
+
+  $effect(() => {
+    if (typeof window === "undefined") return;
+    const media = window.matchMedia("(max-width: 639px)");
+    const sync = () => {
+      filtersOpen = !media.matches;
+    };
+    sync();
+    media.addEventListener("change", sync);
+    return () => media.removeEventListener("change", sync);
+  });
 </script>
 
 <div class="filter-bar">
-  <div class="filters">
+  <details class="filter-panel" bind:open={filtersOpen}>
+    <summary>Filters{activeCount ? ` (${activeCount})` : ""}</summary>
+    <div class="filters">
     <label class="search">
       Search
       <input type="search" bind:value={query} placeholder="Business name or keyword" />
@@ -125,7 +143,8 @@
       Open now
     </label>
     <button type="button" class="clear" onclick={clear}>Clear</button>
-  </div>
+    </div>
+  </details>
 
   <p class="count" aria-live="polite">
     Showing {results.length} of {totalCount ?? businesses.length} listings
@@ -156,16 +175,36 @@
 <style>
   .filter-bar {
     margin-block: var(--size-6);
+    position: sticky;
+    top: 64px;
+    z-index: 20;
+    background: var(--brand-sand);
+    padding-block: var(--size-2);
+  }
+  .filter-panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+  }
+  summary {
+    list-style: none;
+    cursor: pointer;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: var(--size-3) var(--size-4);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  summary::-webkit-details-marker {
+    display: none;
   }
   .filters {
     display: flex;
     flex-wrap: wrap;
     gap: var(--size-3);
     align-items: end;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-4);
+    padding: 0 var(--size-4) var(--size-4);
   }
   label {
     display: flex;
@@ -195,7 +234,8 @@
   .check {
     flex-direction: row;
     align-items: center;
-    padding-bottom: var(--size-2);
+    min-height: 44px;
+    padding-block: var(--size-2);
   }
   .check input {
     width: 18px;
@@ -205,6 +245,7 @@
   .clear {
     font: inherit;
     font-size: var(--font-size-1);
+    min-height: 44px;
     padding: var(--size-2) var(--size-4);
     border-radius: var(--radius-4);
     border: 1px solid var(--brand-line);
@@ -222,7 +263,7 @@
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--size-4);
   }
   .card {
@@ -271,5 +312,34 @@
   }
   .empty {
     color: var(--brand-ink-soft);
+  }
+  @media (max-width: 400px) {
+    .card {
+      flex-direction: column;
+    }
+    .thumb {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16 / 9;
+    }
+    .desc {
+      -webkit-line-clamp: 1;
+    }
+  }
+  @media (min-width: 640px) {
+    .filter-bar {
+      position: static;
+      padding-block: 0;
+      background: transparent;
+    }
+    summary {
+      display: none;
+    }
+    .filters {
+      padding: var(--size-4);
+    }
+    .grid {
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
   }
 </style>
