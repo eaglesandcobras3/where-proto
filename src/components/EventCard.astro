@@ -44,12 +44,17 @@ const dateBits = event.when.split(",")[0] ?? event.when;
     box-shadow: var(--shadow-card);
   }
   .dateblock {
-    flex: 0 0 92px;
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+    aspect-ratio: 1 / 1;
     background: var(--brand-teal-soft);
     border-radius: var(--radius-2);
-    padding: var(--size-2);
+    padding: 4px;
     text-align: center;
     color: var(--brand-deep);
+    display: grid;
+    place-content: center;
   }
   .day {
     display: block;

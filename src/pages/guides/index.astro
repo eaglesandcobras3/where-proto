@@ -8,16 +8,8 @@ import { guides } from "../../data/catalog";
 <BaseLayout title="Guides to 30A" description="Town and travel guides for Scenic Highway 30A." active="guides">
   <div class="container section">
     <PageHeader eyebrow="Guides" title="Read before you go" lede="Stories are guides. There is no separate Stories nav item." />
-    <div class="grid">
+    <div class="listing-grid-full">
       {guides.map((guide) => <GuideCard guide={guide} />)}
     </div>
   </div>
 </BaseLayout>
-
-<style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--size-4);
-  }
-</style>

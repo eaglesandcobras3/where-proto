@@ -1,0 +1,21 @@
+---
+import { cardImageSrc, listingSizes, listingWideSizes } from "../lib/card-image";
+
+interface Props {
+  label: string;
+  alt?: string;
+  wide?: boolean;
+}
+
+const { label, alt = "", wide = false } = Astro.props;
+---
+
+<div class:list={["listing-tile", { wide }]}>
+  <img
+    src={cardImageSrc(label, "2/3")}
+    alt={alt}
+    width="112"
+    height="168"
+    sizes={wide ? listingWideSizes : listingSizes}
+  />
+</div>

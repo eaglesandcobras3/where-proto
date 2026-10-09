@@ -61,7 +61,7 @@ const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area
       inArea.length === 0 ? (
         <p class="empty">No listings sit in this area yet.</p>
       ) : (
-        <div class="grid">
+        <div class="listing-grid">
           {inArea.map((business) => (
             <BusinessCard business={business} />
           ))}
@@ -73,7 +73,7 @@ const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area
       siblings.length > 0 && (
         <section>
           <h2 class="section-title">Other areas in {town?.name ?? "this town"}</h2>
-          <div class="tiles">
+          <div class="listing-grid">
             {siblings.map((item) => (
               <AreaCard area={item} />
             ))}
@@ -88,16 +88,6 @@ const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area
   .lede {
     color: var(--brand-ink-soft);
     max-width: 64ch;
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: var(--size-4);
-  }
-  .tiles {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--size-4);
   }
   .empty {
     color: var(--brand-ink-soft);

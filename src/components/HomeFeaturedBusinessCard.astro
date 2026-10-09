@@ -1,0 +1,87 @@
+---
+import { href } from "../lib/href";
+import { leafBySlug, townBySlug } from "../data/catalog";
+import { cardImageSrc, featuredSizes } from "../lib/card-image";
+import type { Business } from "../data/types";
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+const town = townBySlug(business.townSlug);
+const leaf = leafBySlug(business.leafSlug);
+---
+
+<a class="featured" href={href(`/business/${business.slug}`)}>
+  <div class="media">
+    <img
+      src={cardImageSrc(business.name.charAt(0), "2/3")}
+      alt=""
+      width="150"
+      height="225"
+      sizes={featuredSizes}
+    />
+  </div>
+  <div class="body">
+    <h3>{business.name}</h3>
+    <p class="meta">{town?.name ?? business.townSlug}</p>
+    <p class="cat">{leaf?.name ?? business.leafSlug}</p>
+  </div>
+</a>
+
+<style>
+  .featured {
+    display: block;
+    min-width: 150px;
+    max-width: 150px;
+    scroll-snap-align: start;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    color: var(--brand-ink);
+  }
+  .featured:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .media {
+    aspect-ratio: 2 / 3;
+    max-width: 150px;
+    overflow: hidden;
+    background: var(--brand-teal-soft);
+  }
+  .media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .body {
+    padding: var(--size-3);
+  }
+  .body h3 {
+    font-size: var(--font-size-1);
+    margin-bottom: var(--size-1);
+  }
+  .meta,
+  .cat {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    margin: 0;
+  }
+  @media (min-width: 768px) {
+    .featured {
+      min-width: 0;
+      max-width: none;
+    }
+    .media {
+      max-width: none;
+      width: 100%;
+    }
+    .body h3 {
+      font-size: var(--font-size-3);
+    }
+  }
+</style>

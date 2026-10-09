@@ -1,16 +1,18 @@
 ---
 import { href } from "../lib/href";
 import type { Town } from "../data/types";
+import ListingTile from "./ListingTile.astro";
 
 interface Props {
   town: Town;
+  wide?: boolean;
 }
 
-const { town } = Astro.props;
+const { town, wide = false } = Astro.props;
 ---
 
-<a class="card" href={href(`/town/${town.slug}`)}>
-  <div class="thumb img-placeholder" aria-hidden="true">{town.name.charAt(0)}</div>
+<a class:list={["listing-card", { wide }]} href={href(`/town/${town.slug}`)}>
+  <ListingTile label={town.name.charAt(0)} alt="" wide={wide} />
   <div class="body">
     <h3>{town.name}</h3>
     <p>{town.summary}</p>
@@ -19,24 +21,8 @@ const { town } = Astro.props;
 </a>
 
 <style>
-  .card {
-    display: block;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    color: var(--brand-ink);
-  }
-  .card:hover {
-    text-decoration: none;
-    box-shadow: var(--shadow-card);
-  }
-  .thumb {
-    height: 140px;
-    border-radius: 0;
-  }
   .body {
-    padding: var(--size-3) var(--size-4);
+    min-width: 0;
   }
   .body h3 {
     font-size: var(--font-size-3);

@@ -2,18 +2,20 @@
 import { href } from "../lib/href";
 import { leafBySlug, townBySlug } from "../data/catalog";
 import type { Business } from "../data/types";
+import ListingTile from "./ListingTile.astro";
 
 interface Props {
   business: Business;
+  wide?: boolean;
 }
 
-const { business } = Astro.props;
+const { business, wide = false } = Astro.props;
 const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
 ---
 
-<a class="card" href={href(`/business/${business.slug}`)}>
-  <div class="thumb img-placeholder" aria-hidden="true">{business.name.charAt(0)}</div>
+<a class:list={["listing-card", { wide }]} href={href(`/business/${business.slug}`)}>
+  <ListingTile label={business.name.charAt(0)} alt="" wide={wide} />
   <div class="body">
     <h3>{business.name}</h3>
     <p class="meta">{town?.name ?? business.townSlug}</p>
@@ -26,25 +28,8 @@ const leaf = leafBySlug(business.leafSlug);
 </a>
 
 <style>
-  .card {
-    display: flex;
-    gap: var(--size-4);
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-4);
-    color: var(--brand-ink);
-  }
-  .card:hover {
-    text-decoration: none;
-    box-shadow: var(--shadow-card);
-  }
-  .thumb {
-    width: 140px;
-    height: 140px;
-    flex-shrink: 0;
-    border-radius: var(--radius-2);
-    font-size: var(--font-size-7);
+  .body {
+    min-width: 0;
   }
   .body h3 {
     font-size: var(--font-size-3);
@@ -69,21 +54,5 @@ const leaf = leafBySlug(business.leafSlug);
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
     color: var(--brand-deep);
-  }
-  @media (max-width: 560px) {
-    .thumb {
-      width: 96px;
-      height: 96px;
-    }
-  }
-  @media (max-width: 400px) {
-    .card {
-      flex-direction: column;
-    }
-    .thumb {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 9;
-    }
   }
 </style>

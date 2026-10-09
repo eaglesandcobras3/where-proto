@@ -1,16 +1,18 @@
 ---
 import { href } from "../lib/href";
 import type { Guide } from "../data/types";
+import ListingTile from "./ListingTile.astro";
 
 interface Props {
   guide: Guide;
+  wide?: boolean;
 }
 
-const { guide } = Astro.props;
+const { guide, wide = false } = Astro.props;
 ---
 
-<a class="card" href={href(`/guide/${guide.slug}`)}>
-  <div class="thumb img-placeholder" aria-hidden="true">{guide.title.charAt(0)}</div>
+<a class:list={["listing-card", { wide }]} href={href(`/guide/${guide.slug}`)}>
+  <ListingTile label={guide.title.charAt(0)} alt="" wide={wide} />
   <div class="body">
     <h3>{guide.title}</h3>
     <p class="excerpt">{guide.summary}</p>
@@ -19,24 +21,8 @@ const { guide } = Astro.props;
 </a>
 
 <style>
-  .card {
-    display: block;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    color: var(--brand-ink);
-  }
-  .card:hover {
-    text-decoration: none;
-    box-shadow: var(--shadow-card);
-  }
-  .thumb {
-    height: 120px;
-    border-radius: 0;
-  }
   .body {
-    padding: var(--size-3) var(--size-4);
+    min-width: 0;
   }
   .body h3 {
     font-size: var(--font-size-2);

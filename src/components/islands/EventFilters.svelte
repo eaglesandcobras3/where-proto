@@ -78,14 +78,20 @@
   {#if group.length}
     <section class="group">
       <h2>{bucket.label}</h2>
-      <div class="grid">
+      <div class="listing-grid-full">
         {#each group as event}
+          {@const dateBits = event.when.split(",")[0] ?? event.when}
           <a class="card" href={path(`/event/${event.slug}`)}>
-            <div class="date">{event.when}</div>
-            <h3>{event.name}</h3>
-            <p>{event.time ?? event.when}</p>
-            <p>{event.venue ?? "30A"}{event.townName ? ` · ${event.townName}` : ""}</p>
-            {#if event.category}<span>{event.category}</span>{/if}
+            <div class="dateblock" aria-hidden="true">
+              <span class="day">{dateBits}</span>
+              {#if event.time}<span class="time">{event.time}</span>{/if}
+            </div>
+            <div class="body">
+              <h3>{event.name}</h3>
+              <p>{event.time ?? event.when}</p>
+              <p>{event.venue ?? "30A"}{event.townName ? ` · ${event.townName}` : ""}</p>
+              {#if event.category}<span class="tag">{event.category}</span>{/if}
+            </div>
           </a>
         {/each}
       </div>
@@ -135,38 +141,64 @@
     font-size: var(--font-size-4);
     margin-bottom: var(--size-3);
   }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--size-4);
-  }
   .card {
-    display: grid;
-    gap: var(--size-1);
+    display: flex;
+    gap: var(--size-3);
     background: white;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-card);
-    padding: var(--size-4);
+    padding: var(--size-3);
     color: var(--brand-ink);
   }
   .card:hover {
     text-decoration: none;
     box-shadow: var(--shadow-card);
   }
-  .date,
-  span {
+  .dateblock {
+    flex: 0 0 64px;
+    width: 64px;
+    height: 64px;
+    aspect-ratio: 1 / 1;
+    background: var(--brand-teal-soft);
+    border-radius: var(--radius-2);
+    padding: 4px;
+    text-align: center;
+    color: var(--brand-deep);
+    display: grid;
+    place-content: center;
+  }
+  .day {
+    display: block;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .time {
+    display: block;
+    margin-top: var(--size-1);
+    font-size: 0.68rem;
+  }
+  .body {
+    min-width: 0;
+  }
+  .tag {
+    display: inline-block;
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--brand-teal);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
   }
   h3 {
-    margin: 0;
+    margin: 0 0 var(--size-1);
     font-size: var(--font-size-2);
   }
   p {
-    margin: 0;
+    margin: 0 0 var(--size-2);
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
   }

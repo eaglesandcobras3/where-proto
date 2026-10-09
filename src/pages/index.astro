@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import TownCard from "../components/TownCard.astro";
-import BusinessCard from "../components/BusinessCard.astro";
+import HomeFeaturedBusinessCard from "../components/HomeFeaturedBusinessCard.astro";
 import EventCard from "../components/EventCard.astro";
 import GuideCard from "../components/GuideCard.astro";
 import AreaCard from "../components/AreaCard.astro";
@@ -25,7 +25,7 @@ import { href } from "../lib/href";
   <section class="section">
     <div class="container">
       <h2 class="section-title">Explore the towns</h2>
-      <div class="grid towns-grid">
+      <div class="listing-grid">
         {towns.map((town) => <TownCard town={town} />)}
       </div>
       <p class="more"><a href={href("/towns")}>See all towns</a></p>
@@ -35,8 +35,8 @@ import { href } from "../lib/href";
   <section class="section alt">
     <div class="container">
       <h2 class="section-title">Featured businesses</h2>
-      <div class="grid cards-grid">
-        {businesses.slice(0, 4).map((business) => <BusinessCard business={business} />)}
+      <div class="featured-row">
+        {businesses.slice(0, 4).map((business) => <HomeFeaturedBusinessCard business={business} />)}
       </div>
       <p class="more"><a href={href("/search")}>Browse all businesses</a></p>
     </div>
@@ -45,7 +45,7 @@ import { href } from "../lib/href";
   <section class="section">
     <div class="container">
       <h2 class="section-title">Areas</h2>
-      <div class="grid tiles-grid">
+      <div class="listing-grid">
         {areas.filter((item) => item.kind === "shopping").map((area) => <AreaCard area={area} />)}
       </div>
       <p class="more"><a href={href("/areas")}>See all areas</a></p>
@@ -57,7 +57,7 @@ import { href } from "../lib/href";
       <section class="section alt">
         <div class="container">
           <h2 class="section-title">Upcoming events</h2>
-          <div class="grid tiles-grid">
+          <div class="listing-grid">
             {events.map((event) => (
               <EventCard event={event} />
             ))}
@@ -75,7 +75,7 @@ import { href } from "../lib/href";
       <section class="section">
         <div class="container">
           <h2 class="section-title">Guides</h2>
-          <div class="grid tiles-grid">
+          <div class="listing-grid">
             {guides.slice(0, 3).map((guide) => (
               <GuideCard guide={guide} />
             ))}
@@ -122,19 +122,6 @@ import { href } from "../lib/href";
   .alt {
     background: white;
     border-block: 1px solid var(--brand-line);
-  }
-  .grid {
-    display: grid;
-    gap: var(--size-4);
-  }
-  .towns-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  }
-  .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  }
-  .tiles-grid {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
   .more {
     margin-top: var(--size-4);
