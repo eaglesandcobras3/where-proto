@@ -1,0 +1,155 @@
+---
+interface Props {
+  mapLabel?: string;
+  pinCount?: number;
+}
+
+const { mapLabel = "Map placeholder", pinCount = 12 } = Astro.props;
+const pins = Array.from({ length: pinCount }, (_, index) => index);
+---
+
+<div class="two-pane" data-two-pane data-mobile-view="list">
+  <section class="list">
+    <slot />
+  </section>
+  <aside class="map" aria-label={mapLabel}>
+    <div class="zoom" aria-hidden="true">
+      <span>+</span>
+      <span>−</span>
+    </div>
+    <div class="pins" aria-hidden="true">
+      {pins.map(() => <span class="pin" />)}
+    </div>
+    <p class="label">{mapLabel}</p>
+  </aside>
+  <button class="toggle" type="button" data-two-pane-toggle>Map</button>
+</div>
+
+<script>
+  document.querySelectorAll<HTMLElement>("[data-two-pane]").forEach((root) => {
+    const toggle = root.querySelector<HTMLButtonElement>("[data-two-pane-toggle]");
+    if (!toggle) return;
+    const setView = (view: "list" | "map") => {
+      root.dataset.mobileView = view;
+      toggle.textContent = view === "list" ? "Map" : "List";
+    };
+    toggle.addEventListener("click", () => {
+      setView(root.dataset.mobileView === "map" ? "list" : "map");
+    });
+  });
+</script>
+
+<style>
+  .two-pane {
+    display: grid;
+    grid-template-columns: 1fr;
+    min-height: 28rem;
+    position: relative;
+    background: var(--brand-sand-dark);
+  }
+  .list,
+  .map {
+    min-height: 0;
+  }
+  .list {
+    overflow: auto;
+    background: var(--brand-sand);
+    padding: var(--size-4) var(--size-4) 5rem;
+  }
+  .map {
+    display: none;
+    position: relative;
+    background:
+      linear-gradient(180deg, transparent 62%, var(--brand-map-water) 62%),
+      repeating-linear-gradient(0deg, transparent, transparent 22px, rgba(255, 255, 255, 0.35) 22px, rgba(255, 255, 255, 0.35) 23px),
+      repeating-linear-gradient(90deg, transparent, transparent 22px, rgba(255, 255, 255, 0.28) 22px, rgba(255, 255, 255, 0.28) 23px),
+      var(--brand-map);
+  }
+  .label {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    color: var(--brand-deep);
+    font-size: var(--font-size-1);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    opacity: 0.55;
+    margin: 0;
+  }
+  .zoom {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    display: grid;
+    gap: 0.25rem;
+    z-index: 2;
+  }
+  .zoom span {
+    width: 2rem;
+    height: 2rem;
+    display: grid;
+    place-items: center;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: 0.35rem;
+    font-weight: 700;
+  }
+  .pins {
+    position: absolute;
+    inset: 18% 12% 28% 18%;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+    align-content: flex-start;
+  }
+  .pin {
+    width: 1.7rem;
+    height: 1.7rem;
+    border-radius: 50%;
+    background: var(--brand-teal);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  }
+  .toggle {
+    position: fixed;
+    left: 50%;
+    bottom: 1.25rem;
+    transform: translateX(-50%);
+    z-index: 30;
+    border: 0;
+    border-radius: 999px;
+    background: var(--brand-ink);
+    color: #fff;
+    padding: 0.7rem 1.35rem;
+    font-weight: 700;
+    box-shadow: var(--shadow-card);
+    cursor: pointer;
+  }
+  .two-pane[data-mobile-view="map"] .list {
+    display: none;
+  }
+  .two-pane[data-mobile-view="map"] .map {
+    display: block;
+    min-height: calc(100vh - 9rem);
+  }
+  @media (min-width: 960px) {
+    .two-pane {
+      grid-template-columns: minmax(20rem, 42%) minmax(0, 1fr);
+    }
+    .list {
+      display: block !important;
+      padding: 1.25rem 1.5rem 2rem;
+      border-right: 1px solid var(--brand-line);
+      max-height: calc(100vh - 8.5rem);
+    }
+    .map {
+      display: block !important;
+      min-height: calc(100vh - 8.5rem);
+    }
+    .toggle {
+      display: none;
+    }
+  }
+</style>

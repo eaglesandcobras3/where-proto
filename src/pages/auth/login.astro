@@ -1,30 +1,18 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AuthForm from "../../components/islands/AuthForm.svelte";
 import { href } from "../../lib/href";
 ---
 
-<Layout title="Login" note="Auth pages are still being defined.">
-  <h1>Login</h1>
-  <Box label="Sign in">
-    <form>
-      <p>
-        <label>
-          Email
-          <input type="email" name="email" />
-        </label>
-      </p>
-      <p>
-        <label>
-          Password
-          <input type="password" name="password" />
-        </label>
-      </p>
-      <button type="button">Sign in</button>
-    </form>
-  </Box>
-  <ul>
-    <li><a href={href("/auth/signup")}>Sign up</a></li>
-    <li><a href={href("/auth/forgot-password")}>Forgot password</a></li>
-  </ul>
-</Layout>
+<BaseLayout title="Sign in">
+  <div class="container section">
+    <h1>Welcome back</h1>
+    <AuthForm
+      mode="login"
+      loginHref={href("/auth/login")}
+      signupHref={href("/auth/signup")}
+      forgotHref={href("/auth/forgot-password")}
+      client:load
+    />
+  </div>
+</BaseLayout>

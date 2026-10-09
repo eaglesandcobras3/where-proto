@@ -1,10 +1,14 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import { href } from "../lib/href";
 ---
 
-<Layout title="Not found">
-  <h1>Not found</h1>
-  <p>That route is not in the wireframe.</p>
-  <p><a href={href("/")}>Homepage</a> · <a href={href("/ia")}>All routes / IA</a></p>
-</Layout>
+<BaseLayout title="Not found">
+  <div class="container section">
+    <h1>Not found</h1>
+    <p>That route is not in this prototype.</p>
+    <p>
+      <a href={href("/")}>Homepage</a> · <a href={href("/ia")}>All routes</a>
+    </p>
+  </div>
+</BaseLayout>

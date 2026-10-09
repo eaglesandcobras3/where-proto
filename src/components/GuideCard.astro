@@ -1,0 +1,49 @@
+---
+import { href } from "../lib/href";
+import type { Guide } from "../data/types";
+
+interface Props {
+  guide: Guide;
+}
+
+const { guide } = Astro.props;
+---
+
+<a class="card" href={href(`/guide/${guide.slug}`)}>
+  <div class="thumb img-placeholder" aria-hidden="true">{guide.title.charAt(0)}</div>
+  <div class="body">
+    <h3>{guide.title}</h3>
+    <p class="excerpt">{guide.summary}</p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    color: var(--brand-ink);
+  }
+  .card:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .thumb {
+    height: 120px;
+    border-radius: 0;
+  }
+  .body {
+    padding: var(--size-3) var(--size-4);
+  }
+  .body h3 {
+    font-size: var(--font-size-2);
+    margin-bottom: var(--size-1);
+  }
+  .excerpt {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    margin: 0;
+  }
+</style>

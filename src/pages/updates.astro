@@ -1,0 +1,39 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import UpdateCard from "../components/UpdateCard.astro";
+import { isEnabled } from "../config/flags";
+import { updates } from "../data/catalog";
+import { href } from "../lib/href";
+---
+
+<BaseLayout title="Updates around 30A" description="Short, timely updates from local businesses and towns around 30A.">
+  <div class="container section">
+    <PageHeader
+      eyebrow="Updates"
+      title="Updates around 30A"
+      lede="New menu items, hour changes, and small business news. This rollup is footer only. Town and business pages are the primary surface."
+    />
+    <p class="cta"><a href={href("/add-business")}>Own a business? Share an update</a></p>
+    {
+      isEnabled("updates") && (
+        <div class="grid">
+          {updates.map((update) => (
+            <UpdateCard update={update} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .cta {
+    margin-bottom: var(--size-6);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

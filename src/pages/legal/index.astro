@@ -1,12 +1,20 @@
 ---
-import Layout from "../../layouts/Layout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import { href } from "../../lib/href";
 ---
 
-<Layout title="Legal" note="Legal pages are still being defined.">
-  <h1>Legal</h1>
-  <ul>
-    <li><a href={href("/legal/terms")}>Terms</a></li>
-    <li><a href={href("/legal/privacy")}>Privacy</a></li>
-  </ul>
-</Layout>
+<BaseLayout title="Legal">
+  <div class="container section article">
+    <h1>Legal</h1>
+    <ul>
+      <li><a href={href("/legal/terms")}>Terms</a></li>
+      <li><a href={href("/legal/privacy")}>Privacy</a></li>
+    </ul>
+  </div>
+</BaseLayout>
+
+<style>
+  .article {
+    max-width: 640px;
+  }
+</style>

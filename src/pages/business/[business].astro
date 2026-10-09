@@ -1,9 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import LinkList from "../../components/LinkList.astro";
-import Box from "../../components/Box.astro";
-import Placeholder from "../../components/Placeholder.astro";
-import FeedList from "../../components/FeedList.astro";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import UpdatesModule from "../../components/UpdatesModule.astro";
+import PhotoGrid from "../../components/PhotoGrid.astro";
+import EventCard from "../../components/EventCard.astro";
+import PostCard from "../../components/PostCard.astro";
+import { isEnabled } from "../../config/flags";
 import {
   areaBySlug,
   businesses,
@@ -15,9 +16,7 @@ import {
   tagBySlug,
   townBySlug,
   updatesForBusiness,
-  userBySlug,
 } from "../../data/catalog";
-import UpdatesList from "../../components/UpdatesList.astro";
 import type { Business } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -33,7 +32,6 @@ interface Props {
 const { item: business } = Astro.props;
 const town = townBySlug(business.townSlug);
 const area = business.areaSlug ? areaBySlug(business.areaSlug) : undefined;
-const owner = business.ownerUserSlug ? userBySlug(business.ownerUserSlug) : undefined;
 const leaf = leafBySlug(business.leafSlug);
 const stay = stayBySlug(business.slug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
@@ -42,124 +40,201 @@ const businessPhotos = photosFor("business", business.slug);
 const businessUpdates = updatesForBusiness(business.slug);
 ---
 
-<Layout
+<PlaceLayout
   title={business.name}
-  note="Posting to the feed as a user happens on this business page. Posting as the business happens from the dashboard. How to post as business vs user is still an open question."
+  description={business.summary}
+  active="businesses"
+  browseTown={town?.name}
+  browseCategory={leaf?.name}
+  crumbs={[
+    { label: "Towns", path: "/towns" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: business.name },
+  ]}
 >
-  <p><a href={href("/search")}>Search</a></p>
-  <h1>Business: {business.name}</h1>
-  <p>{business.summary}</p>
-
-  <Box label="Facts">
-    <ul>
-      {
-        town && (
-          <li>
-            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-          </li>
-        )
-      }
-      {
-        area && (
-          <li>
-            Area: <a href={href(`/area/${area.slug}`)}>{area.name}</a>
-            {` (${area.kind === "shopping" ? "shopping area" : "neighborhood"})`}
-          </li>
-        )
-      }
-      {
-        town && (
-          <li>
-            Category page:{" "}
-            <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>
-              {leaf?.name ?? business.leafSlug} in {town.name}
+  <div class="container">
+    <section class="hero">
+      <div class="hero-img img-placeholder" aria-hidden="true">{business.name.charAt(0)}</div>
+      <div>
+        <h1>{business.name}</h1>
+        <p class="meta">
+          {town && <a href={href(`/town/${town.slug}`)}>{town.name}</a>}
+          {" · "}
+          {town && (
+            <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>{leaf?.name ?? business.leafSlug}</a>
+          )}
+          {area && (
+            <>
+              {" · "}
+              <a href={href(`/area/${area.slug}`)}>{area.name}</a>
+            </>
+          )}
+        </p>
+        {business.openNow && <span class="open">Open now</span>}
+        <p class="desc">{business.summary}</p>
+        <dl class="facts">
+          {business.address && (
+            <div>
+              <dt>Address</dt>
+              <dd>{business.address}</dd>
+            </div>
+          )}
+          {business.phone && (
+            <div>
+              <dt>Phone</dt>
+              <dd>{business.phone}</dd>
+            </div>
+          )}
+          {business.hours && (
+            <div>
+              <dt>Hours</dt>
+              <dd>{business.hours}</dd>
+            </div>
+          )}
+          {business.priceBand && (
+            <div>
+              <dt>Price</dt>
+              <dd>{business.priceBand}</dd>
+            </div>
+          )}
+          {stay && (
+            <div>
+              <dt>Stay</dt>
+              <dd>
+                <a href={href(`/stay/${stay.slug}`)}>{stay.name}</a>
+              </dd>
+            </div>
+          )}
+          <div>
+            <dt>Owned by</dt>
+            <dd>a local family</dd>
+          </div>
+        </dl>
+        <div class="tags">
+          {business.tagSlugs.map((slug) => (
+            <a class="tag" href={href(`/search?tag=${slug}`)}>
+              {tagBySlug(slug)?.name ?? slug}
             </a>
-          </li>
-        )
-      }
-      {business.address && <li>Address: {business.address}</li>}
-      {business.phone && <li>Phone: {business.phone}</li>}
-      {business.website && <li>Website: {business.website}</li>}
-      {business.hours && <li>Hours: {business.hours}</li>}
-      {business.priceBand && <li>Price: {business.priceBand}</li>}
-      <li>{business.openNow ? "Open now" : "Closed now"} (fake flag)</li>
-      <li>
-        Tags:{" "}
-        {business.tagSlugs
-          .map((slug) => tagBySlug(slug)?.name ?? slug)
-          .join(", ") || "none"}
-      </li>
-      {
-        stay && (
-          <li>
-            Stay page: <a href={href(`/stay/${stay.slug}`)}>{stay.name}</a>
-          </li>
-        )
-      }
-      {
-        owner && (
-          <li>
-            Owner: <a href={href(`/u/${owner.slug}`)}>{owner.name}</a>
-          </li>
-        )
-      }
-    </ul>
-  </Box>
-
-  <Box label="Map">
-    <Placeholder kind="map" caption={business.name} />
-  </Box>
-
-  <Box label="Photos">
-    {
-      businessPhotos.length === 0 ? (
-        <Placeholder caption="No listing photos yet" />
-      ) : (
-        <div class="row">
-          {businessPhotos.map((photo) => (
-            <Placeholder caption={photo.caption} />
           ))}
         </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">Photos</h2>
+      <PhotoGrid photos={businessPhotos} />
+    </section>
+
+    {
+      businessEvents.length > 0 && (
+        <section>
+          <h2 class="section-title">Events</h2>
+          <div class="grid">
+            {businessEvents.map((event) => (
+              <EventCard event={event} />
+            ))}
+          </div>
+        </section>
       )
     }
-  </Box>
 
-  <Box label="Updates">
-    <UpdatesList items={businessUpdates} />
-  </Box>
+    {
+      isEnabled("communityFeed") && (
+        <section>
+          <h2 class="section-title">Community feed</h2>
+          {businessPosts.length === 0 ? (
+            <p class="empty">Visitor posts about {business.name} will appear here.</p>
+          ) : (
+            <div class="stack">
+              {businessPosts.map((post) => (
+                <PostCard post={post} />
+              ))}
+            </div>
+          )}
+        </section>
+      )
+    }
 
-  <Box label="Events">
-    <LinkList
-      items={businessEvents.map((item) => ({
-        href: href(`/event/${item.slug}`),
-        label: item.name,
-        meta: item.when,
-      }))}
-    />
-  </Box>
+    {isEnabled("updates") && <UpdatesModule title="Latest updates" updates={businessUpdates} />}
+  </div>
+</PlaceLayout>
 
-  <Box label="Feed posts">
-    <FeedList items={businessPosts} />
-  </Box>
-
-  <Box label="Post to this business feed (as user)">
-    <p>Wireframe form. Submit does nothing.</p>
-    <form>
-      <label>
-        Post
-        <input type="text" name="body" />
-      </label>
-      <button type="button">Post as user</button>
-    </form>
-  </Box>
-
-  {
-    owner && (
-      <Box label="Manage">
-        <p>
-          <a href={href(`/dashboard/${business.slug}`)}>Manage this business</a>
-        </p>
-      </Box>
-    )
+<style>
+  .hero {
+    display: flex;
+    gap: var(--size-6);
+    padding-block: var(--size-6);
   }
-</Layout>
+  .hero-img {
+    width: 220px;
+    height: 220px;
+    border-radius: var(--radius-card);
+    flex-shrink: 0;
+    font-size: var(--font-size-9);
+  }
+  .meta {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .open {
+    display: inline-block;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+    background: var(--brand-teal-soft);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
+    margin-bottom: var(--size-2);
+  }
+  .desc {
+    max-width: 64ch;
+  }
+  .facts {
+    display: grid;
+    gap: var(--size-2);
+    margin-block: var(--size-4);
+  }
+  .facts div {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: var(--size-3);
+    font-size: var(--font-size-1);
+  }
+  .facts dt {
+    font-weight: var(--font-weight-7);
+    color: var(--brand-ink-soft);
+  }
+  .facts dd {
+    margin: 0;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+  }
+  .tag {
+    font-size: var(--font-size-0);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
+    background: white;
+    color: var(--brand-ink-soft);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--size-4);
+  }
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+  @media (max-width: 640px) {
+    .hero {
+      flex-direction: column;
+    }
+  }
+</style>

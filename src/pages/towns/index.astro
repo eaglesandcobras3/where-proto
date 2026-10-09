@@ -1,24 +1,27 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import LinkList from "../../components/LinkList.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import TownCard from "../../components/TownCard.astro";
 import { towns } from "../../data/catalog";
-import { href } from "../../lib/href";
 ---
 
-<Layout title="Towns">
-  <h1>Towns</h1>
-  <Box label="Town hub">
-    <p>
-      Hub. Town names only. No business cards on this route. Shopping areas and neighborhoods live
-      under <a href={href("/areas")}>Areas</a>.
-    </p>
-    <LinkList
-      items={towns.map((item) => ({
-        href: href(`/town/${item.slug}`),
-        label: item.name,
-        meta: `${item.walkability} · ${item.summary}`,
-      }))}
+<BaseLayout title="Towns on 30A" description="Compare the towns along Scenic Highway 30A." active="towns" showBrowse>
+  <div class="container section">
+    <PageHeader
+      eyebrow="Towns"
+      title="The 30A corridor"
+      lede="Start with a town, then a category. Town hubs never list businesses directly. The indexable listings live on town plus category pages."
     />
-  </Box>
-</Layout>
+    <div class="grid">
+      {towns.map((town) => <TownCard town={town} />)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

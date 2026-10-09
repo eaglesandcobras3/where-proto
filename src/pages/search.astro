@@ -1,8 +1,9 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import LinkList from "../components/LinkList.astro";
-import Box from "../components/Box.astro";
-import { allLeaves, businesses, listingMeta, tags, towns } from "../data/catalog";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import FilterBar from "../components/islands/FilterBar.svelte";
+import { allLeaves, businesses, categories, tags, towns } from "../data/catalog";
+import { toFilterBusiness } from "../lib/listing";
 import { href } from "../lib/href";
 
 const params = Astro.url.searchParams;
@@ -10,105 +11,56 @@ const town = params.get("town") ?? "";
 const category = params.get("category") ?? "";
 const tag = params.get("tag") ?? "";
 const openNow = params.get("open") === "1";
-const filtered = Boolean(town || category || tag || openNow);
-
-const hits = businesses.filter((item) => {
-  if (town && item.townSlug !== town) return false;
-  if (category && item.leafSlug !== category) return false;
-  if (tag && !item.tagSlugs.includes(tag)) return false;
-  if (openNow && !item.openNow) return false;
-  return true;
-});
-
-const comboCanonical = town && category && !tag && !openNow;
+const comboCanonical = Boolean(town && category && !tag && !openNow);
 const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
+const filterCategories = [
+  ...categories.map((item) => ({ slug: item.slug, name: item.name })),
+  ...allLeaves().map((item) => ({ slug: item.slug, name: `${item.groupName} / ${item.name}` })),
+];
+const base = import.meta.env.BASE_URL;
 ---
 
-<Layout title="Search" noindex canonicalPath={canonicalPath}>
-  <h1>Search</h1>
-  <p>
-    Business finder. Filters: town, category, tag, open now. Indexable category pages are the
-    town × category combos, not this route.
-  </p>
-
-  <Box label="Filters">
-    <form action={href("/search")} method="get">
-      <p>
-        <label>
-          Town
-          <select name="town">
-            <option value="">Any</option>
-            {
-              towns.map((item) => (
-                <option value={item.slug} selected={item.slug === town}>
-                  {item.name}
-                </option>
-              ))
-            }
-          </select>
-        </label>
-      </p>
-      <p>
-        <label>
-          Category
-          <select name="category">
-            <option value="">Any</option>
-            {
-              allLeaves().map((leaf) => (
-                <option value={leaf.slug} selected={leaf.slug === category}>
-                  {leaf.groupName} / {leaf.name}
-                </option>
-              ))
-            }
-          </select>
-        </label>
-      </p>
-      <p>
-        <label>
-          Tag
-          <select name="tag">
-            <option value="">Any</option>
-            {
-              tags.map((item) => (
-                <option value={item.slug} selected={item.slug === tag}>
-                  {item.name}
-                </option>
-              ))
-            }
-          </select>
-        </label>
-      </p>
-      <p>
-        <label>
-          <input type="checkbox" name="open" value="1" checked={openNow} />
-          Open now
-        </label>
-      </p>
-      <button type="submit">Find businesses</button>
-    </form>
-  </Box>
-
-  {
-    comboCanonical && (
-      <Box label="Canonical">
-        <p>
-          Indexable page for this combo:{" "}
+<BaseLayout
+  title="Search businesses on 30A"
+  description="Search every business on 30A by town, category, tag, or open now."
+  active="businesses"
+  noindex
+  canonicalPath={canonicalPath}
+  showBrowse
+>
+  <div class="container section">
+    <PageHeader
+      title="Find a business"
+      lede="Search is the finder. Indexable listings live on town plus category pages. This route stays noindex."
+    />
+    {
+      comboCanonical && (
+        <p class="canonical">
+          Indexable page for this combo:
           <a href={href(`/town/${town}/${category}`)}>
             /town/{town}/{category}
           </a>
         </p>
-      </Box>
-    )
-  }
-
-  <Box label="Results">
-    <p>{filtered ? `${hits.length} fake matches.` : "No filters. Showing all fake businesses."}</p>
-    <LinkList
-      items={hits.map((item) => ({
-        href: href(`/business/${item.slug}`),
-        label: item.name,
-        meta: listingMeta(item),
-      }))}
+      )
+    }
+    <FilterBar
+      businesses={businesses.map(toFilterBusiness)}
+      towns={towns}
+      categories={filterCategories}
+      tags={tags}
+      initialTown={town}
+      initialCategory={category}
+      initialTag={tag}
+      initialOpenNow={openNow}
+      base={base}
+      client:load
     />
-  </Box>
-</Layout>
+  </div>
+</BaseLayout>
+
+<style>
+  .canonical {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+</style>

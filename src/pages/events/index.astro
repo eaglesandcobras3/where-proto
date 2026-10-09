@@ -1,20 +1,23 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import LinkList from "../../components/LinkList.astro";
-import Box from "../../components/Box.astro";
-import { events, townBySlug } from "../../data/catalog";
-import { href } from "../../lib/href";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import EventCard from "../../components/EventCard.astro";
+import { events } from "../../data/catalog";
 ---
 
-<Layout title="Events">
-  <h1>Events</h1>
-  <Box label="Upcoming">
-    <LinkList
-      items={events.map((item) => ({
-        href: href(`/event/${item.slug}`),
-        label: item.name,
-        meta: `${item.when}${item.townSlug ? ` · ${townBySlug(item.townSlug)?.name}` : ""}`,
-      }))}
-    />
-  </Box>
-</Layout>
+<BaseLayout title="Events on 30A" description="Upcoming events along Scenic Highway 30A." active="events">
+  <div class="container section">
+    <PageHeader eyebrow="Events" title="What's on" lede="Concerts, markets, and seasonal gatherings. Fake dates for the prototype." />
+    <div class="grid">
+      {events.map((event) => <EventCard event={event} />)}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

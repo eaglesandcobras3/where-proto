@@ -1,26 +1,12 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import NewsletterForm from "../../components/islands/NewsletterForm.svelte";
 ---
 
-<Layout title="Business newsletter">
-  <h1>Business newsletter</h1>
-  <Box label="Subscribe">
-    <p>Fake subscribe form for business owners.</p>
-    <form>
-      <p>
-        <label>
-          Email
-          <input type="email" name="email" />
-        </label>
-      </p>
-      <p>
-        <label>
-          Business name
-          <input type="text" name="business" />
-        </label>
-      </p>
-      <button type="button">Subscribe</button>
-    </form>
-  </Box>
-</Layout>
+<BaseLayout title="Business newsletter">
+  <div class="container section">
+    <PageHeader title="Business newsletter" lede="Owner notes on listing updates and events. Prototype subscribe only." />
+    <NewsletterForm audience="business" client:visible />
+  </div>
+</BaseLayout>

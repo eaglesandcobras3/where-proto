@@ -1,0 +1,62 @@
+---
+import { areaKindLabel, areasForTown } from "../data/catalog";
+import { href } from "../lib/href";
+
+interface Props {
+  townSlug: string;
+  townName: string;
+}
+
+const { townSlug, townName } = Astro.props;
+const items = areasForTown(townSlug);
+---
+
+{
+  items.length > 0 && (
+    <section class="areas">
+      <p class="eyebrow">Areas in {townName}</p>
+      <div class="chips">
+        {items.map((area) => (
+          <a class="chip" href={href(`/area/${area.slug}`)}>
+            {area.name}
+            <span class="count">{areaKindLabel(area.kind)}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .areas {
+    margin-block: var(--size-6);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-2);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: var(--size-2) var(--size-3);
+    background: white;
+    color: var(--brand-ink);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .chip:hover {
+    text-decoration: none;
+    border-color: var(--brand-teal);
+  }
+  .count {
+    font-size: var(--font-size-0);
+    background: var(--brand-sand-dark);
+    border-radius: var(--radius-4);
+    padding: 1px var(--size-2);
+    color: var(--brand-ink-soft);
+  }
+</style>

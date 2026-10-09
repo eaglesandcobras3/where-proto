@@ -1,30 +1,36 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AccountNav from "../../components/AccountNav.astro";
 import { currentUser } from "../../data/catalog";
-import { href } from "../../lib/href";
 
 const user = currentUser();
 ---
 
-<Layout title="Account settings" note="Account settings are still being defined.">
-  <p><a href={href("/profile")}>Profile</a></p>
-  <h1>Account settings</h1>
-  <Box label="Settings form">
-    <form>
-      <p>
-        <label>
-          Display name
-          <input type="text" name="name" value={user?.name} />
-        </label>
-      </p>
-      <p>
-        <label>
-          Bio
-          <textarea name="bio">{user?.bio}</textarea>
-        </label>
-      </p>
-      <button type="button">Save</button>
+<BaseLayout title="Account settings">
+  <div class="container section">
+    <h1>Settings</h1>
+    <AccountNav active="settings" />
+    <form class="form" onsubmit="return false;">
+      <wa-input label="Display name" value={user?.name ?? ""}></wa-input>
+      <wa-input label="Email" type="email" value="kelley@example.com"></wa-input>
+      <wa-switch checked>Email me weekly town roundups</wa-switch>
+      <wa-button variant="brand">Save settings</wa-button>
     </form>
-  </Box>
-</Layout>
+  </div>
+</BaseLayout>
+
+<style>
+  .form {
+    display: grid;
+    gap: var(--size-4);
+    max-width: 480px;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-5);
+    justify-items: start;
+  }
+  .form wa-input {
+    width: 100%;
+  }
+</style>

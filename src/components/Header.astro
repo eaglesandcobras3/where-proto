@@ -1,0 +1,176 @@
+---
+import SearchBar from "./islands/SearchBar.svelte";
+import { businesses } from "../data/catalog";
+import { href } from "../lib/href";
+
+interface Props {
+  active?: string;
+}
+
+const { active = "" } = Astro.props;
+const base = import.meta.env.BASE_URL;
+
+const links = [
+  { label: "Towns", path: "/towns", key: "towns" },
+  { label: "Areas", path: "/areas", key: "areas" },
+  { label: "Businesses", path: "/search", key: "businesses" },
+  { label: "Events", path: "/events", key: "events" },
+  { label: "Stays", path: "/stays", key: "stays" },
+  { label: "Guides", path: "/guides", key: "guides" },
+  { label: "Ask", path: "/ask", key: "ask" },
+];
+---
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href={href("/")}>WhereTo<span>30A</span></a>
+
+    <nav class="desktop-nav" aria-label="Primary">
+      {
+        links.map((link) => (
+          <a href={href(link.path)} class:list={[{ active: active === link.key }]}>
+            {link.label}
+          </a>
+        ))
+      }
+    </nav>
+
+    <div class="header-actions">
+      <a class="add-business" href={href("/add-business")}>Add business</a>
+      <SearchBar
+        businesses={businesses.map((item) => ({ slug: item.slug, name: item.name, town: item.townSlug }))}
+        base={base}
+        client:load
+      />
+      <a class="icon-link" href={href("/profile")} aria-label="Profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="8" r="3"></circle>
+          <path d="M5 19c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
+        </svg>
+      </a>
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 6h18M3 12h18M3 18h18"></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<wa-drawer label="Menu" id="mobile-drawer" placement="end">
+  <nav class="mobile-nav">
+    {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
+    <a href={href("/add-business")}>Add business</a>
+    <a href={href("/profile")}>Profile</a>
+    <a href={href("/dashboard")}>Dashboard</a>
+    <a href={href("/updates")}>Updates</a>
+  </nav>
+</wa-drawer>
+
+<script>
+  const btn = document.getElementById("menu-btn");
+  const drawer = document.getElementById("mobile-drawer");
+  btn?.addEventListener("click", () => {
+    (drawer as { show?: () => void } | null)?.show?.();
+  });
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--brand-sand);
+    border-bottom: 1px solid var(--brand-line);
+  }
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--size-4);
+    min-height: 64px;
+  }
+  .logo {
+    font-size: var(--font-size-4);
+    font-weight: var(--font-weight-8);
+    font-style: italic;
+    color: var(--brand-deep);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .logo span {
+    color: var(--brand-teal);
+  }
+  .logo:hover {
+    text-decoration: none;
+  }
+  .desktop-nav {
+    display: none;
+    gap: var(--size-4);
+    margin-inline: auto;
+  }
+  .desktop-nav a {
+    color: var(--brand-ink);
+    font-weight: var(--font-weight-6);
+    font-size: var(--font-size-1);
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+  }
+  .desktop-nav a:hover {
+    text-decoration: none;
+    color: var(--brand-teal);
+  }
+  .desktop-nav a.active {
+    border-bottom-color: var(--brand-deep);
+  }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    margin-left: auto;
+  }
+  .add-business {
+    display: none;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink);
+    white-space: nowrap;
+  }
+  .icon-link {
+    display: inline-flex;
+    color: var(--brand-ink);
+    padding: var(--size-1);
+  }
+  .icon-link:hover {
+    color: var(--brand-teal);
+    text-decoration: none;
+  }
+  .menu-btn {
+    background: none;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: var(--size-2);
+    cursor: pointer;
+    color: var(--brand-ink);
+  }
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+  }
+  .mobile-nav a {
+    padding: var(--size-3);
+    font-size: var(--font-size-3);
+    color: var(--brand-ink);
+    border-bottom: 1px solid var(--brand-line);
+  }
+  @media (min-width: 960px) {
+    .desktop-nav,
+    .add-business {
+      display: flex;
+    }
+    .menu-btn {
+      display: none;
+    }
+  }
+</style>

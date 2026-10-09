@@ -1,0 +1,51 @@
+---
+import { href } from "../lib/href";
+import type { Town } from "../data/types";
+import { townView } from "../lib/town-view";
+
+interface Props {
+  town: Town;
+}
+
+const { town } = Astro.props;
+const view = townView(town);
+---
+
+<a class="card" href={href(`/town/${town.slug}`)}>
+  <div class="thumb img-placeholder" aria-hidden="true">{town.name.charAt(0)}</div>
+  <div class="body">
+    <h3>{town.name}</h3>
+    <p>{view.tagline}</p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    color: var(--brand-ink);
+  }
+  .card:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .thumb {
+    height: 140px;
+    border-radius: 0;
+  }
+  .body {
+    padding: var(--size-3) var(--size-4);
+  }
+  .body h3 {
+    font-size: var(--font-size-3);
+    margin-bottom: var(--size-1);
+  }
+  .body p {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    margin: 0;
+  }
+</style>

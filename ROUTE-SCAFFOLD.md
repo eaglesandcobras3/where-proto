@@ -44,5 +44,5 @@ There is no `/businesses` route.
 5. `/search` is `noindex, follow`. If the active filters are exactly town + category, canonical points at `/town/{town}/{category}`. Otherwise canonical is the unfiltered `/search`.
 6. `/ask` is the community route (not `/community`). Question threads at `/ask/{question}`.
 7. User posts from a town or business page. Business posts from `/dashboard/{business}/feed`.
-8. Updates (formerly happenings) are not top-level. They only show on town and business pages.
+8. Updates (formerly happenings) show on town and business pages. `/updates` is a footer-only rollup, never top nav.
 9. Areas extend a town. A town can have many areas. Area kinds are shopping area and neighborhood.

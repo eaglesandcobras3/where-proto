@@ -1,0 +1,57 @@
+---
+import { href } from "../lib/href";
+import { businessBySlug, userBySlug } from "../data/catalog";
+import type { Post } from "../data/types";
+
+interface Props {
+  post: Post;
+}
+
+const { post } = Astro.props;
+const author =
+  post.postedAs === "business" && post.authorBusinessSlug
+    ? businessBySlug(post.authorBusinessSlug)?.name
+    : post.authorUserSlug
+      ? userBySlug(post.authorUserSlug)?.name
+      : "A visitor";
+const authorHref =
+  post.postedAs === "business" && post.authorBusinessSlug
+    ? href(`/business/${post.authorBusinessSlug}`)
+    : post.authorUserSlug
+      ? href(`/u/${post.authorUserSlug}`)
+      : undefined;
+const onHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(`/business/${post.on.slug}`);
+---
+
+<article class="card">
+  <p class="meta">
+    {
+      authorHref ? <a href={authorHref}>{author}</a> : <span>{author}</span>
+    }
+    &middot; {post.createdAt} &middot;
+    <a href={onHref}>{post.on.type}</a>
+  </p>
+  <p>{post.body}</p>
+  <p class="more">
+    <a href={href(`/posts/${post.slug}`)}>Read post</a>
+  </p>
+</article>
+
+<style>
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+  }
+  .meta {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    margin-bottom: var(--size-2);
+  }
+  .more {
+    margin: var(--size-2) 0 0;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+</style>

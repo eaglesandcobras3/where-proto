@@ -1,22 +1,44 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import { knowledge } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
-<Layout title="Knowledge">
-  <p><a href={href("/admin")}>Admin</a></p>
-  <h1>Knowledge</h1>
-  <Box label="Items">
-    <ul>
+<BaseLayout title="Knowledge">
+  <div class="container section">
+    <p><a href={href("/admin")}>Admin</a></p>
+    <h1>Knowledge</h1>
+    <div class="list">
       {
         knowledge.map((item) => (
-          <li>
-            <strong>{item.title}</strong> — {item.body}
-          </li>
+          <article>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </article>
         ))
       }
-    </ul>
-  </Box>
-</Layout>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .list {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 720px;
+  }
+  article {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+  }
+  h3 {
+    font-size: var(--font-size-2);
+    margin-bottom: var(--size-2);
+  }
+  p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+</style>

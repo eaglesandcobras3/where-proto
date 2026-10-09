@@ -1,7 +1,5 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
-import Placeholder from "../../components/Placeholder.astro";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
 import { stays, townBySlug } from "../../data/catalog";
 import type { Stay } from "../../data/types";
 import { href } from "../../lib/href";
@@ -19,36 +17,61 @@ const { item: stay } = Astro.props;
 const town = townBySlug(stay.townSlug);
 ---
 
-<Layout title={stay.name} note="Stay detail is ship-dark with the rest of /stays.">
-  <p><a href={href("/stays")}>Stays</a></p>
-  <h1>Stay: {stay.name}</h1>
-  <p>{stay.summary}</p>
+<PlaceLayout
+  title={stay.name}
+  description={stay.summary}
+  active="stays"
+  browseTown={town?.name}
+  browseCategory="Stay"
+  crumbs={[{ label: "Stays", path: "/stays" }, { label: stay.name }]}
+>
+  <div class="container section">
+    <div class="hero">
+      <div class="hero-img img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
+      <div>
+        <h1>{stay.name}</h1>
+        <p class="lede">{stay.summary}</p>
+        <p>Sleeps {stay.sleeps}</p>
+        {
+          town && (
+            <p>
+              <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+              {" · "}
+              <a href={href(`/town/${town.slug}/vacation-rentals`)}>Vacation rentals</a>
+              {" · "}
+              <a href={href(`/town/${town.slug}/hotels`)}>Hotels</a>
+            </p>
+          )
+        }
+        {
+          stay.businessSlug && (
+            <p>
+              Listing: <a href={href(`/business/${stay.businessSlug}`)}>{stay.name}</a>
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </div>
+</PlaceLayout>
 
-  <Box label="Facts">
-    <ul>
-      <li>Sleeps: {stay.sleeps}</li>
-      {
-        town && (
-          <li>
-            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-            {" · "}
-            <a href={href(`/town/${town.slug}/vacation-rentals`)}>Vacation rentals</a>
-            {" / "}
-            <a href={href(`/town/${town.slug}/hotels`)}>Hotels</a>
-          </li>
-        )
-      }
-      {
-        stay.businessSlug && (
-          <li>
-            Business page: <a href={href(`/business/${stay.businessSlug}`)}>{stay.name}</a>
-          </li>
-        )
-      }
-    </ul>
-  </Box>
-
-  <Box label="Photos">
-    <Placeholder caption={stay.name} />
-  </Box>
-</Layout>
+<style>
+  .hero {
+    display: flex;
+    gap: var(--size-6);
+  }
+  .hero-img {
+    width: 220px;
+    height: 180px;
+    border-radius: var(--radius-card);
+    flex-shrink: 0;
+  }
+  .lede {
+    color: var(--brand-ink-soft);
+  }
+  @media (max-width: 640px) {
+    .hero {
+      flex-direction: column;
+    }
+  }
+</style>

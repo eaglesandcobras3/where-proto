@@ -1,35 +1,48 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
-import { areaKindLabel, areasForTown, towns } from "../../data/catalog";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
+import AreaCard from "../../components/AreaCard.astro";
+import { areasForTown, towns } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
-<Layout title="Areas">
-  <h1>Areas</h1>
-  <p>
-    An area belongs to one town. Shopping areas and neighborhoods are both areas — a town can
-    have many of each.
-  </p>
-  {
-    towns.map((town) => {
-      const townAreas = areasForTown(town.slug);
-      return (
-        <Box label={town.name}>
-          <p>
-            <a href={href(`/town/${town.slug}`)}>{town.name}</a> town page
-          </p>
-          <ul>
-            {townAreas.map((item) => (
-              <li>
-                <a href={href(`/area/${item.slug}`)}>{item.name}</a> — {areaKindLabel(item.kind)}
-                {" · "}
-                {item.summary}
-              </li>
-            ))}
-          </ul>
-        </Box>
-      );
-    })
+<BaseLayout title="Areas on 30A" description="Shopping areas and neighborhoods that sit inside a town." active="areas">
+  <div class="container section">
+    <PageHeader
+      eyebrow="Areas"
+      title="Shopping areas and neighborhoods"
+      lede="An area belongs to one town. A town can have many of each. Areas extend a town. They are not a second directory."
+    />
+    {
+      towns.map((town) => {
+        const townAreas = areasForTown(town.slug);
+        return (
+          <section class="town-block">
+            <h2>
+              <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+            </h2>
+            <div class="grid">
+              {townAreas.map((area) => (
+                <AreaCard area={area} />
+              ))}
+            </div>
+          </section>
+        );
+      })
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .town-block {
+    margin-bottom: var(--size-8);
   }
-</Layout>
+  .town-block h2 {
+    font-size: var(--font-size-4);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

@@ -1,20 +1,52 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import PageHeader from "../../components/PageHeader.astro";
 import { href } from "../../lib/href";
+
+const links = [
+  { label: "Review queue", path: "/admin/review-queue", body: "Pending businesses, events, and posts." },
+  { label: "SEO overrides", path: "/admin/seo", body: "Title and description overrides." },
+  { label: "Knowledge", path: "/admin/knowledge", body: "Short factual answers used around the site." },
+  { label: "Entities", path: "/admin/entities", body: "Towns, businesses, and other catalog counts." },
+];
 ---
 
-<Layout
-  title="Admin"
-  note="Admin is still being defined. These are the entity and queue screens that already have names."
->
-  <h1>Admin</h1>
-  <Box label="Admin surfaces">
-    <ul>
-      <li><a href={href("/admin/review-queue")}>Review queue</a></li>
-      <li><a href={href("/admin/seo")}>SEO overrides</a></li>
-      <li><a href={href("/admin/knowledge")}>Knowledge</a></li>
-      <li><a href={href("/admin/entities")}>Entities</a></li>
-    </ul>
-  </Box>
-</Layout>
+<BaseLayout title="Admin">
+  <div class="container section">
+    <PageHeader title="Admin" lede="Review, SEO, knowledge, and entity screens. Still a prototype." />
+    <div class="cards">
+      {
+        links.map((link) => (
+          <a class="card" href={href(link.path)}>
+            <h3>{link.label}</h3>
+            <p>{link.body}</p>
+          </a>
+        ))
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--size-4);
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+    color: var(--brand-ink);
+  }
+  .card:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .card p {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+    margin: 0;
+  }
+</style>

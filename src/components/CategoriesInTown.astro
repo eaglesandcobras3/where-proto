@@ -1,0 +1,67 @@
+---
+import { businessesForTown, categories } from "../data/catalog";
+import { href } from "../lib/href";
+
+interface Props {
+  townSlug: string;
+  townName: string;
+}
+
+const { townSlug, townName } = Astro.props;
+const inTown = businessesForTown(townSlug);
+const withCounts = categories
+  .map((category) => ({
+    ...category,
+    count: inTown.filter((item) => item.categorySlug === category.slug).length,
+  }))
+  .filter((category) => category.count > 0);
+---
+
+{
+  withCounts.length > 0 && (
+    <section class="cats">
+      <p class="eyebrow">Categories in {townName}</p>
+      <div class="chips">
+        {withCounts.map((category) => (
+          <a class="chip" href={href(`/town/${townSlug}/${category.slug}`)}>
+            {category.name} <span class="count">{category.count}</span>
+          </a>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .cats {
+    margin-block: var(--size-6);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-2);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: var(--size-2) var(--size-3);
+    background: white;
+    color: var(--brand-ink);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .chip:hover {
+    text-decoration: none;
+    border-color: var(--brand-teal);
+  }
+  .count {
+    font-size: var(--font-size-0);
+    background: var(--brand-sand-dark);
+    border-radius: var(--radius-4);
+    padding: 1px var(--size-2);
+    color: var(--brand-ink-soft);
+  }
+</style>

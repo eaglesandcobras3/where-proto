@@ -1,33 +1,66 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  areas,
+  businesses,
+  categories,
+  events,
+  guides,
+  posts,
+  questions,
+  stays,
+  towns,
+  updates,
+} from "../../data/catalog";
 import { href } from "../../lib/href";
+
+const rows = [
+  ["Towns", towns.length],
+  ["Areas", areas.length],
+  ["Categories", categories.length],
+  ["Businesses", businesses.length],
+  ["Stays", stays.length],
+  ["Events", events.length],
+  ["Guides", guides.length],
+  ["Updates", updates.length],
+  ["Posts", posts.length],
+  ["Questions", questions.length],
+];
 ---
 
-<Layout title="Entities">
-  <p><a href={href("/admin")}>Admin</a></p>
-  <h1>Entities</h1>
-  <Box label="Named in the IA">
-    <p>Most do not have their own admin CRUD yet.</p>
-    <ul>
-      <li>User</li>
-      <li>Business</li>
-      <li>Town</li>
-      <li>Area (shopping or neighborhood)</li>
-      <li>Update (town / business only)</li>
-      <li>Post (Feed)</li>
-      <li>Photo</li>
-      <li>Event</li>
-      <li>Guide</li>
-      <li>Category</li>
-      <li>Tag</li>
-      <li>Question</li>
-      <li>Comment</li>
-      <li>Reactions</li>
-      <li>Favorites</li>
-      <li>Knowledge</li>
-      <li>Review Queue</li>
-      <li>SEO Overrides</li>
+<BaseLayout title="Entities">
+  <div class="container section">
+    <p><a href={href("/admin")}>Admin</a></p>
+    <h1>Entities</h1>
+    <p>Catalog counts from the mock data. Most do not have admin CRUD yet.</p>
+    <ul class="list">
+      {
+        rows.map(([label, count]) => (
+          <li>
+            <strong>{label}</strong>
+            <span>{count}</span>
+          </li>
+        ))
+      }
     </ul>
-  </Box>
-</Layout>
+  </div>
+</BaseLayout>
+
+<style>
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    max-width: 420px;
+    display: grid;
+    gap: var(--size-2);
+  }
+  li {
+    display: flex;
+    justify-content: space-between;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: var(--size-3) var(--size-4);
+  }
+</style>

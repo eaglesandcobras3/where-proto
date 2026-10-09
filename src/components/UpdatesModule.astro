@@ -1,0 +1,44 @@
+---
+import UpdateCard from "./UpdateCard.astro";
+import { href } from "../lib/href";
+import type { Update } from "../data/types";
+
+interface Props {
+  title: string;
+  updates: Update[];
+}
+
+const { title, updates } = Astro.props;
+const shown = updates.slice(0, 3);
+---
+
+{
+  shown.length > 0 && (
+    <section class="updates-module">
+      <h2 class="section-title">{title}</h2>
+      <div class="grid">
+        {shown.map((update) => (
+          <UpdateCard update={update} />
+        ))}
+      </div>
+      <p class="more">
+        <a href={href("/updates")}>See all updates</a>
+      </p>
+    </section>
+  )
+}
+
+<style>
+  .updates-module {
+    margin-block: var(--size-8);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--size-4);
+  }
+  .more {
+    margin-top: var(--size-4);
+    font-size: var(--font-size-1);
+  }
+</style>

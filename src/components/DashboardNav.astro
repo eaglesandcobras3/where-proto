@@ -1,0 +1,56 @@
+---
+import { href } from "../lib/href";
+
+interface Props {
+  businessSlug: string;
+  active?: string;
+}
+
+const { businessSlug, active = "" } = Astro.props;
+const root = `/dashboard/${businessSlug}`;
+
+const links = [
+  { label: "Overview", path: root, key: "overview" },
+  { label: "Listing", path: `${root}/listing`, key: "listing" },
+  { label: "Feed", path: `${root}/feed`, key: "feed" },
+  { label: "New event", path: `${root}/events/new`, key: "event" },
+  { label: "Mentions", path: `${root}/mentions`, key: "mentions" },
+  { label: "Photos", path: `${root}/photos`, key: "photos" },
+];
+---
+
+<nav class="tabs" aria-label="Business dashboard">
+  {
+    links.map((link) => (
+      <a class:list={["tab", { active: active === link.key }]} href={href(link.path)}>
+        {link.label}
+      </a>
+    ))
+  }
+</nav>
+
+<style>
+  .tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-1);
+    border-bottom: 2px solid var(--brand-line);
+    margin-bottom: var(--size-5);
+  }
+  .tab {
+    padding: var(--size-2) var(--size-3);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink-soft);
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+  }
+  .tab:hover {
+    text-decoration: none;
+    color: var(--brand-deep);
+  }
+  .tab.active {
+    color: var(--brand-deep);
+    border-bottom-color: var(--brand-deep);
+  }
+</style>

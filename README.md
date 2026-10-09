@@ -1,8 +1,15 @@
-# WhereTo30A wireframe
+# WhereTo30A prototype
 
-Astro prototype of [whereto30a.com](https://whereto30a.com/). Fake data. Gray-box wireframe, not a designed UI.
+Astro rebuild of [whereto30a.com](https://whereto30a.com/). Mock data only.
 
-Phase 1 is routes. Phase 2 is page anatomy and richer fake data. Phase 3 is account, admin, auth, and newsletter surfaces.
+## Stack
+
+| Choice | Why |
+|---|---|
+| Astro 5, static output | Content pages pre-render. Zero JS by default. |
+| Svelte 5 islands | Interactive widgets hydrate with `client:load` / `client:visible`. |
+| Web Awesome | Web components for drawers, inputs, dialogs, and buttons. |
+| Open Props + scoped CSS | Design tokens without Tailwind. Styles live on each component. |
 
 ## Local
 
@@ -15,18 +22,8 @@ npm run dev
 
 The deploy workflow builds the site and pushes `dist/` to the `gh-pages` branch.
 
-After the first successful deploy, point Pages at that branch:
-
-1. Open Settings → Pages
-2. Set Source to **Deploy from a branch**
-3. Set Branch to `gh-pages` / `/ (root)`
-
-The site URL is:
-
 https://eaglesandcobras3.github.io/where-proto/
-
-If the repository stays private, GitHub Pages needs a paid plan. Making the repo public is the other option.
 
 ## Routes
 
-See `ROUTE-SCAFFOLD.md`. `/ia` lists every live wireframe route.
+See `ROUTE-SCAFFOLD.md`. `/ia` lists every live route. `/updates` is footer only.

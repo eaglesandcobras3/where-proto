@@ -1,98 +1,146 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import LinkList from "../components/LinkList.astro";
-import Box from "../components/Box.astro";
-import Placeholder from "../components/Placeholder.astro";
-import { areaKindLabel, areas, events, guides, knowledge, townBySlug, towns } from "../data/catalog";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import TownCard from "../components/TownCard.astro";
+import BusinessCard from "../components/BusinessCard.astro";
+import EventCard from "../components/EventCard.astro";
+import GuideCard from "../components/GuideCard.astro";
+import AreaCard from "../components/AreaCard.astro";
+import UpdatesModule from "../components/UpdatesModule.astro";
+import NewsletterForm from "../components/islands/NewsletterForm.svelte";
+import { isEnabled } from "../config/flags";
+import { areas, businesses, events, guides, towns, updates } from "../data/catalog";
 import { href } from "../lib/href";
 ---
 
-<Layout title="Homepage">
-  <h1>Homepage</h1>
-  <p>Local guide to 30A, Florida. Wireframe with fake data.</p>
+<BaseLayout title="Your local guide to 30A and Florida's Emerald Coast" showBrowse>
+  <section class="hero">
+    <div class="container">
+      <h1>Find the best of 30A</h1>
+      <p class="lede">
+        Curated listings, town guides, and hand-picked local favorites along Florida's Emerald Coast.
+        Pick a town, then a category. Search is the finder.
+      </p>
+    </div>
+  </section>
 
-  <Box label="Hero">
-    <Placeholder caption="30A corridor" />
-    <p>Pick a town, then a category. Search is the finder; town × category pages are the indexable listings.</p>
-  </Box>
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Explore the towns</h2>
+      <div class="grid towns-grid">
+        {towns.map((town) => <TownCard town={town} />)}
+      </div>
+      <p class="more"><a href={href("/towns")}>See all towns</a></p>
+    </div>
+  </section>
 
-  <Box label="Towns">
-    <p><a href={href("/towns")}>All towns</a></p>
-    <LinkList
-      items={towns.map((item) => ({
-        href: href(`/town/${item.slug}`),
-        label: item.name,
-        meta: `${item.walkability} · ${item.summary}`,
-      }))}
-    />
-  </Box>
+  <section class="section alt">
+    <div class="container">
+      <h2 class="section-title">Featured businesses</h2>
+      <div class="grid cards-grid">
+        {businesses.slice(0, 4).map((business) => <BusinessCard business={business} />)}
+      </div>
+      <p class="more"><a href={href("/search")}>Browse all businesses</a></p>
+    </div>
+  </section>
 
-  <Box label="Find businesses">
-    <p>
-      <a href={href("/search")}>Search</a> filters town, category, tag, and open now.
-      Indexable listings live on pages such as
-      <a href={href("/town/rosemary-beach/restaurants")}>/town/rosemary-beach/restaurants</a>.
-    </p>
-  </Box>
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Areas</h2>
+      <div class="grid tiles-grid">
+        {areas.filter((item) => item.kind === "shopping").map((area) => <AreaCard area={area} />)}
+      </div>
+      <p class="more"><a href={href("/areas")}>See all areas</a></p>
+    </div>
+  </section>
 
-  <Box label="Events">
-    <p><a href={href("/events")}>All events</a></p>
-    <LinkList
-      items={events.map((item) => ({
-        href: href(`/event/${item.slug}`),
-        label: item.name,
-        meta: item.when,
-      }))}
-    />
-  </Box>
+  {
+    isEnabled("events") && (
+      <section class="section alt">
+        <div class="container">
+          <h2 class="section-title">Upcoming events</h2>
+          <div class="grid tiles-grid">
+            {events.map((event) => (
+              <EventCard event={event} />
+            ))}
+          </div>
+          <p class="more">
+            <a href={href("/events")}>See all events</a>
+          </p>
+        </div>
+      </section>
+    )
+  }
 
-  <Box label="Areas">
-    <p>
-      <a href={href("/areas")}>All areas</a> — shopping areas and neighborhoods that sit inside a
-      town.
-    </p>
-    <LinkList
-      items={areas.map((item) => ({
-        href: href(`/area/${item.slug}`),
-        label: item.name,
-        meta: `${areaKindLabel(item.kind)} · ${townBySlug(item.townSlug)?.name ?? item.townSlug}`,
-      }))}
-    />
-  </Box>
+  {
+    isEnabled("guides") && (
+      <section class="section">
+        <div class="container">
+          <h2 class="section-title">Guides</h2>
+          <div class="grid tiles-grid">
+            {guides.slice(0, 3).map((guide) => (
+              <GuideCard guide={guide} />
+            ))}
+          </div>
+          <p class="more">
+            <a href={href("/guides")}>See all guides</a>
+          </p>
+        </div>
+      </section>
+    )
+  }
 
-  <Box label="Guides">
-    <p><a href={href("/guides")}>All guides</a></p>
-    <LinkList
-      items={guides.map((item) => ({
-        href: href(`/guide/${item.slug}`),
-        label: item.title,
-        meta: item.summary,
-      }))}
-    />
-  </Box>
+  {
+    isEnabled("updates") && (
+      <div class="container">
+        <UpdatesModule title="Latest updates" updates={updates} />
+      </div>
+    )
+  }
 
-  <Box label="Ask">
-    <p><a href={href("/ask")}>Community questions</a></p>
-  </Box>
+  <section class="section alt">
+    <div class="container subscribe">
+      <h2 class="section-title">Visitor newsletter</h2>
+      <p>Short notes on towns, events, and what is open. Prototype form only.</p>
+      <NewsletterForm audience="visitor" client:visible />
+    </div>
+  </section>
+</BaseLayout>
 
-  <Box label="Knowledge">
-    <ul>
-      {knowledge.map((item) => (
-        <li>
-          <strong>{item.title}</strong> — {item.body}
-        </li>
-      ))}
-    </ul>
-  </Box>
-
-  <Box label="Visitor newsletter">
-    <p>Fake subscribe form. Full page at <a href={href("/newsletters/visitor")}>/newsletters/visitor</a>.</p>
-    <form>
-      <label>
-        Email
-        <input type="email" name="email" />
-      </label>
-      <button type="button">Subscribe</button>
-    </form>
-  </Box>
-</Layout>
+<style>
+  .hero {
+    padding-block: var(--size-10);
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: var(--font-size-8);
+  }
+  .lede {
+    font-size: var(--font-size-3);
+    color: var(--brand-ink-soft);
+    max-width: 60ch;
+    margin-inline: auto;
+  }
+  .alt {
+    background: white;
+    border-block: 1px solid var(--brand-line);
+  }
+  .grid {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .towns-grid {
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  }
+  .cards-grid {
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  }
+  .tiles-grid {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+  .more {
+    margin-top: var(--size-4);
+  }
+  .subscribe {
+    max-width: 640px;
+  }
+</style>

@@ -1,0 +1,70 @@
+---
+import BaseLayout from "./BaseLayout.astro";
+import { href } from "../lib/href";
+
+interface Crumb {
+  label: string;
+  path?: string;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  active?: string;
+  crumbs: Crumb[];
+  showBrowse?: boolean;
+  browseTown?: string;
+  browseCategory?: string;
+  noindex?: boolean;
+  canonicalPath?: string;
+}
+
+const {
+  title,
+  description,
+  active,
+  crumbs,
+  showBrowse = true,
+  browseTown,
+  browseCategory,
+  noindex,
+  canonicalPath,
+} = Astro.props;
+---
+
+<BaseLayout
+  title={title}
+  description={description}
+  active={active}
+  showBrowse={showBrowse}
+  browseTown={browseTown}
+  browseCategory={browseCategory}
+  noindex={noindex}
+  canonicalPath={canonicalPath}
+>
+  <div class="container">
+    <nav class="crumbs" aria-label="Breadcrumb">
+      {
+        crumbs.map((crumb, index) => (
+          <span class="crumb">
+            {crumb.path ? <a href={href(crumb.path)}>{crumb.label}</a> : <span aria-current="page">{crumb.label}</span>}
+            {index < crumbs.length - 1 && <span class="sep">/</span>}
+          </span>
+        ))
+      }
+    </nav>
+  </div>
+  <slot />
+</BaseLayout>
+
+<style>
+  .crumbs {
+    padding-block: var(--size-4) 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .sep {
+    margin-inline: var(--size-2);
+    color: var(--brand-line);
+  }
+</style>

@@ -1,16 +1,18 @@
 ---
-import ProtoLayout from "../../../layouts/ProtoLayout.astro";
-import TwoPaneMap from "../../../components/proto/TwoPaneMap.astro";
+import PlaceLayout from "../../../layouts/PlaceLayout.astro";
+import TwoPaneMap from "../../../components/TwoPaneMap.astro";
+import Corridor from "../../../components/Corridor.astro";
+import FilterBar from "../../../components/islands/FilterBar.svelte";
 import {
   allLeaves,
   businesses,
   categories,
-  leafBySlug,
-  listingMeta,
   towns,
 } from "../../../data/catalog";
 import type { Category, CategoryLeaf, Town } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { toFilterBusiness } from "../../../lib/listing";
+import { tags } from "../../../data/catalog";
 
 type LeafWithGroup = CategoryLeaf & { groupSlug: string; groupName: string };
 
@@ -18,23 +20,13 @@ export function getStaticPaths() {
   return towns.flatMap((town) => [
     ...categories.map((group) => ({
       params: { town: town.slug, category: group.slug },
-      props: {
-        town,
-        group,
-        leaf: null as LeafWithGroup | null,
-        showAll: true,
-      },
+      props: { town, group, leaf: null as LeafWithGroup | null, showAll: true },
     })),
     ...allLeaves().map((leaf) => {
       const group = categories.find((item) => item.slug === leaf.groupSlug) ?? categories[0];
       return {
         params: { town: town.slug, category: leaf.slug },
-        props: {
-          town,
-          group,
-          leaf,
-          showAll: false,
-        },
+        props: { town, group, leaf, showAll: false },
       };
     }),
   ]);
@@ -48,94 +40,60 @@ interface Props {
 }
 
 const { town, group, leaf, showAll } = Astro.props;
-
 const groupListings = businesses.filter(
   (item) => item.townSlug === town.slug && item.categorySlug === group.slug,
 );
-
 const leafCounts = group.leaves
   .map((item) => ({
     ...item,
     count: groupListings.filter((listing) => listing.leafSlug === item.slug).length,
   }))
   .filter((item) => item.count > 0);
-
-const listings = leaf
-  ? groupListings.filter((item) => item.leafSlug === leaf.slug)
-  : groupListings;
-const displayListings = showAll ? groupListings : listings;
-const subcategoryLabel = showAll ? "All in selected group" : (leaf?.name ?? "All in selected group");
-
-const currentIndex = towns.findIndex((item) => item.slug === town.slug);
+const displayListings = showAll ? groupListings : groupListings.filter((item) => item.leafSlug === leaf?.slug);
+const filterCategories = [
+  { slug: group.slug, name: group.name },
+  ...group.leaves.map((item) => ({ slug: item.slug, name: item.name })),
+];
+const base = import.meta.env.BASE_URL;
 ---
 
-<ProtoLayout
+<PlaceLayout
   title={`${group.name} in ${town.name}`}
-  activeNav="towns"
-  headerTone="light"
-  filterTown={town.name}
-  filterCategory={group.name}
-  filterGroup={group.name}
-  filterSubcategory={subcategoryLabel}
-  filterExpanded={true}
+  description={`Find ${group.name.toLowerCase()} in ${town.name}, Florida.`}
+  active="towns"
+  browseTown={town.name}
+  browseCategory={leaf?.name ?? group.name}
+  crumbs={[
+    { label: "Towns", path: "/towns" },
+    { label: town.name, path: `/town/${town.slug}` },
+    { label: leaf?.name ?? group.name },
+  ]}
 >
   <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(6, displayListings.length * 2)}>
-    <section class="corridor" aria-label="The 30A corridor">
-      <p class="corridor__label">The 30A Corridor</p>
-      <div class="corridor__track">
-        {
-          towns.map((item, index) => {
-            const here = item.slug === town.slug;
-            const delta = index - currentIndex;
-            const meta = here
-              ? "Town hub"
-              : delta < 0
-                ? `${Math.abs(delta)} west`
-                : `${delta} east`;
-            return (
-              <a
-                class="corridor__item"
-                href={href(`/town/${item.slug}`)}
-                aria-current={here ? "true" : undefined}
-              >
-                <div class="corridor__dot">{here ? "●" : ""}</div>
-                <p class="corridor__name">{item.name}</p>
-                <p class="corridor__meta">{meta}</p>
-              </a>
-            );
-          })
-        }
-      </div>
-    </section>
+    <Corridor currentSlug={town.slug} />
 
-    <section class="listing-head">
-      <h1 class="listing-head__title">
-        {group.name} in {town.name}
-      </h1>
-      <div class="pill-row">
-        <a class="pill pill--active" href={href(`/town/${town.slug}`)}>
-          {town.name} <span aria-hidden="true">×</span>
-        </a>
-        <a class="pill pill--active" href={href(`/town/${town.slug}`)}>
-          {group.name} <span aria-hidden="true">×</span>
-        </a>
-      </div>
-    </section>
+    <h1>{leaf?.name ?? group.name} in {town.name}</h1>
+
+    <div class="chips">
+      <a class="chip active" href={href(`/town/${town.slug}`)}>
+        {town.name} <span aria-hidden="true">&times;</span>
+      </a>
+      <a class="chip active" href={href(`/town/${town.slug}`)}>
+        {group.name} <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
 
     {
       leafCounts.length > 0 && (
         <section>
-          <p class="section-label">Types of {group.name} in {town.name}</p>
-          <div class="pill-row">
-            <a
-              class:list={["pill", showAll && "pill--active"]}
-              href={href(`/town/${town.slug}/${group.slug}`)}
-            >
+          <p class="eyebrow">Types of {group.name.toLowerCase()} in {town.name}</p>
+          <div class="chips">
+            <a class:list={["chip", showAll && "active"]} href={href(`/town/${town.slug}/${group.slug}`)}>
               All ({groupListings.length})
             </a>
             {leafCounts.map((item) => (
               <a
-                class:list={["pill", !showAll && item.slug === leaf?.slug && "pill--active"]}
+                class:list={["chip", !showAll && item.slug === leaf?.slug && "active"]}
                 href={href(`/town/${town.slug}/${item.slug}`)}
               >
                 {item.name} ({item.count})
@@ -146,31 +104,46 @@ const currentIndex = towns.findIndex((item) => item.slug === town.slug);
       )
     }
 
-    <section class="biz-grid" aria-label="Business listings">
-      {
-        displayListings.map((item) => (
-          <article class="biz-card">
-            <div class="biz-card__media" role="img" aria-label={`${item.name} photo placeholder`}></div>
-            <div class="biz-card__body">
-              <h2 class="biz-card__title">{item.name}</h2>
-              <p class="biz-card__town">{town.name}</p>
-              <p class="biz-card__meta">
-                {(leafBySlug(item.leafSlug)?.name ?? group.name)} in {town.name}
-              </p>
-              <p class="biz-card__summary">{item.summary || listingMeta(item)}</p>
-              <a class="biz-card__link" href={href(`/business/${item.slug}`)}>
-                Explore →
-              </a>
-            </div>
-          </article>
-        ))
-      }
-    </section>
-
-    {
-      displayListings.length === 0 && (
-        <p class="listing-empty">No listings in this combo yet.</p>
-      )
-    }
+    <FilterBar
+      businesses={businesses.map(toFilterBusiness)}
+      towns={towns}
+      categories={filterCategories}
+      tags={tags}
+      initialTown={town.slug}
+      initialCategory={leaf?.slug ?? group.slug}
+      base={base}
+      client:load
+    />
   </TwoPaneMap>
-</ProtoLayout>
+</PlaceLayout>
+
+<style>
+  h1 {
+    font-size: var(--font-size-6);
+    margin-top: var(--size-4);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+    margin-block: var(--size-3);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-2);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: var(--size-1) var(--size-3);
+    background: white;
+    color: var(--brand-ink);
+    font-size: var(--font-size-1);
+  }
+  .chip:hover {
+    text-decoration: none;
+    border-color: var(--brand-teal);
+  }
+  .chip.active {
+    border-color: var(--brand-teal);
+  }
+</style>
