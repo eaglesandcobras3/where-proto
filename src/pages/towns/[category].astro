@@ -1,0 +1,135 @@
+---
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import TwoPaneMap from "../../components/TwoPaneMap.astro";
+import FilterBar from "../../components/islands/FilterBar.svelte";
+import { allLeaves, businesses, categories, tags, towns } from "../../data/catalog";
+import type { Category, CategoryLeaf } from "../../data/types";
+import { href } from "../../lib/href";
+import { toFilterBusiness } from "../../lib/listing";
+
+type LeafWithGroup = CategoryLeaf & { groupSlug: string; groupName: string };
+
+// A category with no town picked in the explore bar lands here
+export function getStaticPaths() {
+  return [
+    ...categories.map((group) => ({
+      params: { category: group.slug },
+      props: { group, leaf: null as LeafWithGroup | null, showAll: true },
+    })),
+    ...allLeaves().map((leaf) => {
+      const group = categories.find((item) => item.slug === leaf.groupSlug) ?? categories[0];
+      return {
+        params: { category: leaf.slug },
+        props: { group, leaf, showAll: false },
+      };
+    }),
+  ];
+}
+
+interface Props {
+  group: Category;
+  leaf: LeafWithGroup | null;
+  showAll: boolean;
+}
+
+const { group, leaf, showAll } = Astro.props;
+const groupListings = businesses.filter((item) => item.categorySlug === group.slug);
+const leafCounts = group.leaves
+  .map((item) => ({
+    ...item,
+    count: groupListings.filter((listing) => listing.leafSlug === item.slug).length,
+  }))
+  .filter((item) => item.count > 0);
+const displayListings = showAll ? groupListings : groupListings.filter((item) => item.leafSlug === leaf?.slug);
+const heading = leaf?.name ?? group.name;
+const filterCategories = [
+  { slug: group.slug, name: group.name },
+  ...group.leaves.map((item) => ({ slug: item.slug, name: item.name })),
+];
+const base = import.meta.env.BASE_URL;
+const searchHref = href(`/search?category=${leaf?.slug ?? group.slug}`);
+---
+
+<PlaceLayout
+  title={`${heading} on 30A`}
+  description={`Find ${heading.toLowerCase()} in every town along 30A.`}
+  active="towns"
+  showBrowse
+  browseCategory={heading}
+  browseExpanded
+  crumbs={[{ label: "Towns", path: "/towns" }, { label: heading }]}
+>
+  <TwoPaneMap mapLabel={`${heading} on 30A map`} pinCount={Math.max(6, displayListings.length * 2)}>
+    <h1>{heading} on 30A</h1>
+
+    <div class="chips">
+      <a class="chip active" href={href("/towns")}>
+        {heading} <span aria-hidden="true">&times;</span>
+      </a>
+    </div>
+
+    {
+      leafCounts.length > 0 && (
+        <section>
+          <p class="eyebrow">Types of {group.name.toLowerCase()}</p>
+          <div class="chips">
+            <a class:list={["chip", showAll && "active"]} href={href(`/towns/${group.slug}`)}>
+              All ({groupListings.length})
+            </a>
+            {leafCounts.map((item) => (
+              <a
+                class:list={["chip", !showAll && item.slug === leaf?.slug && "active"]}
+                href={href(`/towns/${item.slug}`)}
+              >
+                {item.name} ({item.count})
+              </a>
+            ))}
+          </div>
+        </section>
+      )
+    }
+
+    <FilterBar
+      businesses={displayListings.map(toFilterBusiness)}
+      towns={towns}
+      categories={filterCategories}
+      tags={tags}
+      initialCategory={leaf?.slug ?? group.slug}
+      base={base}
+      searchHref={searchHref}
+      totalCount={groupListings.length}
+      client:load
+    />
+  </TwoPaneMap>
+</PlaceLayout>
+
+<style>
+  h1 {
+    font-size: var(--font-size-6);
+    margin-top: var(--size-4);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--size-2);
+    margin-block: var(--size-3);
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--size-2);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: var(--size-1) var(--size-3);
+    background: white;
+    color: var(--brand-ink);
+    font-size: var(--font-size-1);
+  }
+  .chip:hover {
+    text-decoration: none;
+    border-color: var(--brand-teal);
+  }
+  .chip.active {
+    border-color: var(--brand-teal);
+  }
+</style>

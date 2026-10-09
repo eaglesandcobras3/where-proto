@@ -6,48 +6,73 @@ const companyLinks = [
   { label: "About", path: "/about" },
   { label: "Travel guides", path: "/guides" },
   { label: "Events", path: "/events" },
-  { label: "Stays", path: "/stays" },
-  { label: "Businesses", path: "/search" },
   { label: "Updates", path: "/updates" },
+  { label: "Ask", path: "/ask" },
+  { label: "Businesses", path: "/search" },
+  { label: "Categories", path: "/search" },
   { label: "List your business", path: "/add-business" },
+  { label: "List a vacation rental", path: "/stays" },
   { label: "Advertise", path: "/advertise" },
   { label: "Privacy", path: "/legal/privacy" },
   { label: "Terms", path: "/legal/terms" },
 ];
 
-const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 6);
+const shoppingAreas = areas.filter((item) => item.kind === "shopping");
 ---
 
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="brand-block">
       <a class="logo" href={href("/")}>WhereTo<span>30A</span></a>
-      <p>Your local guide to 30A and Florida's Emerald Coast. Curated listings, town guides, and hand-picked local favorites.</p>
+      <p>
+        Your local guide to 30A and Florida's Emerald Coast. Curated listings, town guides, and
+        hand-picked local favorites.
+      </p>
       <div class="social">
-        <a href={href("/about")} aria-label="About">AB</a>
-        <a href={href("/ask")} aria-label="Ask locals">ASK</a>
+        <a href={href("/about")} aria-label="Instagram">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="5" fill="none" stroke="currentColor" stroke-width="1.75"></rect>
+            <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="1.75"></circle>
+            <circle cx="17.5" cy="6.5" r="1" fill="currentColor"></circle>
+          </svg>
+        </a>
+        <a href={href("/about")} aria-label="TikTok">
+          <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+            <path
+              d="M14 4v10.2a3.2 3.2 0 1 1-2.4-3.1V8.2c1.4.9 2.6 1.3 3.8 1.4V4H14z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.75"
+              stroke-linejoin="round"
+            ></path>
+          </svg>
+        </a>
       </div>
     </div>
 
     <nav class="col" aria-label="Towns">
       <h4>Towns</h4>
       <ul>
-        {towns.map((town) => (
-          <li>
-            <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-          </li>
-        ))}
+        {
+          towns.map((town) => (
+            <li>
+              <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
 
     <nav class="col" aria-label="Areas">
       <h4>Areas</h4>
       <ul>
-        {shoppingAreas.map((area) => (
-          <li>
-            <a href={href(`/area/${area.slug}`)}>{area.name}</a>
-          </li>
-        ))}
+        {
+          shoppingAreas.map((area) => (
+            <li>
+              <a href={href(`/area/${area.slug}`)}>{area.name}</a>
+            </li>
+          ))
+        }
         <li>
           <a href={href("/areas")}>All areas</a>
         </li>
@@ -57,22 +82,26 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     <nav class="col" aria-label="Businesses">
       <h4>Businesses</h4>
       <ul>
-        {categories.map((category) => (
-          <li>
-            <a href={href("/search")}>{category.name}</a>
-          </li>
-        ))}
+        {
+          categories.map((category) => (
+            <li>
+              <a href={href(`/towns/${category.slug}`)}>{category.name}</a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
 
     <nav class="col" aria-label="Company">
       <h4>Company</h4>
       <ul>
-        {companyLinks.map((link) => (
-          <li>
-            <a href={href(link.path)}>{link.label}</a>
-          </li>
-        ))}
+        {
+          companyLinks.map((link) => (
+            <li>
+              <a href={href(link.path)}>{link.label}</a>
+            </li>
+          ))
+        }
       </ul>
     </nav>
   </div>
@@ -80,7 +109,7 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
   <div class="container bottom-bar">
     <span>
       &copy; 2026 WhereTo30A &middot; <a href={href("/legal/terms")}>Terms</a> &middot;
-      <a href={href("/legal/privacy")}>Privacy</a> &middot; <a href={href("/ia")}>All routes</a>
+      <a href={href("/legal/privacy")}>Privacy</a>
     </span>
   </div>
 </footer>
@@ -88,9 +117,9 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
 <style>
   .site-footer {
     border-top: 1px solid var(--brand-line);
-    margin-top: var(--size-10);
+    margin-top: auto;
     padding-top: var(--size-8);
-    background: var(--brand-sand);
+    background: var(--brand-sand-dark);
   }
   .footer-grid {
     display: grid;
@@ -101,7 +130,7 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     font-size: var(--font-size-4);
     font-weight: var(--font-weight-8);
     font-style: italic;
-    color: var(--brand-deep);
+    color: var(--brand-teal);
     text-decoration: none;
   }
   .logo span {
@@ -111,6 +140,7 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
     max-width: 28ch;
+    margin: var(--size-3) 0 0;
   }
   .social {
     display: flex;
@@ -118,24 +148,27 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     margin-top: var(--size-3);
   }
   .social a {
-    min-width: 44px;
-    height: 44px;
-    padding-inline: var(--size-2);
-    border: 1px solid var(--brand-line);
-    border-radius: 50px;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 1px var(--brand-line);
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-ink-soft);
+    color: var(--brand-ink);
+  }
+  .social a:hover {
+    text-decoration: none;
+    color: var(--brand-deep);
   }
   .col h4 {
     font-size: var(--font-size-0);
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);
-    margin-bottom: var(--size-3);
+    margin: 0 0 var(--size-3);
   }
   .col ul {
     list-style: none;
@@ -147,8 +180,11 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
   }
   .col a {
     display: block;
-    padding-block: 10px;
+    padding-block: 0.45rem;
     font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .col a:hover {
     color: var(--brand-ink);
   }
   .bottom-bar {
@@ -157,6 +193,9 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     padding-block: var(--size-4);
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+  }
+  .bottom-bar a {
+    color: inherit;
   }
   @media (min-width: 900px) {
     .footer-grid {

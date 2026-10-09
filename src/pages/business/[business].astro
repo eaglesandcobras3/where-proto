@@ -52,10 +52,9 @@ const similar = businesses
   title={business.name}
   description={business.summary}
   active="businesses"
-  browseTown={town?.name}
-  browseCategory={leaf?.name}
+  back={{ label: "Businesses", path: "/search" }}
   crumbs={[
-    { label: "Towns", path: "/towns" },
+    { label: "Businesses", path: "/search" },
     ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
     { label: business.name },
   ]}

@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHeader from "../components/PageHeader.astro";
 import TwoPaneMap from "../components/TwoPaneMap.astro";
 import FilterBar from "../components/islands/FilterBar.svelte";
 import { allLeaves, businesses, categories, tags, towns } from "../data/catalog";
@@ -11,8 +10,9 @@ const params = Astro.url.searchParams;
 const town = params.get("town") ?? "";
 const category = params.get("category") ?? "";
 const tag = params.get("tag") ?? "";
+const q = params.get("q") ?? "";
 const openNow = params.get("open") === "1";
-const comboCanonical = Boolean(town && category && !tag && !openNow);
+const comboCanonical = Boolean(town && category && !tag && !openNow && !q);
 const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
 const filterCategories = [
   ...categories.map((item) => ({ slug: item.slug, name: item.name })),
@@ -23,29 +23,28 @@ const base = import.meta.env.BASE_URL;
 
 <BaseLayout
   title="Search businesses on 30A"
-  description="Search every business on 30A by town, category, tag, or open now."
+  description="Search every business on 30A by town, category, tag, or keyword."
   active="businesses"
   noindex
   canonicalPath={canonicalPath}
-  showBrowse
+  showSearch
+  searchTown={town}
+  searchCategory={category}
+  searchQuery={q}
 >
-  <div class="container section">
-    <PageHeader
-      title="Find a business"
-      lede="Search is the only site-wide business finder. Town plus category pages stay indexable. Filtered views stay noindex, follow."
-    />
-    {
-      comboCanonical && (
-        <p class="canonical">
+  {
+    comboCanonical && (
+      <div class="container notice">
+        <p>
           Indexable page for this combo:
           <a href={href(`/town/${town}/${category}`)}>
             /town/{town}/{category}
           </a>
         </p>
-      )
-    }
-  </div>
-  <TwoPaneMap mapLabel="30A businesses map" pinCount={Math.max(8, businesses.length)}>
+      </div>
+    )
+  }
+  <TwoPaneMap mapLabel="30A businesses map" pinCount={Math.max(8, businesses.length)} searchArea>
     <FilterBar
       businesses={businesses.map(toFilterBusiness)}
       towns={towns}
@@ -55,6 +54,8 @@ const base = import.meta.env.BASE_URL;
       initialCategory={category}
       initialTag={tag}
       initialOpenNow={openNow}
+      initialQuery={q}
+      externalChrome
       base={base}
       client:load
     />
@@ -62,7 +63,8 @@ const base = import.meta.env.BASE_URL;
 </BaseLayout>
 
 <style>
-  .canonical {
+  .notice {
+    padding-block: var(--size-3);
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
   }

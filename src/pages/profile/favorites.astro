@@ -1,8 +1,8 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import AccountNav from "../../components/AccountNav.astro";
+import AccountLayout from "../../layouts/AccountLayout.astro";
 import {
   businessBySlug,
+  currentUser,
   currentUserSlug,
   eventBySlug,
   favorites,
@@ -11,6 +11,7 @@ import {
 } from "../../data/catalog";
 import { href } from "../../lib/href";
 
+const user = currentUser();
 const mine = favorites.filter((item) => item.userSlug === currentUserSlug);
 
 function label(item: (typeof mine)[number]) {
@@ -28,24 +29,32 @@ function path(item: (typeof mine)[number]) {
 }
 ---
 
-<BaseLayout title="Favorites">
-  <div class="container section">
-    <h1>Saved</h1>
-    <AccountNav active="favorites" />
-    <ul class="list">
-      {
-        mine.map((item) => (
-          <li>
-            <span class="type">{item.type}</span>
-            <a href={path(item)}>{label(item)}</a>
-          </li>
-        ))
-      }
-    </ul>
-  </div>
-</BaseLayout>
+<AccountLayout title="Saved" active="favorites">
+  <p class="bio">{user?.bio}</p>
+  <p class="links">
+    <a href={href(`/u/${user?.slug}`)}>Public profile</a> · <a href={href("/dashboard")}>Dashboard</a> ·
+    <a href={href("/profile/settings")}>Account settings</a>
+  </p>
+  <ul class="list">
+    {
+      mine.map((item) => (
+        <li>
+          <span class="type">{item.type}</span>
+          <a href={path(item)}>{label(item)}</a>
+        </li>
+      ))
+    }
+  </ul>
+</AccountLayout>
 
 <style>
+  .bio {
+    margin: 0 0 var(--size-2);
+    color: var(--brand-ink-soft);
+  }
+  .links {
+    margin: 0 0 var(--size-5);
+  }
   .list {
     list-style: none;
     margin: 0;

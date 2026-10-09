@@ -1,23 +1,18 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import AccountNav from "../../components/AccountNav.astro";
+import AccountLayout from "../../layouts/AccountLayout.astro";
 import { currentUser } from "../../data/catalog";
 
 const user = currentUser();
 ---
 
-<BaseLayout title="Account settings">
-  <div class="container section">
-    <h1>Settings</h1>
-    <AccountNav active="settings" />
-    <form class="form" onsubmit="return false;">
-      <wa-input label="Display name" value={user?.name ?? ""}></wa-input>
-      <wa-input label="Email" type="email" value="beachlocal@example.com"></wa-input>
-      <wa-switch checked>Email me weekly town roundups</wa-switch>
-      <wa-button variant="brand">Save settings</wa-button>
-    </form>
-  </div>
-</BaseLayout>
+<AccountLayout title="Account settings" active="settings">
+  <form class="form" onsubmit="return false;">
+    <wa-input label="Display name" value={user?.name ?? ""}></wa-input>
+    <wa-input label="Email" type="email" value="beachlocal@example.com"></wa-input>
+    <wa-switch checked>Email me weekly town roundups</wa-switch>
+    <wa-button variant="brand">Save settings</wa-button>
+  </form>
+</AccountLayout>
 
 <style>
   .form {

@@ -1,22 +1,17 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import AccountNav from "../../components/AccountNav.astro";
+import AccountLayout from "../../layouts/AccountLayout.astro";
 import QuestionCard from "../../components/QuestionCard.astro";
 import { currentUserSlug, questions } from "../../data/catalog";
 
 const mine = questions.filter((item) => item.authorUserSlug === currentUserSlug);
 ---
 
-<BaseLayout title="My questions">
-  <div class="container section">
-    <h1>My questions</h1>
-    <AccountNav active="questions" />
-    <div class="stack">
-      {mine.map((question) => <QuestionCard question={question} />)}
-      {mine.length === 0 && <p>No questions yet.</p>}
-    </div>
+<AccountLayout title="My questions" active="questions">
+  <div class="stack">
+    {mine.map((question) => <QuestionCard question={question} />)}
+    {mine.length === 0 && <p>No questions yet.</p>}
   </div>
-</BaseLayout>
+</AccountLayout>
 
 <style>
   .stack {

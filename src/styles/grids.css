@@ -8,6 +8,27 @@
   grid-template-columns: 1fr;
 }
 
+/* Homepage / marketing story cards — 4-up portrait row on desktop */
+.story-grid {
+  display: grid;
+  gap: clamp(1rem, 2.5vw, 1.75rem);
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+@media (min-width: 960px) {
+  .story-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.event-grid {
+  display: grid;
+  gap: var(--size-4);
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+}
+
 .featured-row {
   display: flex;
   gap: var(--size-4);

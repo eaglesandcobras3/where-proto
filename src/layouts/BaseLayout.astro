@@ -1,7 +1,10 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import BrowseBar from "../components/BrowseBar.astro";
+import ExploreFilterBar from "../components/islands/ExploreFilterBar.svelte";
+import SearchFilterBar from "../components/islands/SearchFilterBar.svelte";
+import EventsFilterBar from "../components/islands/EventsFilterBar.svelte";
+import { allLeaves, categories, towns } from "../data/catalog";
 import { absHref } from "../lib/href";
 import "../styles/tokens.css";
 import "../styles/global.css";
@@ -15,8 +18,39 @@ interface Props {
   noindex?: boolean;
   canonicalPath?: string;
   showBrowse?: boolean;
+  /** Businesses/search chrome — separate from explore */
+  showSearch?: boolean;
+  /** Stays chrome — same shell as search, Guests facet */
+  showStays?: boolean;
+  /** Events chrome — search + date range expand/collapse */
+  showEvents?: boolean;
+  showUpdates?: boolean;
+  showGuides?: boolean;
+  showAsk?: boolean;
   browseTown?: string;
   browseCategory?: string;
+  browseExpanded?: boolean;
+  /** Which explore popover opens when the bar expands */
+  browseInitialPanel?: "town" | "category" | "";
+  searchTown?: string;
+  searchCategory?: string;
+  searchQuery?: string;
+  staysTown?: string;
+  staysGuests?: string;
+  staysQuery?: string;
+  eventsTown?: string;
+  eventsFrom?: string;
+  eventsTo?: string;
+  eventsQuery?: string;
+  updatesTown?: string;
+  updatesType?: string;
+  updatesQuery?: string;
+  guidesTown?: string;
+  guidesCategory?: string;
+  guidesQuery?: string;
+  askTown?: string;
+  askTopic?: string;
+  askQuery?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
@@ -27,10 +61,64 @@ const {
   noindex,
   canonicalPath,
   showBrowse = false,
+  showSearch = false,
+  showStays = false,
+  showEvents = false,
+  showUpdates = false,
+  showGuides = false,
+  showAsk = false,
   browseTown,
   browseCategory,
+  browseExpanded = false,
+  browseInitialPanel = "category",
+  searchTown = "",
+  searchCategory = "",
+  searchQuery = "",
+  staysTown = "",
+  staysGuests = "",
+  staysQuery = "",
+  eventsTown = "",
+  eventsFrom = "",
+  eventsTo = "",
+  eventsQuery = "",
+  updatesTown = "",
+  updatesType = "",
+  updatesQuery = "",
+  guidesTown = "",
+  guidesCategory = "",
+  guidesQuery = "",
+  askTown = "",
+  askTopic = "",
+  askQuery = "",
   jsonLd,
 } = Astro.props;
+
+const stayGuestOptions = [
+  { slug: "2", name: "Sleeps 2+" },
+  { slug: "4", name: "Sleeps 4+" },
+  { slug: "6", name: "Sleeps 6+" },
+  { slug: "8", name: "Sleeps 8+" },
+];
+const askTopicOptions = [
+  { slug: "parking", name: "Parking" },
+  { slug: "dining", name: "Dining" },
+  { slug: "family", name: "Family" },
+  { slug: "getting-around", name: "Getting around" },
+];
+
+// Pages pass display names; the explore bar works in slugs
+const matches = (item: { slug: string; name: string }, label?: string) =>
+  Boolean(label) && (item.name === label || item.slug === label);
+const browseTownSlug = towns.find((item) => matches(item, browseTown))?.slug ?? "";
+const browseLeaf = allLeaves().find((item) => matches(item, browseCategory));
+const browseGroupSlug =
+  browseLeaf?.groupSlug ?? categories.find((item) => matches(item, browseCategory))?.slug ?? "";
+const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
+const exploreCategories = categories.map(({ slug, name, leaves }) => ({
+  slug,
+  name,
+  leaves: leaves.map((leaf) => ({ slug: leaf.slug, name: leaf.name })),
+}));
 ---
 
 <!doctype html>
@@ -47,7 +135,130 @@ const {
   </head>
   <body>
     <Header active={active} />
-    {showBrowse && <BrowseBar townLabel={browseTown} categoryLabel={browseCategory} />}
+    {
+      showBrowse && (
+        <ExploreFilterBar
+          towns={exploreTowns}
+          categories={exploreCategories}
+          initialTown={browseTownSlug}
+          initialGroup={browseGroupSlug}
+          initialLeaf={browseLeaf?.slug ?? ""}
+          categoryLabel={browseCategory}
+          expanded={browseExpanded}
+          initialPanel={browseInitialPanel}
+          base={import.meta.env.BASE_URL}
+          client:load
+        />
+      )
+    }
+    {
+      showSearch && (
+        <SearchFilterBar
+          towns={exploreTowns}
+          categories={[
+            ...categories.map(({ slug, name }) => ({ slug, name })),
+            ...allLeaves().map((item) => ({ slug: item.slug, name: `${item.groupName} / ${item.name}` })),
+          ]}
+          initialTown={searchTown}
+          initialCategory={searchCategory}
+          initialQuery={searchQuery}
+          client:load
+        />
+      )
+    }
+    {
+      showStays && (
+        <SearchFilterBar
+          towns={exploreTowns}
+          categories={stayGuestOptions}
+          initialTown={staysTown}
+          initialCategory={staysGuests}
+          initialQuery={staysQuery}
+          eventName="w30a:stays-filters"
+          facetParam="guests"
+          facetLabel="Guests"
+          facetEmpty="Any guests"
+          facetCollapsedEmpty="Any guests"
+          keywordsPlaceholder="Town, sleeps, or partner..."
+          searchAriaLabel="Search stays"
+          client:load
+        />
+      )
+    }
+    {
+      showEvents && (
+        <EventsFilterBar
+          towns={exploreTowns}
+          initialTown={eventsTown}
+          initialFrom={eventsFrom}
+          initialTo={eventsTo}
+          initialQuery={eventsQuery}
+          client:load
+        />
+      )
+    }
+    {
+      showUpdates && (
+        <SearchFilterBar
+          towns={exploreTowns}
+          categories={[
+            { slug: "new_item", name: "New item" },
+            { slug: "limited_offer", name: "Limited offer" },
+            { slug: "business_news", name: "Business news" },
+            { slug: "hours_change", name: "Hours change" },
+          ]}
+          initialTown={updatesTown}
+          initialCategory={updatesType}
+          initialQuery={updatesQuery}
+          eventName="w30a:updates-filters"
+          facetParam="type"
+          facetLabel="Type"
+          facetEmpty="Any type"
+          facetCollapsedEmpty="Any type"
+          keywordsPlaceholder="Update, business, or town..."
+          searchAriaLabel="Search updates"
+          client:load
+        />
+      )
+    }
+    {
+      showGuides && (
+        <SearchFilterBar
+          towns={exploreTowns}
+          categories={categories.map(({ slug, name }) => ({ slug, name }))}
+          initialTown={guidesTown}
+          initialCategory={guidesCategory}
+          initialQuery={guidesQuery}
+          eventName="w30a:guides-filters"
+          facetParam="category"
+          facetLabel="Topic"
+          facetEmpty="Any topic"
+          facetCollapsedEmpty="Any topic"
+          keywordsPlaceholder="Guide title or keyword..."
+          searchAriaLabel="Search guides"
+          client:load
+        />
+      )
+    }
+    {
+      showAsk && (
+        <SearchFilterBar
+          towns={exploreTowns}
+          categories={askTopicOptions}
+          initialTown={askTown}
+          initialCategory={askTopic}
+          initialQuery={askQuery}
+          eventName="w30a:ask-filters"
+          facetParam="topic"
+          facetLabel="Topic"
+          facetEmpty="Any topic"
+          facetCollapsedEmpty="Any topic"
+          keywordsPlaceholder="Question or keyword..."
+          searchAriaLabel="Search questions"
+          client:load
+        />
+      )
+    }
     <main>
       <slot />
     </main>

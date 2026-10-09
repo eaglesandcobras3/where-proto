@@ -11,20 +11,23 @@
     town?: string;
   }
 
-  interface Named {
-    slug: string;
-    name: string;
-  }
-
   let {
     updates = [],
-    towns = [],
-    types = [],
+    initialTown = "",
+    initialType = "",
+    initialQuery = "",
     base = "/",
-  }: { updates: Row[]; towns: Named[]; types: Named[]; base?: string } = $props();
+  }: {
+    updates: Row[];
+    initialTown?: string;
+    initialType?: string;
+    initialQuery?: string;
+    base?: string;
+  } = $props();
 
-  let town = $state("");
-  let type = $state("");
+  let town = $state(initialTown);
+  let type = $state(initialType);
+  let query = $state(initialQuery);
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -35,31 +38,30 @@
     updates.filter((item) => {
       if (town && item.town !== town) return false;
       if (type && item.type !== type) return false;
+      if (query.trim()) {
+        const hay = `${item.title} ${item.body} ${item.sourceName ?? ""} ${item.typeLabel}`.toLowerCase();
+        if (!hay.includes(query.trim().toLowerCase())) return false;
+      }
       return true;
     }),
   );
+
+  $effect(() => {
+    if (typeof window === "undefined") return;
+    const onFilters = (event: Event) => {
+      const detail = (event as CustomEvent<{ town: string; category: string; query: string }>).detail;
+      town = detail.town;
+      type = detail.category;
+      query = detail.query;
+    };
+    window.addEventListener("w30a:updates-filters", onFilters);
+    return () => window.removeEventListener("w30a:updates-filters", onFilters);
+  });
 </script>
 
-<div class="filters">
-  <label>
-    Town
-    <select bind:value={town}>
-      <option value="">All towns</option>
-      {#each towns as item}
-        <option value={item.slug}>{item.name}</option>
-      {/each}
-    </select>
-  </label>
-  <label>
-    Type
-    <select bind:value={type}>
-      <option value="">All types</option>
-      {#each types as item}
-        <option value={item.slug}>{item.name}</option>
-      {/each}
-    </select>
-  </label>
-</div>
+<p class="count" aria-live="polite">
+  {results.length} {results.length === 1 ? "update" : "updates"}
+</p>
 
 <div class="grid">
   {#each results as update}
@@ -76,39 +78,14 @@
       {/if}
     </article>
   {:else}
-    <p>No live updates match those filters.</p>
+    <p class="empty">No live updates match those filters.</p>
   {/each}
 </div>
 
 <style>
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--size-3);
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-4);
-    margin-bottom: var(--size-5);
-  }
-  label {
-    display: grid;
-    gap: var(--size-1);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--brand-ink-soft);
-  }
-  select {
-    font: inherit;
-    font-size: var(--font-size-1);
-    text-transform: none;
-    letter-spacing: normal;
-    padding: var(--size-2);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-2);
-    min-width: 160px;
+  .count {
+    margin: 0 0 var(--size-4);
+    font-weight: var(--font-weight-6);
   }
   .grid {
     display: grid;
@@ -147,6 +124,9 @@
   }
   p {
     font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .empty {
     color: var(--brand-ink-soft);
   }
 </style>

@@ -2,148 +2,181 @@
   interface Row {
     slug: string;
     title: string;
+    body?: string;
     author: string;
     createdAt: string;
     relative: string;
     answers: number;
     town?: string;
+    townSlug?: string;
   }
 
-  let { questions = [], base = "/" }: { questions: Row[]; base?: string } = $props();
-  let query = $state("");
-  let sort = $state<"newest" | "answered">("newest");
+  let {
+    questions = [],
+    initialTown = "",
+    initialTopic = "",
+    initialQuery = "",
+    base = "/",
+  }: {
+    questions: Row[];
+    initialTown?: string;
+    initialTopic?: string;
+    initialQuery?: string;
+    base?: string;
+  } = $props();
+
+  let town = $state(initialTown);
+  let topic = $state(initialTopic);
+  let query = $state(initialQuery);
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
     return `${root}${route}`;
   }
 
+  const topicWords: Record<string, string[]> = {
+    parking: ["parking", "park", "access"],
+    dining: ["eat", "dinner", "food", "restaurant"],
+    family: ["kids", "family", "children"],
+    "getting-around": ["bike", "cart", "trail", "golf"],
+  };
+
   let rows = $derived(
-    questions
+    [...questions]
       .filter((item) => {
-        if (!query.trim()) return true;
-        const hay = `${item.title} ${item.author} ${item.town ?? ""}`.toLowerCase();
-        return hay.includes(query.trim().toLowerCase());
+        if (town && item.townSlug !== town) return false;
+        if (topic) {
+          const words = topicWords[topic] ?? [topic];
+          const hay = `${item.title} ${item.body ?? ""}`.toLowerCase();
+          if (!words.some((word) => hay.includes(word))) return false;
+        }
+        if (query.trim()) {
+          const hay = `${item.title} ${item.body ?? ""} ${item.town ?? ""}`.toLowerCase();
+          if (!hay.includes(query.trim().toLowerCase())) return false;
+        }
+        return true;
       })
-      .toSorted((a, b) => {
-        if (sort === "answered") return b.answers - a.answers;
-        return b.createdAt.localeCompare(a.createdAt);
-      }),
+      .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)),
   );
+
+  $effect(() => {
+    if (typeof window === "undefined") return;
+    const onFilters = (event: Event) => {
+      const detail = (event as CustomEvent<{ town: string; category: string; query: string }>).detail;
+      town = detail.town;
+      topic = detail.category;
+      query = detail.query;
+    };
+    window.addEventListener("w30a:ask-filters", onFilters);
+    return () => window.removeEventListener("w30a:ask-filters", onFilters);
+  });
 </script>
 
-<div class="tools">
-  <label>
-    Search questions
-    <input type="search" bind:value={query} placeholder="Search questions and answers" />
-  </label>
-  <fieldset>
-    <legend>Sort</legend>
-    <label class="radio"><input type="radio" bind:group={sort} value="newest" /> Newest</label>
-    <label class="radio"><input type="radio" bind:group={sort} value="answered" /> Most answered</label>
-  </fieldset>
-</div>
-
-<div class="list">
-  {#each rows as item}
-    <a class="row" href={path(`/ask/${item.slug}`)}>
-      <div class="avatar">{item.author.charAt(0)}</div>
-      <div>
+<section class="latest">
+  <div class="latest__head">
+    <h2>Latest questions</h2>
+    <p class="count" aria-live="polite">
+      {rows.length} {rows.length === 1 ? "question" : "questions"}
+    </p>
+  </div>
+  <div class="list">
+    {#each rows as item}
+      <a class="card" href={path(`/ask/${item.slug}`)}>
+        <div class="meta">
+          <span class="avatar" aria-hidden="true">{item.author.charAt(0)}</span>
+          <span>
+            {item.relative}
+            · {item.answers}
+            {item.answers === 1 ? "reply" : "replies"}
+            {#if item.town}
+              · {item.town}
+            {/if}
+          </span>
+        </div>
         <h3>{item.title}</h3>
-        <p class="meta">{item.author} · {item.relative} · {item.answers} {item.answers === 1 ? "answer" : "answers"}</p>
-        {#if item.town}
-          <span class="chip">{item.town}</span>
-        {/if}
-      </div>
-    </a>
-  {:else}
-    <p class="empty">No questions match that search.</p>
-  {/each}
-</div>
+        <div class="footer">
+          <span class="like">👍 Like</span>
+          <span class="comments">
+            {item.answers}
+            {item.answers === 1 ? "comment" : "comments"} →
+          </span>
+        </div>
+      </a>
+    {:else}
+      <p class="empty">No questions match those filters.</p>
+    {/each}
+  </div>
+</section>
 
 <style>
-  .tools {
-    display: grid;
+  .latest__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
     gap: var(--size-3);
-    margin-bottom: var(--size-5);
-    max-width: 720px;
+    margin-bottom: var(--size-4);
   }
-  label,
-  legend {
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
+  .latest h2 {
+    margin: 0;
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
   }
-  input[type="search"] {
-    display: block;
-    width: 100%;
-    margin-top: var(--size-1);
-    padding: var(--size-2) var(--size-3);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-2);
-    font: inherit;
-  }
-  fieldset {
-    border: 0;
-    padding: 0;
-    display: flex;
-    gap: var(--size-4);
-  }
-  .radio {
-    display: flex;
-    align-items: center;
-    gap: var(--size-1);
-    text-transform: none;
-    letter-spacing: normal;
+  .count {
+    margin: 0;
     font-weight: var(--font-weight-6);
-    color: var(--brand-ink);
+    color: var(--brand-ink-soft);
   }
   .list {
     display: grid;
     gap: var(--size-3);
-    max-width: 720px;
   }
-  .row {
-    display: flex;
+  .card {
+    display: grid;
     gap: var(--size-3);
     background: white;
     border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-4);
+    border-radius: 1rem;
+    padding: var(--size-4) var(--size-5);
     color: var(--brand-ink);
   }
-  .row:hover {
+  .card:hover {
     text-decoration: none;
     box-shadow: var(--shadow-card);
   }
-  .avatar {
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: var(--brand-sand-dark);
-    display: grid;
-    place-items: center;
-    font-weight: 700;
-    color: var(--brand-deep);
-    flex-shrink: 0;
-  }
-  h3 {
-    font-size: var(--font-size-2);
-    margin: 0 0 var(--size-1);
-  }
   .meta {
-    margin: 0 0 var(--size-2);
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
   }
-  .chip {
-    display: inline-block;
+  .avatar {
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    background: var(--brand-teal-soft);
+    color: var(--brand-deep);
+    display: grid;
+    place-items: center;
     font-size: var(--font-size-0);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-4);
-    padding: 2px var(--size-2);
+    font-weight: var(--font-weight-7);
+  }
+  h3 {
+    margin: 0;
+    font-size: var(--font-size-3);
+    color: var(--brand-deep);
+  }
+  .footer {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .comments {
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep);
   }
   .empty {
     color: var(--brand-ink-soft);

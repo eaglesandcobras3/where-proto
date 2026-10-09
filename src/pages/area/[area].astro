@@ -1,5 +1,6 @@
 ---
 import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import TwoPaneMap from "../../components/TwoPaneMap.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import AreaCard from "../../components/AreaCard.astro";
@@ -34,6 +35,7 @@ const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area
   title={area.name}
   description={area.summary}
   active="areas"
+  showBrowse
   browseTown={town?.name}
   crumbs={[
     { label: "Areas", path: "/areas" },
@@ -41,14 +43,15 @@ const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area
     { label: area.name },
   ]}
 >
-  <div class="container section">
+  <TwoPaneMap mapLabel={`${area.name} map`} pinCount={Math.max(6, inArea.length * 2)}>
     <p class="eyebrow">{areaKindLabel(area.kind)}</p>
     <h1>{area.name}</h1>
     <p class="lede">{area.summary}</p>
     {
       town && (
         <p>
-          Inside <a href={href(`/town/${town.slug}`)}>{town.name}</a>. Indexable category pages stay on the town.
+          Inside <a href={href(`/town/${town.slug}`)}>{town.name}</a>. Indexable category pages stay on
+          the town.
         </p>
       )
     }
@@ -81,7 +84,7 @@ const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area
         </section>
       )
     }
-  </div>
+  </TwoPaneMap>
 </PlaceLayout>
 
 <style>

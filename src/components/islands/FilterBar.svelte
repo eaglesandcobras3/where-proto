@@ -26,9 +26,12 @@
     initialCategory = "",
     initialTag = "",
     initialOpenNow = false,
+    initialQuery = "",
     base = "/",
     searchHref = "",
     totalCount,
+    /** Hide local filters when SearchFilterBar drives town/category/query */
+    externalChrome = false,
   }: {
     businesses: Biz[];
     towns: Named[];
@@ -38,16 +41,18 @@
     initialCategory?: string;
     initialTag?: string;
     initialOpenNow?: boolean;
+    initialQuery?: string;
     base?: string;
     searchHref?: string;
     totalCount?: number;
+    externalChrome?: boolean;
   } = $props();
 
   let town = $state(initialTown);
   let category = $state(initialCategory);
   let tag = $state(initialTag);
   let openNow = $state(initialOpenNow);
-  let query = $state("");
+  let query = $state(initialQuery);
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -95,6 +100,16 @@
 
   $effect(() => {
     if (typeof window === "undefined") return;
+    if (externalChrome) {
+      const onFilters = (event: Event) => {
+        const detail = (event as CustomEvent<{ town: string; category: string; query: string }>).detail;
+        town = detail.town;
+        category = detail.category;
+        query = detail.query;
+      };
+      window.addEventListener("w30a:search-filters", onFilters);
+      return () => window.removeEventListener("w30a:search-filters", onFilters);
+    }
     const media = window.matchMedia("(max-width: 639px)");
     const sync = () => {
       filtersOpen = !media.matches;
@@ -105,59 +120,61 @@
   });
 </script>
 
-<div class="filter-bar">
-  <details class="filter-panel" bind:open={filtersOpen}>
-    <summary>Filters{activeCount ? ` (${activeCount})` : ""}</summary>
-    <div class="filters">
-    <label class="search">
-      Search
-      <input type="search" bind:value={query} placeholder="Business name or keyword" />
-    </label>
-    <label>
-      Town
-      <select bind:value={town}>
-        <option value="">All towns</option>
-        {#each towns as item}
-          <option value={item.slug}>{item.name}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      Category
-      <select bind:value={category}>
-        <option value="">All categories</option>
-        {#each categories as item}
-          <option value={item.slug}>{item.name}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      Tag
-      <select bind:value={tag}>
-        <option value="">Any tag</option>
-        {#each tags as item}
-          <option value={item.slug}>{item.name}</option>
-        {/each}
-      </select>
-    </label>
-    <label class="check">
-      <input type="checkbox" bind:checked={openNow} />
-      Open now
-    </label>
-    <button type="button" class="clear" onclick={clear}>Clear</button>
-    </div>
-  </details>
+<div class="filter-bar" class:external={externalChrome}>
+  {#if !externalChrome}
+    <details class="filter-panel" bind:open={filtersOpen}>
+      <summary>Filters{activeCount ? ` (${activeCount})` : ""}</summary>
+      <div class="filters">
+      <label class="search">
+        Search
+        <input type="search" bind:value={query} placeholder="Business name or keyword" />
+      </label>
+      <label>
+        Town
+        <select bind:value={town}>
+          <option value="">All towns</option>
+          {#each towns as item}
+            <option value={item.slug}>{item.name}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        Category
+        <select bind:value={category}>
+          <option value="">All categories</option>
+          {#each categories as item}
+            <option value={item.slug}>{item.name}</option>
+          {/each}
+        </select>
+      </label>
+      <label>
+        Tag
+        <select bind:value={tag}>
+          <option value="">Any tag</option>
+          {#each tags as item}
+            <option value={item.slug}>{item.name}</option>
+          {/each}
+        </select>
+      </label>
+      <label class="check">
+        <input type="checkbox" bind:checked={openNow} />
+        Open now
+      </label>
+      <button type="button" class="clear" onclick={clear}>Clear</button>
+      </div>
+    </details>
+  {/if}
 
   <p class="count" aria-live="polite">
-    Showing {results.length} of {totalCount ?? businesses.length} listings
+    {results.length} {results.length === 1 ? "result" : "results"}
     {#if searchHref}
       · <a href={searchHref}>Browse all on Search</a>
     {/if}
   </p>
 
-  <div class="listing-grid-split">
+  <div class="listing-grid-split" class:search-grid={externalChrome}>
     {#each results as item}
-      <a class="listing-card" href={path(`/business/${item.slug}`)}>
+      <a class="listing-card" class:search-card={externalChrome} href={path(`/business/${item.slug}`)}>
         <div class="listing-tile">
           <img
             src={cardImageSrc(item.name.charAt(0), "2/3")}
@@ -169,10 +186,16 @@
         </div>
         <div class="body">
           <h3>{item.name}</h3>
-          <p class="meta">{townName(item.town)} &middot; {categoryName(item)}</p>
-          <p class="desc">{item.description}</p>
-          {#if item.openNow}
-            <span class="open">Open now</span>
+          {#if externalChrome}
+            <p class="meta">{townName(item.town)}</p>
+            <p class="desc">{item.description}</p>
+            <span class="explore">Explore →</span>
+          {:else}
+            <p class="meta">{townName(item.town)} &middot; {categoryName(item)}</p>
+            <p class="desc">{item.description}</p>
+            {#if item.openNow}
+              <span class="open">Open now</span>
+            {/if}
           {/if}
         </div>
       </a>
@@ -190,6 +213,32 @@
     z-index: 20;
     background: var(--brand-sand);
     padding-block: var(--size-2);
+  }
+  .filter-bar.external {
+    margin-block: 0;
+    position: static;
+    background: transparent;
+    padding-block: 0;
+  }
+  .filter-bar.external .count {
+    margin-top: 0;
+    margin-bottom: var(--size-3);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink);
+  }
+  .explore {
+    display: inline-block;
+    margin-top: var(--size-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep);
+  }
+  .search-card {
+    text-decoration: none;
+    color: inherit;
+  }
+  .search-card:hover .explore {
+    text-decoration: underline;
   }
   .filter-panel {
     background: white;

@@ -1,15 +1,65 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PageHeader from "../../components/PageHeader.astro";
-import GuideCard from "../../components/GuideCard.astro";
+import GuidesList from "../../components/islands/GuidesList.svelte";
 import { guides } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+const params = Astro.url.searchParams;
+const town = params.get("town") ?? "";
+const category = params.get("category") ?? "";
+const q = params.get("q") ?? "";
+const base = import.meta.env.BASE_URL;
+const guideItems = guides.map((guide) => ({
+  slug: guide.slug,
+  title: guide.title,
+  summary: guide.summary,
+  town: guide.townSlug,
+  category: guide.categorySlug,
+}));
 ---
 
-<BaseLayout title="Guides to 30A" description="Town and travel guides for Scenic Highway 30A." active="guides">
+<BaseLayout
+  title="Travel Guides"
+  description="Town and travel guides for Scenic Highway 30A."
+  active="guides"
+  showGuides
+  guidesTown={town}
+  guidesCategory={category}
+  guidesQuery={q}
+>
   <div class="container section">
-    <PageHeader eyebrow="Guides" title="Read before you go" lede="Stories are guides. There is no separate Stories nav item." />
-    <div class="listing-grid-full">
-      {guides.map((guide) => <GuideCard guide={guide} />)}
-    </div>
+    <header class="intro">
+      <p class="eyebrow">30A · South Walton, Florida</p>
+      <h1>Travel Guides</h1>
+      <p>
+        Practical guides for planning a trip along 30A — towns, beaches, and how to move around without
+        opening twenty tabs. Or check the <a href={href("/events")}>events calendar</a>.
+      </p>
+    </header>
+    <GuidesList
+      guides={guideItems}
+      initialTown={town}
+      initialCategory={category}
+      initialQuery={q}
+      base={base}
+      client:load
+    />
   </div>
 </BaseLayout>
+
+<style>
+  .intro {
+    margin-bottom: var(--size-6);
+    max-width: 42rem;
+  }
+  .intro h1 {
+    margin: 0 0 var(--size-3);
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    color: var(--brand-deep);
+  }
+  .intro p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-2);
+  }
+</style>

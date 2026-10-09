@@ -1,21 +1,29 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PageHeader from "../../components/PageHeader.astro";
+import TwoPaneMap from "../../components/TwoPaneMap.astro";
 import EventFilters from "../../components/islands/EventFilters.svelte";
-import { events, townBySlug, towns } from "../../data/catalog";
+import { events, townBySlug } from "../../data/catalog";
 import { href } from "../../lib/href";
 
-const categories = [...new Set(events.map((item) => item.category).filter(Boolean))] as string[];
+const params = Astro.url.searchParams;
+const town = params.get("town") ?? "";
+const from = params.get("from") ?? "";
+const to = params.get("to") ?? "";
+const q = params.get("q") ?? "";
 const base = import.meta.env.BASE_URL;
 ---
 
-<BaseLayout title="Events on 30A" description="Upcoming events along Scenic Highway 30A." active="events">
-  <div class="container section">
-    <PageHeader
-      eyebrow="Events"
-      title="What's on"
-      lede="Concerts, markets, and seasonal gatherings grouped as happening now, today, this weekend, and the next 30 days."
-    />
+<BaseLayout
+  title="Events on 30A"
+  description="Upcoming events along Scenic Highway 30A."
+  active="events"
+  showEvents
+  eventsTown={town}
+  eventsFrom={from}
+  eventsTo={to}
+  eventsQuery={q}
+>
+  <TwoPaneMap mapLabel="30A events map" pinCount={Math.max(6, events.length)} searchArea>
     <p class="cta"><a href={href("/dashboard")}>Submit your event</a></p>
     <EventFilters
       events={events.map((event) => ({
@@ -29,17 +37,17 @@ const base = import.meta.env.BASE_URL;
         category: event.category,
         bucket: event.bucket,
       }))}
-      towns={towns}
-      categories={categories}
+      initialTown={town}
+      initialQuery={q}
       base={base}
       client:load
     />
-  </div>
+  </TwoPaneMap>
 </BaseLayout>
 
 <style>
   .cta {
-    margin-bottom: var(--size-5);
+    margin-bottom: var(--size-4);
     font-weight: var(--font-weight-6);
   }
 </style>

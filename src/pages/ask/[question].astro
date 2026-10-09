@@ -1,8 +1,7 @@
 ---
-import PlaceLayout from "../../layouts/PlaceLayout.astro";
-import ReactionBar from "../../components/ReactionBar.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntityText from "../../components/EntityText.astro";
-import QuestionCard from "../../components/QuestionCard.astro";
+import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
 import {
   commentsFor,
   questions,
@@ -27,8 +26,7 @@ const { item: question } = Astro.props;
 const author = userBySlug(question.authorUserSlug);
 const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
 const replies = commentsFor("question", question.slug);
-const questionReactions = reactionsFor("question", question.slug);
-const related = questions.filter((item) => item.slug !== question.slug).slice(0, 5);
+const questionUp = reactionsFor("question", question.slug).find((item) => item.label === "up")?.count ?? 0;
 const accepted = replies[0];
 const jsonLd = {
   "@context": "https://schema.org",
@@ -56,147 +54,139 @@ const jsonLd = {
 };
 ---
 
-<PlaceLayout
-  title={question.title}
-  description={question.body}
-  active="ask"
-  showBrowse={false}
-  crumbs={[{ label: "Ask", path: "/ask" }, { label: question.title }]}
-  jsonLd={jsonLd}
->
-  <article class="container section article">
-    <p class="back"><a href={href("/ask")}>Back to Ask</a></p>
-    <h1>{question.title}</h1>
-    <p class="lede"><EntityText text={question.body} /></p>
-    <div class="who">
-      <div class="avatar img-placeholder" aria-hidden="true">{author?.name.charAt(0) ?? "?"}</div>
-      <div>
-        <p class="meta">
-          {
-            author ? (
-              <a href={href(`/u/${author.slug}`)}>{author.name}</a>
-            ) : (
-              "a visitor"
-            )
-          }
-          · {relativeTime(question.createdAt)}
-        </p>
-        {town && <span class="chip">{town.name}</span>}
+<BaseLayout title={question.title} description={question.body} active="ask" jsonLd={jsonLd}>
+  <div class="thread">
+    <p class="back">
+      <a href={href("/ask")}>← Back to Ask</a>
+    </p>
+    <article class="card">
+      <div class="meta">
+        <span class="avatar" aria-hidden="true">{author?.name.charAt(0) ?? "?"}</span>
+        <span>{relativeTime(question.createdAt)}</span>
+        {town && <span class="town">· {town.name}</span>}
       </div>
-    </div>
-    <ReactionBar reactions={questionReactions} />
-
-    <section>
-      <h2 class="section-title">Answers</h2>
+      <h1>{question.title}</h1>
       {
-        replies.map((item) => {
-          const replyAuthor = userBySlug(item.authorUserSlug);
-          return (
-            <article class="answer">
-              <div class="who">
-                <div class="avatar img-placeholder" aria-hidden="true">
-                  {replyAuthor?.name.charAt(0) ?? "?"}
-                </div>
-                <p class="meta">
-                  <a href={href(`/u/${item.authorUserSlug}`)}>{replyAuthor?.name ?? "A local"}</a>
-                  · {relativeTime(question.createdAt)}
-                </p>
-              </div>
-              <p>
-                <EntityText text={item.body} />
-              </p>
-              <ReactionBar reactions={reactionsFor("answer", item.slug)} />
-              <p class="reply-action">
-                <button type="button">Reply</button>
-              </p>
-            </article>
-          );
-        })
+        question.body && (
+          <p class="body">
+            <EntityText text={question.body} />
+          </p>
+        )
       }
-    </section>
+      <div class="actions">
+        <button type="button">👍 Like{questionUp ? ` ${questionUp}` : ""}</button>
+      </div>
+    </article>
 
-    <form class="form" onsubmit="return false;">
-      <wa-textarea label="Your answer" rows="3"></wa-textarea>
-      <wa-button variant="brand">Reply</wa-button>
-      <p class="meta">
-        Logged-out visitors are prompted to <a href={href("/auth/login")}>log in</a> or
-        <a href={href("/auth/signup")}>create an account</a>. Anonymous posting is available after auth.
-      </p>
-    </form>
+    <h2>{replies.length} {replies.length === 1 ? "reply" : "replies"}</h2>
 
     {
-      related.length > 0 && (
-        <section>
-          <h2 class="section-title">Related questions</h2>
-          <div class="related">
-            {related.map((item) => (
-              <QuestionCard question={item} />
-            ))}
-          </div>
-        </section>
-      )
+      replies.map((item) => {
+        const replyAuthor = userBySlug(item.authorUserSlug);
+        const up = reactionsFor("answer", item.slug).find((reaction) => reaction.label === "up")?.count ?? 0;
+        return (
+          <article class="card reply">
+            <div class="meta">
+              <span class="avatar" aria-hidden="true">{replyAuthor?.name.charAt(0) ?? "?"}</span>
+              <span>{relativeTime(question.createdAt)}</span>
+            </div>
+            <p class="body">
+              <EntityText text={item.body} />
+            </p>
+            <div class="actions">
+              <button type="button">👍 Like{up ? ` ${up}` : ""}</button>
+              <button type="button" class="reply-btn">Reply</button>
+            </div>
+          </article>
+        );
+      })
     }
-  </article>
-</PlaceLayout>
+
+    <AskReplyComposer
+      signedIn={false}
+      loginHref={href("/auth/login")}
+      signupHref={href("/auth/signup")}
+      client:visible
+    />
+  </div>
+</BaseLayout>
 
 <style>
-  .article {
-    max-width: 720px;
+  .thread {
+    width: min(44rem, 100%);
+    margin: 0 auto;
+    padding: var(--size-6) var(--size-4) var(--size-10);
+    display: grid;
+    gap: var(--size-4);
   }
   .back {
-    font-size: var(--font-size-1);
-  }
-  .lede {
-    font-size: var(--font-size-3);
-    color: var(--brand-ink-soft);
-  }
-  .who {
-    display: flex;
-    align-items: center;
-    gap: var(--size-3);
-    margin-block: var(--size-3);
-  }
-  .avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-  .meta {
-    font-size: var(--font-size-1);
-    color: var(--brand-ink-soft);
     margin: 0;
   }
-  .chip {
-    display: inline-block;
-    font-size: var(--font-size-0);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-4);
-    padding: 2px var(--size-2);
+  .back a {
+    color: var(--brand-deep);
+    font-weight: var(--font-weight-6);
   }
-  .answer {
+  .card {
     background: white;
     border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-4);
-    margin-bottom: var(--size-3);
+    border-radius: 1rem;
+    padding: var(--size-5);
   }
-  .reply-action button {
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--size-2);
+    margin-bottom: var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .avatar {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--brand-deep);
+    color: white;
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    flex-shrink: 0;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(1.4rem, 3vw, 1.85rem);
+    line-height: 1.25;
+    color: var(--brand-deep);
+  }
+  h2 {
+    margin: var(--size-3) 0 0;
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
+  }
+  .body {
+    margin: var(--size-3) 0 0;
+    color: var(--brand-ink);
+    font-size: var(--font-size-2);
+  }
+  .actions {
+    display: flex;
+    gap: var(--size-4);
+    margin-top: var(--size-4);
+    padding-top: var(--size-3);
+    border-top: 1px solid var(--brand-line);
+  }
+  .actions button {
     border: 0;
     background: none;
-    color: var(--brand-teal);
-    font: inherit;
-    font-weight: var(--font-weight-7);
     padding: 0;
+    font: inherit;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
     cursor: pointer;
   }
-  .form {
-    display: grid;
-    gap: var(--size-3);
-    margin-top: var(--size-6);
-  }
-  .related {
-    display: grid;
-    gap: var(--size-3);
+  .reply-btn {
+    color: var(--brand-deep) !important;
+    font-weight: var(--font-weight-6);
   }
 </style>
+

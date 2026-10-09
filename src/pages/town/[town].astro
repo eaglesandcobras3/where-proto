@@ -1,5 +1,6 @@
 ---
 import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import TwoPaneMap from "../../components/TwoPaneMap.astro";
 import Corridor from "../../components/Corridor.astro";
 import CategoriesInTown from "../../components/CategoriesInTown.astro";
 import AreasInTown from "../../components/AreasInTown.astro";
@@ -44,10 +45,11 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
   title={`${town.name}: stay, eat, and beach on 30A`}
   description={town.summary}
   active="towns"
+  showBrowse
   browseTown={town.name}
   crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
-  <div class="container">
+  <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(6, localBusinesses.length)}>
     <Corridor currentSlug={town.slug} />
 
     <section class="hero">
@@ -111,7 +113,7 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
     </section>
 
     {isEnabled("updates") && <UpdatesModule title={`Updates in ${town.name}`} updates={townUpdates} />}
-  </div>
+  </TwoPaneMap>
 </PlaceLayout>
 
 <style>
@@ -119,7 +121,7 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
     display: flex;
     gap: var(--size-6);
     align-items: center;
-    padding-block: var(--size-6);
+    padding-block: var(--size-4) var(--size-6);
   }
   .hero-img {
     width: 180px;

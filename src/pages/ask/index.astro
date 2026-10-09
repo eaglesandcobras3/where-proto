@@ -1,52 +1,88 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PageHeader from "../../components/PageHeader.astro";
 import AskComposer from "../../components/islands/AskComposer.svelte";
 import AskIndex from "../../components/islands/AskIndex.svelte";
-import { commentsFor, questions, townBySlug, towns, userBySlug } from "../../data/catalog";
+import { commentsFor, questions, townBySlug, userBySlug } from "../../data/catalog";
 import { relativeTime } from "../../lib/labels";
 import { href } from "../../lib/href";
 
+const params = Astro.url.searchParams;
+const town = params.get("town") ?? "";
+const topic = params.get("topic") ?? "";
+const q = params.get("q") ?? "";
 const base = import.meta.env.BASE_URL;
 const rows = questions.map((question) => {
   const author = userBySlug(question.authorUserSlug);
-  const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+  const townRow = question.townSlug ? townBySlug(question.townSlug) : undefined;
   return {
     slug: question.slug,
     title: question.title,
+    body: question.body,
     author: author?.name ?? "a visitor",
     createdAt: question.createdAt,
     relative: relativeTime(question.createdAt),
     answers: commentsFor("question", question.slug).length,
-    town: town?.name,
+    town: townRow?.name,
+    townSlug: question.townSlug,
   };
 });
 ---
 
-<BaseLayout title="Ask locals about 30A" description="Local Q and A about visiting or living on 30A." active="ask">
-  <div class="container section">
-    <PageHeader
-      eyebrow="Ask"
-      title="Ask locals"
-      lede="Real questions from visitors, answered by locals. Newest first, or sort by most answered."
-    />
-    <section class="composer">
-      <h2 class="section-title">Ask a question</h2>
+<BaseLayout
+  title="Ask locals about 30A"
+  description="Local Q and A about visiting or living on 30A."
+  active="ask"
+  showAsk
+  askTown={town}
+  askTopic={topic}
+  askQuery={q}
+>
+  <div class="board">
+    <header class="intro">
+      <div>
+        <h1>Ask the locals</h1>
+        <p class="lede">Questions and answers from people who know 30A.</p>
+      </div>
       <AskComposer
-        towns={towns}
-        signedIn={true}
+        signedIn={false}
         loginHref={href("/auth/login")}
         signupHref={href("/auth/signup")}
         client:visible
       />
-    </section>
-    <AskIndex questions={rows} base={base} client:load />
+    </header>
+
+    <AskIndex
+      questions={rows}
+      initialTown={town}
+      initialTopic={topic}
+      initialQuery={q}
+      base={base}
+      client:load
+    />
   </div>
 </BaseLayout>
 
 <style>
-  .composer {
-    margin-bottom: var(--size-8);
-    max-width: 640px;
+  .board {
+    width: min(44rem, 100%);
+    margin: 0 auto;
+    padding: var(--size-6) var(--size-4) var(--size-10);
+    display: grid;
+    gap: var(--size-5);
+  }
+  .intro {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .intro h1 {
+    margin: 0 0 var(--size-1);
+    font-size: clamp(1.75rem, 4vw, 2.25rem);
+    color: var(--brand-deep);
+  }
+  .lede {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
   }
 </style>
+

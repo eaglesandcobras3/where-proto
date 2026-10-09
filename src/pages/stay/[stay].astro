@@ -21,8 +21,6 @@ const town = townBySlug(stay.townSlug);
   title={stay.name}
   description={stay.summary}
   active="stays"
-  browseTown={town?.name}
-  browseCategory="Stay"
   crumbs={[{ label: "Stays", path: "/stays" }, { label: stay.name }]}
 >
   <div class="container section">

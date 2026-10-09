@@ -68,8 +68,10 @@ const searchHref = href(`/search?town=${town.slug}&category=${leaf?.slug ?? grou
   title={`${group.name} in ${town.name}`}
   description={`Find ${group.name.toLowerCase()} in ${town.name}, Florida.`}
   active="towns"
+  showBrowse
   browseTown={town.name}
   browseCategory={leaf?.name ?? group.name}
+  browseExpanded
   crumbs={[
     { label: "Towns", path: "/towns" },
     { label: town.name, path: `/town/${town.slug}` },

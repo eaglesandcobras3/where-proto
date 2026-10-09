@@ -3,11 +3,12 @@ import { towns } from "../data/catalog";
 import { href } from "../lib/href";
 
 interface Props {
-  currentSlug: string;
+  /** Omit on the towns hub so no town is highlighted */
+  currentSlug?: string;
 }
 
 const { currentSlug } = Astro.props;
-const currentIndex = towns.findIndex((item) => item.slug === currentSlug);
+const currentIndex = currentSlug ? towns.findIndex((item) => item.slug === currentSlug) : -1;
 ---
 
 <section class="corridor" aria-label="The 30A corridor">
@@ -15,14 +16,24 @@ const currentIndex = towns.findIndex((item) => item.slug === currentSlug);
   <div class="track">
     {
       towns.map((item, index) => {
-        const here = item.slug === currentSlug;
-        const delta = index - currentIndex;
-        const meta = here ? "You are here" : delta < 0 ? `${Math.abs(delta)} west` : `${delta} east`;
+        const here = Boolean(currentSlug) && item.slug === currentSlug;
+        const delta = currentIndex >= 0 ? index - currentIndex : 0;
+        const meta = !currentSlug
+          ? ""
+          : here
+            ? "You are here"
+            : delta < 0
+              ? `${Math.abs(delta)} west`
+              : `${delta} east`;
         return (
-          <a class:list={["item", { current: here }]} href={href(`/town/${item.slug}`)} aria-current={here ? "true" : undefined}>
+          <a
+            class:list={["item", { current: here }]}
+            href={href(`/town/${item.slug}`)}
+            aria-current={here ? "true" : undefined}
+          >
             <div class="dot">{here ? "●" : ""}</div>
             <p class="name">{item.name}</p>
-            <p class="meta">{meta}</p>
+            {meta && <p class="meta">{meta}</p>}
           </a>
         );
       })
@@ -36,12 +47,22 @@ const currentIndex = towns.findIndex((item) => item.slug === currentSlug);
     padding-bottom: var(--size-4);
     border-bottom: 1px solid var(--brand-line);
   }
+  .eyebrow {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+    text-align: center;
+  }
   .track {
     display: flex;
     gap: var(--size-4);
     overflow-x: auto;
     padding: var(--size-1) var(--size-1) var(--size-3);
     scroll-snap-type: x proximity;
+    justify-content: safe center;
   }
   .item {
     flex: 0 0 5.5rem;

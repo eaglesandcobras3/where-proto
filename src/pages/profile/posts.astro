@@ -1,22 +1,17 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
-import AccountNav from "../../components/AccountNav.astro";
+import AccountLayout from "../../layouts/AccountLayout.astro";
 import PostCard from "../../components/PostCard.astro";
 import { currentUserSlug, posts } from "../../data/catalog";
 
 const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
 ---
 
-<BaseLayout title="My posts">
-  <div class="container section">
-    <h1>My posts</h1>
-    <AccountNav active="posts" />
-    <div class="stack">
-      {mine.map((post) => <PostCard post={post} />)}
-      {mine.length === 0 && <p>No posts yet.</p>}
-    </div>
+<AccountLayout title="My posts" active="posts">
+  <div class="stack">
+    {mine.map((post) => <PostCard post={post} />)}
+    {mine.length === 0 && <p>No posts yet.</p>}
   </div>
-</BaseLayout>
+</AccountLayout>
 
 <style>
   .stack {

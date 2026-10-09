@@ -9,79 +9,52 @@ interface Props {
 
 const { event } = Astro.props;
 const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
-const dateBits = event.when.split(",")[0] ?? event.when;
 ---
 
 <a class="card" href={href(`/event/${event.slug}`)}>
-  <div class="dateblock" aria-hidden="true">
-    <span class="day">{dateBits}</span>
-    {event.time && <span class="time">{event.time}</span>}
-  </div>
-  <div class="body">
-    <h3>{event.name}</h3>
-    <p class="meta">
-      {event.time ?? event.when}
-      {event.venue && <> &middot; {event.venue}</>}
-      {town && <> &middot; {town.name}</>}
-    </p>
-    {event.category && <span class="tag">{event.category}</span>}
-  </div>
+  <p class="when">{event.when}{event.time ? ` · ${event.time}` : ""}</p>
+  <h3>{event.name}</h3>
+  <p class="meta">
+    {event.venue ?? "30A"}
+    {town && <> · {town.name}</>}
+  </p>
+  {event.category && <span class="tag">{event.category}</span>}
 </a>
 
 <style>
   .card {
-    display: flex;
-    gap: var(--size-3);
+    display: grid;
+    gap: var(--size-2);
     background: white;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-card);
-    overflow: hidden;
+    padding: var(--size-4);
     color: var(--brand-ink);
-    padding: var(--size-3);
   }
   .card:hover {
     text-decoration: none;
     box-shadow: var(--shadow-card);
   }
-  .dateblock {
-    flex: 0 0 64px;
-    width: 64px;
-    height: 64px;
-    aspect-ratio: 1 / 1;
-    background: var(--brand-teal-soft);
-    border-radius: var(--radius-2);
-    padding: 4px;
-    text-align: center;
-    color: var(--brand-deep);
-    display: grid;
-    place-content: center;
-  }
-  .day {
-    display: block;
+  .when {
+    margin: 0;
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
     text-transform: uppercase;
-    letter-spacing: 0.04em;
+    color: var(--brand-ink-soft);
   }
-  .time {
-    display: block;
-    margin-top: var(--size-1);
-    font-size: 0.68rem;
-  }
-  .body {
-    min-width: 0;
-  }
-  .body h3 {
+  h3 {
+    margin: 0;
     font-size: var(--font-size-2);
-    margin-bottom: var(--size-1);
+    color: var(--brand-deep);
   }
   .meta {
+    margin: 0;
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
-    margin: 0 0 var(--size-2);
   }
   .tag {
-    display: inline-block;
+    justify-self: start;
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     text-transform: uppercase;

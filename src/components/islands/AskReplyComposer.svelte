@@ -26,13 +26,13 @@
 <section class="composer">
   {#if mode === "idle"}
     <button class="prompt" type="button" onclick={onPrompt}>
-      <span class="avatar" aria-hidden="true">?</span>
-      <span class="prompt__text">Ask the locals anything about 30A…</span>
+      <span class="avatar" aria-hidden="true">+</span>
+      <span class="prompt__text">Write a reply…</span>
     </button>
   {:else if mode === "gate"}
     <div class="gate">
-      <p class="gate__title">Log in to ask a question</p>
-      <p class="gate__copy">Join to post on the board. You can still read every thread without an account.</p>
+      <p class="gate__title">Log in to reply</p>
+      <p class="gate__copy">Create an account or sign in to share a tip. Reading stays open to everyone.</p>
       <div class="actions">
         <a class="btn btn--solid" href={loginHref}>Log in</a>
         <a class="btn btn--quiet" href={signupHref}>Create account</a>
@@ -41,20 +41,17 @@
     </div>
   {:else}
     <form class="form" onsubmit={onSubmit}>
-      <div class="form__head">
-        <h2>Ask a question</h2>
-        <button class="text-btn" type="button" onclick={() => (mode = "idle")}>Cancel</button>
-      </div>
-      <label class="visually-hidden" for="ask-body">Your question</label>
+      <label class="label" for="ask-reply">Your reply</label>
       <textarea
-        id="ask-body"
+        id="ask-reply"
         name="body"
         rows="3"
-        placeholder="Where’s a quiet beach near Seaside this week?"
+        placeholder="Share a local tip."
         bind:value={body}
       ></textarea>
       <div class="actions">
-        <button class="btn btn--solid" type="submit">Post question</button>
+        <button class="btn btn--solid" type="submit">Reply</button>
+        <button class="text-btn" type="button" onclick={() => (mode = "idle")}>Cancel</button>
       </div>
       {#if submitted}
         <p class="hint">Prototype only: this does not send anything.</p>
@@ -106,8 +103,7 @@
     gap: var(--size-3);
     padding: var(--size-4);
   }
-  .gate__title,
-  h2 {
+  .gate__title {
     margin: 0;
     font-size: var(--font-size-3);
     color: var(--brand-deep);
@@ -118,11 +114,12 @@
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
   }
-  .form__head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: var(--size-3);
+  .label {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
   }
   textarea {
     width: 100%;
@@ -174,16 +171,5 @@
     font-weight: var(--font-weight-6);
     color: var(--brand-ink-soft);
     cursor: pointer;
-  }
-  .visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
   }
 </style>
