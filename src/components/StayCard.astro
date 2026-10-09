@@ -1,6 +1,7 @@
 ---
 import { href } from "../lib/href";
 import { townBySlug } from "../data/catalog";
+import { cardImageSrc, staySizes } from "../lib/card-image";
 import type { Stay } from "../data/types";
 
 interface Props {
@@ -12,7 +13,9 @@ const town = townBySlug(stay.townSlug);
 ---
 
 <a class="card" href={href(`/stay/${stay.slug}`)}>
-  <div class="thumb img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
+  <div class="media">
+    <img src={cardImageSrc(stay.name.charAt(0), "4/3")} alt="" width="400" height="300" sizes={staySizes} />
+  </div>
   <div class="body">
     <h3>{stay.name}</h3>
     <p class="meta">{town?.name ?? stay.townSlug} &middot; Sleeps {stay.sleeps}</p>
@@ -36,9 +39,16 @@ const town = townBySlug(stay.townSlug);
     text-decoration: none;
     box-shadow: var(--shadow-card);
   }
-  .thumb {
-    height: 160px;
-    border-radius: 0;
+  .media {
+    aspect-ratio: 4 / 3;
+    overflow: hidden;
+    background: var(--brand-teal-soft);
+  }
+  .media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .body {
     padding: var(--size-4);

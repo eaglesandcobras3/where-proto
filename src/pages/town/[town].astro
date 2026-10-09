@@ -67,7 +67,7 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
       localBusinesses.length > 0 && (
         <section>
           <h2 class="section-title">Local businesses in {town.name}</h2>
-          <div class="grid cards">
+          <div class="listing-grid">
             {localBusinesses.slice(0, 6).map((business) => (
               <BusinessCard business={business} />
             ))}
@@ -83,7 +83,7 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
       isEnabled("guides") && townGuides.length > 0 && (
         <section>
           <h2 class="section-title">Guides for {town.name}</h2>
-          <div class="grid tiles">
+          <div class="listing-grid">
             {townGuides.map((guide) => (
               <GuideCard guide={guide} />
             ))}
@@ -96,7 +96,7 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
       isEnabled("events") && townEvents.length > 0 && (
         <section>
           <h2 class="section-title">Events in {town.name}</h2>
-          <div class="grid tiles">
+          <div class="listing-grid">
             {townEvents.map((event) => (
               <EventCard event={event} />
             ))}
@@ -136,16 +136,6 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
   .desc {
     color: var(--brand-ink-soft);
     max-width: 64ch;
-  }
-  .grid {
-    display: grid;
-    gap: var(--size-4);
-  }
-  .cards {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-  }
-  .tiles {
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   }
   .more {
     margin-top: var(--size-4);

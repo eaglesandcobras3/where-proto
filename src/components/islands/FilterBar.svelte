@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { cardImageSrc, listingSizes } from "../../lib/card-image";
+
   interface Biz {
     slug: string;
     name: string;
@@ -153,10 +155,18 @@
     {/if}
   </p>
 
-  <div class="grid">
+  <div class="listing-grid-split">
     {#each results as item}
-      <a class="card" href={path(`/business/${item.slug}`)}>
-        <div class="thumb img-placeholder" aria-hidden="true">{item.name.charAt(0)}</div>
+      <a class="listing-card" href={path(`/business/${item.slug}`)}>
+        <div class="listing-tile">
+          <img
+            src={cardImageSrc(item.name.charAt(0), "2/3")}
+            alt=""
+            width="112"
+            height="168"
+            sizes={listingSizes}
+          />
+        </div>
         <div class="body">
           <h3>{item.name}</h3>
           <p class="meta">{townName(item.town)} &middot; {categoryName(item)}</p>
@@ -261,31 +271,7 @@
     color: var(--brand-ink-soft);
     margin-block: var(--size-4) var(--size-2);
   }
-  .grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
-    gap: var(--size-4);
-  }
-  .card {
-    display: flex;
-    gap: var(--size-3);
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-3);
-    color: var(--brand-ink);
-  }
-  .card:hover {
-    text-decoration: none;
-    box-shadow: var(--shadow-card);
-  }
-  .thumb {
-    width: 96px;
-    height: 96px;
-    flex-shrink: 0;
-    border-radius: var(--radius-2);
-  }
-  .card h3 {
+  .listing-card h3 {
     font-size: var(--font-size-2);
     margin-bottom: var(--size-1);
   }
@@ -313,19 +299,6 @@
   .empty {
     color: var(--brand-ink-soft);
   }
-  @media (max-width: 400px) {
-    .card {
-      flex-direction: column;
-    }
-    .thumb {
-      width: 100%;
-      height: auto;
-      aspect-ratio: 16 / 9;
-    }
-    .desc {
-      -webkit-line-clamp: 1;
-    }
-  }
   @media (min-width: 640px) {
     .filter-bar {
       position: static;
@@ -337,9 +310,6 @@
     }
     .filters {
       padding: var(--size-4);
-    }
-    .grid {
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     }
   }
 </style>

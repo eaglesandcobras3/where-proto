@@ -55,7 +55,7 @@ const related = guides.filter((item) => item.slug !== guide.slug).slice(0, 3);
       related.length > 0 && (
         <section>
           <h2 class="section-title">Related guides</h2>
-          <div class="related">
+          <div class="listing-grid">
             {related.map((item) => (
               <GuideCard guide={item} />
             ))}
@@ -78,10 +78,5 @@ const related = guides.filter((item) => item.slug !== guide.slug).slice(0, 3);
   .comment {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
-  }
-  .related {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: var(--size-4);
   }
 </style>

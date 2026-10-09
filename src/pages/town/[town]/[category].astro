@@ -143,7 +143,7 @@ const searchHref = href(`/search?town=${town.slug}&category=${leaf?.slug ?? grou
       relatedGuides.length > 0 && (
         <section>
           <h2 class="section-title">Guides for {group.name}</h2>
-          <div class="guides">
+          <div class="listing-grid-split">
             {relatedGuides.map((guide) => (
               <GuideCard guide={guide} />
             ))}
@@ -182,11 +182,5 @@ const searchHref = href(`/search?town=${town.slug}&category=${leaf?.slug ?? grou
   }
   .chip.active {
     border-color: var(--brand-teal);
-  }
-  .guides {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--size-4);
-    margin-bottom: var(--size-6);
   }
 </style>

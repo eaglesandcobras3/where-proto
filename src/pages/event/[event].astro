@@ -116,7 +116,7 @@ const jsonLd = {
       related.length > 0 && (
         <section>
           <h2 class="section-title">Related events</h2>
-          <div class="grid">
+          <div class="listing-grid">
             {related.map((item) => (
               <EventCard event={item} />
             ))}
@@ -159,10 +159,5 @@ const jsonLd = {
   .note {
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--size-4);
   }
 </style>

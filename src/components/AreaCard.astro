@@ -2,17 +2,19 @@
 import { href } from "../lib/href";
 import { areaKindLabel, townBySlug } from "../data/catalog";
 import type { Area } from "../data/types";
+import ListingTile from "./ListingTile.astro";
 
 interface Props {
   area: Area;
+  wide?: boolean;
 }
 
-const { area } = Astro.props;
+const { area, wide = false } = Astro.props;
 const town = townBySlug(area.townSlug);
 ---
 
-<a class="card" href={href(`/area/${area.slug}`)}>
-  <div class="thumb img-placeholder" aria-hidden="true">{area.name.charAt(0)}</div>
+<a class:list={["listing-card", { wide }]} href={href(`/area/${area.slug}`)}>
+  <ListingTile label={area.name.charAt(0)} alt="" wide={wide} />
   <div class="body">
     <p class="kind">{areaKindLabel(area.kind)}</p>
     <h3>{area.name}</h3>
@@ -22,24 +24,8 @@ const town = townBySlug(area.townSlug);
 </a>
 
 <style>
-  .card {
-    display: block;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    overflow: hidden;
-    color: var(--brand-ink);
-  }
-  .card:hover {
-    text-decoration: none;
-    box-shadow: var(--shadow-card);
-  }
-  .thumb {
-    height: 120px;
-    border-radius: 0;
-  }
   .body {
-    padding: var(--size-3) var(--size-4);
+    min-width: 0;
   }
   .kind {
     font-size: var(--font-size-0);

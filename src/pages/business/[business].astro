@@ -144,7 +144,7 @@ const similar = businesses
       businessEvents.length > 0 && (
         <section>
           <h2 class="section-title">Events</h2>
-          <div class="grid">
+          <div class="listing-grid">
             {businessEvents.map((event) => (
               <EventCard event={event} />
             ))}
@@ -185,7 +185,7 @@ const similar = businesses
       similar.length > 0 && (
         <section>
           <h2 class="section-title">Similar nearby</h2>
-          <div class="grid">
+          <div class="listing-grid">
             {similar.map((item) => (
               <BusinessCard business={item} />
             ))}
@@ -256,11 +256,6 @@ const similar = businesses
     padding: 2px var(--size-2);
     background: white;
     color: var(--brand-ink-soft);
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--size-4);
   }
   .stack {
     display: grid;

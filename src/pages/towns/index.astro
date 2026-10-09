@@ -12,16 +12,8 @@ import { towns } from "../../data/catalog";
       title="The 30A corridor"
       lede="West to east along the corridor. Each town has a one-line description and an Explore link. Town pages are discovery surfaces: glance facts plus local businesses, guides, and events."
     />
-    <div class="grid">
+    <div class="listing-grid-full">
       {towns.map((town) => <TownCard town={town} />)}
     </div>
   </div>
 </BaseLayout>
-
-<style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: var(--size-4);
-  }
-</style>

@@ -21,7 +21,7 @@ import { href } from "../../lib/href";
             <h2>
               <a href={href(`/town/${town.slug}`)}>{town.name}</a>
             </h2>
-            <div class="grid">
+            <div class="listing-grid-full">
               {townAreas.map((area) => (
                 <AreaCard area={area} />
               ))}
@@ -39,10 +39,5 @@ import { href } from "../../lib/href";
   }
   .town-block h2 {
     font-size: var(--font-size-4);
-  }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: var(--size-4);
   }
 </style>
