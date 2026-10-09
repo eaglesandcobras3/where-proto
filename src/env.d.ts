@@ -5,7 +5,6 @@ declare namespace astroHTML.JSX {
     "wa-button": any;
     "wa-checkbox": any;
     "wa-dialog": any;
-    "wa-drawer": any;
     "wa-input": any;
     "wa-option": any;
     "wa-select": any;
