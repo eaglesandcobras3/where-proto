@@ -52,10 +52,7 @@ const leafCounts = group.leaves
   }))
   .filter((item) => item.count > 0);
 const displayListings = showAll ? groupListings : groupListings.filter((item) => item.leafSlug === leaf?.slug);
-const filterCategories = [
-  { slug: group.slug, name: group.name },
-  ...group.leaves.map((item) => ({ slug: item.slug, name: item.name })),
-];
+const filterCategories = [{ slug: group.slug, name: group.name, leaves: group.leaves }];
 const moreCategories = categories.filter((item) => item.slug !== group.slug);
 const relatedGuides = guides.filter(
   (item) => item.categorySlug === group.slug || item.townSlug === town.slug,

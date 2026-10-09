@@ -9,9 +9,11 @@ import PhotoGrid from "../../components/PhotoGrid.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import GuideCard from "../../components/GuideCard.astro";
 import EventCard from "../../components/EventCard.astro";
+import ExploreBar from "../../components/islands/ExploreBar.svelte";
 import { isEnabled } from "../../config/flags";
 import {
   businessesForTown,
+  categories,
   events,
   guides,
   photosFor,
@@ -38,13 +40,14 @@ const photos = photosFor("town", town.slug);
 const localBusinesses = businessesForTown(town.slug);
 const townGuides = guides.filter((item) => item.townSlug === town.slug);
 const townEvents = events.filter((item) => item.townSlug === town.slug);
+const base = import.meta.env.BASE_URL;
 ---
 
 <PlaceLayout
   title={`${town.name}: stay, eat, and beach on 30A`}
   description={town.summary}
   active="towns"
-  browseTown={town.name}
+  showBrowse={false}
   crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
   <div class="container">
@@ -58,6 +61,15 @@ const townEvents = events.filter((item) => item.townSlug === town.slug);
         <p class="desc">{town.summary}</p>
       </div>
     </section>
+
+    <ExploreBar
+      towns={towns}
+      categories={categories}
+      currentTown={town.slug}
+      currentPath={`/town/${town.slug}`}
+      base={base}
+      client:load
+    />
 
     <AtAGlance town={view} />
     <CategoriesInTown townSlug={town.slug} townName={town.name} />
