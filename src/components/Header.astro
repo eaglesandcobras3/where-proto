@@ -47,7 +47,14 @@ const links = [
           <path d="M5 19c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
         </svg>
       </a>
-      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu" aria-controls="mobile-drawer">
+      <button
+        class="menu-btn"
+        id="menu-btn"
+        type="button"
+        aria-label="Open menu"
+        aria-controls="mobile-drawer"
+        aria-expanded="false"
+      >
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 6h18M3 12h18M3 18h18"></path>
         </svg>
@@ -56,34 +63,39 @@ const links = [
   </div>
 </header>
 
-<wa-drawer label="Menu" id="mobile-drawer" placement="end">
-  <nav class="mobile-nav">
-    {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
-    <a href={href("/add-business")}>Add business</a>
-    <a href={href("/profile")}>Profile</a>
-    <a href={href("/dashboard")}>Dashboard</a>
-    <a href={href("/updates")}>Updates</a>
-  </nav>
-</wa-drawer>
+<dialog class="mobile-drawer" id="mobile-drawer" aria-label="Menu">
+  <div class="mobile-drawer-panel">
+    <form method="dialog">
+      <button class="menu-close" type="submit">Close</button>
+    </form>
+    <nav class="mobile-nav">
+      {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
+      <a href={href("/add-business")}>Add business</a>
+      <a href={href("/profile")}>Profile</a>
+      <a href={href("/dashboard")}>Dashboard</a>
+      <a href={href("/updates")}>Updates</a>
+    </nav>
+  </div>
+</dialog>
 
 <script>
   const btn = document.getElementById("menu-btn");
   const drawer = document.getElementById("mobile-drawer");
 
-  btn?.addEventListener("click", async () => {
-    btn.classList.add("is-pressed");
-    try {
-      if (!customElements.get("wa-drawer")) {
-        await customElements.whenDefined("wa-drawer");
-      }
-      const host = drawer as (HTMLElement & { show?: () => void }) | null;
-      if (typeof host?.show === "function") {
-        host.show();
-      } else {
-        host?.setAttribute("open", "");
-      }
-    } finally {
-      btn.classList.remove("is-pressed");
+  function setExpanded(open: boolean) {
+    btn?.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  btn?.addEventListener("click", () => {
+    if (!(drawer instanceof HTMLDialogElement)) return;
+    drawer.showModal();
+    setExpanded(true);
+  });
+
+  drawer?.addEventListener("close", () => setExpanded(false));
+  drawer?.addEventListener("click", (event) => {
+    if (event.target === drawer && drawer instanceof HTMLDialogElement) {
+      drawer.close();
     }
   });
 </script>
@@ -178,9 +190,45 @@ const links = [
     color: var(--brand-ink);
     flex-shrink: 0;
   }
-  .menu-btn.is-pressed {
+  .menu-btn[aria-expanded="true"] {
     background: var(--brand-teal-soft);
     border-color: var(--brand-teal);
+  }
+  .mobile-drawer {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  .mobile-drawer::backdrop {
+    background: rgb(12 47 61 / 0.4);
+  }
+  .mobile-drawer-panel {
+    position: absolute;
+    inset: 0 0 0 auto;
+    width: min(20rem, 100vw);
+    height: 100%;
+    overflow: auto;
+    background: var(--brand-sand);
+    border-left: 1px solid var(--brand-line);
+    padding: var(--size-4);
+  }
+  .menu-close {
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    min-height: 44px;
+    padding: var(--size-2) var(--size-3);
+    margin-bottom: var(--size-3);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    background: white;
+    color: var(--brand-ink);
+    cursor: pointer;
   }
   .mobile-nav {
     display: flex;
@@ -189,6 +237,7 @@ const links = [
   }
   .mobile-nav a {
     padding: var(--size-3);
+    min-height: 44px;
     font-size: var(--font-size-3);
     color: var(--brand-ink);
     border-bottom: 1px solid var(--brand-line);
