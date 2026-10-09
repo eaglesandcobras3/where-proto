@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { onMount, tick } from "svelte";
   import { cardImageSrc, listingSizes } from "../../lib/card-image";
+  import { withBase } from "../../lib/explore-link";
 
   interface Biz {
     slug: string;
@@ -17,6 +19,10 @@
     name: string;
   }
 
+  interface CategoryGroup extends Named {
+    leaves?: Named[];
+  }
+
   let {
     businesses = [],
     towns = [],
@@ -32,7 +38,7 @@
   }: {
     businesses: Biz[];
     towns: Named[];
-    categories: Named[];
+    categories: CategoryGroup[];
     tags: Named[];
     initialTown?: string;
     initialCategory?: string;
@@ -48,10 +54,30 @@
   let tag = $state(initialTag);
   let openNow = $state(initialOpenNow);
   let query = $state("");
+  let filtersOpen = $state(false);
+  let ready = $state(false);
+  let townSelect: HTMLSelectElement | undefined = $state();
+  let chevron: HTMLButtonElement | undefined = $state();
 
   function path(route: string) {
-    const root = base.endsWith("/") ? base.slice(0, -1) : base;
-    return `${root}${route}`;
+    return withBase(base, route);
+  }
+
+  function categoryLabel(slug: string) {
+    for (const group of categories) {
+      if (group.slug === slug) return group.name;
+      const leaf = group.leaves?.find((item) => item.slug === slug);
+      if (leaf) return leaf.name;
+    }
+    return slug;
+  }
+
+  function townName(slug: string) {
+    return towns.find((item) => item.slug === slug)?.name ?? slug;
+  }
+
+  function listingCategory(item: Biz) {
+    return categoryLabel(item.leaf) || categoryLabel(item.category) || item.leaf;
   }
 
   let results = $derived(
@@ -68,17 +94,10 @@
     }),
   );
 
-  function townName(slug: string) {
-    return towns.find((item) => item.slug === slug)?.name ?? slug;
-  }
-
-  function categoryName(item: Biz) {
-    return (
-      categories.find((entry) => entry.slug === item.leaf)?.name ??
-      categories.find((entry) => entry.slug === item.category)?.name ??
-      item.leaf
-    );
-  }
+  let pillTown = $derived(town ? townName(town) : "All 30A");
+  let pillCategory = $derived(category ? categoryLabel(category) : "");
+  let showIndexable = $derived(Boolean(town && category && !tag && !openNow));
+  let indexableHref = $derived(path(`/town/${town}/${category}`));
 
   function clear() {
     town = "";
@@ -88,72 +107,153 @@
     query = "";
   }
 
-  let activeCount = $derived(
-    [town, category, tag, query.trim(), openNow ? "open" : ""].filter(Boolean).length,
-  );
-  let filtersOpen = $state(true);
+  async function expand() {
+    filtersOpen = true;
+    await tick();
+    townSelect?.focus();
+  }
+
+  async function collapse() {
+    filtersOpen = false;
+    await tick();
+    chevron?.focus();
+  }
+
+  function toggle() {
+    if (filtersOpen) void collapse();
+    else void expand();
+  }
+
+  function onKeydown(event: KeyboardEvent) {
+    if (event.key === "Escape" && filtersOpen) {
+      event.preventDefault();
+      void collapse();
+    }
+  }
+
+  onMount(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (window.location.pathname.includes("/search")) {
+      if (params.has("town")) town = params.get("town") ?? "";
+      if (params.has("category")) category = params.get("category") ?? "";
+      if (params.has("tag")) tag = params.get("tag") ?? "";
+      if (params.has("open")) openNow = params.get("open") === "1";
+    }
+    filtersOpen = window.matchMedia("(min-width: 640px)").matches;
+    ready = true;
+  });
 
   $effect(() => {
-    if (typeof window === "undefined") return;
-    const media = window.matchMedia("(max-width: 639px)");
-    const sync = () => {
-      filtersOpen = !media.matches;
-    };
-    sync();
-    media.addEventListener("change", sync);
-    return () => media.removeEventListener("change", sync);
+    if (!ready || typeof window === "undefined") return;
+    if (!window.location.pathname.includes("/search")) return;
+    const params = new URLSearchParams();
+    if (town) params.set("town", town);
+    if (category) params.set("category", category);
+    if (tag) params.set("tag", tag);
+    if (openNow) params.set("open", "1");
+    const next = `${window.location.pathname}${params.size ? `?${params}` : ""}`;
+    const now = `${window.location.pathname}${window.location.search}`;
+    if (next !== now) history.replaceState(null, "", next);
   });
 </script>
 
 <div class="filter-bar">
-  <details class="filter-panel" bind:open={filtersOpen}>
-    <summary>Filters{activeCount ? ` (${activeCount})` : ""}</summary>
-    <div class="filters">
-    <label class="search">
-      Search
-      <input type="search" bind:value={query} placeholder="Business name or keyword" />
-    </label>
-    <label>
-      Town
-      <select bind:value={town}>
-        <option value="">All towns</option>
-        {#each towns as item}
-          <option value={item.slug}>{item.name}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      Category
-      <select bind:value={category}>
-        <option value="">All categories</option>
-        {#each categories as item}
-          <option value={item.slug}>{item.name}</option>
-        {/each}
-      </select>
-    </label>
-    <label>
-      Tag
-      <select bind:value={tag}>
-        <option value="">Any tag</option>
-        {#each tags as item}
-          <option value={item.slug}>{item.name}</option>
-        {/each}
-      </select>
-    </label>
-    <label class="check">
-      <input type="checkbox" bind:checked={openNow} />
-      Open now
-    </label>
-    <button type="button" class="clear" onclick={clear}>Clear</button>
+  <div class="filter-chrome" role="search" onkeydown={onKeydown}>
+    <div class="fb-card">
+      <div class="fb-row">
+        <button class="fb-pill" type="button" onclick={toggle}>
+          <span class="fb-pill-text">
+            <strong>{pillTown}</strong>
+            {#if pillCategory}<span> / {pillCategory}</span>{/if}
+          </span>
+        </button>
+        <button
+          bind:this={chevron}
+          class="fb-chevron"
+          type="button"
+          aria-label={filtersOpen ? "Collapse filters" : "Expand filters"}
+          aria-expanded={filtersOpen}
+          aria-controls="search-filter-panel"
+          onclick={toggle}
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M6 9l6 6 6-6"></path>
+          </svg>
+        </button>
+        <button class="fb-primary" type="button" onclick={() => (filtersOpen ? void collapse() : void expand())}>
+          {results.length} businesses
+        </button>
+      </div>
+
+      {#if filtersOpen}
+        <div class="fb-panel" id="search-filter-panel">
+          <div class="fb-fields">
+            <label class="fb-label">
+              Town
+              <select class="fb-control" bind:this={townSelect} bind:value={town}>
+                <option value="">All towns</option>
+                {#each towns as item}
+                  <option value={item.slug}>{item.name}</option>
+                {/each}
+              </select>
+            </label>
+            <label class="fb-label">
+              Category
+              <select class="fb-control" bind:value={category}>
+                <option value="">All categories</option>
+                {#each categories as group}
+                  {#if group.leaves?.length}
+                    <optgroup label={group.name}>
+                      <option value={group.slug}>{group.name}</option>
+                      {#each group.leaves as leaf}
+                        <option value={leaf.slug}>{leaf.name}</option>
+                      {/each}
+                    </optgroup>
+                  {:else}
+                    <option value={group.slug}>{group.name}</option>
+                  {/if}
+                {/each}
+              </select>
+            </label>
+            <label class="fb-label">
+              Tag
+              <select class="fb-control" bind:value={tag}>
+                <option value="">Any tag</option>
+                {#each tags as item}
+                  <option value={item.slug}>{item.name}</option>
+                {/each}
+              </select>
+            </label>
+            <label class="fb-label">
+              Search
+              <input class="fb-control" type="search" bind:value={query} placeholder="Business name or keyword" />
+            </label>
+          </div>
+          <div class="fb-actions">
+            <label class="fb-label fb-check">
+              <input type="checkbox" bind:checked={openNow} />
+              Open now
+            </label>
+            <button type="button" class="fb-clear" onclick={clear}>Clear</button>
+          </div>
+        </div>
+      {/if}
     </div>
-  </details>
+  </div>
 
   <p class="count" aria-live="polite">
-    Showing {results.length} of {totalCount ?? businesses.length} listings
+    {results.length} businesses
     {#if searchHref}
       · <a href={searchHref}>Browse all on Search</a>
     {/if}
   </p>
+
+  {#if showIndexable}
+    <p class="indexable">
+      View the indexable page:
+      <a href={indexableHref}>/town/{town}/{category}</a>
+    </p>
+  {/if}
 
   <div class="listing-grid-split">
     {#each results as item}
@@ -169,7 +269,7 @@
         </div>
         <div class="body">
           <h3>{item.name}</h3>
-          <p class="meta">{townName(item.town)} &middot; {categoryName(item)}</p>
+          <p class="meta">{townName(item.town)} &middot; {listingCategory(item)}</p>
           <p class="desc">{item.description}</p>
           {#if item.openNow}
             <span class="open">Open now</span>
@@ -185,88 +285,18 @@
 <style>
   .filter-bar {
     margin-block: var(--size-6);
-    position: sticky;
-    top: 64px;
-    z-index: 20;
+  }
+  .filter-chrome {
     background: var(--brand-sand);
-    padding-block: var(--size-2);
   }
-  .filter-panel {
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-  }
-  summary {
-    list-style: none;
-    cursor: pointer;
-    min-height: 44px;
-    display: flex;
-    align-items: center;
-    padding: var(--size-3) var(--size-4);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-  }
-  summary::-webkit-details-marker {
-    display: none;
-  }
-  .filters {
+  .fb-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--size-3);
-    align-items: end;
-    padding: 0 var(--size-4) var(--size-4);
-  }
-  label {
-    display: flex;
-    flex-direction: column;
-    gap: var(--size-1);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--brand-ink-soft);
-  }
-  select,
-  input[type="search"] {
-    font: inherit;
-    font-size: var(--font-size-1);
-    text-transform: none;
-    letter-spacing: normal;
-    padding: var(--size-2) var(--size-3);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-2);
-    background: white;
-    min-width: 160px;
-  }
-  .search {
-    flex: 1 1 220px;
-  }
-  .check {
-    flex-direction: row;
     align-items: center;
-    min-height: 44px;
-    padding-block: var(--size-2);
   }
-  .check input {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--brand-teal);
-  }
-  .clear {
-    font: inherit;
-    font-size: var(--font-size-1);
-    min-height: 44px;
-    padding: var(--size-2) var(--size-4);
-    border-radius: var(--radius-4);
-    border: 1px solid var(--brand-line);
-    background: white;
-    cursor: pointer;
-  }
-  .clear:hover {
-    border-color: var(--brand-teal);
-    color: var(--brand-teal);
-  }
-  .count {
+  .count,
+  .indexable {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
     margin-block: var(--size-4) var(--size-2);
@@ -299,17 +329,12 @@
   .empty {
     color: var(--brand-ink-soft);
   }
-  @media (min-width: 640px) {
-    .filter-bar {
-      position: static;
-      padding-block: 0;
-      background: transparent;
-    }
-    summary {
-      display: none;
-    }
-    .filters {
-      padding: var(--size-4);
+  @media (max-width: 639px) {
+    .filter-chrome {
+      position: sticky;
+      top: 64px;
+      z-index: 20;
+      padding-block: var(--size-2);
     }
   }
 </style>
