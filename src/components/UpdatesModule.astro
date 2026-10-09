@@ -1,15 +1,18 @@
 ---
 import UpdateCard from "./UpdateCard.astro";
 import { href } from "../lib/href";
+import { liveUpdates } from "../data/catalog";
 import type { Update } from "../data/types";
 
 interface Props {
   title: string;
   updates: Update[];
+  ctaHref?: string;
+  ctaLabel?: string;
 }
 
-const { title, updates } = Astro.props;
-const shown = updates.slice(0, 3);
+const { title, updates, ctaHref, ctaLabel } = Astro.props;
+const shown = liveUpdates(updates).slice(0, 3);
 ---
 
 {
@@ -22,6 +25,12 @@ const shown = updates.slice(0, 3);
         ))}
       </div>
       <p class="more">
+        {ctaHref && ctaLabel && (
+          <>
+            <a href={href(ctaHref)}>{ctaLabel}</a>
+            {" · "}
+          </>
+        )}
         <a href={href("/updates")}>See all updates</a>
       </p>
     </section>

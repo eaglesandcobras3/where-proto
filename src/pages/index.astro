@@ -6,9 +6,8 @@ import EventCard from "../components/EventCard.astro";
 import GuideCard from "../components/GuideCard.astro";
 import AreaCard from "../components/AreaCard.astro";
 import UpdatesModule from "../components/UpdatesModule.astro";
-import NewsletterForm from "../components/islands/NewsletterForm.svelte";
 import { isEnabled } from "../config/flags";
-import { areas, businesses, events, guides, towns, updates } from "../data/catalog";
+import { areas, businesses, events, guides, liveUpdates, towns } from "../data/catalog";
 import { href } from "../lib/href";
 ---
 
@@ -92,16 +91,16 @@ import { href } from "../lib/href";
   {
     isEnabled("updates") && (
       <div class="container">
-        <UpdatesModule title="Latest updates" updates={updates} />
+        <UpdatesModule title="Latest updates" updates={liveUpdates()} />
       </div>
     )
   }
 
   <section class="section alt">
     <div class="container subscribe">
-      <h2 class="section-title">Visitor newsletter</h2>
-      <p>Short notes on towns, events, and what is open. Prototype form only.</p>
-      <NewsletterForm audience="visitor" client:visible />
+      <h2 class="section-title">Add your business</h2>
+      <p>Add your business to WhereTo30A. Every submission is reviewed before publishing.</p>
+      <p class="more"><a href={href("/add-business")}>Add your business</a></p>
     </div>
   </section>
 </BaseLayout>
@@ -112,7 +111,7 @@ import { href } from "../lib/href";
     text-align: center;
   }
   .hero h1 {
-    font-size: var(--font-size-8);
+    font-size: clamp(2rem, 8vw, 3rem);
   }
   .lede {
     font-size: var(--font-size-3);
@@ -132,7 +131,7 @@ import { href } from "../lib/href";
     grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
   }
   .cards-grid {
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
   .tiles-grid {
     grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));

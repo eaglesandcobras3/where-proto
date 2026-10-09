@@ -8,6 +8,7 @@ import { href } from "../../lib/href";
   <div class="container section">
     <p><a href={href("/admin")}>Admin</a></p>
     <h1>Review queue</h1>
+    <div class="table-wrap">
     <table>
       <thead>
         <tr>
@@ -28,12 +29,17 @@ import { href } from "../../lib/href";
         }
       </tbody>
     </table>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
+  .table-wrap {
+    overflow-x: auto;
+  }
   table {
     width: 100%;
+    min-width: 640px;
     border-collapse: collapse;
     background: white;
     border: 1px solid var(--brand-line);

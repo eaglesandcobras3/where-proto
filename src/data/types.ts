@@ -58,14 +58,21 @@ export interface Stay {
   businessSlug?: Slug;
 }
 
+export type EventBucket = "now" | "today" | "weekend" | "month";
+
 export interface EventItem {
   slug: Slug;
   name: string;
   townSlug?: Slug;
   businessSlug?: Slug;
   when: string;
+  time?: string;
   summary: string;
   venue?: string;
+  category?: string;
+  ticketUrl?: string;
+  price?: string;
+  bucket: EventBucket;
 }
 
 export interface Guide {
@@ -74,6 +81,7 @@ export interface Guide {
   summary: string;
   body: string;
   townSlug?: Slug;
+  categorySlug?: Slug;
 }
 
 export interface Update {
@@ -81,6 +89,8 @@ export interface Update {
   title: string;
   body: string;
   createdAt: string;
+  through: string;
+  type: "new_item" | "limited_offer" | "business_news" | "hours_change";
   townSlug?: Slug;
   businessSlug?: Slug;
 }
@@ -90,6 +100,7 @@ export interface User {
   name: string;
   role: "visitor" | "local" | "business-owner" | "admin";
   bio: string;
+  memberSince: string;
 }
 
 export interface Post {
@@ -114,6 +125,7 @@ export interface Question {
   body: string;
   authorUserSlug: Slug;
   townSlug?: Slug;
+  createdAt: string;
 }
 
 export interface Comment {
@@ -125,9 +137,9 @@ export interface Comment {
 
 export interface Reaction {
   slug: Slug;
-  label: string;
+  label: "up" | "heart" | "wow";
   count: number;
-  on: { type: "post" | "question" | "guide"; slug: Slug };
+  on: { type: "post" | "question" | "guide" | "answer"; slug: Slug };
 }
 
 export interface Tag {

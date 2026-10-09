@@ -8,9 +8,9 @@ interface Props {
 const { active = "" } = Astro.props;
 
 const links = [
-  { label: "Profile", path: "/profile", key: "profile" },
-  { label: "Favorites", path: "/profile/favorites", key: "favorites" },
-  { label: "Posts", path: "/profile/posts", key: "posts" },
+  { label: "Saved", path: "/profile/favorites", key: "favorites" },
+  { label: "My Questions", path: "/profile/questions", key: "questions" },
+  { label: "My Posts", path: "/profile/posts", key: "posts" },
   { label: "Settings", path: "/profile/settings", key: "settings" },
 ];
 ---
@@ -34,7 +34,7 @@ const links = [
     margin-bottom: var(--size-5);
   }
   .tab {
-    padding: var(--size-2) var(--size-4);
+    padding: 12px var(--size-4);
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
     color: var(--brand-ink-soft);

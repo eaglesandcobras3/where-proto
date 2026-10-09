@@ -17,6 +17,7 @@ interface Props {
   browseCategory?: string;
   noindex?: boolean;
   canonicalPath?: string;
+  jsonLd?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const {
@@ -29,7 +30,10 @@ const {
   browseCategory,
   noindex,
   canonicalPath,
+  jsonLd,
 } = Astro.props;
+
+const trail = [{ label: "Home", path: "/" }, ...crumbs];
 ---
 
 <BaseLayout
@@ -41,14 +45,15 @@ const {
   browseCategory={browseCategory}
   noindex={noindex}
   canonicalPath={canonicalPath}
+  jsonLd={jsonLd}
 >
   <div class="container">
     <nav class="crumbs" aria-label="Breadcrumb">
       {
-        crumbs.map((crumb, index) => (
+        trail.map((crumb, index) => (
           <span class="crumb">
             {crumb.path ? <a href={href(crumb.path)}>{crumb.label}</a> : <span aria-current="page">{crumb.label}</span>}
-            {index < crumbs.length - 1 && <span class="sep">/</span>}
+            {index < trail.length - 1 && <span class="sep">/</span>}
           </span>
         ))
       }

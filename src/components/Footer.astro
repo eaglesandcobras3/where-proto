@@ -6,11 +6,11 @@ const companyLinks = [
   { label: "About", path: "/about" },
   { label: "Travel guides", path: "/guides" },
   { label: "Events", path: "/events" },
+  { label: "Stays", path: "/stays" },
   { label: "Businesses", path: "/search" },
   { label: "Updates", path: "/updates" },
   { label: "List your business", path: "/add-business" },
   { label: "Advertise", path: "/advertise" },
-  { label: "Visitor newsletter", path: "/newsletters/visitor" },
   { label: "Privacy", path: "/legal/privacy" },
   { label: "Terms", path: "/legal/terms" },
 ];
@@ -118,8 +118,8 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     margin-top: var(--size-3);
   }
   .social a {
-    min-width: 36px;
-    height: 36px;
+    min-width: 44px;
+    height: 44px;
     padding-inline: var(--size-2);
     border: 1px solid var(--brand-line);
     border-radius: 50px;
@@ -143,9 +143,11 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping").slice(0, 
     padding: 0;
   }
   .col li {
-    margin-bottom: var(--size-2);
+    margin: 0;
   }
   .col a {
+    display: block;
+    padding-block: 10px;
     font-size: var(--font-size-1);
     color: var(--brand-ink);
   }

@@ -53,6 +53,7 @@ const pins = Array.from({ length: pinCount }, (_, index) => index);
   }
   .list {
     overflow: auto;
+    max-height: calc(100dvh - 8rem);
     background: var(--brand-sand);
     padding: var(--size-4) var(--size-4) 5rem;
   }
@@ -113,7 +114,7 @@ const pins = Array.from({ length: pinCount }, (_, index) => index);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
   }
   .toggle {
-    position: fixed;
+    position: absolute;
     left: 50%;
     bottom: 1.25rem;
     transform: translateX(-50%);
@@ -122,6 +123,7 @@ const pins = Array.from({ length: pinCount }, (_, index) => index);
     border-radius: 999px;
     background: var(--brand-ink);
     color: #fff;
+    min-height: 44px;
     padding: 0.7rem 1.35rem;
     font-weight: 700;
     box-shadow: var(--shadow-card);

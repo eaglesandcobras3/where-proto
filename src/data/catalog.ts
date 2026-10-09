@@ -20,32 +20,48 @@ import type {
   User,
 } from "./types";
 
-export const currentUserSlug = "kelley";
+export const currentUserSlug = "beachlocal";
 
 export const towns: Town[] = [
   {
-    slug: "rosemary-beach",
-    name: "Rosemary Beach",
-    summary: "Walkable town center, European-inspired streets, Barrett Square.",
-    walkability: "Walkable",
-    beachAccess: "Private for guests and residents",
-    areaSlugs: ["barrett-square", "east-rosemary", "north-rosemary"],
+    slug: "sandestin",
+    name: "Sandestin",
+    summary: "Resort community at the west end of the 30A corridor.",
+    walkability: "Mixed",
+    beachAccess: "Mostly private for guests",
+    areaSlugs: ["sandestin-village"],
   },
   {
-    slug: "seaside",
-    name: "Seaside",
-    summary: "Classic 30A town around a central square and amphitheatre.",
-    walkability: "Walkable",
+    slug: "santa-rosa-beach",
+    name: "Santa Rosa Beach",
+    summary: "Larger west-central town wrapping several 30A neighborhoods.",
+    walkability: "Drive-first",
+    beachAccess: "Public access points",
+    areaSlugs: ["santa-rosa-core"],
+  },
+  {
+    slug: "dune-allen-beach",
+    name: "Dune Allen Beach",
+    summary: "Quiet gulf-front stretch west of Gulf Place.",
+    walkability: "Mixed",
+    beachAccess: "Public access points",
+    areaSlugs: ["dune-allen-shore"],
+  },
+  {
+    slug: "gulf-place",
+    name: "Gulf Place",
+    summary: "Shops and dining at a western public beach.",
+    walkability: "Walkable at the shops",
+    beachAccess: "Public beach",
+    areaSlugs: ["gulf-place-shops"],
+  },
+  {
+    slug: "blue-mountain-beach",
+    name: "Blue Mountain Beach",
+    summary: "Artsy, laid-back stretch with a local scene.",
+    walkability: "Mixed",
     beachAccess: "Public access nearby",
-    areaSlugs: ["seaside-town-square", "ruskin-place", "seaside-residential"],
-  },
-  {
-    slug: "alys-beach",
-    name: "Alys Beach",
-    summary: "White Mediterranean-inspired architecture and a quieter pace.",
-    walkability: "Walkable",
-    beachAccess: "Private for guests and residents",
-    areaSlugs: ["alys-town-center", "caliza-courtyard"],
+    areaSlugs: ["blue-mountain-village"],
   },
   {
     slug: "grayton-beach",
@@ -64,12 +80,76 @@ export const towns: Town[] = [
     areaSlugs: ["watercolor-town-center", "western-lake"],
   },
   {
+    slug: "seaside",
+    name: "Seaside",
+    summary: "Classic 30A town around a central square and amphitheatre.",
+    walkability: "Walkable",
+    beachAccess: "Public access nearby",
+    areaSlugs: ["seaside-town-square", "ruskin-place", "seaside-residential"],
+  },
+  {
+    slug: "seagrove-beach",
+    name: "Seagrove Beach",
+    summary: "Residential beach town between Seaside and WaterSound.",
+    walkability: "Mixed",
+    beachAccess: "Public access points",
+    areaSlugs: ["seagrove-shore"],
+  },
+  {
+    slug: "watersound",
+    name: "WaterSound",
+    summary: "Newer planned community with a compact town center.",
+    walkability: "Walkable inside the community",
+    beachAccess: "Private for guests and residents",
+    areaSlugs: ["watersound-town-center"],
+  },
+  {
+    slug: "seacrest-beach",
+    name: "Seacrest Beach",
+    summary: "Quiet gulf-front neighborhood east of WaterSound.",
+    walkability: "Mixed",
+    beachAccess: "Mostly private for guests",
+    areaSlugs: ["seacrest-shore"],
+  },
+  {
+    slug: "alys-beach",
+    name: "Alys Beach",
+    summary: "White Mediterranean-inspired architecture and a quieter pace.",
+    walkability: "Walkable",
+    beachAccess: "Private for guests and residents",
+    areaSlugs: ["alys-town-center", "caliza-courtyard"],
+  },
+  {
+    slug: "rosemary-beach",
+    name: "Rosemary Beach",
+    summary: "Walkable town center, European-inspired streets, Barrett Square.",
+    walkability: "Walkable",
+    beachAccess: "Private for guests and residents",
+    areaSlugs: ["barrett-square", "east-rosemary", "north-rosemary"],
+  },
+  {
     slug: "inlet-beach",
     name: "Inlet Beach",
     summary: "Eastern end of 30A with 30Avenue shops and dining.",
     walkability: "Mixed",
     beachAccess: "Public access points",
     areaSlugs: ["30avenue", "camp-creek"],
+  },
+  {
+    slug: "carillon-beach",
+    name: "Carillon Beach",
+    summary: "Gated gulf-front community at the east end of 30A.",
+    walkability: "Walkable inside the gates",
+    beachAccess: "Private for guests and residents",
+    areaSlugs: ["carillon-green"],
+  },
+  {
+    slug: "panama-city-beach",
+    name: "Panama City Beach",
+    summary: "Larger neighbor just east of the 30A corridor.",
+    walkability: "Drive-first",
+    beachAccess: "Public beaches",
+    areaSlugs: ["pcb-pier-park"],
   },
 ];
 
@@ -172,6 +252,76 @@ export const areas: Area[] = [
     kind: "neighborhood",
     summary: "Neighborhood and lake side east of 30Avenue.",
   },
+  {
+    slug: "sandestin-village",
+    name: "Sandestin Village",
+    townSlug: "sandestin",
+    kind: "shopping",
+    summary: "Resort village shops and dining at the west end.",
+  },
+  {
+    slug: "santa-rosa-core",
+    name: "Santa Rosa Beach",
+    townSlug: "santa-rosa-beach",
+    kind: "neighborhood",
+    summary: "Spread-out residential and commercial pockets.",
+  },
+  {
+    slug: "dune-allen-shore",
+    name: "Dune Allen shore",
+    townSlug: "dune-allen-beach",
+    kind: "neighborhood",
+    summary: "Gulf-front houses west of Gulf Place.",
+  },
+  {
+    slug: "gulf-place-shops",
+    name: "Gulf Place shops",
+    townSlug: "gulf-place",
+    kind: "shopping",
+    summary: "Public-beach shops and casual dining.",
+  },
+  {
+    slug: "blue-mountain-village",
+    name: "Blue Mountain village",
+    townSlug: "blue-mountain-beach",
+    kind: "shopping",
+    summary: "Small commercial cluster on the artsy stretch.",
+  },
+  {
+    slug: "seagrove-shore",
+    name: "Seagrove shore",
+    townSlug: "seagrove-beach",
+    kind: "neighborhood",
+    summary: "Residential streets between Seaside and WaterSound.",
+  },
+  {
+    slug: "watersound-town-center",
+    name: "WaterSound Town Center",
+    townSlug: "watersound",
+    kind: "shopping",
+    summary: "Newer town-center shops inside the community.",
+  },
+  {
+    slug: "seacrest-shore",
+    name: "Seacrest shore",
+    townSlug: "seacrest-beach",
+    kind: "neighborhood",
+    summary: "Quiet gulf-front streets east of WaterSound.",
+  },
+  {
+    slug: "carillon-green",
+    name: "Carillon green",
+    townSlug: "carillon-beach",
+    kind: "neighborhood",
+    summary: "Gated green and gulf-front streets.",
+  },
+  {
+    slug: "pcb-pier-park",
+    name: "Pier Park",
+    townSlug: "panama-city-beach",
+    kind: "shopping",
+    summary: "Large shopping and dining district east of 30A.",
+  },
 ];
 
 export const categories: Category[] = [
@@ -226,7 +376,7 @@ export const businesses: Business[] = [
     website: "https://example.com/edwards",
     hours: "Tue–Sun 5:00 PM – 9:30 PM",
     priceBand: "$$$",
-    ownerUserSlug: "brett",
+    ownerUserSlug: "local_owner",
   },
   {
     slug: "beachy-bean-coffee",
@@ -242,7 +392,7 @@ export const businesses: Business[] = [
     phone: "(850) 555-0102",
     hours: "Daily 7:00 AM – 2:00 PM",
     priceBand: "$",
-    ownerUserSlug: "brett",
+    ownerUserSlug: "local_owner",
   },
   {
     slug: "the-rep-theatre",
@@ -286,7 +436,7 @@ export const businesses: Business[] = [
     address: "Hwy 30A, Grayton Beach, FL",
     phone: "(850) 555-0104",
     hours: "Daily 8:00 AM – 6:00 PM",
-    ownerUserSlug: "brett",
+    ownerUserSlug: "local_owner",
   },
   {
     slug: "alys-shoppe",
@@ -476,6 +626,57 @@ export const businesses: Business[] = [
     hours: "Daily 8:00 AM – 8:00 PM",
     priceBand: "$",
   },
+  {
+    slug: "sandestin-market",
+    name: "Sandestin Market",
+    townSlug: "sandestin",
+    areaSlug: "sandestin-village",
+    categorySlug: "shopping",
+    leafSlug: "specialty-retail",
+    summary: "Resort-village groceries and beach goods. Fake listing.",
+    tagSlugs: ["family"],
+    openNow: true,
+    hours: "Daily 8:00 AM – 8:00 PM",
+    priceBand: "$$",
+  },
+  {
+    slug: "gulf-place-coffee",
+    name: "Gulf Place Coffee",
+    townSlug: "gulf-place",
+    areaSlug: "gulf-place-shops",
+    categorySlug: "food-and-drink",
+    leafSlug: "coffee-shops",
+    summary: "Coffee by the western public beach. Fake listing.",
+    tagSlugs: ["walkable"],
+    openNow: true,
+    hours: "Daily 7:00 AM – 2:00 PM",
+    priceBand: "$",
+  },
+  {
+    slug: "seagrove-surf",
+    name: "Seagrove Surf Shop",
+    townSlug: "seagrove-beach",
+    areaSlug: "seagrove-shore",
+    categorySlug: "things-to-do",
+    leafSlug: "rentals",
+    summary: "Boards and beach rentals. Fake listing.",
+    tagSlugs: ["family"],
+    openNow: false,
+    hours: "Daily 9:00 AM – 5:00 PM",
+  },
+  {
+    slug: "watersound-bistro",
+    name: "WaterSound Bistro",
+    townSlug: "watersound",
+    areaSlug: "watersound-town-center",
+    categorySlug: "food-and-drink",
+    leafSlug: "restaurants",
+    summary: "Town-center dining in WaterSound. Fake listing.",
+    tagSlugs: ["family", "walkable"],
+    openNow: true,
+    hours: "Daily 11:00 AM – 9:00 PM",
+    priceBand: "$$$",
+  },
 ];
 
 export const stays: Stay[] = [
@@ -507,29 +708,78 @@ export const stays: Stay[] = [
 
 export const events: EventItem[] = [
   {
+    slug: "alys-sunset-yoga",
+    name: "Sunset yoga on the green",
+    townSlug: "alys-beach",
+    when: "Today, 5:30 PM",
+    time: "5:30 PM – 6:30 PM",
+    summary: "Drop-in yoga on the Alys Beach green. Fake event happening now.",
+    venue: "Alys Beach green",
+    category: "Wellness",
+    price: "Free",
+    bucket: "now",
+  },
+  {
     slug: "sounds-of-seaside",
     name: "Sounds of Seaside Wednesday Night Concert Series",
     townSlug: "seaside",
-    when: "Every Wednesday, 5:00 PM",
+    when: "Today, 5:00 PM",
+    time: "5:00 PM – 7:00 PM",
     summary: "Live music at the Seaside Amphitheatre.",
     venue: "Seaside Amphitheatre",
+    category: "Music",
+    price: "Free",
+    bucket: "today",
+  },
+  {
+    slug: "seaside-storytime",
+    name: "Storytime on the square",
+    townSlug: "seaside",
+    when: "Today, 10:00 AM",
+    time: "10:00 AM – 10:45 AM",
+    summary: "Kids stories near the amphitheatre. Fake event.",
+    venue: "Seaside Town Square",
+    category: "Family",
+    price: "Free",
+    bucket: "today",
   },
   {
     slug: "grayton-farmers-market",
     name: "Grayton Beach Farmers Market",
     townSlug: "grayton-beach",
-    when: "Every Thursday morning",
+    when: "Saturday, 8:00 AM",
+    time: "8:00 AM – 12:00 PM",
     summary: "Local produce and makers in Grayton Beach.",
     venue: "Grayton Beach town core",
+    category: "Market",
+    price: "Free",
+    bucket: "weekend",
+  },
+  {
+    slug: "rosemary-art-walk",
+    name: "Rosemary Beach art walk",
+    townSlug: "rosemary-beach",
+    when: "Saturday, 6:00 PM",
+    time: "6:00 PM – 8:00 PM",
+    summary: "Galleries open late around Barrett Square. Fake event.",
+    venue: "Barrett Square",
+    category: "Arts",
+    price: "Free",
+    bucket: "weekend",
   },
   {
     slug: "harvest-wine-food",
     name: "Harvest Wine & Food Festival",
     townSlug: "watercolor",
     businessSlug: "edwards-fine-food-and-wine",
-    when: "Saturday, 12:00 PM",
+    when: "Saturday, Oct 25, 12:00 PM",
+    time: "12:00 PM – 5:00 PM",
     summary: "Food and wine event used as a sample event page.",
     venue: "WaterColor Town Center",
+    category: "Food",
+    ticketUrl: "https://example.com/harvest",
+    price: "$45",
+    bucket: "month",
   },
 ];
 
@@ -539,6 +789,7 @@ export const guides: Guide[] = [
     title: "First Timer's Guide to 30A",
     summary: "Towns, beaches, cars, bikes, and what to know before you arrive.",
     body: "Fake guide body. Start with a town, not a hotel dump. Cars, bikes, and beach access are the first decisions.",
+    categorySlug: "food-and-drink",
   },
   {
     slug: "guide-to-rosemary-beach",
@@ -546,6 +797,7 @@ export const guides: Guide[] = [
     summary: "Walkability, dining, and how the town center works.",
     body: "Fake guide body. Barrett Square is the center. Most dining is walkable once you park once.",
     townSlug: "rosemary-beach",
+    categorySlug: "food-and-drink",
   },
   {
     slug: "why-is-it-called-30a",
@@ -573,6 +825,8 @@ export const updates: Update[] = [
     title: "Wednesday night concert traffic",
     body: "Sounds of Seaside fills the square. Fake town update.",
     createdAt: "2026-10-08",
+    through: "2026-10-08",
+    type: "business_news",
     townSlug: "seaside",
   },
   {
@@ -580,6 +834,8 @@ export const updates: Update[] = [
     title: "Market morning",
     body: "Farmers market is running on the usual Thursday rhythm. Fake town update.",
     createdAt: "2026-10-07",
+    through: "2026-10-11",
+    type: "new_item",
     townSlug: "grayton-beach",
   },
   {
@@ -587,6 +843,8 @@ export const updates: Update[] = [
     title: "Extended weekend hours",
     body: "Courtyard seating open later Friday and Saturday. Fake business update.",
     createdAt: "2026-10-05",
+    through: "2026-10-12",
+    type: "hours_change",
     townSlug: "rosemary-beach",
     businessSlug: "edwards-fine-food-and-wine",
   },
@@ -595,42 +853,68 @@ export const updates: Update[] = [
     title: "Pool closed Friday",
     body: "Maintenance day. Fake business update.",
     createdAt: "2026-10-03",
+    through: "2026-10-10",
+    type: "hours_change",
     townSlug: "rosemary-beach",
     businessSlug: "the-pearl-hotel",
+  },
+  {
+    slug: "beachy-bean-cold-brew",
+    title: "New cold brew on tap",
+    body: "Seasonal cold brew at the square. Fake business update.",
+    createdAt: "2026-10-06",
+    through: "2026-10-20",
+    type: "new_item",
+    townSlug: "seaside",
+    businessSlug: "beachy-bean-coffee",
+  },
+  {
+    slug: "edwards-oyster-night",
+    title: "Half-price oysters Thursday",
+    body: "Courtyard special this week only. Fake limited offer.",
+    createdAt: "2026-10-07",
+    through: "2026-10-09",
+    type: "limited_offer",
+    townSlug: "rosemary-beach",
+    businessSlug: "edwards-fine-food-and-wine",
   },
 ];
 
 export const users: User[] = [
   {
-    slug: "kelley",
-    name: "Kelley",
+    slug: "beachlocal",
+    name: "beachlocal",
     role: "local",
     bio: "Fake signed-in user for profile, favorites, and posts.",
+    memberSince: "2024-03-12",
   },
   {
-    slug: "brett",
-    name: "Brett",
+    slug: "local_owner",
+    name: "local_owner",
     role: "business-owner",
     bio: "Fake business owner used on manage-my-business screens.",
+    memberSince: "2023-06-01",
   },
   {
-    slug: "alex",
-    name: "Alex",
+    slug: "first_timer",
+    name: "first_timer",
     role: "visitor",
     bio: "Fake visitor used for community questions.",
+    memberSince: "2026-09-20",
   },
   {
-    slug: "admin",
-    name: "Admin",
+    slug: "site_admin",
+    name: "site_admin",
     role: "admin",
     bio: "Fake admin account for review-queue screens.",
+    memberSince: "2022-01-01",
   },
 ];
 
 export const posts: Post[] = [
   {
     slug: "sunset-on-the-square",
-    authorUserSlug: "kelley",
+    authorUserSlug: "beachlocal",
     postedAs: "user",
     on: { type: "town", slug: "rosemary-beach" },
     body: "Posted as a user on the Rosemary Beach town page. Fake feed item.",
@@ -646,7 +930,7 @@ export const posts: Post[] = [
   },
   {
     slug: "loved-the-courtyard",
-    authorUserSlug: "alex",
+    authorUserSlug: "first_timer",
     postedAs: "user",
     on: { type: "business", slug: "edwards-fine-food-and-wine" },
     body: "User mention on a business page. Fake feed item for the mentions screen.",
@@ -654,7 +938,7 @@ export const posts: Post[] = [
   },
   {
     slug: "seaside-wednesday",
-    authorUserSlug: "kelley",
+    authorUserSlug: "beachlocal",
     postedAs: "user",
     on: { type: "town", slug: "seaside" },
     body: "Posted as a user on the Seaside town page. Fake feed item.",
@@ -709,16 +993,34 @@ export const questions: Question[] = [
   {
     slug: "parking-near-seaside",
     title: "Best beach access with parking near Seaside?",
-    body: "Fake community question. Looking for a public access that still has spaces after 10am.",
-    authorUserSlug: "alex",
+    body: "Fake community question. Looking for a public access that still has spaces after 10am near Seaside.",
+    authorUserSlug: "first_timer",
     townSlug: "seaside",
+    createdAt: "2026-10-06",
   },
   {
     slug: "golf-carts-rosemary",
     title: "Are golf carts allowed in Rosemary Beach?",
-    body: "Fake community question about local rules.",
-    authorUserSlug: "kelley",
+    body: "Fake community question about local rules in Rosemary Beach.",
+    authorUserSlug: "beachlocal",
     townSlug: "rosemary-beach",
+    createdAt: "2026-10-04",
+  },
+  {
+    slug: "kids-dinner-watercolor",
+    title: "Where do families eat early in WaterColor?",
+    body: "Fake community question. Need a 5pm table with kids near WaterColor Town Center.",
+    authorUserSlug: "first_timer",
+    townSlug: "watercolor",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "bike-path-grayton",
+    title: "Is the Timpoochee Trail easy from Grayton Beach?",
+    body: "Fake community question about biking from Grayton Beach toward Seaside.",
+    authorUserSlug: "beachlocal",
+    townSlug: "grayton-beach",
+    createdAt: "2026-10-01",
   },
 ];
 
@@ -726,28 +1028,43 @@ export const comments: Comment[] = [
   {
     slug: "parking-reply-1",
     body: "Fake answer: try the county access west of the square, earlier is better.",
-    authorUserSlug: "kelley",
+    authorUserSlug: "beachlocal",
     on: { type: "question", slug: "parking-near-seaside" },
+  },
+  {
+    slug: "golf-carts-reply-1",
+    body: "Fake answer: carts are limited on the town streets. Check the Rosemary Beach rules first.",
+    authorUserSlug: "local_owner",
+    on: { type: "question", slug: "golf-carts-rosemary" },
+  },
+  {
+    slug: "golf-carts-reply-2",
+    body: "Fake answer: most visitors walk Barrett Square and skip the cart.",
+    authorUserSlug: "first_timer",
+    on: { type: "question", slug: "golf-carts-rosemary" },
   },
   {
     slug: "guide-reply-1",
     body: "Fake comment on the first-timer guide.",
-    authorUserSlug: "alex",
+    authorUserSlug: "first_timer",
     on: { type: "guide", slug: "first-timers-guide" },
   },
   {
     slug: "post-reply-1",
     body: "Fake comment on a feed post.",
-    authorUserSlug: "brett",
+    authorUserSlug: "local_owner",
     on: { type: "post", slug: "sunset-on-the-square" },
   },
 ];
 
 export const reactions: Reaction[] = [
-  { slug: "r1", label: "Helpful", count: 4, on: { type: "question", slug: "parking-near-seaside" } },
-  { slug: "r2", label: "Same question", count: 2, on: { type: "question", slug: "parking-near-seaside" } },
-  { slug: "r3", label: "Useful", count: 6, on: { type: "guide", slug: "first-timers-guide" } },
-  { slug: "r4", label: "Like", count: 3, on: { type: "post", slug: "sunset-on-the-square" } },
+  { slug: "r1", label: "up", count: 4, on: { type: "question", slug: "parking-near-seaside" } },
+  { slug: "r2", label: "heart", count: 2, on: { type: "question", slug: "parking-near-seaside" } },
+  { slug: "r3", label: "wow", count: 1, on: { type: "question", slug: "parking-near-seaside" } },
+  { slug: "r4", label: "up", count: 3, on: { type: "answer", slug: "parking-reply-1" } },
+  { slug: "r5", label: "heart", count: 1, on: { type: "answer", slug: "parking-reply-1" } },
+  { slug: "r6", label: "up", count: 6, on: { type: "guide", slug: "first-timers-guide" } },
+  { slug: "r7", label: "heart", count: 3, on: { type: "post", slug: "sunset-on-the-square" } },
 ];
 
 export const tags: Tag[] = [
@@ -758,10 +1075,10 @@ export const tags: Tag[] = [
 ];
 
 export const favorites: Favorite[] = [
-  { userSlug: "kelley", type: "business", slug: "edwards-fine-food-and-wine" },
-  { userSlug: "kelley", type: "event", slug: "sounds-of-seaside" },
-  { userSlug: "kelley", type: "guide", slug: "first-timers-guide" },
-  { userSlug: "kelley", type: "town", slug: "rosemary-beach" },
+  { userSlug: "beachlocal", type: "business", slug: "edwards-fine-food-and-wine" },
+  { userSlug: "beachlocal", type: "event", slug: "sounds-of-seaside" },
+  { userSlug: "beachlocal", type: "guide", slug: "first-timers-guide" },
+  { userSlug: "beachlocal", type: "town", slug: "rosemary-beach" },
 ];
 
 export const reviewQueue: ReviewQueueItem[] = [
@@ -827,6 +1144,15 @@ export function stayBySlug(slug: string) {
 
 export function eventBySlug(slug: string) {
   return events.find((item) => item.slug === slug);
+}
+
+export function updateBySlug(slug: string) {
+  return updates.find((item) => item.slug === slug);
+}
+
+export function liveUpdates(list: Update[] = updates) {
+  const today = "2026-10-08";
+  return list.filter((item) => item.through >= today).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
 }
 
 export function guideBySlug(slug: string) {

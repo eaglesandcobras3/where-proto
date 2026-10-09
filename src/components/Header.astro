@@ -12,7 +12,6 @@ const base = import.meta.env.BASE_URL;
 
 const links = [
   { label: "Towns", path: "/towns", key: "towns" },
-  { label: "Areas", path: "/areas", key: "areas" },
   { label: "Businesses", path: "/search", key: "businesses" },
   { label: "Events", path: "/events", key: "events" },
   { label: "Stays", path: "/stays", key: "stays" },
@@ -48,7 +47,7 @@ const links = [
           <path d="M5 19c0-3.3 3.1-6 7-6s7 2.7 7 6"></path>
         </svg>
       </a>
-      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu">
+      <button class="menu-btn" id="menu-btn" type="button" aria-label="Open menu" aria-controls="mobile-drawer">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M3 6h18M3 12h18M3 18h18"></path>
         </svg>
@@ -70,8 +69,22 @@ const links = [
 <script>
   const btn = document.getElementById("menu-btn");
   const drawer = document.getElementById("mobile-drawer");
-  btn?.addEventListener("click", () => {
-    (drawer as { show?: () => void } | null)?.show?.();
+
+  btn?.addEventListener("click", async () => {
+    btn.classList.add("is-pressed");
+    try {
+      if (!customElements.get("wa-drawer")) {
+        await customElements.whenDefined("wa-drawer");
+      }
+      const host = drawer as (HTMLElement & { show?: () => void }) | null;
+      if (typeof host?.show === "function") {
+        host.show();
+      } else {
+        host?.setAttribute("open", "");
+      }
+    } finally {
+      btn.classList.remove("is-pressed");
+    }
   });
 </script>
 
@@ -86,8 +99,9 @@ const links = [
   .header-inner {
     display: flex;
     align-items: center;
-    gap: var(--size-4);
+    gap: var(--size-2);
     min-height: 64px;
+    min-width: 0;
   }
   .logo {
     font-size: var(--font-size-4);
@@ -126,8 +140,11 @@ const links = [
   .header-actions {
     display: flex;
     align-items: center;
-    gap: var(--size-3);
+    gap: var(--size-2);
     margin-left: auto;
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-end;
   }
   .add-business {
     display: none;
@@ -138,8 +155,13 @@ const links = [
   }
   .icon-link {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
     color: var(--brand-ink);
-    padding: var(--size-1);
+    padding: 12px;
+    min-width: 44px;
+    min-height: 44px;
+    flex-shrink: 0;
   }
   .icon-link:hover {
     color: var(--brand-teal);
@@ -150,8 +172,15 @@ const links = [
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
     padding: var(--size-2);
+    min-width: 44px;
+    min-height: 44px;
     cursor: pointer;
     color: var(--brand-ink);
+    flex-shrink: 0;
+  }
+  .menu-btn.is-pressed {
+    background: var(--brand-teal-soft);
+    border-color: var(--brand-teal);
   }
   .mobile-nav {
     display: flex;
@@ -165,6 +194,13 @@ const links = [
     border-bottom: 1px solid var(--brand-line);
   }
   @media (min-width: 960px) {
+    .header-inner {
+      gap: var(--size-4);
+    }
+    .header-actions {
+      flex: 0 0 auto;
+      gap: var(--size-3);
+    }
     .desktop-nav,
     .add-business {
       display: flex;

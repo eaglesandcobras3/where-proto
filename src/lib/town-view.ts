@@ -13,6 +13,25 @@ export interface TownView extends Town {
   highlights: string[];
 }
 
+const diningAndParking: GlanceFact[] = [
+  {
+    label: "Dining & Town Center",
+    value: "Compact core",
+    detail: "Most dining sits in or next to the town center. Park once when you can.",
+  },
+  {
+    label: "Parking",
+    value: "Limited in season",
+    detail: "Town lots and street spaces fill early on concert nights and weekends.",
+  },
+];
+
+function withCoreGlance(facts: GlanceFact[]): GlanceFact[] {
+  const hasDining = facts.some((item) => item.label.startsWith("Dining"));
+  const hasParking = facts.some((item) => item.label === "Parking");
+  return [...facts, ...(hasDining ? [] : [diningAndParking[0]]), ...(hasParking ? [] : [diningAndParking[1]])];
+}
+
 const extras: Record<string, { tagline: string; glance: GlanceFact[]; highlights: string[] }> = {
   seaside: {
     tagline: "The iconic 30A town",
@@ -148,15 +167,17 @@ export function townView(town: Town): TownView {
   return {
     ...town,
     tagline: extra?.tagline ?? town.summary,
-    glance: extra?.glance ?? [
-      { label: "Walkability", value: town.walkability, detail: town.summary },
-      { label: "Beach access", value: town.beachAccess, detail: "Access rules vary by stay and neighborhood." },
-      {
-        label: "Areas",
-        value: `${areaCount} in this town`,
-        detail: "Shopping areas and neighborhoods that sit inside this town.",
-      },
-    ],
+    glance: withCoreGlance(
+      extra?.glance ?? [
+        { label: "Walkability", value: town.walkability, detail: town.summary },
+        { label: "Beach access", value: town.beachAccess, detail: "Access rules vary by stay and neighborhood." },
+        {
+          label: "Getting around",
+          value: areaCount ? `${areaCount} areas` : "Drive or bike",
+          detail: "Shopping areas and neighborhoods that sit inside this town.",
+        },
+      ],
+    ),
     highlights: extra?.highlights ?? [town.walkability, town.beachAccess],
   };
 }

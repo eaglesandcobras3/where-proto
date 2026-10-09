@@ -1,0 +1,91 @@
+---
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import UpdateCard from "../../components/UpdateCard.astro";
+import { businessBySlug, liveUpdates, townBySlug, updates } from "../../data/catalog";
+import { formatThrough, updateTypeLabels } from "../../lib/labels";
+import type { Update } from "../../data/types";
+import { href } from "../../lib/href";
+import { slugPaths } from "../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(liveUpdates(), "update");
+}
+
+interface Props {
+  item: Update;
+}
+
+const { item: update } = Astro.props;
+const business = update.businessSlug ? businessBySlug(update.businessSlug) : undefined;
+const town = update.townSlug ? townBySlug(update.townSlug) : undefined;
+const related = liveUpdates(updates)
+  .filter((item) => item.slug !== update.slug && (item.townSlug === update.townSlug || item.type === update.type))
+  .slice(0, 3);
+---
+
+<PlaceLayout
+  title={update.title}
+  description={update.body}
+  showBrowse={false}
+  crumbs={[{ label: "Updates", path: "/updates" }, { label: update.title }]}
+>
+  <article class="container section article">
+    <p class="type">{updateTypeLabels[update.type]}</p>
+    <h1>{update.title}</h1>
+    <p class="range">Through {formatThrough(update.through)}</p>
+    <p class="body">{update.body}</p>
+    <p class="source">
+      {
+        business ? (
+          <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+        ) : town ? (
+          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+        ) : null
+      }
+    </p>
+    <p><a href={href("/search")}>Learn more</a> on nearby listings.</p>
+    <p class="note">On expiry, this URL 301s to /updates. Expired updates are never listed.</p>
+    {
+      related.length > 0 && (
+        <section>
+          <h2 class="section-title">Related updates</h2>
+          <div class="grid">
+            {related.map((item) => (
+              <UpdateCard update={item} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </article>
+</PlaceLayout>
+
+<style>
+  .article {
+    max-width: 720px;
+  }
+  .type {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .range,
+  .note {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .body {
+    font-size: var(--font-size-3);
+    max-width: 64ch;
+  }
+  .source {
+    font-weight: var(--font-weight-6);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 import { href } from "../lib/href";
-import { commentsFor, townBySlug } from "../data/catalog";
+import { commentsFor, townBySlug, userBySlug } from "../data/catalog";
+import { relativeTime } from "../lib/labels";
 import type { Question } from "../data/types";
 
 interface Props {
@@ -9,16 +10,19 @@ interface Props {
 
 const { question } = Astro.props;
 const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+const author = userBySlug(question.authorUserSlug);
 const answers = commentsFor("question", question.slug).length;
 ---
 
 <a class="row" href={href(`/ask/${question.slug}`)}>
-  <div>
+  <div class="avatar img-placeholder" aria-hidden="true">{author?.name.charAt(0) ?? "?"}</div>
+  <div class="body">
     <h3>{question.title}</h3>
     <p class="meta">
-      {answers} {answers === 1 ? "answer" : "answers"}
-      {town && <> &middot; {town.name}</>}
+      {author?.name ?? "a visitor"} · {relativeTime(question.createdAt)} · {answers}
+      {answers === 1 ? " answer" : " answers"}
     </p>
+    {town && <span class="chip">{town.name}</span>}
   </div>
   <span aria-hidden="true">&rarr;</span>
 </a>
@@ -26,9 +30,8 @@ const answers = commentsFor("question", question.slug).length;
 <style>
   .row {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: var(--size-4);
+    gap: var(--size-3);
     background: white;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-card);
@@ -39,6 +42,17 @@ const answers = commentsFor("question", question.slug).length;
     text-decoration: none;
     box-shadow: var(--shadow-card);
   }
+  .avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    font-size: var(--font-size-2);
+  }
+  .body {
+    min-width: 0;
+    flex: 1;
+  }
   .row h3 {
     font-size: var(--font-size-2);
     margin-bottom: var(--size-1);
@@ -46,6 +60,14 @@ const answers = commentsFor("question", question.slug).length;
   .meta {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
-    margin: 0;
+    margin: 0 0 var(--size-2);
+  }
+  .chip {
+    display: inline-block;
+    font-size: var(--font-size-0);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
+    color: var(--brand-ink-soft);
   }
 </style>

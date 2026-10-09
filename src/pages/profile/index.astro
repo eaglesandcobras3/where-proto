@@ -10,6 +10,9 @@ const stats = [
   { label: "Questions", value: String(questions.filter((item) => item.authorUserSlug === user?.slug).length) },
   { label: "Posts", value: String(posts.filter((item) => item.authorUserSlug === user?.slug).length) },
 ];
+const memberSince = user?.memberSince
+  ? new Date(`${user.memberSince}T12:00:00`).toLocaleDateString("en-US", { month: "long", year: "numeric" })
+  : null;
 ---
 
 <BaseLayout title={`${user?.name ?? "Member"} on WhereTo30A`}>
@@ -18,7 +21,10 @@ const stats = [
       <div class="avatar img-placeholder" aria-hidden="true">{user?.name.charAt(0) ?? "M"}</div>
       <div>
         <h1>{user?.name ?? "Member"}</h1>
-        <p class="meta">{user?.role} · fake signed-in session</p>
+        <p class="meta">
+          {user?.role}
+          {memberSince && <> · member since {memberSince}</>}
+        </p>
         <div class="stats">
           {
             stats.map((stat) => (
@@ -31,11 +37,11 @@ const stats = [
         </div>
       </div>
     </section>
-    <AccountNav active="profile" />
+    <AccountNav active="favorites" />
     <p>{user?.bio}</p>
     <p>
       <a href={href(`/u/${user?.slug}`)}>Public profile</a> · <a href={href("/dashboard")}>Dashboard</a> ·
-      <a href={href("/auth/login")}>Login</a>
+      <a href={href("/profile/settings")}>Account settings</a>
     </p>
   </div>
 </BaseLayout>

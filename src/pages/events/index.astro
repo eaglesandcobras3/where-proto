@@ -1,23 +1,45 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PageHeader from "../../components/PageHeader.astro";
-import EventCard from "../../components/EventCard.astro";
-import { events } from "../../data/catalog";
+import EventFilters from "../../components/islands/EventFilters.svelte";
+import { events, townBySlug, towns } from "../../data/catalog";
+import { href } from "../../lib/href";
+
+const categories = [...new Set(events.map((item) => item.category).filter(Boolean))] as string[];
+const base = import.meta.env.BASE_URL;
 ---
 
 <BaseLayout title="Events on 30A" description="Upcoming events along Scenic Highway 30A." active="events">
   <div class="container section">
-    <PageHeader eyebrow="Events" title="What's on" lede="Concerts, markets, and seasonal gatherings. Fake dates for the prototype." />
-    <div class="grid">
-      {events.map((event) => <EventCard event={event} />)}
-    </div>
+    <PageHeader
+      eyebrow="Events"
+      title="What's on"
+      lede="Concerts, markets, and seasonal gatherings grouped as happening now, today, this weekend, and the next 30 days."
+    />
+    <p class="cta"><a href={href("/dashboard")}>Submit your event</a></p>
+    <EventFilters
+      events={events.map((event) => ({
+        slug: event.slug,
+        name: event.name,
+        town: event.townSlug,
+        townName: event.townSlug ? townBySlug(event.townSlug)?.name : undefined,
+        when: event.when,
+        time: event.time,
+        venue: event.venue,
+        category: event.category,
+        bucket: event.bucket,
+      }))}
+      towns={towns}
+      categories={categories}
+      base={base}
+      client:load
+    />
   </div>
 </BaseLayout>
 
 <style>
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: var(--size-4);
+  .cta {
+    margin-bottom: var(--size-5);
+    font-weight: var(--font-weight-6);
   }
 </style>

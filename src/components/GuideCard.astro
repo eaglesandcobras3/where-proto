@@ -14,6 +14,7 @@ const { guide } = Astro.props;
   <div class="body">
     <h3>{guide.title}</h3>
     <p class="excerpt">{guide.summary}</p>
+    <span class="read">Read guide</span>
   </div>
 </a>
 
@@ -44,6 +45,11 @@ const { guide } = Astro.props;
   .excerpt {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
-    margin: 0;
+    margin: 0 0 var(--size-2);
+  }
+  .read {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
   }
 </style>

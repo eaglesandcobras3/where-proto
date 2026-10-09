@@ -20,7 +20,7 @@ const withCounts = categories
 {
   withCounts.length > 0 && (
     <section class="cats">
-      <p class="eyebrow">Categories in {townName}</p>
+      <h2 class="section-title">Categories in {townName}</h2>
       <div class="chips">
         {withCounts.map((category) => (
           <a class="chip" href={href(`/town/${townSlug}/${category.slug}`)}>

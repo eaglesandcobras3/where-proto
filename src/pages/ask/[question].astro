@@ -1,6 +1,16 @@
 ---
 import PlaceLayout from "../../layouts/PlaceLayout.astro";
-import { commentsFor, questions, reactionsFor, townBySlug, userBySlug } from "../../data/catalog";
+import ReactionBar from "../../components/ReactionBar.astro";
+import EntityText from "../../components/EntityText.astro";
+import QuestionCard from "../../components/QuestionCard.astro";
+import {
+  commentsFor,
+  questions,
+  reactionsFor,
+  townBySlug,
+  userBySlug,
+} from "../../data/catalog";
+import { relativeTime } from "../../lib/labels";
 import type { Question } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -18,6 +28,32 @@ const author = userBySlug(question.authorUserSlug);
 const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
 const replies = commentsFor("question", question.slug);
 const questionReactions = reactionsFor("question", question.slug);
+const related = questions.filter((item) => item.slug !== question.slug).slice(0, 5);
+const accepted = replies[0];
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "QAPage",
+  mainEntity: {
+    "@type": "Question",
+    name: question.title,
+    text: question.body,
+    dateCreated: question.createdAt,
+    author: { "@type": "Person", name: author?.name ?? "a visitor" },
+    answerCount: replies.length,
+    acceptedAnswer: accepted
+      ? {
+          "@type": "Answer",
+          text: accepted.body,
+          author: { "@type": "Person", name: userBySlug(accepted.authorUserSlug)?.name ?? "A local" },
+        }
+      : undefined,
+    suggestedAnswer: replies.slice(1).map((item) => ({
+      "@type": "Answer",
+      text: item.body,
+      author: { "@type": "Person", name: userBySlug(item.authorUserSlug)?.name ?? "A local" },
+    })),
+  },
+};
 ---
 
 <PlaceLayout
@@ -26,41 +62,80 @@ const questionReactions = reactionsFor("question", question.slug);
   active="ask"
   showBrowse={false}
   crumbs={[{ label: "Ask", path: "/ask" }, { label: question.title }]}
+  jsonLd={jsonLd}
 >
   <article class="container section article">
+    <p class="back"><a href={href("/ask")}>Back to Ask</a></p>
     <h1>{question.title}</h1>
-    <p class="lede">{question.body}</p>
-    <p class="meta">
-      Asked by {author ? <a href={href(`/u/${author.slug}`)}>{author.name}</a> : "a visitor"}
-      {town && (
-        <>
-          {" in "}
-          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-        </>
-      )}
-    </p>
-    {
-      questionReactions.length > 0 && (
-        <p class="meta">{questionReactions.map((item) => `${item.label} ${item.count}`).join(" · ")}</p>
-      )
-    }
+    <p class="lede"><EntityText text={question.body} /></p>
+    <div class="who">
+      <div class="avatar img-placeholder" aria-hidden="true">{author?.name.charAt(0) ?? "?"}</div>
+      <div>
+        <p class="meta">
+          {
+            author ? (
+              <a href={href(`/u/${author.slug}`)}>{author.name}</a>
+            ) : (
+              "a visitor"
+            )
+          }
+          · {relativeTime(question.createdAt)}
+        </p>
+        {town && <span class="chip">{town.name}</span>}
+      </div>
+    </div>
+    <ReactionBar reactions={questionReactions} />
+
     <section>
       <h2 class="section-title">Answers</h2>
       {
-        replies.map((item) => (
-          <article class="answer">
-            <p>{item.body}</p>
-            <p class="meta">
-              <a href={href(`/u/${item.authorUserSlug}`)}>{userBySlug(item.authorUserSlug)?.name ?? "A local"}</a>
-            </p>
-          </article>
-        ))
+        replies.map((item) => {
+          const replyAuthor = userBySlug(item.authorUserSlug);
+          return (
+            <article class="answer">
+              <div class="who">
+                <div class="avatar img-placeholder" aria-hidden="true">
+                  {replyAuthor?.name.charAt(0) ?? "?"}
+                </div>
+                <p class="meta">
+                  <a href={href(`/u/${item.authorUserSlug}`)}>{replyAuthor?.name ?? "A local"}</a>
+                  · {relativeTime(question.createdAt)}
+                </p>
+              </div>
+              <p>
+                <EntityText text={item.body} />
+              </p>
+              <ReactionBar reactions={reactionsFor("answer", item.slug)} />
+              <p class="reply-action">
+                <button type="button">Reply</button>
+              </p>
+            </article>
+          );
+        })
       }
     </section>
+
     <form class="form" onsubmit="return false;">
       <wa-textarea label="Your answer" rows="3"></wa-textarea>
-      <wa-button variant="brand">Add comment</wa-button>
+      <wa-button variant="brand">Reply</wa-button>
+      <p class="meta">
+        Logged-out visitors are prompted to <a href={href("/auth/login")}>log in</a> or
+        <a href={href("/auth/signup")}>create an account</a>. Anonymous posting is available after auth.
+      </p>
     </form>
+
+    {
+      related.length > 0 && (
+        <section>
+          <h2 class="section-title">Related questions</h2>
+          <div class="related">
+            {related.map((item) => (
+              <QuestionCard question={item} />
+            ))}
+          </div>
+        </section>
+      )
+    }
   </article>
 </PlaceLayout>
 
@@ -68,13 +143,36 @@ const questionReactions = reactionsFor("question", question.slug);
   .article {
     max-width: 720px;
   }
+  .back {
+    font-size: var(--font-size-1);
+  }
   .lede {
     font-size: var(--font-size-3);
     color: var(--brand-ink-soft);
   }
+  .who {
+    display: flex;
+    align-items: center;
+    gap: var(--size-3);
+    margin-block: var(--size-3);
+  }
+  .avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
   .meta {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+    margin: 0;
+  }
+  .chip {
+    display: inline-block;
+    font-size: var(--font-size-0);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
   }
   .answer {
     background: white;
@@ -83,9 +181,22 @@ const questionReactions = reactionsFor("question", question.slug);
     padding: var(--size-4);
     margin-bottom: var(--size-3);
   }
+  .reply-action button {
+    border: 0;
+    background: none;
+    color: var(--brand-teal);
+    font: inherit;
+    font-weight: var(--font-weight-7);
+    padding: 0;
+    cursor: pointer;
+  }
   .form {
     display: grid;
     gap: var(--size-3);
     margin-top: var(--size-6);
+  }
+  .related {
+    display: grid;
+    gap: var(--size-3);
   }
 </style>
