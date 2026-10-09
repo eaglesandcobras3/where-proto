@@ -34,6 +34,7 @@ jobs:
         with:
           name: dist
           path: dist
+          include-hidden-files: true
 
   deploy:
     needs: build
@@ -46,6 +47,8 @@ jobs:
         with:
           name: dist
           path: dist
+      - name: Disable Jekyll on GitHub Pages
+        run: touch dist/.nojekyll
       - name: Deploy to GitHub Pages
         id: deployment
         uses: JamesIves/github-pages-deploy-action@v4
