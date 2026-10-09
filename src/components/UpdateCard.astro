@@ -1,0 +1,76 @@
+---
+import { href } from "../lib/href";
+import { businessBySlug, townBySlug } from "../data/catalog";
+import type { Update } from "../data/types";
+
+interface Props {
+  update: Update;
+}
+
+const { update } = Astro.props;
+const business = update.businessSlug ? businessBySlug(update.businessSlug) : undefined;
+const town = update.townSlug ? townBySlug(update.townSlug) : undefined;
+const kind = update.businessSlug ? "Business news" : "Town update";
+---
+
+<article class="card">
+  <div class="top">
+    <span class="type">{kind}</span>
+    <span class="when">{update.createdAt}</span>
+  </div>
+  <h3>{update.title}</h3>
+  <p>{update.body}</p>
+  <p class="source">
+    {
+      business ? (
+        <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+      ) : town ? (
+        <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+      ) : null
+    }
+  </p>
+</article>
+
+<style>
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+  }
+  .top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--size-2);
+  }
+  .type {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-teal);
+    background: var(--brand-teal-soft);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
+  }
+  .when {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  h3 {
+    font-size: var(--font-size-3);
+    margin-bottom: var(--size-2);
+  }
+  p {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .source {
+    margin: var(--size-2) 0 0;
+    font-weight: var(--font-weight-6);
+  }
+  .source a {
+    color: var(--brand-deep);
+  }
+</style>

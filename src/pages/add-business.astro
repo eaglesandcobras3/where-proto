@@ -1,50 +1,23 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Box from "../components/Box.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import AddBusinessForm from "../components/islands/AddBusinessForm.svelte";
+import { isEnabled } from "../config/flags";
 import { categories, towns } from "../data/catalog";
 ---
 
-<Layout
-  title="Add business"
-  note="Add business is still being defined. This is a public intake stub."
->
-  <h1>Add business</h1>
-  <Box label="Intake form">
-    <p>Wireframe form. Submissions would land on the review queue later.</p>
-    <form>
-      <p>
-        <label>
-          Business name
-          <input type="text" name="name" />
-        </label>
-      </p>
-      <p>
-        <label>
-          Town
-          <select name="town">
-            {towns.map((town) => (
-              <option value={town.slug}>{town.name}</option>
-            ))}
-          </select>
-        </label>
-      </p>
-      <p>
-        <label>
-          Category
-          <select name="category">
-            {categories.map((category) => (
-              <option value={category.slug}>{category.name}</option>
-            ))}
-          </select>
-        </label>
-      </p>
-      <p>
-        <label>
-          Summary
-          <textarea name="summary"></textarea>
-        </label>
-      </p>
-      <button type="button">Submit listing</button>
-    </form>
-  </Box>
-</Layout>
+<BaseLayout title="Add your business" description="List your 30A business on WhereTo30A.">
+  <div class="container section form-page">
+    <PageHeader
+      title="Add your business"
+      lede="Free to list. Every submission is reviewed before it goes live."
+    />
+    {isEnabled("addBusiness") && <AddBusinessForm towns={towns} categories={categories} client:load />}
+  </div>
+</BaseLayout>
+
+<style>
+  .form-page {
+    max-width: 640px;
+  }
+</style>

@@ -1,0 +1,25 @@
+/* Open Props supplies the scale. Brand tokens are the WhereTo30A palette. */
+
+@import "open-props/style";
+
+:root {
+  --brand-deep: #0c2f3d;
+  --brand-deep-soft: #134252;
+  --brand-teal: #1f7a8c;
+  --brand-teal-soft: #e3f0f2;
+  --brand-sand: #faf8f4;
+  --brand-sand-dark: #f1ece3;
+  --brand-ink: #1d2b33;
+  --brand-ink-soft: #5b6b74;
+  --brand-coral: #b85c2e;
+  --brand-line: #e5ded2;
+  --brand-map: #c9d9c4;
+  --brand-map-water: #a8c8d8;
+
+  --font-body: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+
+  --max-width: 1200px;
+  --radius-card: var(--radius-3);
+  --shadow-card: var(--shadow-2);
+}

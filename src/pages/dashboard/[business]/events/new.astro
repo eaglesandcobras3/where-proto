@@ -1,8 +1,8 @@
 ---
-import Layout from "../../../../layouts/Layout.astro";
-import Box from "../../../../components/Box.astro";
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import DashboardNav from "../../../../components/DashboardNav.astro";
+import ComposerCard from "../../../../components/islands/ComposerCard.svelte";
 import type { Business } from "../../../../data/types";
-import { href } from "../../../../lib/href";
 import { ownedBusinessPaths } from "../../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -16,31 +16,16 @@ interface Props {
 const { business } = Astro.props;
 ---
 
-<Layout title={`Post event · ${business.name}`}>
-  <p><a href={href(`/dashboard/${business.slug}`)}>Manage {business.name}</a></p>
-  <h1>Post event</h1>
-  <Box label="Event form">
-    <p>Wireframe form. Goes onto the review queue in a later pass.</p>
-    <form>
-      <p>
-        <label>
-          Name
-          <input type="text" name="name" />
-        </label>
-      </p>
-      <p>
-        <label>
-          When
-          <input type="text" name="when" />
-        </label>
-      </p>
-      <p>
-        <label>
-          Summary
-          <textarea name="summary"></textarea>
-        </label>
-      </p>
-      <button type="button">Submit event</button>
-    </form>
-  </Box>
-</Layout>
+<BaseLayout title={`New event · ${business.name}`}>
+  <div class="container section">
+    <h1>Post an event</h1>
+    <DashboardNav businessSlug={business.slug} active="event" />
+    <ComposerCard
+      title="New event"
+      body="A dated event for the public calendar. Prototype only."
+      action="Submit event"
+      kind="event"
+      client:visible
+    />
+  </div>
+</BaseLayout>

@@ -1,0 +1,83 @@
+---
+import { towns } from "../data/catalog";
+import { href } from "../lib/href";
+
+interface Props {
+  currentSlug: string;
+}
+
+const { currentSlug } = Astro.props;
+const currentIndex = towns.findIndex((item) => item.slug === currentSlug);
+---
+
+<section class="corridor" aria-label="The 30A corridor">
+  <p class="eyebrow">The 30A corridor</p>
+  <div class="track">
+    {
+      towns.map((item, index) => {
+        const here = item.slug === currentSlug;
+        const delta = index - currentIndex;
+        const meta = here ? "You are here" : delta < 0 ? `${Math.abs(delta)} west` : `${delta} east`;
+        return (
+          <a class:list={["item", { current: here }]} href={href(`/town/${item.slug}`)} aria-current={here ? "true" : undefined}>
+            <div class="dot">{here ? "●" : ""}</div>
+            <p class="name">{item.name}</p>
+            <p class="meta">{meta}</p>
+          </a>
+        );
+      })
+    }
+  </div>
+</section>
+
+<style>
+  .corridor {
+    margin: 0 0 var(--size-6);
+    padding-bottom: var(--size-4);
+    border-bottom: 1px solid var(--brand-line);
+  }
+  .track {
+    display: flex;
+    gap: var(--size-4);
+    overflow-x: auto;
+    padding: var(--size-1) var(--size-1) var(--size-3);
+    scroll-snap-type: x proximity;
+  }
+  .item {
+    flex: 0 0 5.5rem;
+    text-align: center;
+    scroll-snap-align: center;
+    color: var(--brand-ink);
+  }
+  .item:hover {
+    text-decoration: none;
+  }
+  .dot {
+    width: 4.25rem;
+    height: 4.25rem;
+    margin: 0 auto var(--size-2);
+    border-radius: 50%;
+    border: 3px solid var(--brand-line);
+    background: linear-gradient(145deg, #8eb8c8, #dfe9ee 45%, #b7c4a8);
+    display: grid;
+    place-items: center;
+    color: var(--brand-deep);
+    font-weight: 800;
+  }
+  .item.current .dot {
+    border-color: var(--brand-deep);
+    box-shadow: 0 0 0 3px var(--brand-teal-soft);
+  }
+  .name {
+    margin: 0;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+  }
+  .meta {
+    margin: 0.15rem 0 0;
+    font-size: 0.68rem;
+    color: var(--brand-ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+</style>

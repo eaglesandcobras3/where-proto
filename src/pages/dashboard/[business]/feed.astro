@@ -1,10 +1,10 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import Box from "../../../components/Box.astro";
-import FeedList from "../../../components/FeedList.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import DashboardNav from "../../../components/DashboardNav.astro";
+import PostCard from "../../../components/PostCard.astro";
+import ComposerCard from "../../../components/islands/ComposerCard.svelte";
 import { postsFor } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
-import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -19,22 +19,32 @@ const { business } = Astro.props;
 const feed = postsFor("business", business.slug).filter((item) => item.postedAs === "business");
 ---
 
-<Layout
-  title={`Post feed · ${business.name}`}
-  note="Posting as a business happens here. Posting as a user happens on the town or business page. How a person with both roles switches is still an open question."
->
-  <p><a href={href(`/dashboard/${business.slug}`)}>Manage {business.name}</a></p>
-  <h1>Post feed as business</h1>
-  <Box label="Existing posts">
-    <FeedList items={feed} />
-  </Box>
-  <Box label="New post">
-    <form>
-      <label>
-        New post
-        <input type="text" name="body" />
-      </label>
-      <button type="button">Post as {business.name}</button>
-    </form>
-  </Box>
-</Layout>
+<BaseLayout title={`Post feed · ${business.name}`}>
+  <div class="container section">
+    <h1>Post as {business.name}</h1>
+    <DashboardNav businessSlug={business.slug} active="feed" />
+    <div class="stack">
+      {feed.map((post) => <PostCard post={post} />)}
+      {feed.length === 0 && <p class="empty">No business posts yet.</p>}
+    </div>
+    <ComposerCard
+      title="New post"
+      body="Posting as the business happens here. Posting as a user happens on the public page."
+      action={`Post as ${business.name}`}
+      kind="update"
+      client:visible
+    />
+  </div>
+</BaseLayout>
+
+<style>
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 720px;
+    margin-bottom: var(--size-6);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+</style>

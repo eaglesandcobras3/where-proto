@@ -1,8 +1,11 @@
 import { defineConfig } from "astro/config";
+import svelte from "@astrojs/svelte";
 
 export default defineConfig({
   site: "https://eaglesandcobras3.github.io",
   base: "/where-proto",
+  output: "static",
+  integrations: [svelte()],
   redirects: {
     "/community": "/ask",
     "/community/ask": "/ask",

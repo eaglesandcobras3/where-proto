@@ -1,0 +1,61 @@
+---
+import { href } from "../lib/href";
+import { townBySlug } from "../data/catalog";
+import type { Stay } from "../data/types";
+
+interface Props {
+  stay: Stay;
+}
+
+const { stay } = Astro.props;
+const town = townBySlug(stay.townSlug);
+---
+
+<a class="card" href={href(`/stay/${stay.slug}`)}>
+  <div class="thumb img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
+  <div class="body">
+    <h3>{stay.name}</h3>
+    <p class="meta">{town?.name ?? stay.townSlug} &middot; Sleeps {stay.sleeps}</p>
+    <p class="desc">{stay.summary}</p>
+    <span class="verified">Owner verified</span>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    color: var(--brand-ink);
+  }
+  .card:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .thumb {
+    height: 160px;
+    border-radius: 0;
+  }
+  .body {
+    padding: var(--size-4);
+  }
+  .body h3 {
+    font-size: var(--font-size-3);
+    margin-bottom: var(--size-1);
+  }
+  .meta,
+  .desc {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .verified {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+    background: var(--brand-teal-soft);
+    border-radius: var(--radius-4);
+    padding: 2px var(--size-2);
+  }
+</style>

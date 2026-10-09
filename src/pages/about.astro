@@ -1,12 +1,35 @@
 ---
-import Layout from "../layouts/Layout.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 ---
 
-<Layout title="About">
-  <h1>About</h1>
-  <p>
-    WhereTo30A is a local guide and directory for Scenic Highway 30A. This prototype is a
-    wireframe of routes and page types only.
-  </p>
-  <p>Contact placeholders: hello@whereto30a.com / feedback@whereto30a.com</p>
-</Layout>
+<BaseLayout title="About WhereTo30A" description="A local family guide to 30A and Florida's Emerald Coast.">
+  <div class="container section article">
+    <h1>About WhereTo30A</h1>
+    <p class="lede">
+      WhereTo30A sits between Google and Facebook: a structured directory with the soul of a local community.
+    </p>
+    <p>
+      We are a local family who lives on 30A. Kelley and Brett built the guide we always wanted: town-scoped
+      discovery, honest business listings, timely updates from the businesses themselves, and a place to ask
+      locals anything.
+    </p>
+    <p>No ratings, no stars, no noise. Just the best of 30A, curated by people who are here every day.</p>
+    <p>Contact: hello@whereto30a.com / feedback@whereto30a.com</p>
+    <p class="credit">Photography by Coast Love Collection.</p>
+  </div>
+</BaseLayout>
+
+<style>
+  .article {
+    max-width: 680px;
+  }
+  .lede {
+    font-size: var(--font-size-3);
+    color: var(--brand-ink-soft);
+  }
+  .credit {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    font-style: italic;
+  }
+</style>

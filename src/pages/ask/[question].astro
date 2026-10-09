@@ -1,13 +1,6 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
-import {
-  commentsFor,
-  questions,
-  reactionsFor,
-  townBySlug,
-  userBySlug,
-} from "../../data/catalog";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import { commentsFor, questions, reactionsFor, townBySlug, userBySlug } from "../../data/catalog";
 import type { Question } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -27,63 +20,72 @@ const replies = commentsFor("question", question.slug);
 const questionReactions = reactionsFor("question", question.slug);
 ---
 
-<Layout title={question.title}>
-  <p><a href={href("/ask")}>Ask</a></p>
-  <h1>Question: {question.title}</h1>
-
-  <Box label="Question">
-    <p>{question.body}</p>
-    <ul>
-      {author && (
-        <li>
-          Asked by: <a href={href(`/u/${author.slug}`)}>{author.name}</a>
-        </li>
+<PlaceLayout
+  title={question.title}
+  description={question.body}
+  active="ask"
+  showBrowse={false}
+  crumbs={[{ label: "Ask", path: "/ask" }, { label: question.title }]}
+>
+  <article class="container section article">
+    <h1>{question.title}</h1>
+    <p class="lede">{question.body}</p>
+    <p class="meta">
+      Asked by {author ? <a href={href(`/u/${author.slug}`)}>{author.name}</a> : "a visitor"}
+      {town && (
+        <>
+          {" in "}
+          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+        </>
       )}
-      {
-        town && (
-          <li>
-            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-          </li>
-        )
-      }
-    </ul>
-  </Box>
-
-  <Box label="Reactions">
+    </p>
     {
-      questionReactions.length === 0 ? (
-        <p>No fake reactions.</p>
-      ) : (
-        <ul>
-          {questionReactions.map((item) => (
-            <li>
-              {item.label}: {item.count}
-            </li>
-          ))}
-        </ul>
+      questionReactions.length > 0 && (
+        <p class="meta">{questionReactions.map((item) => `${item.label} ${item.count}`).join(" · ")}</p>
       )
     }
-  </Box>
-
-  <Box label="Comments">
-    <ul>
+    <section>
+      <h2 class="section-title">Answers</h2>
       {
         replies.map((item) => (
-          <li>
-            {item.body} — <a href={href(`/u/${item.authorUserSlug}`)}>{userBySlug(item.authorUserSlug)?.name}</a>
-          </li>
+          <article class="answer">
+            <p>{item.body}</p>
+            <p class="meta">
+              <a href={href(`/u/${item.authorUserSlug}`)}>{userBySlug(item.authorUserSlug)?.name ?? "A local"}</a>
+            </p>
+          </article>
         ))
       }
-    </ul>
-  </Box>
-
-  <Box label="Reply">
-    <form>
-      <label>
-        Comment
-        <textarea name="body"></textarea>
-      </label>
-      <button type="button">Add comment</button>
+    </section>
+    <form class="form" onsubmit="return false;">
+      <wa-textarea label="Your answer" rows="3"></wa-textarea>
+      <wa-button variant="brand">Add comment</wa-button>
     </form>
-  </Box>
-</Layout>
+  </article>
+</PlaceLayout>
+
+<style>
+  .article {
+    max-width: 720px;
+  }
+  .lede {
+    font-size: var(--font-size-3);
+    color: var(--brand-ink-soft);
+  }
+  .meta {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .answer {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+    margin-bottom: var(--size-3);
+  }
+  .form {
+    display: grid;
+    gap: var(--size-3);
+    margin-top: var(--size-6);
+  }
+</style>

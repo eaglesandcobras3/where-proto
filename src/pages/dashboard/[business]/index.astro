@@ -1,6 +1,7 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import Box from "../../../components/Box.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import DashboardNav from "../../../components/DashboardNav.astro";
+import ComposerCard from "../../../components/islands/ComposerCard.svelte";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
@@ -16,20 +17,44 @@ interface Props {
 const { business } = Astro.props;
 ---
 
-<Layout
-  title={`Manage ${business.name}`}
-  note="Anything under manage-my-business is still being defined. These links are placeholders."
->
-  <p><a href={href("/dashboard")}>Dashboard</a></p>
-  <h1>Manage: {business.name}</h1>
-  <p>Public listing: <a href={href(`/business/${business.slug}`)}>{business.name}</a></p>
-  <Box label="Manage my business">
-    <ul>
-      <li><a href={href(`/dashboard/${business.slug}/feed`)}>Post feed (as business)</a></li>
-      <li><a href={href(`/dashboard/${business.slug}/events/new`)}>Post event</a></li>
-      <li><a href={href(`/dashboard/${business.slug}/mentions`)}>See mentions</a></li>
-      <li><a href={href(`/dashboard/${business.slug}/listing`)}>Edit listing</a></li>
-      <li><a href={href(`/dashboard/${business.slug}/photos`)}>Photos</a></li>
-    </ul>
-  </Box>
-</Layout>
+<BaseLayout title={`Manage ${business.name}`}>
+  <div class="container section">
+    <p class="eyebrow">Dashboard</p>
+    <h1>{business.name}</h1>
+    <p>
+      Public listing: <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+    </p>
+    <DashboardNav businessSlug={business.slug} active="overview" />
+    <div class="cards">
+      <ComposerCard
+        title="Post an update"
+        body="New menu item, hours change, seasonal special. Goes to the review queue."
+        action="Submit update"
+        kind="update"
+        client:visible
+      />
+      <ComposerCard
+        title="Post an event"
+        body="A dated event. Also creates a linked update."
+        action="Submit event"
+        kind="event"
+        client:visible
+      />
+      <ComposerCard
+        title="Post an image"
+        body="Add a photo to your gallery. Only images you own."
+        action="Choose image"
+        kind="photo"
+        client:visible
+      />
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

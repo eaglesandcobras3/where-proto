@@ -1,10 +1,9 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
-import FeedList from "../../components/FeedList.astro";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import PostCard from "../../components/PostCard.astro";
+import QuestionCard from "../../components/QuestionCard.astro";
 import { posts, questions, users } from "../../data/catalog";
 import type { User } from "../../data/types";
-import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -20,34 +19,58 @@ const userPosts = posts.filter((item) => item.authorUserSlug === user.slug);
 const userQuestions = questions.filter((item) => item.authorUserSlug === user.slug);
 ---
 
-<Layout
-  title={`${user.name} (public)`}
-  note="External facing profile is still being defined. This route exists so owner and author links resolve."
+<PlaceLayout
+  title={`${user.name} on WhereTo30A`}
+  description={user.bio}
+  showBrowse={false}
+  crumbs={[{ label: "Profile", path: "/profile" }, { label: user.name }]}
 >
-  <h1>External facing profile: {user.name}</h1>
-  <Box label="Public record">
-    <ul>
-      <li>Role: {user.role}</li>
-      <li>{user.bio}</li>
-    </ul>
-  </Box>
-  <Box label="Posts">
-    <FeedList items={userPosts} />
-  </Box>
-  <Box label="Questions">
-    {
-      userQuestions.length === 0 ? (
-        <p>No fake questions from this user.</p>
-      ) : (
-        <ul>
-          {userQuestions.map((item) => (
-            <li>
-              <a href={href(`/ask/${item.slug}`)}>{item.title}</a>
-            </li>
-          ))}
-        </ul>
-      )
-    }
-  </Box>
-  <p><a href={href("/profile")}>User facing profile (signed-in)</a></p>
-</Layout>
+  <div class="container section">
+    <section class="head">
+      <div class="avatar img-placeholder" aria-hidden="true">{user.name.charAt(0)}</div>
+      <div>
+        <h1>{user.name}</h1>
+        <p class="meta">{user.role}</p>
+        <p>{user.bio}</p>
+      </div>
+    </section>
+    <h2 class="section-title">Posts</h2>
+    <div class="stack">
+      {userPosts.map((post) => <PostCard post={post} />)}
+      {userPosts.length === 0 && <p class="empty">No posts from this person yet.</p>}
+    </div>
+    <h2 class="section-title">Questions</h2>
+    <div class="stack">
+      {userQuestions.map((question) => <QuestionCard question={question} />)}
+      {userQuestions.length === 0 && <p class="empty">No questions from this person yet.</p>}
+    </div>
+  </div>
+</PlaceLayout>
+
+<style>
+  .head {
+    display: flex;
+    gap: var(--size-5);
+    align-items: center;
+    margin-bottom: var(--size-6);
+  }
+  .avatar {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .meta {
+    color: var(--brand-ink-soft);
+    text-transform: capitalize;
+  }
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 720px;
+    margin-bottom: var(--size-6);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+</style>

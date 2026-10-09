@@ -1,14 +1,13 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import { seoOverrides } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
 
-<Layout title="SEO overrides">
-  <p><a href={href("/admin")}>Admin</a></p>
-  <h1>SEO overrides</h1>
-  <Box label="Overrides">
+<BaseLayout title="SEO overrides">
+  <div class="container section">
+    <p><a href={href("/admin")}>Admin</a></p>
+    <h1>SEO overrides</h1>
     <table>
       <thead>
         <tr>
@@ -29,5 +28,27 @@ import { href } from "../../lib/href";
         }
       </tbody>
     </table>
-  </Box>
-</Layout>
+  </div>
+</BaseLayout>
+
+<style>
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid var(--brand-line);
+  }
+  th,
+  td {
+    text-align: left;
+    padding: var(--size-3) var(--size-4);
+    border-bottom: 1px solid var(--brand-line);
+    font-size: var(--font-size-1);
+  }
+  th {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+</style>

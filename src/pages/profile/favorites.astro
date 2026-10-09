@@ -1,6 +1,6 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AccountNav from "../../components/AccountNav.astro";
 import {
   businessBySlug,
   currentUserSlug,
@@ -28,18 +28,45 @@ function path(item: (typeof mine)[number]) {
 }
 ---
 
-<Layout title="Favorites">
-  <p><a href={href("/profile")}>Profile</a></p>
-  <h1>View favorites</h1>
-  <Box label="Saved items">
-    <ul>
+<BaseLayout title="Favorites">
+  <div class="container section">
+    <h1>Saved</h1>
+    <AccountNav active="favorites" />
+    <ul class="list">
       {
         mine.map((item) => (
           <li>
-            {item.type}: <a href={path(item)}>{label(item)}</a>
+            <span class="type">{item.type}</span>
+            <a href={path(item)}>{label(item)}</a>
           </li>
         ))
       }
     </ul>
-  </Box>
-</Layout>
+  </div>
+</BaseLayout>
+
+<style>
+  .list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--size-3);
+    max-width: 560px;
+  }
+  li {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: var(--size-3) var(--size-4);
+    display: flex;
+    gap: var(--size-3);
+    align-items: center;
+  }
+  .type {
+    font-size: var(--font-size-0);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-teal);
+  }
+</style>

@@ -10,7 +10,11 @@
     "check": "astro check"
   },
   "dependencies": {
-    "astro": "^5.14.4"
+    "@astrojs/svelte": "^7.2.2",
+    "@awesome.me/webawesome": "^3.0.0",
+    "astro": "^5.14.4",
+    "open-props": "^1.7.16",
+    "svelte": "^5.39.11"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",

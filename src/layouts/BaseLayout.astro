@@ -1,0 +1,59 @@
+---
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import BrowseBar from "../components/BrowseBar.astro";
+import { absHref } from "../lib/href";
+import "../styles/tokens.css";
+import "../styles/global.css";
+import "@awesome.me/webawesome/dist/styles/webawesome.css";
+
+interface Props {
+  title: string;
+  description?: string;
+  active?: string;
+  noindex?: boolean;
+  canonicalPath?: string;
+  showBrowse?: boolean;
+  browseTown?: string;
+  browseCategory?: string;
+}
+
+const {
+  title,
+  description = "Your local guide to 30A and Florida's Emerald Coast. Curated listings, town guides, and hand-picked local favorites.",
+  active = "",
+  noindex,
+  canonicalPath,
+  showBrowse = false,
+  browseTown,
+  browseCategory,
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{title} | WhereTo30A</title>
+    <meta name="description" content={description} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    {canonicalPath && <link rel="canonical" href={absHref(canonicalPath)} />}
+    <script type="module" src="https://cdn.jsdelivr.net/npm/@awesome.me/webawesome@3/dist/webawesome.loader.js"
+    ></script>
+  </head>
+  <body>
+    <Header active={active} />
+    {showBrowse && <BrowseBar townLabel={browseTown} categoryLabel={browseCategory} />}
+    <main>
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>
+
+<script>
+  if (!customElements.get("wa-button")) {
+    import("@awesome.me/webawesome/dist/webawesome.loader.js").catch(() => {});
+  }
+</script>

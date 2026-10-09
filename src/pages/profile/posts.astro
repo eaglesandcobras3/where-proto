@@ -1,17 +1,27 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
-import FeedList from "../../components/FeedList.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import AccountNav from "../../components/AccountNav.astro";
+import PostCard from "../../components/PostCard.astro";
 import { currentUserSlug, posts } from "../../data/catalog";
-import { href } from "../../lib/href";
 
 const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
 ---
 
-<Layout title="My posts">
-  <p><a href={href("/profile")}>Profile</a></p>
-  <h1>Posts</h1>
-  <Box label="Posted as user">
-    <FeedList items={mine} />
-  </Box>
-</Layout>
+<BaseLayout title="My posts">
+  <div class="container section">
+    <h1>My posts</h1>
+    <AccountNav active="posts" />
+    <div class="stack">
+      {mine.map((post) => <PostCard post={post} />)}
+      {mine.length === 0 && <p>No posts yet.</p>}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 720px;
+  }
+</style>

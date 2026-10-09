@@ -1,0 +1,50 @@
+---
+import type { Photo } from "../data/types";
+
+interface Props {
+  photos: Photo[];
+  empty?: string;
+}
+
+const { photos, empty = "No photos yet" } = Astro.props;
+---
+
+{
+  photos.length === 0 ? (
+    <p class="empty">{empty}</p>
+  ) : (
+    <div class="grid">
+      {photos.map((photo) => (
+        <figure>
+          <div class="thumb img-placeholder" aria-hidden="true">
+            {photo.caption.charAt(0)}
+          </div>
+          <figcaption>{photo.caption}</figcaption>
+        </figure>
+      ))}
+    </div>
+  )
+}
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: var(--size-3);
+  }
+  figure {
+    margin: 0;
+  }
+  .thumb {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-2);
+  }
+  figcaption {
+    margin-top: var(--size-2);
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+</style>

@@ -1,20 +1,34 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import LinkList from "../components/LinkList.astro";
-import Box from "../components/Box.astro";
-import { stays, townBySlug } from "../data/catalog";
-import { href } from "../lib/href";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import StayCard from "../components/StayCard.astro";
+import { isEnabled } from "../config/flags";
+import { stays } from "../data/catalog";
 ---
 
-<Layout title="Stays" note="Ship-dark. Route exists; product is not launched.">
-  <h1>Stays</h1>
-  <Box label="Stay listings">
-    <LinkList
-      items={stays.map((item) => ({
-        href: href(`/stay/${item.slug}`),
-        label: item.name,
-        meta: `${townBySlug(item.townSlug)?.name ?? item.townSlug} · sleeps ${item.sleeps}`,
-      }))}
+<BaseLayout title="Stays on 30A" description="Book direct with local 30A rental partners." active="stays">
+  <div class="container section">
+    <PageHeader
+      eyebrow="Stays"
+      title="Book direct on 30A"
+      lede="Vacation rentals and hotels from the catalog. The product is still early. This page renders because the stays flag is on."
     />
-  </Box>
-</Layout>
+    {
+      isEnabled("stays") && (
+        <div class="grid">
+          {stays.map((stay) => (
+            <StayCard stay={stay} />
+          ))}
+        </div>
+      )
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--size-4);
+  }
+</style>

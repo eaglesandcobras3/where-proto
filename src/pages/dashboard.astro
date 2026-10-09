@@ -1,39 +1,69 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import LinkList from "../components/LinkList.astro";
-import Box from "../components/Box.astro";
-import { businessesOwnedBy, currentUser, currentUserSlug } from "../data/catalog";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import PageHeader from "../components/PageHeader.astro";
+import { businessesOwnedBy, currentUser } from "../data/catalog";
 import { href } from "../lib/href";
+import { isEnabled } from "../config/flags";
 
 const user = currentUser();
 const owned = businessesOwnedBy("brett");
 ---
 
-<Layout
-  title="Dashboard"
-  note="Business management is still being defined. Dashboard is the selector plus the manage surfaces from the IA."
->
-  <h1>Dashboard</h1>
-  <p>
-    Signed-in user on this wireframe is {user?.name}. Owned businesses are attached to Brett so
-    the selector has fake rows to click. Fake session slug: {currentUserSlug}.
-  </p>
-
-  <Box label="Business selector">
-    <LinkList
-      items={owned.map((item) => ({
-        href: href(`/dashboard/${item.slug}`),
-        label: item.name,
-        meta: item.summary,
-      }))}
+<BaseLayout title="Business dashboard" description="Manage listings, posts, and mentions.">
+  <div class="container section">
+    <PageHeader
+      title="Business dashboard"
+      lede={`Signed in as ${user?.name ?? "a member"}. Owned businesses are attached to Brett so the selector has rows to open.`}
     />
-  </Box>
+    {
+      isEnabled("businessDashboard") && (
+        <div class="cards">
+          {owned.map((business) => (
+            <a class="card" href={href(`/dashboard/${business.slug}`)}>
+              <h3>{business.name}</h3>
+              <p>{business.summary}</p>
+              <span>Manage listing</span>
+            </a>
+          ))}
+        </div>
+      )
+    }
+    <p>
+      <a href={href("/profile")}>Profile</a> · <a href={href("/admin")}>Admin</a> ·
+      <a href={href("/add-business")}>Add business</a>
+    </p>
+  </div>
+</BaseLayout>
 
-  <Box label="Other account surfaces">
-    <ul>
-      <li><a href={href("/profile")}>Profile</a></li>
-      <li><a href={href("/admin")}>Admin</a></li>
-      <li><a href={href("/add-business")}>Add business</a></li>
-    </ul>
-  </Box>
-</Layout>
+<style>
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--size-4);
+    margin-bottom: var(--size-6);
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+    color: var(--brand-ink);
+  }
+  .card:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .card h3 {
+    font-size: var(--font-size-3);
+    margin-bottom: var(--size-2);
+  }
+  .card p {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .card span {
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+  }
+</style>

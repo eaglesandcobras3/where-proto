@@ -1,10 +1,9 @@
 ---
-import Layout from "../../../layouts/Layout.astro";
-import Box from "../../../components/Box.astro";
-import FeedList from "../../../components/FeedList.astro";
-import { posts } from "../../../data/catalog";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import DashboardNav from "../../../components/DashboardNav.astro";
+import PostCard from "../../../components/PostCard.astro";
+import { postsFor } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
-import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -16,16 +15,27 @@ interface Props {
 }
 
 const { business } = Astro.props;
-const mentions = posts.filter(
-  (item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user",
-);
+const mentions = postsFor("business", business.slug).filter((item) => item.postedAs === "user");
 ---
 
-<Layout title={`Mentions · ${business.name}`}>
-  <p><a href={href(`/dashboard/${business.slug}`)}>Manage {business.name}</a></p>
-  <h1>See mentions</h1>
-  <Box label="User posts on this listing">
-    <p>User posts that landed on this business page. Still to be defined.</p>
-    <FeedList items={mentions} />
-  </Box>
-</Layout>
+<BaseLayout title={`Mentions · ${business.name}`}>
+  <div class="container section">
+    <h1>Mentions inbox</h1>
+    <DashboardNav businessSlug={business.slug} active="mentions" />
+    <div class="stack">
+      {mentions.map((post) => <PostCard post={post} />)}
+      {mentions.length === 0 && <p class="empty">No visitor mentions yet.</p>}
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 720px;
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+</style>

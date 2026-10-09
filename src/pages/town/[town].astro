@@ -1,15 +1,15 @@
 ---
-import ProtoLayout from "../../layouts/ProtoLayout.astro";
-import TwoPaneMap from "../../components/proto/TwoPaneMap.astro";
-import {
-  areasForTown,
-  businessesForTown,
-  categories,
-  towns,
-  updatesForTown,
-} from "../../data/catalog";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import Corridor from "../../components/Corridor.astro";
+import CategoriesInTown from "../../components/CategoriesInTown.astro";
+import AreasInTown from "../../components/AreasInTown.astro";
+import AtAGlance from "../../components/AtAGlance.astro";
+import UpdatesModule from "../../components/UpdatesModule.astro";
+import PhotoGrid from "../../components/PhotoGrid.astro";
+import { isEnabled } from "../../config/flags";
+import { photosFor, towns, updatesForTown } from "../../data/catalog";
 import type { Town } from "../../data/types";
-import { href } from "../../lib/href";
+import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -21,136 +21,70 @@ interface Props {
 }
 
 const { item: town } = Astro.props;
-const townBusinesses = businessesForTown(town.slug);
-const townAreas = areasForTown(town.slug);
+const view = townView(town);
 const townUpdates = updatesForTown(town.slug);
-
-const categoryCounts = categories
-  .map((category) => {
-    const count = townBusinesses.filter((item) => item.categorySlug === category.slug).length;
-    return {
-      slug: category.slug,
-      name: category.name,
-      count,
-      href: href(`/town/${town.slug}/${category.slug}`),
-    };
-  })
-  .filter((item) => item.count > 0);
-
-const currentIndex = towns.findIndex((item) => item.slug === town.slug);
+const photos = photosFor("town", town.slug);
 ---
 
-<ProtoLayout
-  title={town.name}
-  activeNav="towns"
-  headerTone="light"
-  filterTown={town.name}
-  filterCategory="Any category"
-  filterExpanded={false}
+<PlaceLayout
+  title={`${town.name}: stay, eat, and beach on 30A`}
+  description={town.summary}
+  active="towns"
+  browseTown={town.name}
+  crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
-  <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(8, townBusinesses.length * 3)}>
-    <section class="corridor" aria-label="The 30A corridor">
-      <p class="corridor__label">The 30A Corridor</p>
-      <div class="corridor__track">
-        {
-          towns.map((item, index) => {
-            const here = item.slug === town.slug;
-            const delta = index - currentIndex;
-            const meta = here
-              ? "You are here"
-              : delta < 0
-                ? `${Math.abs(delta)} west`
-                : `${delta} east`;
-            return (
-              <a
-                class="corridor__item"
-                href={href(`/town/${item.slug}`)}
-                aria-current={here ? "true" : undefined}
-              >
-                <div class="corridor__dot">{here ? "●" : ""}</div>
-                <p class="corridor__name">{item.name}</p>
-                <p class="corridor__meta">{meta}</p>
-              </a>
-            );
-          })
-        }
-      </div>
-    </section>
+  <div class="container">
+    <Corridor currentSlug={town.slug} />
 
-    <section class="town-hero">
-      <div class="town-hero__media" role="img" aria-label={`${town.name} photo placeholder`}></div>
+    <section class="hero">
+      <div class="hero-img img-placeholder" aria-hidden="true">{town.name.charAt(0)}</div>
       <div>
-        <h1 class="town-hero__title">{town.name}</h1>
-        <span class="town-hero__tag">All 30A</span>
-        <p class="town-hero__summary">{town.summary}</p>
-        <a class="town-hero__suggest" href={href("/ask")}>Suggest an update</a>
+        <h1>{town.name}</h1>
+        <p class="tagline">{view.tagline}</p>
+        <p class="desc">{town.summary}</p>
       </div>
     </section>
 
-    {
-      categoryCounts.length > 0 && (
-        <section>
-          <p class="section-label">Categories in {town.name}</p>
-          <div class="pill-row">
-            {categoryCounts.map((item) => (
-              <a class="pill" href={item.href}>
-                {item.name} ({item.count})
-              </a>
-            ))}
-          </div>
-        </section>
-      )
-    }
+    <CategoriesInTown townSlug={town.slug} townName={town.name} />
+    <AreasInTown townSlug={town.slug} townName={town.name} />
+    <AtAGlance town={view} />
 
-    <section class="glance">
-      <h2 class="glance__title">{town.name} at a glance</h2>
-      <div class="glance__grid">
-        <div class="glance__card">
-          <div class="glance__icon" aria-hidden="true"></div>
-          <strong>Walkability</strong>
-          <span>{town.walkability}</span>
-        </div>
-        <div class="glance__card">
-          <div class="glance__icon" aria-hidden="true"></div>
-          <strong>Beach access</strong>
-          <span>{town.beachAccess}</span>
-        </div>
-        <div class="glance__card">
-          <div class="glance__icon" aria-hidden="true"></div>
-          <strong>Areas</strong>
-          <span>{townAreas.length} in this town</span>
-        </div>
-      </div>
+    <section>
+      <h2 class="section-title">Photos</h2>
+      <PhotoGrid photos={photos} empty={`No ${town.name} photos yet.`} />
     </section>
 
-    {
-      townAreas.length > 0 && (
-        <section>
-          <p class="section-label">Areas in {town.name}</p>
-          <div class="pill-row">
-            {townAreas.map((area) => (
-              <a class="pill" href={href(`/area/${area.slug}`)}>
-                {area.name}
-              </a>
-            ))}
-          </div>
-        </section>
-      )
-    }
+    {isEnabled("updates") && <UpdatesModule title={`Updates in ${town.name}`} updates={townUpdates} />}
+  </div>
+</PlaceLayout>
 
-    {
-      townUpdates.length > 0 && (
-        <section class="updates-block">
-          <p class="section-label">Updates</p>
-          <ul>
-            {townUpdates.map((item) => (
-              <li>
-                <strong>{item.title}</strong> — {item.body}
-              </li>
-            ))}
-          </ul>
-        </section>
-      )
+<style>
+  .hero {
+    display: flex;
+    gap: var(--size-6);
+    align-items: center;
+    padding-block: var(--size-6);
+  }
+  .hero-img {
+    width: 180px;
+    height: 180px;
+    border-radius: var(--radius-card);
+    flex-shrink: 0;
+    font-size: var(--font-size-8);
+  }
+  .tagline {
+    font-weight: var(--font-weight-6);
+    color: var(--brand-teal);
+    margin-bottom: var(--size-1);
+  }
+  .desc {
+    color: var(--brand-ink-soft);
+    max-width: 64ch;
+  }
+  @media (max-width: 640px) {
+    .hero {
+      flex-direction: column;
+      align-items: flex-start;
     }
-  </TwoPaneMap>
-</ProtoLayout>
+  }
+</style>

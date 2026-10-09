@@ -1,15 +1,13 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import LinkList from "../../components/LinkList.astro";
-import Box from "../../components/Box.astro";
-import Placeholder from "../../components/Placeholder.astro";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import BusinessCard from "../../components/BusinessCard.astro";
+import PhotoGrid from "../../components/PhotoGrid.astro";
+import AreaCard from "../../components/AreaCard.astro";
 import {
-  allLeaves,
   areaKindLabel,
   areas,
   areasForTown,
   businessesForArea,
-  listingMeta,
   photosFor,
   townBySlug,
 } from "../../data/catalog";
@@ -32,84 +30,76 @@ const inArea = businessesForArea(area.slug);
 const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area.slug);
 ---
 
-<Layout title={area.name}>
-  <p>
-    <a href={href("/areas")}>Areas</a>
+<PlaceLayout
+  title={area.name}
+  description={area.summary}
+  active="areas"
+  browseTown={town?.name}
+  crumbs={[
+    { label: "Areas", path: "/areas" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: area.name },
+  ]}
+>
+  <div class="container section">
+    <p class="eyebrow">{areaKindLabel(area.kind)}</p>
+    <h1>{area.name}</h1>
+    <p class="lede">{area.summary}</p>
     {
       town && (
-        <>
-          {" / "}
-          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-        </>
+        <p>
+          Inside <a href={href(`/town/${town.slug}`)}>{town.name}</a>. Indexable category pages stay on the town.
+        </p>
       )
     }
-  </p>
-  <h1>Area: {area.name}</h1>
-  <p>{area.summary}</p>
 
-  <Box label="Facts">
-    <ul>
-      <li>{areaKindLabel(area.kind)}</li>
-      {
-        town && (
-          <li>
-            Town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-          </li>
-        )
-      }
-    </ul>
-    <p>An area is an extension of a town, not a second directory. One town, many areas.</p>
-  </Box>
+    <h2 class="section-title">Photos</h2>
+    <PhotoGrid photos={areaPhotos} />
 
-  <Box label="Map">
-    <Placeholder kind="map" caption={area.name} />
-  </Box>
-
-  <Box label="Photos">
+    <h2 class="section-title">In this area</h2>
     {
-      areaPhotos.length === 0 ? (
-        <Placeholder caption="No area photos yet" />
+      inArea.length === 0 ? (
+        <p class="empty">No listings sit in this area yet.</p>
       ) : (
-        <div class="row">
-          {areaPhotos.map((photo) => (
-            <Placeholder caption={photo.caption} />
+        <div class="grid">
+          {inArea.map((business) => (
+            <BusinessCard business={business} />
           ))}
         </div>
       )
     }
-  </Box>
 
-  <Box label="In this area">
-    <p>These listings sit in this shopping area or neighborhood. Indexable category pages stay on the town.</p>
-    <LinkList
-      items={inArea.map((item) => ({
-        href: href(`/business/${item.slug}`),
-        label: item.name,
-        meta: listingMeta(item),
-      }))}
-    />
-  </Box>
+    {
+      siblings.length > 0 && (
+        <section>
+          <h2 class="section-title">Other areas in {town?.name ?? "this town"}</h2>
+          <div class="tiles">
+            {siblings.map((item) => (
+              <AreaCard area={item} />
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</PlaceLayout>
 
-  {
-    town && (
-      <Box label={`Categories in ${town.name}`}>
-        <LinkList
-          items={allLeaves().map((leaf) => ({
-            href: href(`/town/${town.slug}/${leaf.slug}`),
-            label: leaf.name,
-          }))}
-        />
-      </Box>
-    )
+<style>
+  .lede {
+    color: var(--brand-ink-soft);
+    max-width: 64ch;
   }
-
-  <Box label="Other areas in this town">
-    <LinkList
-      items={siblings.map((item) => ({
-        href: href(`/area/${item.slug}`),
-        label: item.name,
-        meta: areaKindLabel(item.kind),
-      }))}
-    />
-  </Box>
-</Layout>
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: var(--size-4);
+  }
+  .tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: var(--size-4);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+</style>

@@ -1,7 +1,6 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import Box from "../../components/Box.astro";
-import { commentsFor, guides, reactionsFor, townBySlug, userBySlug } from "../../data/catalog";
+import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import { commentsFor, guides, reactionsFor, townBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -16,55 +15,55 @@ interface Props {
 
 const { item: guide } = Astro.props;
 const town = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
-const guideComments = commentsFor("guide", guide.slug);
-const guideReactions = reactionsFor("guide", guide.slug);
+const comments = commentsFor("guide", guide.slug);
+const reactions = reactionsFor("guide", guide.slug);
 ---
 
-<Layout title={guide.title}>
-  <p><a href={href("/guides")}>Guides</a></p>
-  <h1>Guide: {guide.title}</h1>
-  <p>{guide.summary}</p>
-  {
-    town && (
+<PlaceLayout
+  title={guide.title}
+  description={guide.summary}
+  active="guides"
+  showBrowse={false}
+  crumbs={[{ label: "Guides", path: "/guides" }, { label: guide.title }]}
+>
+  <article class="container section article">
+    <h1>{guide.title}</h1>
+    <p class="lede">{guide.summary}</p>
+    {town && (
       <p>
         Related town: <a href={href(`/town/${town.slug}`)}>{town.name}</a>
       </p>
-    )
-  }
-
-  <Box label="Body">
+    )}
     <p>{guide.body}</p>
-  </Box>
-
-  <Box label="Reactions">
     {
-      guideReactions.length === 0 ? (
-        <p>No fake reactions on this guide.</p>
-      ) : (
-        <ul>
-          {guideReactions.map((item) => (
-            <li>
-              {item.label}: {item.count}
-            </li>
-          ))}
-        </ul>
+      reactions.length > 0 && (
+        <p class="meta">{reactions.map((item) => `${item.label} ${item.count}`).join(" · ")}</p>
       )
     }
-  </Box>
-
-  <Box label="Comments">
     {
-      guideComments.length === 0 ? (
-        <p>No fake comments on this guide.</p>
-      ) : (
-        <ul>
-          {guideComments.map((item) => (
-            <li>
-              {item.body} — {userBySlug(item.authorUserSlug)?.name}
-            </li>
+      comments.length > 0 && (
+        <section>
+          <h2 class="section-title">Comments</h2>
+          {comments.map((item) => (
+            <p class="comment">{item.body}</p>
           ))}
-        </ul>
+        </section>
       )
     }
-  </Box>
-</Layout>
+  </article>
+</PlaceLayout>
+
+<style>
+  .article {
+    max-width: 720px;
+  }
+  .lede {
+    font-size: var(--font-size-3);
+    color: var(--brand-ink-soft);
+  }
+  .meta,
+  .comment {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+</style>

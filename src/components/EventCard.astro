@@ -1,0 +1,63 @@
+---
+import { href } from "../lib/href";
+import { townBySlug } from "../data/catalog";
+import type { EventItem } from "../data/types";
+
+interface Props {
+  event: EventItem;
+}
+
+const { event } = Astro.props;
+const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
+---
+
+<a class="card" href={href(`/event/${event.slug}`)}>
+  <div class="thumb img-placeholder" aria-hidden="true">{event.name.charAt(0)}</div>
+  <div class="body">
+    <p class="date">{event.when}</p>
+    <h3>{event.name}</h3>
+    <p class="meta">
+      {event.venue ?? "30A"}
+      {town && <> &middot; {town.name}</>}
+    </p>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: block;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    color: var(--brand-ink);
+  }
+  .card:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .thumb {
+    height: 120px;
+    border-radius: 0;
+  }
+  .body {
+    padding: var(--size-3) var(--size-4);
+  }
+  .date {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-teal);
+    margin-bottom: var(--size-1);
+  }
+  .body h3 {
+    font-size: var(--font-size-2);
+    margin-bottom: var(--size-1);
+  }
+  .meta {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    margin: 0;
+  }
+</style>

@@ -1,6 +1,5 @@
 ---
-import Layout from "../layouts/Layout.astro";
-import Box from "../components/Box.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import { href } from "../lib/href";
 
 const routes = [
@@ -22,6 +21,7 @@ const routes = [
   ["Question", "/ask/parking-near-seaside"],
   ["Stays", "/stays"],
   ["Stay", "/stay/the-pearl-hotel"],
+  ["Updates (footer only)", "/updates"],
   ["Post", "/posts/sunset-on-the-square"],
   ["Dashboard", "/dashboard"],
   ["Manage business", "/dashboard/edwards-fine-food-and-wine"],
@@ -52,51 +52,54 @@ const routes = [
 ];
 ---
 
-<Layout title="Route scaffold">
-  <h1>Route scaffold</h1>
-  <p>No /businesses. /search is the finder. Town × category pages are the indexable leaves.</p>
-
-  <Box label="Rules">
+<BaseLayout title="Route scaffold">
+  <div class="container section">
+    <h1>Route scaffold</h1>
+    <p>No /businesses hub. /search is the finder. Town × category pages are the indexable leaves.</p>
     <ol>
       <li>There is no /businesses hub or /businesses/{"{category}"} leaf.</li>
-      <li>
-        /search is the business finder: town, category, tag, and open-now filters. Always noindex,
-        follow. If the filters are exactly town + category, canonical points at that combo page.
-      </li>
-      <li>Town pages link to /town/{"{town}"}/{'{category}'}.</li>
-      <li>
-        Listings on indexable pages live only on /town/{"{town}"}/{'{category}'}. /towns and
-        /town/{"{town}"} do not render business cards.
-      </li>
+      <li>/search is the business finder and stays noindex, follow.</li>
+      <li>Town hubs link to /town/{"{town}"}/{"{category}"} and do not render business cards.</li>
       <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
-      <li>User posts from a town or business page. Business posts from the dashboard.</li>
-      <li>Updates are not a top-level section. They only appear on town and business pages.</li>
-      <li>
-        Areas extend a town: shopping areas and neighborhoods. One town can have many areas.
-      </li>
-      <li>Stories are guides. There is no Stories nav item.</li>
+      <li>Updates appear on town and business pages. /updates is footer only.</li>
+      <li>Areas extend a town: shopping areas and neighborhoods.</li>
     </ol>
-  </Box>
-
-  <Box label="Still being defined">
-    <ul>
-      <li>External facing profile beyond the public stub</li>
-      <li>Business management beyond selector, post event, post feed, mentions, listing, photos</li>
-      <li>Admin beyond review queue, SEO, knowledge</li>
-      <li>Auth flow</li>
-      <li>How to post as business vs user</li>
-    </ul>
-  </Box>
-
-  <Box label="Routes">
-    <ul>
+    <ul class="routes">
       {
         routes.map(([label, path]) => (
           <li>
-            <a href={href(path)}>{label}</a> — {path}
+            <a href={href(path)}>{label}</a>
+            <span>{path}</span>
           </li>
         ))
       }
     </ul>
-  </Box>
-</Layout>
+  </div>
+</BaseLayout>
+
+<style>
+  ol {
+    max-width: 64ch;
+    color: var(--brand-ink-soft);
+  }
+  .routes {
+    list-style: none;
+    margin: var(--size-6) 0 0;
+    padding: 0;
+    display: grid;
+    gap: var(--size-2);
+  }
+  .routes li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--size-4);
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: var(--size-3) var(--size-4);
+  }
+  .routes span {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+</style>

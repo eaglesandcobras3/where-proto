@@ -1,0 +1,51 @@
+---
+import { href } from "../lib/href";
+import { commentsFor, townBySlug } from "../data/catalog";
+import type { Question } from "../data/types";
+
+interface Props {
+  question: Question;
+}
+
+const { question } = Astro.props;
+const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+const answers = commentsFor("question", question.slug).length;
+---
+
+<a class="row" href={href(`/ask/${question.slug}`)}>
+  <div>
+    <h3>{question.title}</h3>
+    <p class="meta">
+      {answers} {answers === 1 ? "answer" : "answers"}
+      {town && <> &middot; {town.name}</>}
+    </p>
+  </div>
+  <span aria-hidden="true">&rarr;</span>
+</a>
+
+<style>
+  .row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: var(--size-4);
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-4);
+    color: var(--brand-ink);
+  }
+  .row:hover {
+    text-decoration: none;
+    box-shadow: var(--shadow-card);
+  }
+  .row h3 {
+    font-size: var(--font-size-2);
+    margin-bottom: var(--size-1);
+  }
+  .meta {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    margin: 0;
+  }
+</style>
