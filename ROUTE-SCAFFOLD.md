@@ -17,13 +17,13 @@
 
 **Admin:** `/admin`, `/admin/review-queue`, `/admin/seo`, `/admin/knowledge`, `/admin/entities`
 
-**Auth:** `/auth/login`, `/auth/signup`, `/auth/forgot-password`
+**Auth:** Modal (Indeed-style) via `?auth=login|signup|forgot`, or `/auth/login`, `/auth/signup`, `/auth/forgot-password` (same modal). Also `window` event `w30a:auth`.
 
 **Submit:** `/add-business`
 
 **Newsletters:** `/newsletters/visitor`, `/newsletters/business`
 
-**Static:** `/about`, `/legal`, `/advertise`
+**Static:** `/about`, `/legal`, `/merchants`
 
 **Top nav:** Homepage (logo), Towns, Areas, Search, Events, Stays, Guides, Ask. Right side: Add Business, Profile, Dashboard.
 
@@ -44,5 +44,5 @@ There is no `/businesses` route.
 5. `/search` is `noindex, follow`. If the active filters are exactly town + category, canonical points at `/town/{town}/{category}`. Otherwise canonical is the unfiltered `/search`.
 6. `/ask` is the community route (not `/community`). Question threads at `/ask/{question}`.
 7. User posts from a town or business page. Business posts from `/dashboard/{business}/feed`.
-8. Updates (formerly happenings) show on town and business pages. `/updates` is a footer-only rollup, never top nav.
+8. Updates (formerly happenings) show on the homepage, town pages, and business pages — not as standalone routes or top nav.
 9. Areas extend a town. A town can have many areas. Area kinds are shopping area and neighborhood.

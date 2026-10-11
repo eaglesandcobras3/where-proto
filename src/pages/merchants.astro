@@ -1,0 +1,1410 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import AuthGateLink from "../components/islands/AuthGateLink.svelte";
+import { businessBySlug, towns } from "../data/catalog";
+import { href } from "../lib/href";
+
+const addBusinessHref = href("/add-business");
+const claimBusinessHref = href("/add-business?tab=claim");
+
+const sample = businessBySlug("amavida");
+const sampleTown = towns.find((t) => t.slug === sample?.townSlug);
+
+const stats = [
+  { value: "745+", label: "Local businesses listed across the corridor" },
+  { value: "12", label: "Coastal communities from Inlet to Dune Allen" },
+  { value: "$0", label: "Free forever — full listing, no hidden paywall" },
+  { value: "100%", label: "Human-reviewed before going live" },
+];
+
+const features = [
+  {
+    n: "01",
+    title: "A page of your own",
+    body: "Your dedicated page with description, phone, website, hours, location, photos, and FAQ — in search, on town pages, and in category filters.",
+    note: "Included free",
+  },
+  {
+    n: "02",
+    title: "Updates, posted like social",
+    body: "New menu item, changed hours, seasonal launch, or a reopening after a storm. Post once and it shows on your page and in the corridor feed.",
+    note: "Instant distribution",
+  },
+  {
+    n: "03",
+    title: "Events that reach planners",
+    body: "Live music, tastings, workshops, morning markets: post once and they land on the regional events calendar where visitors plan their trip.",
+    note: "Calendar reach",
+  },
+  {
+    n: "04",
+    title: "A community that talks back",
+    body: "On Ask 30A, locals and visitors ask for recommendations. Reply directly as the verified owner in public view.",
+    note: "Verified owner badge",
+  },
+  {
+    n: "05",
+    title: "Mentions in guides & towns",
+    body: "Town guides and itineraries help visitors decide where to spend their time. When you’re featured, your dashboard notifies you.",
+    note: "Tracked curation",
+  },
+  {
+    n: "06",
+    title: "No ratings. No review wars.",
+    body: "WhereTo30A intentionally excludes star ratings. Your page presents what you offer in your own words — no score drops or review bombing.",
+    note: "Built for owners",
+  },
+];
+
+const pageChecks = [
+  { strong: "Tap-to-call, directions, and your website", rest: "right at the top" },
+  { strong: "Hours you can change the moment they change", rest: ", including holiday and storm hours" },
+  { strong: "Photos and an FAQ", rest: " that answer the questions you hear every day" },
+  { strong: "Your latest updates and events", rest: " pulled onto the page automatically" },
+];
+
+const dashboard = [
+  {
+    title: "Edit your profile anytime",
+    body: "Description, phone, website, hours, and location — when they change, not when a directory gets around to it.",
+  },
+  {
+    title: "Post photos, updates, events",
+    body: "One place for three kinds of posts. Photos build your gallery, updates feed your page, events reach the calendar.",
+  },
+  {
+    title: "See and answer mentions",
+    body: "Community posts and Ask 30A threads about your business land in one inbox. Reply as the verified owner.",
+  },
+  {
+    title: "Build your FAQ once",
+    body: "Parking, reservations, dog-friendly, gluten-free: answer it once and stop answering it fifty times a season.",
+  },
+];
+
+const steps = [
+  {
+    n: "1",
+    title: "Send us your business",
+    body: "Name, town, category, and the basics: phone, website, hours, and a photo or two. Two minutes is plenty.",
+    meta: "Takes ~2 minutes",
+  },
+  {
+    n: "2",
+    title: "We review and publish",
+    body: "Every listing is reviewed by a local before it goes live — trustworthy for visitors, valuable for you.",
+    meta: "Reviewed in 24 hours",
+  },
+  {
+    n: "3",
+    title: "You take it from there",
+    body: "Claim your dashboard, keep hours and photos current, post updates and events, and answer when your name comes up.",
+    meta: "You’re in control",
+  },
+];
+
+const freeFeatures = [
+  "Your own page: description, phone, website, hours, location",
+  "Placement in search, on your town page, and in your category",
+  "Photo gallery and an FAQ section on your page",
+  "Post updates and events from your merchant dashboard",
+  "Mentions inbox with verified-owner replies in Ask 30A",
+  "Multiple businesses under one login",
+];
+
+const sponsoredFeatures = [
+  "Sponsored slots on the homepage, next to features and town spotlights",
+  "Featured placement on your town page and in relevant guides",
+  "A dedicated spotlight story about your business, written with you",
+  "Quarterly traffic and referral impression digest",
+  "Everything in the free listing",
+];
+
+const faqs = [
+  {
+    q: "Is the listing really free?",
+    a: "Yes. Every legitimate 30A business gets a full listing at zero cost. We do not restrict hours, photos, or updates behind a paywall. Revenue comes from clearly labeled sponsored placements and partnerships.",
+  },
+  {
+    q: "I’m already listed. How do I take control of my page?",
+    a: "Submit the form below or use Add your business with your business email. We confirm identity and issue dashboard access — usually within 24 hours.",
+  },
+  {
+    q: "I run more than one business. Do I need separate accounts?",
+    a: "No. One login switches between locations. Manage a coffee shop, a taco stand, and a bike rental from the same dashboard.",
+  },
+  {
+    q: "What counts as an update?",
+    a: "Anything timely: seasonal hours, weather closures, happy hour, new menu items, retail arrivals, or flash events. Updates flow to your listing and the corridor feed.",
+  },
+  {
+    q: "Can people leave reviews or ratings on my page?",
+    a: "No. We don’t do star ratings or anonymous review wars. Visitors ask factual questions in community threads where you can respond with a verified-owner badge.",
+  },
+  {
+    q: "Where does the FAQ on my page come from?",
+    a: "You curate it in your dashboard. We suggest prompts vacationers ask often — parking, golf carts, pets, peak hours, and more.",
+  },
+  {
+    q: "My business isn’t a restaurant or a shop. Does this still fit?",
+    a: "Yes. Charter captains, wedding planners, home services, bike rentals, and photography studios are heavily searched categories on WhereTo30A.",
+  },
+];
+
+const spotlightImg =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuD4lHrNRE3VmgRm_gnplOGVWhskGBuWFTtLzmfzZtbARwfz5dAsGWEwd56UQXmV_mYG-Sm-qewnaWOjeYXUKNMz7tyTnVjicT28Of7Fmi0qHGrB5hCZPpL7XMx1ULxHHRtC94vhA-kSYWIkBpGQOZeeEC0xjmBKgp6JekaAdUcxumNAl9Xm2f4K5dRd2rsb0LaygD9DIEqsuZiX5UQtq8MWbr9w7G8kQ3wshfxudrNZDgPg-0l2EMK2";
+const pageImg =
+  "https://lh3.googleusercontent.com/aida-public/AB6AXuBYEaozozSnhSAu6u3SVsX_cmbFtsAY-_rBPTpb2WXECnONk9fujsr2MGs-_DkeS_mqPjPAgx-BxFzi56OMymEDWl14aivOPXz7XH2ismMSL_8UyY6BLwdpmKt7yyEdNlRNERJeDZPq55IAVPpLzljoGHck7yQYOs2Ns-cOx6zxtcyMrJ7QkmyKnYfVw_NZc3S8xMZyrhfJBzX2hcY5__M1auLR6X-PF2WIkaraC1iQJxL_KLFc6oAS";
+const townImgs = [
+  {
+    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuAGpk_Dka42sMiaNvmLdp19hXCH7e7Lt4o4p-C1UI3fOOpp0xPZ-acPaaoOraxNW7XxDwtAnS4EtCfWtcDErAvtCTITgBH46HUyqiVI6J-p0WW77ho3OSd4i1Hld4PwOdVneIWRDwvMtKKA67uR69Ij_9DHc2ntu6Q9I27WnjMUBpHNYbcs9WcRR1IZMFHqRvLqXUxC-j-aMdsmJMxxnnk1YKxSg-ccUOznMBMxy4LAg4aiU-Fl1Xj5",
+    title: "Rosemary Beach · East 30A",
+    lede: "High pedestrian traffic along Barrett Square and Main Street",
+  },
+  {
+    src: spotlightImg,
+    title: "Seaside Town Center · Central 30A",
+    lede: "Main Street storefronts where coastal customers already walk",
+  },
+];
+---
+
+<BaseLayout
+  title="For merchants"
+  description="List your 30A business for free, manage your page from a simple dashboard, and optionally sponsor placement when you want more reach."
+  active="merchants"
+>
+  <div class="mkt">
+    <section class="hero">
+      <div class="container hero__inner">
+        <p class="eyebrow hero__eyebrow">For business owners · Scenic Highway 30A</p>
+        <h1>
+          Connecting 30A’s best local businesses with
+          <em>high-intent travelers</em>
+        </h1>
+        <p class="hero__lede">
+          The visitors are already here. Be the business they find — with a free listing,
+          a real dashboard, and optional sponsorship that’s always clearly labeled.
+        </p>
+        <div class="hero__actions">
+          <AuthGateLink class="btn btn--teal" href={addBusinessHref} returnTo={addBusinessHref} client:load>
+            Add your business
+          </AuthGateLink>
+          <a class="btn btn--ghost" href="#tiers">Free vs sponsored</a>
+        </div>
+        <p class="hero__note">
+          Free listings are verified by a local before they go live. No star wars, no
+          pay-to-rank games.
+        </p>
+      </div>
+    </section>
+
+    <section class="stats" aria-label="WhereTo30A at a glance">
+      <div class="container stats__grid">
+        {
+          stats.map((item) => (
+            <div class="stat">
+              <p class="stat__value">{item.value}</p>
+              <p class="stat__label">{item.label}</p>
+            </div>
+          ))
+        }
+      </div>
+    </section>
+
+    <section class="section spotlight">
+      <div class="container">
+        <article class="spotlight__card">
+          <div class="spotlight__media">
+            <img src={spotlightImg} alt="Seaside Town Center storefronts" loading="lazy" />
+            <div class="spotlight__media-copy">
+              <span class="chip chip--dark">Merchant spotlight</span>
+              <p class="spotlight__place">Modica Market · Seaside</p>
+              <p class="spotlight__meta">Central 30A corridor icon since 1988</p>
+            </div>
+          </div>
+          <div class="spotlight__body">
+            <span class="chip chip--teal">Verified merchant story</span>
+            <blockquote>
+              “WhereTo30A connected us with seasonal families before they even unpacked.”
+            </blockquote>
+            <p>
+              When guests arrive Friday looking for groceries, dinner provisions, or specialty
+              wine, daily updates and current hours in the town feed drove hundreds of direct
+              inquiries in a single July.
+            </p>
+            <div class="tags">
+              <span>+42% map directions</span>
+              <span>Zero star-rating stress</span>
+              <span>Direct verified replies</span>
+            </div>
+            <div class="spotlight__foot">
+              <div>
+                <p class="spotlight__name">Carmel Modica</p>
+                <p class="spotlight__role">Proprietor · Seaside Town Center</p>
+              </div>
+              <AuthGateLink class="btn btn--deep" href={claimBusinessHref} returnTo={claimBusinessHref} client:load>
+                Claim your business
+              </AuthGateLink>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="section offer" id="whats-included">
+      <div class="container">
+        <header class="sec-head">
+          <p class="eyebrow">The offer</p>
+          <h2>More than a directory listing</h2>
+          <p>
+            A listing is the starting point. Around it sits tools to keep your business in front
+            of locals and visitors all season — operated directly by you.
+          </p>
+        </header>
+        <div class="feature-grid">
+          {
+            features.map((item) => (
+              <article class="feature">
+                <div class="feature__top">
+                  <span class="feature__n">{item.n}</span>
+                </div>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <p class="feature__note">{item.note}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section page-show">
+      <div class="container page-show__grid">
+        <div class="page-show__copy">
+          <p class="eyebrow">Your business page</p>
+          <h2>Everything a customer needs, in one place</h2>
+          <p>
+            Most people decide where to go from their phone — on the sidewalk or on the beach.
+            Your page answers them fast, and every part of it is yours to keep current.
+          </p>
+          <ul class="checks">
+            {
+              pageChecks.map((item) => (
+                <li>
+                  <span class="check" aria-hidden="true" />
+                  <span>
+                    <strong>{item.strong}</strong>
+                    {item.rest}
+                  </span>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+        <div class="page-card" aria-hidden="true">
+          <div class="page-card__media">
+            <img src={pageImg} alt="" loading="lazy" />
+            <div class="page-card__chips">
+              <span>{sampleTown?.name ?? "Rosemary Beach"}</span>
+              <span>Coffee &amp; bakery</span>
+            </div>
+            <span class="page-card__open">Open now</span>
+          </div>
+          <div class="page-card__body">
+            <div class="page-card__title-row">
+              <div>
+                <h3>{sample?.name ?? "Amavida Coffee Roasters"}</h3>
+                <p class="page-card__meta">104 N Barrett Sq · Open today until 6 pm</p>
+              </div>
+              <span class="chip chip--teal">Verified</span>
+            </div>
+            <p>
+              {sample?.summary ??
+                "Organic specialty coffees roasted in Santa Rosa Beach — housemade pastries and coastal lattes steps from the boardwalk."}
+            </p>
+            <div class="page-card__actions">
+              <span>Call</span>
+              <span>Directions</span>
+              <span>Website</span>
+              <span>Menu</span>
+            </div>
+            <div class="page-card__update">
+              <p class="page-card__update-label">Latest update · 2 hours ago</p>
+              <p>
+                “Fresh cinnamon morning buns just out of the oven, and cold brew is flowing.
+                Seasonal lavender syrup back all weekend.”
+              </p>
+            </div>
+            <p class="page-card__caption">Sample layout — your page carries your name, photos, and words.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dash">
+      <div class="container">
+        <header class="sec-head">
+          <p class="eyebrow">Your dashboard</p>
+          <h2>One login, every location, five minutes a week</h2>
+          <p>
+            Run more than one business on 30A? A single switcher moves between them. Same tools
+            for a food truck, boutique, salon, or service company.
+          </p>
+        </header>
+        <div class="dash-grid">
+          {
+            dashboard.map((item) => (
+              <article class="dash-card">
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+              </article>
+            ))
+          }
+        </div>
+        <div class="town-photos">
+          {
+            townImgs.map((item) => (
+              <figure class="town-photo">
+                <img src={item.src} alt={item.title} loading="lazy" />
+                <figcaption>
+                  <strong>{item.title}</strong>
+                  <span>{item.lede}</span>
+                </figcaption>
+              </figure>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section steps">
+      <div class="container">
+        <header class="sec-head sec-head--center">
+          <p class="eyebrow">Getting listed</p>
+          <h2>Three steps, and the first one is free</h2>
+          <p>
+            Getting set up takes a couple of minutes, with human verification to keep the
+            directory trustworthy.
+          </p>
+        </header>
+        <div class="steps-grid">
+          {
+            steps.map((item) => (
+              <article class="step">
+                <span class="step__n" aria-hidden="true">
+                  {item.n}
+                </span>
+                <h3>
+                  {item.n}. {item.title}
+                </h3>
+                <p>{item.body}</p>
+                <p class="step__meta">{item.meta}</p>
+              </article>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section tiers" id="tiers">
+      <div class="container">
+        <header class="sec-head sec-head--center">
+          <p class="eyebrow">Free vs sponsored</p>
+          <h2>The listing is free. Attention is the upgrade.</h2>
+          <p>
+            Every business gets the same complete listing and dashboard. Sponsorship buys
+            placement — not position in search — and it is always labeled.
+          </p>
+        </header>
+        <div class="tier-grid">
+          <article class="tier">
+            <div class="tier__head">
+              <span class="eyebrow">Business listing</span>
+              <span class="chip chip--teal">Forever free</span>
+            </div>
+            <p class="tier__price">
+              $0 <span>/ forever</span>
+            </p>
+            <p class="tier__lede">
+              For every legitimate 30A business. Everything you need to be found and manage your
+              presence.
+            </p>
+            <ul>
+              {freeFeatures.map((item) => <li>{item}</li>)}
+            </ul>
+            <AuthGateLink class="btn btn--teal tier__cta" href={addBusinessHref} returnTo={addBusinessHref} client:load>
+              Add your business
+            </AuthGateLink>
+          </article>
+          <article class="tier tier--sponsored">
+            <div class="tier__head">
+              <span class="eyebrow">Sponsored placement</span>
+              <span class="chip chip--light">Premium exposure</span>
+            </div>
+            <p class="tier__price tier__price--word">When you want more</p>
+            <p class="tier__lede">
+              For launches, peak season, and businesses that want the front of the line. Always
+              clearly and honestly labeled.
+            </p>
+            <ul>
+              {sponsoredFeatures.map((item) => <li>{item}</li>)}
+            </ul>
+            <a class="btn btn--mint tier__cta" href="#contact">Ask about sponsorship</a>
+          </article>
+        </div>
+        <p class="stays-note">
+          Run a vacation rental? Ask us about <a href={href("/stays")}>Stays</a> — our
+          direct-booking referral marketplace for 30A rental owners and managers.
+        </p>
+      </div>
+    </section>
+
+    <section class="section faq" id="faq">
+      <div class="container faq__inner">
+        <header class="sec-head">
+          <p class="eyebrow">Owner questions</p>
+          <h2>Before you ask</h2>
+          <p>Straightforward answers about listings, verified owners, and how things work.</p>
+        </header>
+        <div class="faq-list">
+          {
+            faqs.map((item) => (
+              <details class="faq-item">
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact" id="contact">
+      <div class="container contact__grid">
+        <div>
+          <p class="eyebrow">Get in touch</p>
+          <h2>List your business or ask about sponsorship</h2>
+          <p>
+            Prototype form — nothing is sent yet. Prefer the short path?
+            <AuthGateLink href={addBusinessHref} returnTo={addBusinessHref} client:load>
+              Add your business
+            </AuthGateLink> instead.
+          </p>
+        </div>
+        <form class="form" onsubmit="return false;">
+          <label>
+            <span>Business name *</span>
+            <input type="text" name="business" placeholder="e.g. Coastal Soles Boutique" required />
+          </label>
+          <div class="form__row">
+            <label>
+              <span>30A town</span>
+              <select name="town">
+                {towns.map((t) => <option value={t.slug}>{t.name}</option>)}
+              </select>
+            </label>
+            <label>
+              <span>Interest</span>
+              <select name="interest">
+                <option value="list">Free listing</option>
+                <option value="sponsor">Sponsorship</option>
+                <option value="stays">Stays / rentals</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            <span>Email *</span>
+            <input type="email" name="email" placeholder="owner@yourdomain.com" required />
+          </label>
+          <label>
+            <span>What should we know?</span>
+            <textarea name="notes" rows="3" placeholder="Website, Instagram, or what you’re promoting…"
+            ></textarea>
+          </label>
+          <button class="btn btn--teal" type="submit">Request info</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="section cta">
+      <div class="container">
+        <div class="cta__banner">
+          <div>
+            <p class="eyebrow cta__eyebrow">Scenic Highway 30A</p>
+            <h2>Own a business along 30A?</h2>
+            <p>
+              Claim your verified listing, update hours in real time, and connect with visitors
+              planning their stay.
+            </p>
+          </div>
+          <AuthGateLink class="btn btn--teal" href={claimBusinessHref} returnTo={claimBusinessHref} client:load>
+            Claim your listing
+          </AuthGateLink>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .mkt {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+
+  .hero {
+    background: var(--brand-deep);
+    color: white;
+    padding: var(--size-9) 0 var(--size-8);
+  }
+  .hero__inner {
+    max-width: 44rem;
+  }
+  .hero__eyebrow {
+    color: #85f6e5;
+    margin-bottom: var(--size-3);
+  }
+  .hero h1 {
+    margin: 0 0 var(--size-4);
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: var(--font-weight-8);
+    line-height: 1.12;
+    letter-spacing: -0.03em;
+    color: white;
+  }
+  .hero h1 em {
+    font-style: italic;
+    font-weight: var(--font-weight-7);
+    color: #85f6e5;
+  }
+  .hero__lede {
+    margin: 0 0 var(--size-5);
+    max-width: 36rem;
+    font-size: var(--font-size-2);
+    line-height: 1.55;
+    color: #cbd5e1;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-bottom: var(--size-4);
+  }
+  .hero__note {
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: #94a3b8;
+  }
+  .hero .btn--ghost {
+    border-color: rgba(255, 255, 255, 0.35);
+    color: white;
+  }
+  .hero .btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+    text-decoration: none;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.65rem 1.25rem;
+    border-radius: var(--radius-2);
+    font-family: var(--font-display);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn:hover {
+    text-decoration: none;
+  }
+  .btn--teal {
+    background: var(--brand-teal);
+    color: white;
+  }
+  .btn--teal:hover {
+    background: #007a6e;
+  }
+  .btn--deep {
+    background: var(--brand-deep);
+    color: white;
+  }
+  .btn--deep:hover {
+    background: #071820;
+  }
+  .btn--ghost {
+    background: transparent;
+    border-color: var(--brand-line);
+    color: var(--brand-deep);
+  }
+  .btn--mint {
+    background: #85f6e5;
+    color: var(--brand-deep);
+  }
+  .btn--mint:hover {
+    background: #67d9c9;
+  }
+
+  .stats {
+    background: white;
+    border-bottom: 1px solid var(--brand-line);
+    padding: var(--size-6) 0;
+  }
+  .stats__grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--size-3);
+  }
+  .stat {
+    padding: var(--size-4);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+  }
+  .stat__value {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3vw, 2.35rem);
+    font-weight: var(--font-weight-8);
+    color: var(--brand-deep);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .stat__label {
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    line-height: 1.4;
+  }
+
+  .sec-head {
+    max-width: 38rem;
+    margin-bottom: var(--size-7);
+  }
+  .sec-head--center {
+    margin-inline: auto;
+    text-align: center;
+  }
+  .sec-head h2,
+  .page-show__copy h2,
+  .contact h2,
+  .cta h2 {
+    margin: 0 0 var(--size-3);
+    font-size: clamp(1.65rem, 3vw, 2.35rem);
+    font-weight: var(--font-weight-8);
+    color: var(--brand-deep);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .sec-head p,
+  .page-show__copy > p,
+  .contact > div > p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-2);
+    line-height: 1.55;
+  }
+  .eyebrow {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+    margin: 0 0 var(--size-2);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.7rem;
+    border-radius: var(--radius-pill);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .chip--teal {
+    background: var(--brand-teal-soft);
+    color: #00695c;
+    border: 1px solid #b2dfdb;
+  }
+  .chip--dark {
+    background: rgba(12, 35, 46, 0.85);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .chip--light {
+    background: rgba(255, 255, 255, 0.12);
+    color: #85f6e5;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .spotlight__card {
+    display: grid;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    overflow: hidden;
+    box-shadow: var(--shadow-card);
+  }
+  .spotlight__media {
+    position: relative;
+    min-height: 16rem;
+    background: var(--brand-deep);
+  }
+  .spotlight__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    min-height: 16rem;
+  }
+  .spotlight__media-copy {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.25rem;
+    background: linear-gradient(to top, rgba(12, 35, 46, 0.9), transparent);
+    color: white;
+  }
+  .spotlight__media-copy .chip {
+    margin-bottom: 0.65rem;
+  }
+  .spotlight__place {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-3);
+    font-weight: var(--font-weight-7);
+  }
+  .spotlight__meta {
+    margin: 0.2rem 0 0;
+    font-size: var(--font-size-0);
+    color: #cbd5e1;
+  }
+  .spotlight__body {
+    padding: var(--size-6);
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-3);
+  }
+  .spotlight__body blockquote {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.25rem, 2.5vw, 1.65rem);
+    font-weight: var(--font-weight-7);
+    font-style: italic;
+    color: var(--brand-deep);
+    line-height: 1.3;
+  }
+  .spotlight__body > p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    line-height: 1.55;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .tags span {
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep);
+  }
+  .spotlight__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-3);
+    padding-top: var(--size-4);
+    margin-top: auto;
+    border-top: 1px solid var(--brand-line);
+  }
+  .spotlight__name {
+    margin: 0;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .spotlight__role {
+    margin: 0.15rem 0 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+
+  .offer {
+    background: white;
+    border-block: 1px solid var(--brand-line);
+  }
+  .feature-grid {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .feature {
+    display: flex;
+    flex-direction: column;
+    padding: var(--size-5);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+  }
+  .feature__n {
+    font-family: var(--font-display);
+    font-size: 1.75rem;
+    font-weight: var(--font-weight-7);
+    font-style: italic;
+    color: var(--brand-teal);
+  }
+  .feature h3 {
+    margin: var(--size-3) 0 var(--size-2);
+    font-size: var(--font-size-3);
+    color: var(--brand-deep);
+  }
+  .feature p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    line-height: 1.55;
+  }
+  .feature__note {
+    margin-top: auto !important;
+    padding-top: var(--size-4);
+    border-top: 1px solid var(--brand-line);
+    font-size: var(--font-size-0) !important;
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep) !important;
+  }
+
+  .page-show__grid {
+    display: grid;
+    gap: var(--size-7);
+    align-items: center;
+  }
+  .checks {
+    list-style: none;
+    margin: var(--size-5) 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+  .checks li {
+    display: flex;
+    gap: 0.75rem;
+    align-items: flex-start;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink);
+    line-height: 1.45;
+  }
+  .check {
+    width: 1.25rem;
+    height: 1.25rem;
+    margin-top: 0.1rem;
+    border-radius: 50%;
+    background: var(--brand-teal-soft);
+    border: 1px solid #b2dfdb;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .check::after {
+    content: "";
+    position: absolute;
+    left: 0.32rem;
+    top: 0.22rem;
+    width: 0.35rem;
+    height: 0.55rem;
+    border: solid var(--brand-teal);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .page-card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+    overflow: hidden;
+    box-shadow: var(--shadow-card-hover);
+    max-width: 28rem;
+    margin-inline: auto;
+  }
+  .page-card__media {
+    position: relative;
+    height: 12rem;
+    background: var(--brand-deep);
+  }
+  .page-card__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .page-card__chips {
+    position: absolute;
+    top: 0.85rem;
+    left: 0.85rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .page-card__chips span {
+    padding: 0.25rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.8);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .page-card__open {
+    position: absolute;
+    right: 0.85rem;
+    bottom: 0.85rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-teal);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .page-card__body {
+    padding: var(--size-5);
+    display: grid;
+    gap: var(--size-3);
+  }
+  .page-card__title-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: flex-start;
+  }
+  .page-card h3 {
+    margin: 0;
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
+  }
+  .page-card__meta,
+  .page-card__body > p,
+  .page-card__caption {
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    line-height: 1.45;
+  }
+  .page-card__body > p:not(.page-card__meta):not(.page-card__caption) {
+    font-size: var(--font-size-1);
+  }
+  .page-card__actions {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  .page-card__actions span {
+    display: grid;
+    place-items: center;
+    min-height: 2.5rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep);
+  }
+  .page-card__update {
+    padding: var(--size-3);
+    border-radius: var(--radius-2);
+    background: var(--brand-teal-soft);
+    border: 1px solid #b2dfdb;
+  }
+  .page-card__update-label {
+    margin: 0 0 0.35rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #00695c;
+  }
+  .page-card__update p:last-child {
+    margin: 0;
+    font-size: var(--font-size-0);
+    font-style: italic;
+    color: var(--brand-deep);
+    line-height: 1.45;
+  }
+
+  .dash {
+    background: white;
+    border-block: 1px solid var(--brand-line);
+  }
+  .dash-grid {
+    display: grid;
+    gap: var(--size-3);
+    margin-bottom: var(--size-6);
+  }
+  .dash-card {
+    padding: var(--size-5);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+  }
+  .dash-card h3 {
+    margin: 0 0 0.5rem;
+    font-size: var(--font-size-2);
+    color: var(--brand-deep);
+  }
+  .dash-card p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    line-height: 1.5;
+  }
+  .town-photos {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .town-photo {
+    position: relative;
+    margin: 0;
+    border-radius: var(--radius-3);
+    overflow: hidden;
+    height: 14rem;
+    border: 1px solid var(--brand-line);
+  }
+  .town-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .town-photo figcaption {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 1.1rem 1.25rem;
+    background: linear-gradient(to top, rgba(12, 35, 46, 0.9), transparent);
+    color: white;
+    display: grid;
+    gap: 0.15rem;
+  }
+  .town-photo strong {
+    font-family: var(--font-display);
+    font-size: var(--font-size-2);
+  }
+  .town-photo span {
+    font-size: var(--font-size-0);
+    color: #cbd5e1;
+  }
+
+  .steps-grid {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .step {
+    position: relative;
+    padding: var(--size-5);
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    overflow: hidden;
+  }
+  .step__n {
+    position: absolute;
+    top: 0.75rem;
+    right: 1rem;
+    font-family: var(--font-display);
+    font-size: 3rem;
+    font-weight: var(--font-weight-7);
+    font-style: italic;
+    color: #e2e8f0;
+    line-height: 1;
+  }
+  .step h3 {
+    margin: 0 0 0.65rem;
+    font-size: var(--font-size-3);
+    color: var(--brand-deep);
+  }
+  .step p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    line-height: 1.5;
+  }
+  .step__meta {
+    margin-top: var(--size-4) !important;
+    padding-top: var(--size-3);
+    border-top: 1px solid var(--brand-line);
+    font-size: var(--font-size-0) !important;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-teal) !important;
+  }
+
+  .tiers {
+    background: white;
+    border-block: 1px solid var(--brand-line);
+  }
+  .tier-grid {
+    display: grid;
+    gap: var(--size-4);
+    max-width: 56rem;
+    margin-inline: auto;
+  }
+  .tier {
+    display: flex;
+    flex-direction: column;
+    padding: var(--size-6);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-4);
+  }
+  .tier--sponsored {
+    background: var(--brand-deep);
+    color: white;
+    border-color: transparent;
+  }
+  .tier--sponsored .eyebrow {
+    color: #85f6e5;
+  }
+  .tier__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: var(--size-3);
+  }
+  .tier__head .eyebrow {
+    margin: 0;
+  }
+  .tier__price {
+    margin: 0 0 var(--size-2);
+    font-family: var(--font-display);
+    font-size: clamp(2.5rem, 5vw, 3.25rem);
+    font-weight: var(--font-weight-8);
+    color: var(--brand-deep);
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .tier__price span {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-5);
+    color: var(--brand-ink-soft);
+  }
+  .tier__price--word {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    color: white;
+    line-height: 1.2;
+  }
+  .tier__lede {
+    margin: 0 0 var(--size-5);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    line-height: 1.5;
+  }
+  .tier ul {
+    list-style: none;
+    margin: 0 0 var(--size-5);
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+    flex: 1;
+  }
+  .tier li {
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: var(--font-size-1);
+    line-height: 1.45;
+    color: var(--brand-ink);
+  }
+  .tier li::before {
+    content: "";
+    position: absolute;
+    left: 0.15rem;
+    top: 0.35rem;
+    width: 0.4rem;
+    height: 0.65rem;
+    border: solid var(--brand-teal);
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .tier--sponsored .tier__lede,
+  .tier--sponsored li {
+    color: #e2e8f0;
+  }
+  .tier--sponsored li::before {
+    border-color: #85f6e5;
+  }
+  .tier__cta {
+    width: 100%;
+  }
+  .stays-note {
+    margin: var(--size-6) auto 0;
+    max-width: 40rem;
+    text-align: center;
+    padding: var(--size-4);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+
+  .faq__inner {
+    max-width: 44rem;
+  }
+  .faq-list {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .faq-item {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: 0;
+  }
+  .faq-item summary {
+    cursor: pointer;
+    list-style: none;
+    padding: var(--size-4) var(--size-5);
+    font-family: var(--font-display);
+    font-size: var(--font-size-3);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .faq-item summary::-webkit-details-marker {
+    display: none;
+  }
+  .faq-item p {
+    margin: 0;
+    padding: 0 var(--size-5) var(--size-4);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    line-height: 1.55;
+  }
+
+  .contact {
+    background: white;
+    border-top: 1px solid var(--brand-line);
+  }
+  .contact__grid {
+    display: grid;
+    gap: var(--size-6);
+    align-items: start;
+  }
+  .form {
+    display: grid;
+    gap: var(--size-3);
+    padding: var(--size-5);
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+  }
+  .form__row {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .form label {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .form label span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-deep);
+  }
+  .form input,
+  .form select,
+  .form textarea {
+    min-height: 2.75rem;
+    padding: 0.65rem 0.85rem;
+    border: 1px solid #cbd5e1;
+    border-radius: var(--radius-2);
+    background: white;
+    color: var(--brand-ink);
+  }
+  .form textarea {
+    min-height: 5rem;
+    resize: vertical;
+  }
+  .form input:focus,
+  .form select:focus,
+  .form textarea:focus {
+    outline: 2px solid rgba(0, 137, 123, 0.35);
+    border-color: var(--brand-teal);
+  }
+
+  .cta {
+    padding-top: 0;
+  }
+  .cta__banner {
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-5);
+    padding: var(--size-7);
+    background: var(--brand-deep);
+    color: white;
+    border-radius: var(--radius-4);
+  }
+  .cta__eyebrow {
+    color: #85f6e5;
+  }
+  .cta h2 {
+    color: white;
+  }
+  .cta__banner p:not(.eyebrow) {
+    margin: 0;
+    color: #cbd5e1;
+    max-width: 32rem;
+    line-height: 1.5;
+  }
+
+  @media (min-width: 720px) {
+    .stats__grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+    .feature-grid,
+    .dash-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+    .steps-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .town-photos,
+    .form__row {
+      grid-template-columns: 1fr 1fr;
+    }
+    .tier-grid,
+    .contact__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .cta__banner {
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+    }
+  }
+
+  @media (min-width: 960px) {
+    .spotlight__card {
+      grid-template-columns: 5fr 7fr;
+    }
+    .spotlight__media,
+    .spotlight__media img {
+      min-height: 100%;
+    }
+    .feature-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .page-show__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .dash-grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+</style>

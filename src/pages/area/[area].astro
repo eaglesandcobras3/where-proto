@@ -1,8 +1,8 @@
 ---
-import PlaceLayout from "../../layouts/PlaceLayout.astro";
-import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import BusinessCard from "../../components/BusinessCard.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import TownCommunitySections from "../../components/TownCommunitySections.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
+import BusinessCard from "../../components/BusinessCard.astro";
 import AreaCard from "../../components/AreaCard.astro";
 import {
   areaKindLabel,
@@ -11,9 +11,11 @@ import {
   businessesForArea,
   photosFor,
   townBySlug,
+  towns,
 } from "../../data/catalog";
 import type { Area } from "../../data/types";
 import { href } from "../../lib/href";
+import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -26,73 +28,556 @@ interface Props {
 
 const { item: area } = Astro.props;
 const town = townBySlug(area.townSlug);
+if (!town) {
+  throw new Error(`Area ${area.slug} is missing town ${area.townSlug}`);
+}
+const view = townView(town);
 const areaPhotos = photosFor("area", area.slug);
+const townPhotos = photosFor("town", town.slug);
+const photos = areaPhotos.length > 0 ? areaPhotos : townPhotos;
 const inArea = businessesForArea(area.slug);
 const siblings = areasForTown(area.townSlug).filter((item) => item.slug !== area.slug);
+const townIndex = towns.findIndex((item) => item.slug === town.slug);
+const kindLabel = areaKindLabel(area.kind);
 ---
 
-<PlaceLayout
-  title={area.name}
+<BaseLayout
+  title={`${area.name} in ${town.name}`}
   description={area.summary}
-  active="areas"
-  showBrowse
-  browseTown={town?.name}
-  crumbs={[
-    { label: "Areas", path: "/areas" },
-    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
-    { label: area.name },
-  ]}
+  active="towns"
 >
-  <TwoPaneMap mapLabel={`${area.name} map`} pinCount={Math.max(6, inArea.length * 2)}>
-    <p class="eyebrow">{areaKindLabel(area.kind)}</p>
-    <h1>{area.name}</h1>
-    <p class="lede">{area.summary}</p>
-    {
-      town && (
-        <p>
-          Inside <a href={href(`/town/${town.slug}`)}>{town.name}</a>. Indexable category pages stay on
-          the town.
-        </p>
-      )
-    }
+  <div class="area-page">
+    <section class="hero">
+      <div class="container hero__inner">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={href("/")}>Home</a>
+          <span>/</span>
+          <a href={href("/towns")}>Towns</a>
+          <span>/</span>
+          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+          <span>/</span>
+          <span class="current">{area.name}</span>
+        </nav>
 
-    <h2 class="section-title">Photos</h2>
-    <PhotoGrid photos={areaPhotos} />
-
-    <h2 class="section-title">In this area</h2>
-    {
-      inArea.length === 0 ? (
-        <p class="empty">No listings sit in this area yet.</p>
-      ) : (
-        <div class="listing-grid">
-          {inArea.map((business) => (
-            <BusinessCard business={business} />
-          ))}
+        <div class="hero__title">
+          <div>
+            <div class="eyebrow-row">
+              <span class="live-pill">{kindLabel}</span>
+              <span class="tagline">Inside {town.name} · {view.tagline}</span>
+            </div>
+            <h1>{area.name}</h1>
+            <p class="lede">{area.summary}</p>
+            <p class="extends">
+              Extends <a href={href(`/town/${town.slug}`)}>{town.name}</a>. Local posts and events for this
+              {kindLabel.toLowerCase()} come from its area desk listing — same pattern as businesses and stays.
+            </p>
+          </div>
+          <div class="hero__actions">
+            <a class="ghost" href={href(`/town/${town.slug}`)}>View full town</a>
+            <a class="map-btn" href={href(`/town/${town.slug}#map`)}>Town map</a>
+          </div>
         </div>
-      )
-    }
 
-    {
-      siblings.length > 0 && (
-        <section>
-          <h2 class="section-title">Other areas in {town?.name ?? "this town"}</h2>
-          <div class="listing-grid">
-            {siblings.map((item) => (
-              <AreaCard area={item} />
-            ))}
+        <div class="snapshot">
+          <div>
+            <span class="label">Parent town</span>
+            <strong>{town.name}</strong>
+          </div>
+          <div>
+            <span class="label">Walkability</span>
+            <strong>{town.walkability}</strong>
+          </div>
+          <div>
+            <span class="label">Beach access</span>
+            <strong>{town.beachAccess}</strong>
+          </div>
+          <div>
+            <span class="label">Area type</span>
+            <strong>{kindLabel}</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <nav class="corridor" aria-label="30A corridor">
+      <div class="container corridor__inner">
+        <span class="corridor__label">Corridor · {town.name}</span>
+        <div class="corridor__track">
+          {
+            towns.map((item, index) => {
+              const here = item.slug === town.slug;
+              const delta = index - townIndex;
+              return (
+                <a
+                  class:list={[{ current: here }]}
+                  href={href(`/town/${item.slug}`)}
+                  aria-current={here ? "true" : undefined}
+                >
+                  {item.name}
+                  {here ? (
+                    <span class="here">Parent town</span>
+                  ) : (
+                    <span class="delta">{delta < 0 ? `${Math.abs(delta)} west` : `${delta} east`}</span>
+                  )}
+                </a>
+              );
+            })
+          }
+        </div>
+      </div>
+    </nav>
+
+    <div class="container layout">
+      <div class="main">
+        <section class="panel">
+          <div class="panel__head">
+            <div>
+              <p class="eyebrow">From {town.name}</p>
+              <h2>{town.name} at a glance</h2>
+            </div>
+            <a href={href(`/town/${town.slug}`)}>Town page</a>
+          </div>
+          <div class="glance">
+            {
+              view.glance.map((fact) => (
+                <div>
+                  <p class="label">{fact.label}</p>
+                  <p class="value">{fact.value}</p>
+                  <p class="detail">{fact.detail}</p>
+                </div>
+              ))
+            }
           </div>
         </section>
-      )
-    }
-  </TwoPaneMap>
-</PlaceLayout>
+
+        <section class="panel">
+          <div class="panel__head">
+            <h2>In {area.name}</h2>
+            <span class="count">{inArea.length} listings</span>
+          </div>
+          {
+            inArea.length === 0 ? (
+              <p class="empty">No listings sit in this area yet. Browse the wider {town.name} directory.</p>
+            ) : (
+              <div class="listing-grid">
+                {inArea.map((business) => (
+                  <BusinessCard business={business} />
+                ))}
+              </div>
+            )
+          }
+          <p class="more">
+            <a href={href(`/search?town=${town.slug}`)}>Browse all {town.name} businesses</a>
+          </p>
+        </section>
+
+        {
+          siblings.length > 0 && (
+            <section class="panel">
+              <div class="panel__head">
+                <h2>Other areas in {town.name}</h2>
+                <a href={href(`/town/${town.slug}`)}>All areas</a>
+              </div>
+              <div class="listing-grid">
+                {siblings.map((item) => (
+                  <AreaCard area={item} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <TownCommunitySections town={town} areaName={area.name} />
+
+        <section class="panel">
+          <h2>Photos</h2>
+          <PhotoGrid
+            photos={photos}
+            empty={
+              areaPhotos.length === 0
+                ? `Showing ${town.name} photos until ${area.name} has its own set.`
+                : `No ${area.name} photos yet.`
+            }
+          />
+        </section>
+      </div>
+
+      <aside class="rail">
+
+        <section class="widget">
+          <p class="widget__label">Parent town</p>
+          <p class="town-card__name">{town.name}</p>
+          <p class="town-card__copy">{town.summary}</p>
+          <a class="town-card__btn" href={href(`/town/${town.slug}`)}>Open {town.name}</a>
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">Explore {town.name}</p>
+          <ul class="links">
+            <li><a href={href(`/search?town=${town.slug}`)}>Businesses</a></li>
+            <li><a href={href(`/stays?town=${town.slug}`)}>Stays</a></li>
+            <li><a href={href(`/events?town=${town.slug}`)}>Events</a></li>
+            <li><a href={href(`/town/${town.slug}#updates`)}>Town bulletins</a></li>
+            <li><a href={href("/ask")}>Ask locals</a></li>
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
 
 <style>
+  .area-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .hero {
+    background: var(--brand-deep);
+    color: white;
+    padding: var(--size-6) 0 var(--size-7);
+  }
+  .hero__inner {
+    display: grid;
+    gap: var(--size-5);
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: var(--font-size-0);
+    color: #94a3b8;
+  }
+  .crumbs a {
+    color: #94a3b8;
+  }
+  .crumbs a:hover {
+    color: #85f6e5;
+  }
+  .crumbs .current {
+    color: #85f6e5;
+    font-weight: var(--font-weight-7);
+  }
+  .hero__title {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-4);
+    align-items: flex-end;
+  }
+  .eyebrow-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .live-pill {
+    display: inline-flex;
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 137, 123, 0.22);
+    color: #85f6e5;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .tagline {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: #cbd5e1;
+  }
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2rem, 5vw, 2.75rem);
+    color: white;
+  }
   .lede {
+    margin: 0 0 0.75rem;
+    max-width: 40rem;
+    color: #cbd5e1;
+    font-size: var(--font-size-2);
+    line-height: 1.55;
+  }
+  .extends {
+    margin: 0;
+    max-width: 40rem;
+    font-size: var(--font-size-1);
+    color: #94a3b8;
+  }
+  .extends a {
+    color: #85f6e5;
+    font-weight: var(--font-weight-7);
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .ghost,
+  .map-btn {
+    display: inline-flex;
+    align-items: center;
+    border-radius: var(--radius-2);
+    padding: 0.5rem 0.85rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: white;
+    text-decoration: none;
+  }
+  .ghost {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .map-btn {
+    background: var(--brand-teal);
+  }
+  .map-btn:hover {
+    background: #00796b;
+  }
+  .snapshot {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--size-3);
+    padding-top: var(--size-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .snapshot .label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+  .snapshot strong {
+    font-size: var(--font-size-1);
+    color: white;
+  }
+  .corridor {
+    background: #eef2f6;
+    border-bottom: 1px solid var(--brand-line);
+    overflow-x: auto;
+  }
+  .corridor__inner {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding-block: 0.65rem;
+  }
+  .corridor__label {
+    flex-shrink: 0;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--brand-ink-soft);
-    max-width: 64ch;
+  }
+  .corridor__track {
+    display: flex;
+    gap: 0.45rem;
+    min-width: max-content;
+  }
+  .corridor__track a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    border: 1px solid var(--brand-line);
+    color: var(--brand-ink);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    white-space: nowrap;
+  }
+  .corridor__track a:hover,
+  .corridor__track a.current {
+    text-decoration: none;
+  }
+  .corridor__track a.current {
+    background: var(--brand-deep);
+    border-color: var(--brand-deep);
+    color: white;
+  }
+  .here,
+  .delta {
+    font-size: 0.5625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    opacity: 0.85;
+  }
+  .here {
+    background: var(--brand-teal);
+    color: white;
+    border-radius: 0.25rem;
+    padding: 0.1rem 0.35rem;
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: var(--size-4);
+    min-width: 0;
+  }
+  .panel,
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  .panel__head h2,
+  .panel > h2 {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
+  }
+  .panel__head h2 {
+    margin-bottom: 0;
+  }
+  .panel__head a,
+  .more a {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+  }
+  .eyebrow {
+    margin: 0 0 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .count {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .glance {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .glance > div {
+    padding: 0.85rem;
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .glance .label {
+    margin: 0 0 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .glance .value {
+    margin: 0 0 0.25rem;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .glance .detail {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .more {
+    margin: var(--size-3) 0 0;
   }
   .empty {
+    margin: 0;
     color: var(--brand-ink-soft);
+  }
+  .rail {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .town-card__name {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .town-card__copy {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .town-card__btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-deep);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .town-card__btn:hover {
+    background: var(--brand-teal);
+    text-decoration: none;
+  }
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .links a {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep);
+  }
+  .links a:hover {
+    color: var(--brand-teal);
+  }
+  @media (min-width: 800px) {
+    .snapshot {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .glance {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 17rem;
+    }
+    .rail {
+      position: sticky;
+      top: calc(var(--header-h) + 1rem);
+    }
+    .glance {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
   }
 </style>

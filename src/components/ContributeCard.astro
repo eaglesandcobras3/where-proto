@@ -1,0 +1,88 @@
+---
+import { href } from "../lib/href";
+
+export type ContributeKind = "business" | "stay" | "event" | "guide" | "ask";
+
+interface Props {
+  kind: ContributeKind;
+}
+
+const copy: Record<
+  ContributeKind,
+  { title: string; body: string; actionLabel: string; actionHref: string }
+> = {
+  business: {
+    title: "Are you a 30A business?",
+    body: "Claim or list your local outpost to connect with vacationers and year-round residents.",
+    actionLabel: "List Your Business →",
+    actionHref: "/add-business",
+  },
+  stay: {
+    title: "Own a 30A rental?",
+    body: "List a boutique inn, cottage, or vacation home with clear town fit and guest notes.",
+    actionLabel: "List Your Stay →",
+    actionHref: "/add-business",
+  },
+  event: {
+    title: "Hosting on 30A?",
+    body: "List concerts, markets, and community series where locals already look.",
+    actionLabel: "Submit Your Event →",
+    actionHref: "/dashboard",
+  },
+  guide: {
+    title: "Write for 30A?",
+    body: "Share itineraries, town tips, and corridor know-how with the Field Journal.",
+    actionLabel: "Contribute a Guide →",
+    actionHref: "/dashboard",
+  },
+  ask: {
+    title: "Have a 30A question?",
+    body: "Ask residents about golf carts, walkovers, parking, dining, and trip logistics.",
+    actionLabel: "Ask the Locals →",
+    actionHref: "/ask",
+  },
+};
+
+const { kind } = Astro.props;
+const item = copy[kind];
+---
+
+<section class="contribute">
+  <p class="contribute__title">{item.title}</p>
+  <p class="contribute__body">{item.body}</p>
+  <a class="contribute__action" href={href(item.actionHref)}>{item.actionLabel}</a>
+</section>
+
+<style>
+  .contribute {
+    background: var(--brand-deep);
+    border: 1px solid var(--brand-deep);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+    color: white;
+  }
+  .contribute__title {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-7);
+    color: white;
+  }
+  .contribute__body {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: #cbd5e1;
+    line-height: 1.5;
+  }
+  .contribute__action {
+    display: inline-flex;
+    align-items: center;
+    color: #85f6e5;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .contribute__action:hover {
+    color: white;
+  }
+</style>

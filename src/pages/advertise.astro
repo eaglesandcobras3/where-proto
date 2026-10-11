@@ -1,33 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PageHeader from "../components/PageHeader.astro";
+import { href } from "../lib/href";
+
+return Astro.redirect(href("/merchants"), 301);
 ---
-
-<BaseLayout title="Advertise on WhereTo30A" description="Paid placement on WhereTo30A is still being defined.">
-  <div class="container section form-page">
-    <PageHeader
-      title="Advertise"
-      lede="Placeholder for paid placement. No products or pricing yet. This form does not send anything."
-    />
-    <form class="form" onsubmit="return false;">
-      <wa-input label="Business name" required></wa-input>
-      <wa-input label="Email" type="email" required></wa-input>
-      <wa-textarea label="What do you want to promote?" rows="3"></wa-textarea>
-      <wa-button variant="brand">Request info</wa-button>
-    </form>
-  </div>
-</BaseLayout>
-
-<style>
-  .form-page {
-    max-width: 640px;
-  }
-  .form {
-    display: grid;
-    gap: var(--size-4);
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-5);
-  }
-</style>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-dim": "#cbdbf5", "on-tertiary-fixed-variant": "#653e00", "on-secondary-container": "#007166", "on-secondary": "#ffffff", "on-primary-fixed": "#061e29", "primary-container": "#0c232e", "primary-fixed-dim": "#b3cad8", "on-primary-container": "#758b99", "canvas-bg": "#f8f9fa", "tertiary": "#110700", "on-tertiary-fixed": "#2a1700", "tertiary-fixed-dim": "#ffb95f", "on-error": "#ffffff", "on-surface-variant": "#42474b", "secondary-fixed": "#85f6e5", "on-error-container": "#93000a", "teal-interactive": "#00897b", "outline": "#73787b", "error-container": "#ffdad6", "primary": "#000b12", "surface": "#f8f9ff", "on-tertiary-container": "#be7900", "tertiary-container": "#311c00", "outline-variant": "#c3c7cb", "error": "#ba1a1a", "amber-warning": "#f59e0b", "surface-container-high": "#dce9ff", "inverse-on-surface": "#eaf1ff", "surface-tint": "#4c616e", "teal-surface": "#e0f2f1", "on-primary-fixed-variant": "#344a56", "on-surface": "#0b1c30", "secondary": "#006a60", "secondary-fixed-dim": "#67d9c9", "surface-container": "#e5eeff", "on-primary": "#ffffff", "secondary-container": "#85f6e5", "surface-container-highest": "#d3e4fe", "on-secondary-fixed": "#00201c", "inverse-surface": "#213145", "amber-surface": "#fef3c7", "tertiary-fixed": "#ffddb8", "on-secondary-fixed-variant": "#005048", "text-primary": "#0f172a", "surface-container-low": "#eff4ff", "primary-fixed": "#cfe6f5", "teal-accent": "#009688", "background": "#f8f9ff", "inverse-primary": "#b3cad8", "card-bg": "#ffffff", "on-background": "#0b1c30", "card-border": "#e2e8f0", "surface-container-lowest": "#ffffff", "surface-bright": "#f8f9ff", "surface-variant": "#d3e4fe", "text-muted": "#64748b", "on-tertiary": "#ffffff", "ocean-navy": "#0c232e" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "space-sm": "0.5rem", "margin-md": "1.5rem", "margin": "1rem", "margin-lg": "2rem", "space-xs": "0.25rem", "space-md": "1rem", "gutter-sm": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "gutter-lg": "2rem" }, "fontFamily": { "headline-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-base": ["Inter"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Inter"], "label-xs": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-lead": ["Inter"], "label-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, "fontSize": { "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "display-hero-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}], "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "800"}], "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}], "body-base": ["14px", {"lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700"}], "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}], "label-xs": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}], "headline-sm": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-lead": ["16px", {"lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400"}], "label-lg": ["14px", {"lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600"}], "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700"}] } } } };</script></head><body class="bg-background font-body-base text-body-base text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-card-bg z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-lg flex items-center gap-space-sm bg-card-bg"><span class="font-headline-sm text-headline-sm text-ocean-navy font-bold tracking-tight">WhereTo30A</span><span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-teal-surface text-secondary font-bold tracking-wider uppercase">Merchant Outpost</span></div><div class="px-space-md py-space-sm"><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="overview" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">dashboard</span><span>Overview</span></div></a><a aria-current="page" class="flex items-center justify-between px-3 py-2.5 transition-all group bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm" data-path="business-profile" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">storefront</span><span>Business profile</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="posts-and-events" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">campaign</span><span>Posts &amp; events</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="faqs-and-knowledge" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">quiz</span><span>FAQs &amp; knowledge</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="community-feed" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">forum</span><span>Community feed</span></div><span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-teal-surface text-secondary font-bold">3</span></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="guide-mentions" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">menu_book</span><span>Guide mentions</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="advertise-and-grow" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">trending_up</span><span>Advertise &amp; grow</span></div><span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-amber-surface text-on-tertiary-container font-bold">Growth</span></a></nav></div></div><div class="p-space-md"><div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-sm"><div class="flex items-center gap-2 text-ocean-navy"><span class="material-symbols-outlined text-[18px] text-teal-interactive">support_agent</span><span class="font-label-md text-label-md font-bold text-ocean-navy">Need a hand?</span></div><p class="font-body-sm text-body-sm text-text-muted leading-relaxed">See what visitors see, then fill any gaps before promoting your outpost.</p><button class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-card-bg hover:bg-surface text-ocean-navy font-label-md text-label-md font-semibold transition-all shadow-[0_1px_3px_rgba(12,35,46,0.04)]" type="button"><span class="material-symbols-outlined text-[16px]">visibility</span><span>Preview profile</span></button></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-card-bg/95 backdrop-blur-xl z-40 px-space-lg flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer"><div class="w-7 h-7 rounded-lg bg-ocean-navy flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold text-[13px]">SG</div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-label-md text-label-md font-bold text-ocean-navy">Seagrove Garden Co.</span><span class="material-symbols-outlined text-[16px] text-outline">unfold_more</span></div><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal-accent"></span><span class="font-label-xs text-label-xs text-secondary font-medium">Profile is live</span></div></div></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-ocean-navy font-label-md text-label-md transition-colors" type="button"><span class="material-symbols-outlined text-[16px] text-teal-interactive">open_in_new</span><span>View public profile</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-warning"></span></button><div class="flex items-center gap-2.5 pl-2"><div class="flex flex-col items-end"><span class="font-label-md text-label-md font-bold text-ocean-navy">Jamie Lee</span><span class="font-label-xs text-label-xs text-text-muted">Business owner</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-space-lg pb-space-xl bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Utility Context Bar / Sub-Navigation & Quick Action -->
+<div class="flex flex-col lg:flex-row lg:items-end justify-between gap-space-md mb-8">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="font-label-xs text-label-xs uppercase tracking-widest text-secondary font-bold bg-teal-surface px-2.5 py-1 rounded-full">Merchant Outpost</span>
+<span class="text-text-muted font-body-sm text-body-sm">·</span>
+<span class="font-label-xs text-label-xs text-text-muted uppercase tracking-wider">Directory Management</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-ocean-navy font-bold tracking-tight">Business profile</h1>
+<p class="font-body-lead text-body-lead text-text-muted mt-1 max-w-2xl">Keep the essentials accurate, then preview exactly what visitors see across the 30A hamlet guides.</p>
+</div>
+<div class="flex items-center gap-3 self-start lg:self-auto">
+<button class="px-4 py-2.5 rounded-lg bg-surface-container-lowest text-ocean-navy hover:bg-surface-container font-label-md text-label-md font-semibold transition-all shadow-sm flex items-center gap-2" type="button">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span>Revert edits</span>
+</button>
+<button class="px-5 py-2.5 rounded-lg bg-teal-interactive hover:bg-secondary text-on-secondary font-label-md text-label-md font-semibold transition-all shadow-sm hover:shadow-md flex items-center gap-2" id="applyPreviewBtn" type="button">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+<span>Apply in preview</span>
+</button>
+</div>
+</div>
+<!-- Operational Alert Banner -->
+<div class="mb-8 p-4 rounded-xl bg-amber-surface flex items-start justify-between gap-4 shadow-sm">
+<div class="flex items-start gap-3">
+<div class="p-1.5 rounded-lg bg-amber-warning/20 text-on-tertiary-container mt-0.5">
+<span class="material-symbols-outlined text-[20px] text-amber-warning">verified</span>
+</div>
+<div>
+<div class="font-label-lg text-label-lg font-bold text-tertiary">Verified Seagrove merchant badge is currently active</div>
+<p class="font-body-sm text-body-sm text-on-tertiary-fixed-variant mt-0.5">Your updates post in real-time to the public directory feed, Hamlet curated maps, and regional itineraries.</p>
+</div>
+</div>
+<span class="font-label-xs text-label-xs font-bold uppercase tracking-wider text-on-tertiary-container bg-surface-container-lowest/80 px-2.5 py-1 rounded-full whitespace-nowrap">Tier 1 Verified</span>
+</div>
+<!-- 2-Column Split Layout: Form Inputs (~60%) & Live Architectural Preview (~40%) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- LEFT COLUMN: Form / Edit Sections (~60% => 7 cols) -->
+<div class="lg:col-span-7 flex flex-col gap-6">
+<!-- Section 1: Business Details -->
+<div class="bg-card-bg rounded-xl p-space-lg shadow-sm flex flex-col gap-5">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-teal-interactive text-[22px]">store</span>
+<h2 class="font-headline-sm text-headline-sm text-ocean-navy font-bold">Business details</h2>
+</div>
+<span class="font-label-xs text-label-xs text-text-muted uppercase tracking-wider font-semibold">Primary info</span>
+</div>
+<!-- Description with live character count -->
+<div class="flex flex-col gap-1.5">
+<div class="flex items-center justify-between">
+<label class="font-label-md text-label-md font-semibold text-ocean-navy" for="bizDesc">Public Description</label>
+<span class="font-label-xs text-label-xs text-text-muted font-medium" id="charCounter">142 / 500</span>
+</div>
+<textarea class="w-full rounded-lg bg-surface-container-lowest p-3.5 text-body-base font-body-base text-text-primary focus:outline-none focus:ring-2 focus:ring-teal-interactive shadow-[0_1px_2px_rgba(0,0,0,0.03)] resize-y leading-relaxed" id="bizDesc" rows="3">Thoughtful landscape design and year-round garden care for homes across 30A. Native planting, seasonal refreshes, and dependable maintenance.</textarea>
+<span class="font-body-sm text-body-sm text-text-muted">Appears at top of your business hub and within South Walton search highlights.</span>
+</div>
+<!-- 2-Column Inputs: Phone & Website -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md font-semibold text-ocean-navy" for="bizPhone">Contact Phone</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined text-outline absolute left-3 text-[18px]">call</span>
+<input class="w-full pl-9 pr-3 py-2.5 rounded-lg bg-surface-container-lowest text-body-base font-body-base text-text-primary focus:outline-none focus:ring-2 focus:ring-teal-interactive shadow-[0_1px_2px_rgba(0,0,0,0.03)]" id="bizPhone" type="text" value="(850) 555-0142"/>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md font-semibold text-ocean-navy" for="bizWebsite">Website Domain</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined text-outline absolute left-3 text-[18px]">language</span>
+<input class="w-full pl-9 pr-3 py-2.5 rounded-lg bg-surface-container-lowest text-body-base font-body-base text-text-primary focus:outline-none focus:ring-2 focus:ring-teal-interactive shadow-[0_1px_2px_rgba(0,0,0,0.03)]" id="bizWebsite" type="text" value="seagrovegarden.example"/>
+</div>
+</div>
+</div>
+<!-- Location Input -->
+<div class="flex flex-col gap-1.5">
+<label class="font-label-md text-label-md font-semibold text-ocean-navy" for="bizLocation">Hamlet &amp; Geographic Territory</label>
+<div class="relative flex items-center">
+<span class="material-symbols-outlined text-outline absolute left-3 text-[18px]">pin_drop</span>
+<input class="w-full pl-9 pr-3 py-2.5 rounded-lg bg-surface-container-lowest text-body-base font-body-base text-text-primary focus:outline-none focus:ring-2 focus:ring-teal-interactive shadow-[0_1px_2px_rgba(0,0,0,0.03)]" id="bizLocation" type="text" value="Seagrove Beach, Florida"/>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="material-symbols-outlined text-teal-accent text-[16px]">info</span>
+<span class="font-body-sm text-body-sm text-secondary font-medium">Appears under Seagrove &amp; South Walton corridors</span>
+</div>
+</div>
+</div>
+<!-- Section 2: Operating Hours -->
+<div class="bg-card-bg rounded-xl p-space-lg shadow-sm flex flex-col gap-5">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-1">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-teal-interactive text-[22px]">schedule</span>
+<h2 class="font-headline-sm text-headline-sm text-ocean-navy font-bold">Hours of operation</h2>
+</div>
+<div class="flex items-center gap-1.5 bg-teal-surface px-3 py-1 rounded-full self-start">
+<span class="w-2 h-2 rounded-full bg-teal-accent animate-pulse"></span>
+<span class="font-label-xs text-label-xs text-secondary font-bold uppercase tracking-wide">Seasonal summer hours active</span>
+</div>
+</div>
+<!-- Days Stack -->
+<div class="flex flex-col gap-2.5">
+<!-- Mon-Fri -->
+<div class="p-3.5 rounded-lg bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="font-label-lg text-label-lg font-bold text-ocean-navy min-w-28">Monday – Friday</span>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded bg-surface-container font-semibold text-ocean-navy">Weekdays</span>
+</div>
+<div class="flex items-center gap-2">
+<input class="w-24 text-center py-1.5 px-2 bg-card-bg rounded font-body-sm text-body-sm font-semibold text-text-primary focus:outline-none focus:ring-1 focus:ring-teal-interactive" type="text" value="8:00 AM"/>
+<span class="text-text-muted font-body-sm text-body-sm">to</span>
+<input class="w-24 text-center py-1.5 px-2 bg-card-bg rounded font-body-sm text-body-sm font-semibold text-text-primary focus:outline-none focus:ring-1 focus:ring-teal-interactive" type="text" value="5:00 PM"/>
+</div>
+</div>
+<!-- Saturday -->
+<div class="p-3.5 rounded-lg bg-surface-container-low flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+<div class="flex items-center gap-3">
+<span class="font-label-lg text-label-lg font-bold text-ocean-navy min-w-28">Saturday</span>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded bg-amber-surface font-semibold text-on-tertiary-container">Midday Care</span>
+</div>
+<div class="flex items-center gap-2">
+<input class="w-24 text-center py-1.5 px-2 bg-card-bg rounded font-body-sm text-body-sm font-semibold text-text-primary focus:outline-none focus:ring-1 focus:ring-teal-interactive" type="text" value="9:00 AM"/>
+<span class="text-text-muted font-body-sm text-body-sm">to</span>
+<input class="w-24 text-center py-1.5 px-2 bg-card-bg rounded font-body-sm text-body-sm font-semibold text-text-primary focus:outline-none focus:ring-1 focus:ring-teal-interactive" type="text" value="2:00 PM"/>
+</div>
+</div>
+<!-- Sunday -->
+<div class="p-3.5 rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="font-label-lg text-label-lg font-bold text-text-muted min-w-28">Sunday</span>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded bg-surface-container text-text-muted font-medium">Off-duty</span>
+</div>
+<div class="px-4 py-1.5 rounded bg-card-bg text-text-muted font-label-md text-label-md font-semibold">
+              Closed
+            </div>
+</div>
+</div>
+</div>
+<!-- Section 3: Categories & Tags -->
+<div class="bg-card-bg rounded-xl p-space-lg shadow-sm flex flex-col gap-4">
+<div class="flex items-center justify-between pb-1">
+<div class="flex items-center gap-2.5">
+<span class="material-symbols-outlined text-teal-interactive text-[22px]">sell</span>
+<h2 class="font-headline-sm text-headline-sm text-ocean-navy font-bold">Categories &amp; Tags</h2>
+</div>
+<button class="text-teal-interactive hover:text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1 transition-colors" type="button">
+<span class="material-symbols-outlined text-[16px]">add_circle</span>
+<span>Add tag</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted">Tags determine which thematic 30A itineraries and curated service collections your outpost surfaces in.</p>
+<div class="flex flex-wrap gap-2 pt-1">
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low font-label-md text-label-md font-semibold text-ocean-navy group hover:bg-surface-container transition-colors">
+<span>Landscaping &amp; Design</span>
+<button class="text-outline hover:text-error transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low font-label-md text-label-md font-semibold text-ocean-navy group hover:bg-surface-container transition-colors">
+<span>Native Plants</span>
+<button class="text-outline hover:text-error transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low font-label-md text-label-md font-semibold text-ocean-navy group hover:bg-surface-container transition-colors">
+<span>Property Care</span>
+<button class="text-outline hover:text-error transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+</button>
+</span>
+<span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low font-label-md text-label-md font-semibold text-ocean-navy group hover:bg-surface-container transition-colors">
+<span>Commercial &amp; Residential</span>
+<button class="text-outline hover:text-error transition-colors flex items-center" type="button">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+</button>
+</span>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-card-bg hover:bg-surface-container-low font-label-md text-label-md font-semibold text-teal-interactive transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Custom tag</span>
+</button>
+</div>
+</div>
+<!-- Reference Audit Card -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex items-center justify-between">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-outline text-[20px]">sync</span>
+<span class="font-body-sm text-body-sm text-text-muted">Last synced with 30A Registry: Today at 9:42 AM EST</span>
+</div>
+<a class="font-label-sm text-label-sm text-teal-interactive hover:underline font-semibold flex items-center gap-1" href="#">
+<span>Audit logs</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+<!-- RIGHT COLUMN: Live Directory Preview (~40% => 5 cols) -->
+<div class="lg:col-span-5 sticky top-20 flex flex-col gap-4">
+<!-- Label Header for the Live Sandbox Preview -->
+<div class="flex items-center justify-between px-1">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-teal-accent"></span>
+<span class="font-label-md text-label-md font-bold text-ocean-navy uppercase tracking-wider">Live Directory Preview</span>
+</div>
+<span class="font-label-xs text-label-xs text-text-muted bg-surface-container px-2 py-0.5 rounded-full">Interactive Sandbox</span>
+</div>
+<!-- Preview Mockup Card Frame -->
+<div class="bg-card-bg rounded-2xl overflow-hidden shadow-md flex flex-col">
+<!-- Header Banner with Botanical Aesthetic Pattern -->
+<div class="relative h-32 w-full bg-ocean-navy overflow-hidden">
+<!-- Geometric coastal botanical background layer -->
+<div class="absolute inset-0 bg-gradient-to-r from-ocean-navy via-primary-container to-teal-accent/40 opacity-90"></div>
+<!-- Subtle coastal leaf/wave vector decor -->
+<svg class="absolute -right-4 -bottom-6 w-44 h-44 text-teal-surface/10" fill="currentColor" viewbox="0 0 100 100">
+<path d="M50 0 C60 30 70 40 100 50 C70 60 60 70 50 100 C40 70 30 60 0 50 C30 40 40 30 50 0 Z"></path>
+</svg>
+<svg class="absolute left-6 -top-10 w-32 h-32 text-secondary-fixed/10" fill="currentColor" viewbox="0 0 100 100">
+<circle cx="50" cy="50" r="45"></circle>
+</svg>
+<!-- Status badge atop banner -->
+<div class="absolute top-3 right-3">
+<span class="font-label-xs text-label-xs font-bold text-on-primary bg-primary/40 backdrop-blur-md px-2.5 py-1 rounded-full flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px] text-teal-accent">check_circle</span>
+<span>Public Listing</span>
+</span>
+</div>
+</div>
+<!-- Card Body Content -->
+<div class="p-space-lg pt-0 relative flex flex-col gap-4">
+<!-- Monogram Logo Overlap -->
+<div class="flex items-end justify-between -mt-10 mb-1">
+<div class="w-16 h-16 rounded-xl bg-card-bg p-1 shadow-md">
+<div class="w-full h-full rounded-lg bg-surface-container-high text-ocean-navy flex items-center justify-center font-headline-md text-headline-md font-bold tracking-tight">
+                SG
+              </div>
+</div>
+<!-- Owner verified badge -->
+<div class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-surface text-secondary">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive" style="font-variation-settings: 'FILL' 1;">verified</span>
+<span class="font-label-xs text-label-xs font-bold tracking-wide">Owner verified</span>
+</div>
+</div>
+<!-- Business Header -->
+<div class="flex flex-col gap-1">
+<h3 class="font-headline-sm text-headline-sm text-ocean-navy font-bold tracking-tight" id="prevTitle">Seagrove Garden Co.</h3>
+<div class="flex flex-wrap items-center gap-2 text-text-muted font-body-sm text-body-sm">
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive">location_on</span>
+<span id="prevLocation">Seagrove Beach, Florida</span>
+</div>
+<span>·</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive">call</span>
+<span id="prevPhone">(850) 555-0142</span>
+</div>
+</div>
+</div>
+<!-- Dynamic Description Blurb -->
+<p class="font-body-base text-body-base text-text-primary leading-relaxed bg-surface-container-lowest p-3 rounded-lg" id="prevDesc">
+            Thoughtful landscape design and year-round garden care for homes across 30A. Native planting, seasonal refreshes, and dependable maintenance.
+          </p>
+<!-- Operating Snapshot Preview -->
+<div class="p-3 rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-teal-accent"></span>
+<span class="font-label-md text-label-md font-bold text-ocean-navy">Open today: 8:00 AM – 5:00 PM</span>
+</div>
+<span class="font-label-xs text-label-xs text-text-muted">Summer schedule</span>
+</div>
+<!-- Tags List in Preview -->
+<div class="flex flex-wrap gap-1.5">
+<span class="px-2.5 py-1 rounded-full bg-surface-container font-label-xs text-label-xs font-medium text-ocean-navy">Landscaping &amp; Design</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container font-label-xs text-label-xs font-medium text-ocean-navy">Native Plants</span>
+<span class="px-2.5 py-1 rounded-full bg-surface-container font-label-xs text-label-xs font-medium text-ocean-navy">Property Care</span>
+</div>
+<!-- Interactive Actions Bar on Directory Card -->
+<div class="pt-2 flex items-center gap-2">
+<a class="flex-1 py-2.5 px-3 rounded-lg bg-surface-container-high hover:bg-surface-container-highest text-ocean-navy font-label-md text-label-md font-semibold text-center transition-colors flex items-center justify-center gap-1.5" href="#" id="prevWebBtn">
+<span>Visit website</span>
+<span class="material-symbols-outlined text-[16px]">open_in_new</span>
+</a>
+<button aria-label="Save to itinerary" class="w-10 h-10 rounded-lg bg-surface-container-low hover:bg-surface-container flex items-center justify-center text-ocean-navy transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">bookmark</span>
+</button>
+<button aria-label="Share listing" class="w-10 h-10 rounded-lg bg-surface-container-low hover:bg-surface-container flex items-center justify-center text-ocean-navy transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Note Beneath Preview -->
+<div class="p-4 rounded-xl bg-surface-container-lowest shadow-sm flex items-start gap-3">
+<span class="material-symbols-outlined text-teal-interactive text-[20px] mt-0.5">cloud_done</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-ocean-navy">Immediate synchronization</span>
+<p class="font-body-sm text-body-sm text-text-muted mt-0.5">Updates sync immediately to public 30A search and hamlet directories. No waiting period required for verified owners.</p>
+</div>
+</div>
+<!-- Quick Tips Card -->
+<div class="p-4 rounded-xl bg-teal-surface/50 flex flex-col gap-2">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[18px]">lightbulb</span>
+<span class="font-label-md text-label-md font-bold text-secondary">Pro tip for 30A visitors</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted">Mentioning "Native Planting" attracts homeowners in Seaside and Watercolor where strict landscape guidelines are enforced by town councils.</p>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Real-time synchronization micro-interactions
+  const bizDescInput = document.getElementById('bizDesc');
+  const prevDesc = document.getElementById('prevDesc');
+  const charCounter = document.getElementById('charCounter');
+  const bizPhoneInput = document.getElementById('bizPhone');
+  const prevPhone = document.getElementById('prevPhone');
+  const bizLocationInput = document.getElementById('bizLocation');
+  const prevLocation = document.getElementById('prevLocation');
+  const applyPreviewBtn = document.getElementById('applyPreviewBtn');
+
+  function syncInputs() {
+    if (bizDescInput && prevDesc && charCounter) {
+      const len = bizDescInput.value.length;
+      charCounter.textContent = `${len} / 500`;
+      prevDesc.textContent = bizDescInput.value || 'No description provided yet.';
+    }
+    if (bizPhoneInput && prevPhone) {
+      prevPhone.textContent = bizPhoneInput.value || 'Phone not set';
+    }
+    if (bizLocationInput && prevLocation) {
+      prevLocation.textContent = bizLocationInput.value || 'Seagrove Beach, Florida';
+    }
+  }
+
+  if (bizDescInput) {
+    bizDescInput.addEventListener('input', syncInputs);
+  }
+  if (bizPhoneInput) {
+    bizPhoneInput.addEventListener('input', syncInputs);
+  }
+  if (bizLocationInput) {
+    bizLocationInput.addEventListener('input', syncInputs);
+  }
+
+  if (applyPreviewBtn) {
+    applyPreviewBtn.addEventListener('click', () => {
+      syncInputs();
+      applyPreviewBtn.classList.add('scale-95');
+      setTimeout(() => applyPreviewBtn.classList.remove('scale-95'), 150);
+      
+      const prevCard = prevDesc.closest('.rounded-2xl');
+      if (prevCard) {
+        prevCard.classList.add('ring-2', 'ring-teal-interactive');
+        setTimeout(() => prevCard.classList.remove('ring-2', 'ring-teal-interactive'), 1000);
+      }
+    });
+  }
+</script></main></div></body></html>

@@ -1,7 +1,17 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
 import AccountNav from "../components/AccountNav.astro";
-import { currentUser, favorites, posts, questions } from "../data/catalog";
+import BusinessesPanel from "../components/islands/BusinessesPanel.svelte";
+import {
+  businesses,
+  currentUser,
+  favorites,
+  posts,
+  questions,
+  towns,
+  businessesForTown,
+} from "../data/catalog";
+import { href } from "../lib/href";
 
 interface Props {
   title: string;
@@ -11,27 +21,74 @@ interface Props {
 
 const { title, active, description } = Astro.props;
 const user = currentUser();
+const savedCount = favorites.filter((item) => item.userSlug === user?.slug).length;
+const questionCount = questions.filter((item) => item.authorUserSlug === user?.slug).length;
+const postCount = posts.filter((item) => item.authorUserSlug === user?.slug).length;
 const stats = [
-  { label: "Saved", value: String(favorites.filter((item) => item.userSlug === user?.slug).length) },
-  { label: "Questions", value: String(questions.filter((item) => item.authorUserSlug === user?.slug).length) },
-  { label: "Posts", value: String(posts.filter((item) => item.authorUserSlug === user?.slug).length) },
+  { label: "Saved", value: String(savedCount) },
+  { label: "Questions", value: String(questionCount) },
+  { label: "Posts", value: String(postCount) },
 ];
 const memberSince = user?.memberSince
   ? new Date(`${user.memberSince}T12:00:00`).toLocaleDateString("en-US", { month: "long", year: "numeric" })
   : null;
-const roleLabel = user?.role === "business-owner" ? "Business owner" : user?.role === "admin" ? "Admin" : user?.role === "visitor" ? "Visitor" : "Local";
+const roleLabel =
+  user?.role === "business-owner"
+    ? "Business Owner"
+    : user?.role === "admin"
+      ? "Admin"
+      : user?.role === "visitor"
+        ? "Visitor"
+        : "Local Resident";
+
+const favoriteTowns = favorites
+  .filter((item) => item.userSlug === user?.slug && item.type === "town")
+  .map((item) => towns.find((town) => town.slug === item.slug))
+  .filter(Boolean);
+
+const corridorTowns = (favoriteTowns.length > 0 ? favoriteTowns : towns.slice(0, 4)).map((town) => ({
+  slug: town!.slug,
+  name: town!.name,
+  count: businessesForTown(town!.slug).length,
+}));
+
+const seedBusinesses = businesses.map((biz) => ({
+  slug: biz.slug,
+  name: biz.name,
+  townSlug: biz.townSlug,
+  summary: biz.summary,
+  ownerUserSlug: biz.ownerUserSlug,
+  entityKind: biz.entityKind ?? (biz.isStay ? ("stay" as const) : ("business" as const)),
+  isStay: biz.isStay,
+}));
+const townNames = Object.fromEntries(towns.map((town) => [town.slug, town.name]));
 ---
 
-<BaseLayout title={title} description={description}>
-  <div class="container section">
-    <section class="head">
-      <div class="avatar img-placeholder" aria-hidden="true">{user?.name.charAt(0) ?? "M"}</div>
-      <div class="identity">
-        <h1>{user?.name ?? "Member"}</h1>
-        <p class="meta">
-          {roleLabel}
-          {memberSince && <> · Member Since {memberSince}</>}
-        </p>
+<BaseLayout title={title} description={description ?? user?.bio}>
+  <div class="account-page">
+    <section class="hero">
+      <div class="container hero__inner">
+        <div class="identity">
+          <div class="avatar-wrap">
+            <div class="avatar img-placeholder" aria-hidden="true">{user?.name.charAt(0) ?? "M"}</div>
+            <span class="verified" title="Community Verified" aria-label="Community Verified">✓</span>
+          </div>
+          <div>
+            <h1>{user?.name ?? "Member"}</h1>
+            <p class="meta">
+              <span class="pill">{roleLabel}</span>
+              {memberSince && <span class="pill">Member Since {memberSince}</span>}
+            </p>
+            <p class="bio">{user?.bio}</p>
+            <ul class="facts">
+              <li>
+                <a href={href(`/u/${user?.slug}`)}>Public Profile</a>
+              </li>
+              <li>Highway 30A East</li>
+              <li>Insider Tier</li>
+            </ul>
+          </div>
+        </div>
         <div class="stats">
           {
             stats.map((stat) => (
@@ -44,57 +101,302 @@ const roleLabel = user?.role === "business-owner" ? "Business owner" : user?.rol
         </div>
       </div>
     </section>
-    <AccountNav active={active} />
-    <slot />
+
+    <div class="tabs-bar">
+      <div class="container tabs-bar__inner">
+        <AccountNav
+          active={active}
+          savedCount={savedCount}
+          questionCount={questionCount}
+          postCount={postCount}
+        />
+        <p class="privacy">
+          Profile Privacy: <strong>Community Verified</strong>
+        </p>
+      </div>
+    </div>
+
+    <div class="container layout">
+      <div class="main">
+        <slot />
+      </div>
+      <aside class="rail">
+        <BusinessesPanel
+          seedBusinesses={seedBusinesses}
+          townNames={townNames}
+          merchantsHref={href("/merchants")}
+          addHref={href("/add-business")}
+          dashboardRoot={href("/dashboard").replace(/\/$/, "")}
+          variant="card"
+          client:load
+        />
+
+        <section class="widget insider">
+          <p class="widget__label">30A Insider Level</p>
+          <p class="insider__tier">Level 3 Contributor</p>
+          <div class="bar" aria-hidden="true">
+            <span style="width: 80%"></span>
+          </div>
+          <p class="muted">80 / 100 XP toward Local Ambassador</p>
+          <p class="insider__votes">42 Total Helpful Upvotes</p>
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">Favorite Towns</p>
+          <ul class="towns">
+            {
+              corridorTowns.map((town) => (
+                <li>
+                  <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+                  <span>{town.count} new</span>
+                </li>
+              ))
+            }
+          </ul>
+        </section>
+
+        <section class="widget help">
+          <p class="widget__label">Need a hand?</p>
+          <p class="muted">Account help, listing claims, or contributor badges.</p>
+          <a href={href("/ask")}>Contact Local Concierge →</a>
+        </section>
+      </aside>
+    </div>
   </div>
 </BaseLayout>
 
 <style>
-  .head {
+  .account-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .hero {
+    background: var(--brand-deep);
+    color: white;
+    padding: var(--size-7) 0 var(--size-6);
+  }
+  .hero__inner {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
     gap: var(--size-5);
     align-items: center;
-    margin-bottom: var(--size-6);
+  }
+  .identity {
+    display: flex;
+    gap: var(--size-4);
+    align-items: flex-start;
+    min-width: min(100%, 28rem);
+  }
+  .avatar-wrap {
+    position: relative;
+    flex-shrink: 0;
   }
   .avatar {
-    width: 96px;
-    height: 96px;
+    width: 5.5rem;
+    height: 5.5rem;
     border-radius: 50%;
-    flex-shrink: 0;
-    font-size: var(--font-size-7);
+    font-size: var(--font-size-6);
+    background: var(--brand-teal);
+    color: white;
+  }
+  .verified {
+    position: absolute;
+    right: 0.1rem;
+    bottom: 0.1rem;
+    width: 1.35rem;
+    height: 1.35rem;
+    border-radius: 50%;
+    background: #22c55e;
+    color: white;
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-8);
+    display: grid;
+    place-items: center;
+    border: 2px solid var(--brand-deep);
   }
   .identity h1 {
-    margin: 0 0 var(--size-1);
-    font-size: var(--font-size-6);
+    margin: 0 0 0.45rem;
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    color: white;
   }
   .meta {
+    margin: 0 0 0.65rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.6rem;
+    padding: 0.15rem 0.65rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: var(--font-size-0);
+    color: #e2e8f0;
+  }
+  .bio {
+    margin: 0 0 0.75rem;
+    max-width: 36rem;
+    color: #cbd5e1;
+    font-size: var(--font-size-1);
+  }
+  .facts {
+    list-style: none;
     margin: 0;
-    color: var(--brand-ink-soft);
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1.25rem;
+    font-size: var(--font-size-1);
+    color: #94a3b8;
+  }
+  .facts a {
+    color: #85f6e5;
   }
   .stats {
     display: flex;
-    gap: var(--size-5);
-    margin-top: var(--size-3);
+    gap: 0.75rem;
   }
   .stat {
-    display: flex;
-    flex-direction: column;
+    min-width: 5.5rem;
+    padding: 0.85rem 1rem;
+    border-radius: var(--radius-3);
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
   }
   .stat .value {
+    display: block;
+    font-family: var(--font-display);
     font-size: var(--font-size-4);
     font-weight: var(--font-weight-7);
-    color: var(--brand-deep);
+    color: white;
     line-height: 1.1;
   }
   .stat .label {
-    font-size: var(--font-size-0);
+    font-size: 0.625rem;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
+    color: #94a3b8;
+  }
+  .tabs-bar {
+    background: white;
+    border-bottom: 1px solid var(--brand-line);
+  }
+  .tabs-bar__inner {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-3);
+    align-items: center;
+  }
+  .privacy {
+    margin: 0;
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
   }
-  @media (max-width: 640px) {
-    .head {
-      align-items: flex-start;
+  .privacy strong {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .main {
+    min-width: 0;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .muted {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .help a {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .insider__tier {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-3);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .bar {
+    height: 0.45rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-sand-dark);
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+  .bar span {
+    display: block;
+    height: 100%;
+    background: var(--brand-teal);
+  }
+  .insider__votes {
+    margin: 0;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink);
+  }
+  .towns {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+  }
+  .towns li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: center;
+    font-size: var(--font-size-1);
+  }
+  .towns a {
+    color: var(--brand-ink);
+    font-weight: var(--font-weight-6);
+  }
+  .towns span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+    background: var(--brand-teal-soft);
+    border-radius: var(--radius-pill);
+    padding: 0.15rem 0.5rem;
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 17rem;
+    }
+    .rail {
+      display: grid;
     }
   }
 </style>

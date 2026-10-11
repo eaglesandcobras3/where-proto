@@ -1,53 +1,217 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
+import MapToggle from "../../components/MapToggle.astro";
+import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
+import EventsHeroSearch from "../../components/islands/EventsHeroSearch.svelte";
+import EventsSidebarFilters from "../../components/islands/EventsSidebarFilters.svelte";
 import EventFilters from "../../components/islands/EventFilters.svelte";
-import { events, townBySlug } from "../../data/catalog";
+import { businessBySlug, events, towns, townBySlug } from "../../data/catalog";
 import { href } from "../../lib/href";
+import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
 const params = Astro.url.searchParams;
 const town = params.get("town") ?? "";
 const from = params.get("from") ?? "";
 const to = params.get("to") ?? "";
+const category = params.get("category") ?? "";
 const q = params.get("q") ?? "";
+const mapView = params.get("view") === "map";
 const base = import.meta.env.BASE_URL;
+const searchQs = Astro.url.search;
+const mapHref = withViewMap("/events", searchQs);
+const gridHref = withoutViewMap("/events", searchQs);
+
+const categoryOptions = [
+  { slug: "Music", name: "Live Music" },
+  { slug: "Wellness", name: "Wellness & Yoga" },
+  { slug: "Market", name: "Farmers Markets" },
+  { slug: "Food", name: "Food & Wine" },
+  { slug: "Arts", name: "Arts & Culture" },
+  { slug: "Family", name: "Family Friendly" },
+];
+
+const rows = events.map((event) => {
+  const townRow = event.townSlug ? townBySlug(event.townSlug) : undefined;
+  const host = event.businessSlug ? businessBySlug(event.businessSlug)?.name : undefined;
+  return {
+    slug: event.slug,
+    name: event.name,
+    town: event.townSlug,
+    townName: townRow?.name,
+    when: event.when,
+    time: event.time,
+    venue: event.venue,
+    category: event.category,
+    price: event.price,
+    summary: event.summary,
+    host: host ?? (townRow ? `${townRow.name} Events` : "Community host"),
+    bucket: event.bucket,
+  };
+});
+
+const townCounts = towns
+  .map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    count: events.filter((event) => event.townSlug === item.slug).length,
+  }))
+  .filter((item) => item.count > 0);
+
+const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
+
+const venueCounts = [
+  { name: "Seaside Amphitheatre", count: events.filter((e) => e.venue?.includes("Amphitheatre")).length || 2 },
+  { name: "Alys Beach Green", count: events.filter((e) => e.townSlug === "alys-beach").length || 1 },
+  { name: "Barrett Square", count: events.filter((e) => e.venue?.includes("Barrett")).length || 1 },
+  { name: "Grayton town core", count: events.filter((e) => e.townSlug === "grayton-beach").length || 1 },
+];
+
+const mapMarkers = markersFromNames(
+  rows.map((event) => ({
+    name: event.name,
+    href: href(`/event/${event.slug}`),
+    detail: `${event.townName ?? "30A"} · ${event.when}`,
+  })),
+);
 ---
 
 <BaseLayout
-  title="Events on 30A"
-  description="Upcoming events along Scenic Highway 30A."
+  title="30A Events & Community Calendar"
+  description="Upcoming concerts, markets, wellness, and community gatherings along Scenic Highway 30A."
   active="events"
-  showEvents
-  eventsTown={town}
-  eventsFrom={from}
-  eventsTo={to}
-  eventsQuery={q}
 >
-  <TwoPaneMap mapLabel="30A events map" pinCount={Math.max(6, events.length)} searchArea>
-    <p class="cta"><a href={href("/dashboard")}>Submit your event</a></p>
-    <EventFilters
-      events={events.map((event) => ({
-        slug: event.slug,
-        name: event.name,
-        town: event.townSlug,
-        townName: event.townSlug ? townBySlug(event.townSlug)?.name : undefined,
-        when: event.when,
-        time: event.time,
-        venue: event.venue,
-        category: event.category,
-        bucket: event.bucket,
-      }))}
-      initialTown={town}
-      initialQuery={q}
-      base={base}
-      client:load
-    />
-  </TwoPaneMap>
+  <div class="events-page">
+    <InteriorHero
+      title="30A Events & Community Calendar"
+      lede="Live music, markets, wellness, and neighborhood gatherings across the corridor."
+    >
+      <EventsHeroSearch
+        towns={exploreTowns}
+        initialTown={town}
+        initialFrom={from}
+        initialTo={to}
+        initialQuery={q}
+        client:load
+      />
+    </InteriorHero>
+
+    {
+      mapView ? (
+        <TwoPaneMap
+          mapLabel="30A events map"
+          resultLabel={`${events.length} Events along Scenic 30A`}
+          gridHref={href(gridHref)}
+          markers={mapMarkers}
+          searchArea
+        >
+          <EventFilters
+            events={rows}
+            initialTown={town}
+            initialCategory={category}
+            initialQuery={q}
+            base={base}
+            client:load
+          />
+        </TwoPaneMap>
+      ) : (
+        <div class="container layout">
+          <EventsSidebarFilters
+            towns={townCounts}
+            categories={categoryOptions}
+            initialTown={town}
+            initialCategory={category}
+            total={events.length}
+            client:load
+          />
+
+          <EventFilters
+            events={rows}
+            initialTown={town}
+            initialCategory={category}
+            initialQuery={q}
+            base={base}
+            client:load
+          />
+
+          <aside class="rail">
+            <MapToggle title="30A Events Map" href={mapHref} />
+            <ContributeCard kind="event" />
+
+            <section class="widget">
+              <p class="widget__label">Trending Venues</p>
+              <ul class="venues">
+                {venueCounts.map((item) => (
+                  <li>
+                    <span>{item.name}</span>
+                    <span>{item.count}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </aside>
+        </div>
+      )
+    }
+  </div>
 </BaseLayout>
 
 <style>
-  .cta {
-    margin-bottom: var(--size-4);
-    font-weight: var(--font-weight-6);
+  .events-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .venues {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .venues li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink);
+  }
+  .venues li span:last-child {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
+    }
+    .rail {
+      display: grid;
+    }
   }
 </style>

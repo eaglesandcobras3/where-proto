@@ -1,0 +1,160 @@
+---
+import { href } from "../lib/href";
+
+interface Props {
+  href?: string;
+}
+
+const { href: shopHref = "/search?q=prints" } = Astro.props;
+
+const frames = [
+  { label: "30A Sunset Serenity", tone: "warm" },
+  { label: "Emerald Shoreline", tone: "sea" },
+  { label: "Discover Scenic 30A", tone: "sand" },
+];
+---
+
+<section class="showcase">
+  <div class="container">
+    <div class="panel">
+      <div class="copy">
+        <p class="eyebrow">Sponsored Showcase</p>
+        <h2>
+          <span class="title">Coast Love</span>
+          <span class="subtitle">Collection</span>
+        </h2>
+        <p class="product">Coastal Photography Prints</p>
+        <p class="body">
+          Fine-art framed prints of South Walton dunes and emerald shores. Complimentary white-glove
+          delivery on 30A.
+        </p>
+        <a class="cta" href={href(shopHref)}>Shop the Collection</a>
+      </div>
+      <div class="gallery" aria-hidden="true">
+        {
+          frames.map((frame) => (
+            <figure class:list={["frame", `frame--${frame.tone}`]}>
+              <div class="frame__media img-placeholder">
+                <span>{frame.label}</span>
+              </div>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .showcase {
+    padding-block: var(--size-5);
+  }
+  .panel {
+    display: grid;
+    gap: var(--size-5);
+    align-items: center;
+    background: #eae2d7;
+    border-radius: var(--radius-4);
+    padding: clamp(1.5rem, 4vw, 2.75rem);
+  }
+  .eyebrow {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  h2 {
+    margin: 0 0 0.75rem;
+    display: grid;
+    gap: 0.1rem;
+  }
+  .title,
+  .subtitle {
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brand-deep);
+    line-height: 1.05;
+  }
+  .title {
+    font-size: clamp(2rem, 4vw, 2.75rem);
+  }
+  .subtitle {
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+  }
+  .product {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-3);
+    font-style: italic;
+    color: var(--brand-ink);
+  }
+  .body {
+    margin: 0 0 var(--size-4);
+    max-width: 34ch;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+    line-height: 1.55;
+  }
+  .cta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.6rem;
+    padding: 0.55rem 1.2rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--brand-deep);
+    color: var(--brand-deep);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    background: transparent;
+  }
+  .cta:hover {
+    background: rgba(12, 35, 46, 0.06);
+    text-decoration: none;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.75rem;
+    align-items: end;
+  }
+  .frame {
+    margin: 0;
+  }
+  .frame__media {
+    aspect-ratio: 3 / 4;
+    border-radius: var(--radius-3);
+    display: grid;
+    place-items: end start;
+    padding: 0.75rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+  }
+  .frame--warm .frame__media {
+    background: linear-gradient(160deg, #c4a574 0%, #7a8fa3 55%, #3d5a80 100%);
+  }
+  .frame--sea .frame__media {
+    background: linear-gradient(160deg, #7ec8c0 0%, #2a8f9e 45%, #0c232e 100%);
+    aspect-ratio: 3 / 4.4;
+  }
+  .frame--sand .frame__media {
+    background: linear-gradient(160deg, #e8d5b5 0%, #8eb8c8 50%, #3d5a80 100%);
+  }
+  @media (min-width: 900px) {
+    .panel {
+      grid-template-columns: minmax(14rem, 0.9fr) minmax(0, 1.4fr);
+      gap: var(--size-6);
+    }
+  }
+  @media (max-width: 640px) {
+    .gallery {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.45rem;
+    }
+  }
+</style>

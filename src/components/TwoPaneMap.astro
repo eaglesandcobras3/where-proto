@@ -1,35 +1,125 @@
 ---
+import type { MapMarker } from "../lib/map-markers";
+
 interface Props {
   mapLabel?: string;
+  /** @deprecated Prefer `markers` — used for placeholder dots when markers empty */
   pinCount?: number;
-  /** Show wireframe “Search this area” control (businesses/search) */
   searchArea?: boolean;
+  resultLabel?: string;
+  gridHref?: string;
+  markers?: MapMarker[];
 }
 
-const { mapLabel = "Map placeholder", pinCount = 12, searchArea = false } = Astro.props;
-const pins = Array.from({ length: pinCount }, (_, index) => index);
+const {
+  mapLabel = "Scenic 30A map",
+  pinCount = 6,
+  searchArea = true,
+  resultLabel,
+  gridHref,
+  markers = [],
+} = Astro.props;
+
+const pins =
+  markers.length > 0
+    ? markers
+    : Array.from({ length: pinCount }, (_, index) => ({
+        label: `Spot ${index + 1}`,
+        rating: undefined as string | undefined,
+        top: `${28 + ((index * 11) % 40)}%`,
+        left: `${18 + ((index * 13) % 62)}%`,
+        active: index === 0,
+        detail: undefined as string | undefined,
+        href: undefined as string | undefined,
+      }));
+
+const active = pins.find((pin) => pin.active) ?? pins[0];
 ---
 
 <div class="two-pane" data-two-pane data-mobile-view="list">
   <section class="list">
-    <slot />
-  </section>
-  <aside class="map" aria-label={mapLabel}>
-    <div class="zoom" aria-hidden="true">
-      <span>+</span>
-      <span>−</span>
+    {
+      (resultLabel || gridHref) && (
+        <div class="list__bar">
+          {resultLabel ? <p class="list__count">{resultLabel}</p> : <span />}
+          <div class="list__tools">
+            <label class="sync">
+              <input type="checkbox" checked />
+              <span>Sync Map</span>
+            </label>
+            {gridHref && (
+              <a class="grid-link" href={gridHref}>Grid View</a>
+            )}
+          </div>
+        </div>
+      )
+    }
+    <div class="list__scroll">
+      <slot />
     </div>
+  </section>
+
+  <aside class="map" aria-label={mapLabel}>
+    <div class="map__canvas" aria-hidden="true">
+      <span class="geo geo--gulf">Gulf of Mexico</span>
+      <span class="geo geo--west">Western Lake</span>
+      <span class="geo geo--east">Camp Creek Lake</span>
+    </div>
+
     {
       searchArea && (
         <button class="search-area" type="button">Search this area</button>
       )
     }
-    <div class="pins" aria-hidden="true">
-      {pins.map(() => <span class="pin" />)}
+
+    <div class="markers" aria-hidden="true">
+      {
+        pins.map((pin) => (
+          <div
+            class:list={["marker", pin.active && "marker--active"]}
+            style={`top:${pin.top};left:${pin.left}`}
+          >
+            {pin.active && active ? (
+              <div class="popup">
+                <div class="popup__media img-placeholder"></div>
+                <div class="popup__body">
+                  <div class="popup__row">
+                    <strong>{pin.label}</strong>
+                    {pin.rating && <span>{pin.rating} ★</span>}
+                  </div>
+                  {pin.detail && <p>{pin.detail}</p>}
+                  {pin.href ? <a href={pin.href}>View Details</a> : <span class="muted">View Details</span>}
+                </div>
+              </div>
+            ) : null}
+            <div class="marker__pill">
+              <span class="marker__dot"></span>
+              <span class="marker__label">
+                {pin.label}
+                {pin.rating ? ` · ${pin.rating}★` : ""}
+              </span>
+            </div>
+          </div>
+        ))
+      }
     </div>
-    <p class="label">{mapLabel}</p>
+
+    <div class="map__controls">
+      <div class="layers" role="group" aria-label="Map layers">
+        <button class="active" type="button">Road</button>
+        <button type="button">Coastal Sat</button>
+        <button type="button">Trails</button>
+      </div>
+      <div class="zoom" aria-hidden="true">
+        <span>+</span>
+        <span>−</span>
+        <span class="locate">◎</span>
+      </div>
+      <p class="scale">1 mi · 1.6 km</p>
+    </div>
+
+    <button class="toggle" type="button" data-two-pane-toggle>Map</button>
   </aside>
-  <button class="toggle" type="button" data-two-pane-toggle>Map</button>
 </div>
 
 <script>
@@ -50,94 +140,266 @@ const pins = Array.from({ length: pinCount }, (_, index) => index);
   .two-pane {
     display: grid;
     grid-template-columns: 1fr;
-    min-height: 28rem;
     position: relative;
-    background: var(--brand-sand-dark);
-  }
-  .list,
-  .map {
-    min-height: 0;
+    min-height: 32rem;
+    background: var(--brand-sand);
+    border-top: 1px solid var(--brand-line);
   }
   .list {
-    background: var(--brand-sand);
-    padding: var(--size-4) var(--size-4) 5rem;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: white;
+    z-index: 2;
+  }
+  .list__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.65rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--brand-line);
+    flex-shrink: 0;
+  }
+  .list__count {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .list__tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem;
+  }
+  .sync {
+    display: none;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+    cursor: pointer;
+  }
+  .sync input {
+    accent-color: var(--brand-teal);
+  }
+  .grid-link {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-selected);
+  }
+  .list__scroll {
+    padding: 0.85rem 1rem 5rem;
+    overflow: auto;
   }
   .map {
     display: none;
     position: relative;
     overflow: hidden;
-    border: 1px solid var(--brand-line);
-    border-radius: 1.25rem;
-    background:
-      linear-gradient(180deg, transparent 62%, var(--brand-map-water) 62%),
-      repeating-linear-gradient(0deg, transparent, transparent 22px, rgba(255, 255, 255, 0.35) 22px, rgba(255, 255, 255, 0.35) 23px),
-      repeating-linear-gradient(90deg, transparent, transparent 22px, rgba(255, 255, 255, 0.28) 22px, rgba(255, 255, 255, 0.28) 23px),
-      var(--brand-map);
-    box-shadow: 0 1px 2px rgba(12, 47, 61, 0.04);
+    background: #e5f3f7;
+    min-height: min(32rem, calc(100dvh - var(--header-h) - 2rem));
   }
-  .label {
+  .map__canvas {
     position: absolute;
     inset: 0;
-    display: grid;
-    place-items: center;
-    pointer-events: none;
-    color: var(--brand-deep);
-    font-size: var(--font-size-1);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    opacity: 0.55;
-    margin: 0;
+    background:
+      radial-gradient(ellipse 80% 40% at 50% 100%, rgba(168, 200, 216, 0.85) 0%, transparent 55%),
+      linear-gradient(180deg, #dff0d8 0%, #e8f4e4 28%, #d4ebf2 62%, #a8c8d8 100%);
   }
-  .zoom {
+  .geo {
     position: absolute;
-    top: 0.75rem;
-    left: 0.75rem;
-    display: grid;
-    gap: 0.25rem;
-    z-index: 2;
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #004f59;
+    opacity: 0.55;
+    pointer-events: none;
   }
-  .zoom span {
-    width: 2rem;
-    height: 2rem;
-    display: grid;
-    place-items: center;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: 0.35rem;
-    font-weight: 700;
+  .geo--gulf {
+    left: 50%;
+    bottom: 8%;
+    transform: translateX(-50%);
+    font-size: var(--font-size-2);
+    color: #006a60;
+  }
+  .geo--west {
+    top: 28%;
+    left: 22%;
+    font-size: 0.625rem;
+  }
+  .geo--east {
+    top: 32%;
+    left: 58%;
+    font-size: 0.625rem;
   }
   .search-area {
     position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    z-index: 2;
+    top: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 4;
     border: 0;
-    border-radius: 999px;
-    background: var(--brand-ink);
-    color: #fff;
-    min-height: 2.25rem;
-    padding: 0.45rem 0.95rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    color: var(--brand-deep);
+    min-height: 2.35rem;
+    padding: 0.45rem 1rem;
     font: inherit;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
+    box-shadow: var(--shadow-card-hover);
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
   }
-  .pins {
+  .search-area:hover {
+    background: var(--brand-sand);
+  }
+  .markers {
     position: absolute;
-    inset: 18% 12% 28% 18%;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.55rem;
-    align-content: flex-start;
+    inset: 0;
+    z-index: 3;
   }
-  .pin {
-    width: 1.7rem;
-    height: 1.7rem;
+  .marker {
+    position: absolute;
+    transform: translate(-50%, -100%);
+    display: grid;
+    justify-items: center;
+    gap: 0.35rem;
+  }
+  .marker__pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    color: var(--brand-deep);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-7);
+    box-shadow: var(--shadow-card-hover);
+    white-space: nowrap;
+  }
+  .marker__dot {
+    width: 0.45rem;
+    height: 0.45rem;
     border-radius: 50%;
     background: var(--brand-teal);
-    border: 2px solid #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  }
+  .marker--active .marker__pill {
+    background: var(--brand-deep);
+    color: white;
+  }
+  .marker--active .marker__dot {
+    background: #85f6e5;
+  }
+  .popup {
+    width: 15rem;
+    background: white;
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card-hover);
+    overflow: hidden;
+  }
+  .popup__media {
+    aspect-ratio: 16 / 9;
+    border-radius: 0;
+  }
+  .popup__body {
+    padding: 0.65rem 0.75rem 0.75rem;
+  }
+  .popup__row {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    align-items: baseline;
+  }
+  .popup__row strong {
+    font-size: var(--font-size-1);
+    color: var(--brand-deep);
+  }
+  .popup__row span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+  }
+  .popup__body p {
+    margin: 0.2rem 0 0.45rem;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .popup__body a,
+  .popup__body .muted {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+  }
+  .map__controls {
+    position: absolute;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 4;
+    display: grid;
+    justify-items: end;
+    gap: 0.65rem;
+  }
+  .layers {
+    display: inline-flex;
+    gap: 0.15rem;
+    padding: 0.2rem;
+    border-radius: var(--radius-3);
+    background: white;
+    box-shadow: var(--shadow-card);
+  }
+  .layers button {
+    border: 0;
+    background: transparent;
+    border-radius: var(--radius-2);
+    padding: 0.35rem 0.55rem;
+    font: inherit;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-ink-soft);
+    cursor: pointer;
+  }
+  .layers button.active {
+    background: var(--brand-sand-dark);
+    color: var(--brand-deep);
+  }
+  .zoom {
+    display: grid;
+    overflow: hidden;
+    border-radius: var(--radius-3);
+    background: white;
+    box-shadow: var(--shadow-card);
+  }
+  .zoom span {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: grid;
+    place-items: center;
+    border-bottom: 1px solid var(--brand-line);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .zoom span:last-child {
+    border-bottom: 0;
+  }
+  .zoom .locate {
+    color: var(--brand-teal);
+  }
+  .scale {
+    margin: 0;
+    padding: 0.2rem 0.45rem;
+    border-radius: var(--radius-2);
+    background: rgba(255, 255, 255, 0.92);
+    font-size: 0.625rem;
+    color: var(--brand-ink-soft);
+    box-shadow: var(--shadow-card);
   }
   .toggle {
     position: fixed;
@@ -146,13 +408,13 @@ const pins = Array.from({ length: pinCount }, (_, index) => index);
     transform: translateX(-50%);
     z-index: 30;
     border: 0;
-    border-radius: 999px;
-    background: var(--brand-ink);
-    color: #fff;
-    min-height: 44px;
+    border-radius: var(--radius-pill);
+    background: var(--brand-deep);
+    color: white;
+    min-height: 2.75rem;
     padding: 0.7rem 1.35rem;
-    font-weight: 700;
-    box-shadow: var(--shadow-card);
+    font-weight: var(--font-weight-7);
+    box-shadow: var(--shadow-card-hover);
     cursor: pointer;
   }
   .two-pane[data-mobile-view="map"] .list {
@@ -160,37 +422,31 @@ const pins = Array.from({ length: pinCount }, (_, index) => index);
   }
   .two-pane[data-mobile-view="map"] .map {
     display: block;
-    min-height: min(28rem, calc(100dvh - var(--header-h) - 2rem));
-    margin: 0.75rem 1rem 5rem;
   }
   @media (min-width: 960px) {
     .two-pane {
-      grid-template-columns: minmax(0, 1fr) minmax(16rem, 32%);
-      align-items: start;
-      gap: 0;
-      background: var(--brand-sand);
-      padding: 1rem 1rem 1rem 0;
+      grid-template-columns: minmax(20rem, 28rem) minmax(0, 1fr);
+      height: calc(100dvh - var(--header-h));
+      min-height: 36rem;
     }
     .list {
-      display: block !important;
-      align-self: stretch;
-      padding: 1.25rem 1.25rem 2rem 1.5rem;
-      border-right: 0;
-      background: transparent;
+      display: flex !important;
+      border-right: 1px solid var(--brand-line);
+      box-shadow: 4px 0 24px rgba(12, 35, 46, 0.06);
     }
-    /* Inset sticky map card — shorter/narrower than full pane */
+    .sync {
+      display: inline-flex;
+    }
+    .list__scroll {
+      padding-bottom: 1.5rem;
+    }
     .map {
       display: block !important;
-      position: sticky;
-      top: calc(var(--header-h) + 0.75rem);
-      height: calc(100dvh - var(--header-h) - 1.75rem);
-      max-height: 36rem;
-      width: 100%;
-      justify-self: stretch;
+      min-height: 0;
+      height: 100%;
     }
     .toggle {
       display: none;
     }
   }
 </style>
-

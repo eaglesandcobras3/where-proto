@@ -1,8 +1,8 @@
 ---
-import BaseLayout from "../../../../layouts/BaseLayout.astro";
-import DashboardNav from "../../../../components/DashboardNav.astro";
+import MerchantLayout from "../../../../layouts/MerchantLayout.astro";
 import ComposerCard from "../../../../components/islands/ComposerCard.svelte";
 import type { Business } from "../../../../data/types";
+import { href } from "../../../../lib/href";
 import { ownedBusinessPaths } from "../../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -16,16 +16,52 @@ interface Props {
 const { business } = Astro.props;
 ---
 
-<BaseLayout title={`New event · ${business.name}`}>
-  <div class="container section">
-    <h1>Post an event</h1>
-    <DashboardNav businessSlug={business.slug} active="event" />
+<MerchantLayout title={`New event · ${business.name}`} business={business} active="posts">
+  <header class="head">
+    <div>
+      <h1>Post an event</h1>
+      <p>A dated event for the public calendar. Linked update drafts go to the review queue.</p>
+    </div>
+    <a class="back" href={href(`/dashboard/${business.slug}/feed`)}>← Posts &amp; events</a>
+  </header>
+  <section class="card">
     <ComposerCard
       title="New event"
-      body="A dated event for the public calendar. Prototype only."
+      body="Prototype only — nothing is published until review."
       action="Submit event"
       kind="event"
       client:visible
     />
-  </div>
-</BaseLayout>
+  </section>
+</MerchantLayout>
+
+<style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    margin: 0 0 0.35rem;
+    color: var(--brand-deep);
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+  }
+  .head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+  .back {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
+    font-size: var(--font-size-1);
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: 1.15rem;
+    max-width: 40rem;
+  }
+</style>

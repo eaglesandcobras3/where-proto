@@ -26,4 +26,4 @@ https://eaglesandcobras3.github.io/where-proto/
 
 ## Routes
 
-See `ROUTE-SCAFFOLD.md`. `/ia` lists every live route. `/updates` is footer only.
+See `ROUTE-SCAFFOLD.md`. `/ia` lists every live route. Updates appear on the homepage, town, and business pages.

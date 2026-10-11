@@ -1,10 +1,10 @@
 ---
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import DashboardNav from "../../../components/DashboardNav.astro";
+import MerchantLayout from "../../../layouts/MerchantLayout.astro";
 import PostCard from "../../../components/PostCard.astro";
 import ComposerCard from "../../../components/islands/ComposerCard.svelte";
-import { postsFor } from "../../../data/catalog";
+import { events, postsFor } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
+import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -17,34 +17,145 @@ interface Props {
 
 const { business } = Astro.props;
 const feed = postsFor("business", business.slug).filter((item) => item.postedAs === "business");
+const businessEvents = events.filter((item) => item.businessSlug === business.slug).slice(0, 4);
 ---
 
-<BaseLayout title={`Post feed · ${business.name}`}>
-  <div class="container section">
-    <h1>Post as {business.name}</h1>
-    <DashboardNav businessSlug={business.slug} active="feed" />
-    <div class="stack">
-      {feed.map((post) => <PostCard post={post} />)}
-      {feed.length === 0 && <p class="empty">No business posts yet.</p>}
+<MerchantLayout title={`Posts & events · ${business.name}`} business={business} active="posts">
+  <header class="head">
+    <div>
+      <h1>Posts &amp; events</h1>
+      <p>Publish updates and dated events as {business.name}. Everything goes through review first.</p>
     </div>
-    <ComposerCard
-      title="New post"
-      body="Posting as the business happens here. Posting as a user happens on the public page."
-      action={`Post as ${business.name}`}
-      kind="update"
-      client:visible
-    />
+    <a class="btn" href={href(`/dashboard/${business.slug}/events/new`)}>New event</a>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Compose</h2>
+      <div class="stack">
+        <ComposerCard
+          title="Post an update"
+          body="Menu change, hours note, or seasonal special."
+          action={`Post as ${business.name}`}
+          kind="update"
+          client:visible
+        />
+        <ComposerCard
+          title="Post an event"
+          body="Creates a dated event plus a linked update draft."
+          action="Create event"
+          kind="event"
+          client:visible
+        />
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Recent posts</h2>
+      <div class="stack">
+        {feed.map((post) => <PostCard post={post} />)}
+        {feed.length === 0 && <p class="empty">No business posts yet.</p>}
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Upcoming events</h2>
+      <ul>
+        {
+          businessEvents.map((event) => (
+            <li>
+              <a href={href(`/event/${event.slug}`)}>{event.name}</a>
+              <span>{event.when}</span>
+            </li>
+          ))
+        }
+        {businessEvents.length === 0 && <li class="empty">No linked events yet.</li>}
+      </ul>
+    </section>
   </div>
-</BaseLayout>
+</MerchantLayout>
 
 <style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    margin: 0 0 0.35rem;
+    color: var(--brand-deep);
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+  }
+  .head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    max-width: 46ch;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.4rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-deep);
+    color: white;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    text-decoration: none;
+  }
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: 1.15rem;
+  }
+  h2 {
+    margin: 0 0 0.85rem;
+    color: var(--brand-deep);
+    font-size: var(--font-size-3);
+  }
   .stack {
     display: grid;
-    gap: var(--size-3);
-    max-width: 720px;
-    margin-bottom: var(--size-6);
+    gap: 0.85rem;
   }
   .empty {
     color: var(--brand-ink-soft);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+  }
+  li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding-bottom: 0.65rem;
+    border-bottom: 1px solid var(--brand-line);
+    font-size: var(--font-size-1);
+  }
+  li a {
+    color: var(--brand-deep);
+    font-weight: var(--font-weight-7);
+  }
+  li span {
+    color: var(--brand-ink-soft);
+    white-space: nowrap;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .grid > :first-child {
+      grid-column: 1 / -1;
+    }
   }
 </style>

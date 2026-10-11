@@ -1,18 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import AuthForm from "../../components/islands/AuthForm.svelte";
-import { href } from "../../lib/href";
 ---
 
 <BaseLayout title="Sign in">
   <div class="container section">
-    <h1>Welcome back</h1>
-    <AuthForm
-      mode="login"
-      loginHref={href("/auth/login")}
-      signupHref={href("/auth/signup")}
-      forgotHref={href("/auth/forgot-password")}
-      client:load
-    />
+    <p>Sign in to save favorites, ask questions, and manage a business.</p>
   </div>
 </BaseLayout>

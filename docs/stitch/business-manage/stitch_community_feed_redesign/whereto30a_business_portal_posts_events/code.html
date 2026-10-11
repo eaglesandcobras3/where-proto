@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "surface-dim": "#cbdbf5", "on-tertiary-fixed-variant": "#653e00", "on-secondary-container": "#007166", "on-secondary": "#ffffff", "on-primary-fixed": "#061e29", "primary-container": "#0c232e", "primary-fixed-dim": "#b3cad8", "on-primary-container": "#758b99", "canvas-bg": "#f8f9fa", "tertiary": "#110700", "on-tertiary-fixed": "#2a1700", "tertiary-fixed-dim": "#ffb95f", "on-error": "#ffffff", "on-surface-variant": "#42474b", "secondary-fixed": "#85f6e5", "on-error-container": "#93000a", "teal-interactive": "#00897b", "outline": "#73787b", "error-container": "#ffdad6", "primary": "#000b12", "surface": "#f8f9ff", "on-tertiary-container": "#be7900", "tertiary-container": "#311c00", "outline-variant": "#c3c7cb", "error": "#ba1a1a", "amber-warning": "#f59e0b", "surface-container-high": "#dce9ff", "inverse-on-surface": "#eaf1ff", "surface-tint": "#4c616e", "teal-surface": "#e0f2f1", "on-primary-fixed-variant": "#344a56", "on-surface": "#0b1c30", "secondary": "#006a60", "secondary-fixed-dim": "#67d9c9", "surface-container": "#e5eeff", "on-primary": "#ffffff", "secondary-container": "#85f6e5", "surface-container-highest": "#d3e4fe", "on-secondary-fixed": "#00201c", "inverse-surface": "#213145", "amber-surface": "#fef3c7", "tertiary-fixed": "#ffddb8", "on-secondary-fixed-variant": "#005048", "text-primary": "#0f172a", "surface-container-low": "#eff4ff", "primary-fixed": "#cfe6f5", "teal-accent": "#009688", "background": "#f8f9ff", "inverse-primary": "#b3cad8", "card-bg": "#ffffff", "on-background": "#0b1c30", "card-border": "#e2e8f0", "surface-container-lowest": "#ffffff", "surface-bright": "#f8f9ff", "surface-variant": "#d3e4fe", "text-muted": "#64748b", "on-tertiary": "#ffffff", "ocean-navy": "#0c232e" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-lg": "1.5rem", "space-sm": "0.5rem", "margin-md": "1.5rem", "margin": "1rem", "margin-lg": "2rem", "space-xs": "0.25rem", "space-md": "1rem", "gutter-sm": "1rem", "space-xl": "2.5rem", "gutter": "1.5rem", "gutter-lg": "2rem" }, "fontFamily": { "headline-lg": ["Plus Jakarta Sans"], "display-hero-mobile": ["Plus Jakarta Sans"], "display-hero": ["Plus Jakarta Sans"], "label-md": ["Plus Jakarta Sans"], "body-base": ["Inter"], "headline-lg-mobile": ["Plus Jakarta Sans"], "body-sm": ["Inter"], "label-xs": ["Plus Jakarta Sans"], "headline-sm": ["Plus Jakarta Sans"], "body-lead": ["Inter"], "label-lg": ["Plus Jakarta Sans"], "headline-md": ["Plus Jakarta Sans"] }, "fontSize": { "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}], "display-hero-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}], "display-hero": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.03em", "fontWeight": "800"}], "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600"}], "body-base": ["14px", {"lineHeight": "22px", "letterSpacing": "0em", "fontWeight": "400"}], "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.015em", "fontWeight": "700"}], "body-sm": ["13px", {"lineHeight": "18px", "letterSpacing": "0em", "fontWeight": "400"}], "label-xs": ["10px", {"lineHeight": "12px", "letterSpacing": "0.05em", "fontWeight": "700"}], "headline-sm": ["18px", {"lineHeight": "24px", "letterSpacing": "-0.01em", "fontWeight": "600"}], "body-lead": ["16px", {"lineHeight": "26px", "letterSpacing": "-0.005em", "fontWeight": "400"}], "label-lg": ["14px", {"lineHeight": "18px", "letterSpacing": "0.01em", "fontWeight": "600"}], "headline-md": ["22px", {"lineHeight": "28px", "letterSpacing": "-0.015em", "fontWeight": "700"}] } } } };</script></head><body class="bg-background font-body-base text-body-base text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-card-bg z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="h-16 px-space-lg flex items-center gap-space-sm bg-card-bg"><span class="font-headline-sm text-headline-sm text-ocean-navy font-bold tracking-tight">WhereTo30A</span><span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-teal-surface text-secondary font-bold tracking-wider uppercase">Merchant Outpost</span></div><div class="px-space-md py-space-sm"><nav class="flex flex-col gap-1" data-active-classes="bg-primary-container text-on-primary font-label-lg text-label-lg rounded-lg shadow-sm"><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="overview" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">dashboard</span><span>Overview</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="business-profile" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">storefront</span><span>Business profile</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="posts-and-events" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">campaign</span><span>Posts &amp; events</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="faqs-and-knowledge" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">quiz</span><span>FAQs &amp; knowledge</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="community-feed" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">forum</span><span>Community feed</span></div><span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-teal-surface text-secondary font-bold">3</span></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="guide-mentions" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">menu_book</span><span>Guide mentions</span></div></a><a class="flex items-center justify-between px-3 py-2.5 rounded-lg font-label-lg text-label-lg text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-all group" data-path="advertise-and-grow" href="#"><div class="flex items-center gap-3"><span class="material-symbols-outlined text-[20px] text-outline group-hover:text-ocean-navy transition-colors">trending_up</span><span>Advertise &amp; grow</span></div><span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-amber-surface text-on-tertiary-container font-bold">Growth</span></a></nav></div></div><div class="p-space-md"><div class="p-space-md rounded-xl bg-surface-container-low flex flex-col gap-space-sm"><div class="flex items-center gap-2 text-ocean-navy"><span class="material-symbols-outlined text-[18px] text-teal-interactive">support_agent</span><span class="font-label-md text-label-md font-bold text-ocean-navy">Need a hand?</span></div><p class="font-body-sm text-body-sm text-text-muted leading-relaxed">See what visitors see, then fill any gaps before promoting your outpost.</p><button class="w-full flex items-center justify-center gap-1.5 py-2 px-3 rounded-lg bg-card-bg hover:bg-surface text-ocean-navy font-label-md text-label-md font-semibold transition-all shadow-[0_1px_3px_rgba(12,35,46,0.04)]" type="button"><span class="material-symbols-outlined text-[16px]">visibility</span><span>Preview profile</span></button></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-card-bg/95 backdrop-blur-xl z-40 px-space-lg flex items-center justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex items-center gap-space-md"><div class="flex items-center gap-3 px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer"><div class="w-7 h-7 rounded-lg bg-ocean-navy flex items-center justify-center text-on-primary font-headline-sm text-headline-sm font-bold text-[13px]">SG</div><div class="flex flex-col"><div class="flex items-center gap-1.5"><span class="font-label-md text-label-md font-bold text-ocean-navy">Seagrove Garden Co.</span><span class="material-symbols-outlined text-[16px] text-outline">unfold_more</span></div><div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 rounded-full bg-teal-accent"></span><span class="font-label-xs text-label-xs text-secondary font-medium">Profile is live</span></div></div></div></div><div class="flex items-center gap-space-md"><button class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-surface-container-low hover:bg-surface-container text-ocean-navy font-label-md text-label-md transition-colors" type="button"><span class="material-symbols-outlined text-[16px] text-teal-interactive">open_in_new</span><span>View public profile</span></button><button aria-label="Notifications" class="relative w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2 right-2 w-2 h-2 rounded-full bg-amber-warning"></span></button><div class="flex items-center gap-2.5 pl-2"><div class="flex flex-col items-end"><span class="font-label-md text-label-md font-bold text-ocean-navy">Jamie Lee</span><span class="font-label-xs text-label-xs text-text-muted">Business owner</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="w-full pt-16 px-space-lg pb-space-xl bg-background min-h-screen"><div class="flex flex-col w-full">
+<!-- Top Context Header Bar (No double H1, tailored editorial sub-nav context) -->
+<div class="w-full mb-space-lg flex flex-col md:flex-row md:items-end justify-between gap-space-md">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-xs text-label-xs px-2.5 py-0.5 rounded-full bg-surface-container-high text-ocean-navy font-bold tracking-wider uppercase">Content Studio</span>
+<span class="font-label-xs text-label-xs text-text-muted flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-teal-accent"></span>
+          Corridor Live Syndication
+        </span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-ocean-navy tracking-tight font-extrabold">Posts &amp; events</h1>
+<p class="font-body-base text-body-base text-text-muted mt-1 max-w-2xl">
+        Choose the format that matches what you have to share with corridor residents and visitors across Scenic Highway 30A.
+      </p>
+</div>
+<!-- Quick Metrics Strip -->
+<div class="flex items-center gap-3">
+<div class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-surface-container-low">
+<div class="w-8 h-8 rounded-lg bg-teal-surface flex items-center justify-center text-teal-interactive">
+<span class="material-symbols-outlined text-[18px]">visibility</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-text-muted">30-day views</span>
+<span class="font-label-lg text-label-lg font-bold text-ocean-navy">1,482</span>
+</div>
+</div>
+<div class="flex items-center gap-2.5 px-4 py-2 rounded-xl bg-surface-container-low">
+<div class="w-8 h-8 rounded-lg bg-amber-surface flex items-center justify-center text-on-tertiary-container">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-xs text-label-xs text-text-muted">Town mentions</span>
+<span class="font-label-lg text-label-lg font-bold text-ocean-navy">Seagrove · Seaside</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Creation Cards Bento Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md mb-space-xl">
+<!-- 1. Business Update Card -->
+<div class="group relative rounded-xl bg-card-bg p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-teal-surface/60 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-12 h-12 rounded-xl bg-teal-surface text-teal-interactive flex items-center justify-center group-hover:bg-teal-interactive group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">chat_bubble</span>
+</div>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-teal-surface text-secondary font-bold">Fast publish</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-ocean-navy mb-2">Business update</h2>
+<p class="font-body-base text-body-base text-text-muted leading-relaxed">
+          New services, seasonal hours, team news, or anything you would post on social feeds to alert local patrons.
+        </p>
+</div>
+<div class="mt-space-lg pt-space-md flex flex-col gap-2">
+<button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-teal-interactive hover:bg-secondary text-on-primary font-label-lg text-label-lg transition-all shadow-sm" type="button">
+<span class="material-symbols-outlined text-[18px]">add_circle</span>
+<span>Create update</span>
+</button>
+<span class="font-label-xs text-label-xs text-center text-text-muted">Shared to 30A timeline instantly</span>
+</div>
+</div>
+<!-- 2. Event Card -->
+<div class="group relative rounded-xl bg-card-bg p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-surface-container-high/60 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low text-ocean-navy flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">calendar_today</span>
+</div>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-bold">Calendar listing</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-ocean-navy mb-2">Event</h2>
+<p class="font-body-base text-body-base text-text-muted leading-relaxed">
+          A dated event with time, location, and optional ticket or RSVP link featured across the seasonal guide.
+        </p>
+</div>
+<div class="mt-space-lg pt-space-md flex flex-col gap-2">
+<button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-surface-container-low hover:bg-surface-container text-ocean-navy font-label-lg text-label-lg transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">event_available</span>
+<span>Create event</span>
+</button>
+<span class="font-label-xs text-label-xs text-center text-text-muted">Appears in South Walton Weekend Rundowns</span>
+</div>
+</div>
+<!-- 3. Photo Card -->
+<div class="group relative rounded-xl bg-card-bg p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between overflow-hidden">
+<div class="absolute -top-12 -right-12 w-32 h-32 bg-surface-variant/60 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-500"></div>
+<div>
+<div class="flex items-center justify-between mb-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-low text-ocean-navy flex items-center justify-center group-hover:bg-primary-container group-hover:text-on-primary transition-colors">
+<span class="material-symbols-outlined text-[24px]">photo_library</span>
+</div>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-surface-container-low text-on-surface-variant font-bold">Visual album</span>
+</div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-ocean-navy mb-2">Photo</h2>
+<p class="font-body-base text-body-base text-text-muted leading-relaxed">
+          Add recent work to your profile gallery, with an optional caption and location tag for visiting sightseers.
+        </p>
+</div>
+<div class="mt-space-lg pt-space-md flex flex-col gap-2">
+<button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-surface-container-low hover:bg-surface-container text-ocean-navy font-label-lg text-label-lg transition-all" type="button">
+<span class="material-symbols-outlined text-[18px]">add_photo_alternate</span>
+<span>Add photo</span>
+</button>
+<span class="font-label-xs text-label-xs text-center text-text-muted">Auto-tagged with Seagrove Garden Co.</span>
+</div>
+</div>
+</div>
+<!-- Reference Snapshot Accordion Bar (Quietly dock original system reference) -->
+<div class="mb-space-lg p-3 rounded-xl bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-teal-interactive">preview</span>
+<span class="font-label-md text-label-md text-ocean-navy font-bold">Original reference archive</span>
+<span class="font-label-xs text-label-xs text-text-muted">Screenshot comparison</span>
+</div>
+<button class="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-card-bg text-ocean-navy font-label-md text-label-md hover:bg-surface transition-all shadow-sm" id="toggle-ref-btn" type="button">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+<span id="ref-btn-text">View reference preview</span>
+</button>
+</div>
+<div class="hidden mb-space-lg p-4 rounded-xl bg-card-bg shadow-sm" id="reference-panel">
+<div class="flex items-center justify-between pb-3 mb-3">
+<span class="font-label-md text-label-md text-text-muted">Legacy Outpost Mockup (IMAGE_4)</span>
+<span class="font-label-xs text-label-xs text-teal-interactive font-semibold">Active design uplifted to Coastal Editorial</span>
+</div>
+<div class="rounded-lg overflow-hidden bg-surface-container-low flex items-center justify-center max-h-96">
+<img alt="Legacy posts and events mockup" class="w-full h-auto object-contain max-h-96" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBMfL9WzgNhmsQ89Yshf9raIFOioPqo8Bj8WpmGniKE7fdXEWxRJsJNRjcYQg9a5lv4vblR_AsYzjeSWbW2KaeuJFRaykMLfKh2yv5njz5r56tSaWNthyWGDmm9WYV1RmzDo7e-wlGilIRixbFoMp6d5fu9oefplQNyGBFD_A70Z4xxVLVA9Yg4Bu-RZOrq1jYf92ZkgGkrRQIRpp3POFBKOOQWnCo3aRgBhRJ40nb6y32qR6oLL9fiamYLyh-k0ShykQ"/>
+</div>
+</div>
+<!-- Management & Activity Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- Main Activity Stream (8 Cols) -->
+<div class="lg:col-span-8 flex flex-col gap-space-md">
+<!-- Management Header & Filters -->
+<div class="p-space-lg rounded-xl bg-card-bg shadow-sm flex flex-col gap-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+<div>
+<h2 class="font-headline-sm text-headline-sm font-bold text-ocean-navy">Published</h2>
+<p class="font-body-sm text-body-sm text-text-muted mt-0.5">Your recent profile activity and corridor distribution.</p>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-label-xs text-label-xs text-text-muted">Sort by:</span>
+<button class="flex items-center gap-1 font-label-md text-label-md font-bold text-ocean-navy hover:text-teal-interactive" type="button">
+<span>Most recent</span>
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+</button>
+</div>
+</div>
+<!-- Filter Tabs -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1" id="filter-tabs">
+<button class="filter-tab active px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-ocean-navy text-on-primary transition-all flex items-center gap-2" type="button">
+<span>All</span>
+<span class="px-1.5 py-0.2 rounded-full bg-on-primary/20 text-on-primary font-bold text-[10px]">2</span>
+</button>
+<button class="filter-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-ocean-navy transition-all flex items-center gap-2" type="button">
+<span>Updates</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container text-ocean-navy font-bold text-[10px]">1</span>
+</button>
+<button class="filter-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-ocean-navy transition-all flex items-center gap-2" type="button">
+<span>Events</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container text-text-muted font-bold text-[10px]">0</span>
+</button>
+<button class="filter-tab px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-ocean-navy transition-all flex items-center gap-2" type="button">
+<span>Photos</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container text-ocean-navy font-bold text-[10px]">1</span>
+</button>
+</div>
+</div>
+<!-- Published Item 1: Business Update -->
+<div class="rounded-xl bg-card-bg p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col gap-space-md group">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-teal-surface text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">campaign</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-xs text-label-xs px-2.5 py-0.5 rounded-full bg-teal-surface text-secondary font-bold uppercase tracking-wider">Update</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-xs text-label-xs text-text-muted">Apr 8, 2026</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-xs text-label-xs text-teal-interactive font-medium flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-teal-accent"></span> Live on Corridor
+                </span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-ocean-navy group-hover:text-teal-interactive transition-colors">
+                Spring planting calendar is now open
+              </h3>
+<p class="font-body-base text-body-base text-text-muted mt-1 leading-relaxed line-clamp-2">
+                We've stocked fresh salt-tolerant bougainvillea, native dune perennials, and certified organic soil amendments for homeowner spring rejuvenation.
+              </p>
+</div>
+</div>
+<!-- Actions Dropdown Trigger -->
+<div class="relative">
+<button aria-label="Item actions" class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-surface-container-low hover:text-ocean-navy transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Metric Badges & Quick Action Links -->
+<div class="pt-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm bg-surface-container-low/50 -mx-space-lg -mb-space-lg px-space-lg py-3 rounded-b-xl">
+<div class="flex items-center gap-4 text-text-muted font-body-sm text-body-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive">thumb_up</span>
+<span class="font-label-md text-label-md font-semibold text-ocean-navy">18 likes</span>
+</div>
+<span class="text-outline-variant">·</span>
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-ocean-navy">travel_explore</span>
+<span class="font-label-md text-label-md font-semibold text-ocean-navy">6 profile visits</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 rounded-md text-ocean-navy hover:bg-card-bg font-label-md text-label-md font-semibold transition-all" type="button">
+              Edit
+            </button>
+<span class="text-outline-variant">·</span>
+<button class="px-2.5 py-1 rounded-md text-teal-interactive hover:bg-card-bg font-label-md text-label-md font-semibold transition-all flex items-center gap-1" type="button">
+<span>View live</span>
+<span class="material-symbols-outlined text-[14px]">north_east</span>
+</button>
+<span class="text-outline-variant">·</span>
+<button class="px-2.5 py-1 rounded-md text-text-muted hover:text-error hover:bg-card-bg font-label-md text-label-md font-semibold transition-all" type="button">
+              Archive
+            </button>
+</div>
+</div>
+</div>
+<!-- Published Item 2: Photo Album -->
+<div class="rounded-xl bg-card-bg p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col gap-space-md group">
+<div class="flex items-start justify-between gap-space-md">
+<div class="flex items-start gap-space-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-ocean-navy flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">photo_camera</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-2 mb-1">
+<span class="font-label-xs text-label-xs px-2.5 py-0.5 rounded-full bg-surface-container-high text-ocean-navy font-bold uppercase tracking-wider">Photo</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-xs text-label-xs text-text-muted">Apr 2, 2026</span>
+<span class="w-1 h-1 rounded-full bg-outline-variant"></span>
+<span class="font-label-xs text-label-xs text-ocean-navy font-medium">Added to gallery</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm font-bold text-ocean-navy group-hover:text-teal-interactive transition-colors">
+                Native pollinator garden in Seaside
+              </h3>
+<p class="font-body-base text-body-base text-text-muted mt-1 leading-relaxed">
+                4 photos in album · Coastal scrub lupine, gaillardia, and crushed coquina pathways completed for cottage restoration.
+              </p>
+</div>
+</div>
+<!-- Actions Dropdown Trigger -->
+<div class="relative">
+<button aria-label="Item actions" class="w-8 h-8 rounded-lg flex items-center justify-center text-text-muted hover:bg-surface-container-low hover:text-ocean-navy transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">more_vert</span>
+</button>
+</div>
+</div>
+<!-- Thumbnail Preview Strip (Visual Richness with placeholders) -->
+<div class="grid grid-cols-4 gap-2 pt-1">
+<div class="h-20 rounded-lg overflow-hidden relative group/thumb">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-105" data-alt="Close up photography of vibrant Florida native purple wild lupine flowers growing in soft coastal sunlight with sandy coastal soil background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBx-AwPi5teKZnTeas8PPKjJKxbyS7a6WZC4MWt15-WefsyDmdQLRu4-7FholJDqYxB8oYDnV5n9KiDkcbuejsHV8GXBFqxsAepPZv1RGvRtSTtFUAqvnUP4TGoWn1BuQxpfZelf27RBvIMmNW5i1scqJAEQ2nBGKMWPLVljqf1OfSDTrBMTOqYvIV2lArCLKsMPKvNFhfHAv9Q-9BZboiZyZ-XoYjFR3QjijKQ3frFDJxUb2LmUGBS"/>
+</div>
+<div class="h-20 rounded-lg overflow-hidden relative group/thumb">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-105" data-alt="Architectural photo of Seaside cottage garden featuring crushed white shell pathways, weathered timber borders, and lush native greenery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDIiMy25VHaXivx06QHUcoqkm2_31mHNTWJCRAyud2kD8ED0OG3Bu5MJMlLSkwVOYwlZxgNiL-TmCOtUUCZ7Cvzxo1eXRqcU4XVaCF_B-i427SY1khaHSg93V4_yEQYbLzwWwoLPy-7Ejky-b-mESpEGV7Bx0dXqb7NShfTkq6m_aHxkNsDhokM9jngDasqTVuj9cCE0RTtxbG14xrrjnJzlZPErleQMWbdyPR6lLZlVOLfgrEph48u"/>
+</div>
+<div class="h-20 rounded-lg overflow-hidden relative group/thumb">
+<img class="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-105" data-alt="Artisanal terracotta garden pots filled with blooming gaillardia blanket flowers outside a sunlit coastal Florida boutique nursery" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAPb38gBpulAYi3dCJ9IFRmuzX8PWcqfrWgQzoSIedtJ2g1UnGrw2dRcXPIZNxaySHNhbI-FtNBKMjN3JkrxDUQ1_K4C08ycCqMYMH4acCwvKqYAITxa4CrGtesZ7IRGLMNWCgdHYrCT_4EpcN5rgNp4hr4ksG6kFUQ2QCqzpWFZRcYnZr-GnT6XrHED-2ssMI5-AqGLKD9n690Q6ppeDptp4lKEqRdHwqevvergpah1MwrCORhuogi"/>
+</div>
+<div class="h-20 rounded-lg bg-surface-container-high flex flex-col items-center justify-center text-ocean-navy hover:bg-surface-container-highest cursor-pointer transition-colors">
+<span class="material-symbols-outlined text-[20px]">add_photo_alternate</span>
+<span class="font-label-xs text-label-xs font-bold mt-1">+1 more</span>
+</div>
+</div>
+<!-- Metric Badges & Quick Action Links -->
+<div class="pt-space-md flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm bg-surface-container-low/50 -mx-space-lg -mb-space-lg px-space-lg py-3 rounded-b-xl">
+<div class="flex items-center gap-4 text-text-muted font-body-sm text-body-sm">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive">visibility</span>
+<span class="font-label-md text-label-md font-semibold text-ocean-navy">240 gallery views</span>
+</div>
+<span class="text-outline-variant">·</span>
+<span class="font-label-md text-label-md text-text-muted">Location: Seaside, FL</span>
+</div>
+<div class="flex items-center gap-2">
+<button class="px-2.5 py-1 rounded-md text-ocean-navy hover:bg-card-bg font-label-md text-label-md font-semibold transition-all" type="button">
+              Manage
+            </button>
+<span class="text-outline-variant">·</span>
+<button class="px-2.5 py-1 rounded-md text-teal-interactive hover:bg-card-bg font-label-md text-label-md font-semibold transition-all flex items-center gap-1" type="button">
+<span>View live</span>
+<span class="material-symbols-outlined text-[14px]">north_east</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Empty State Teaser for Events -->
+<div class="rounded-xl bg-surface-container-low/60 p-space-lg flex flex-col sm:flex-row items-center justify-between gap-space-md">
+<div class="flex items-center gap-space-md">
+<div class="w-10 h-10 rounded-full bg-amber-surface text-on-tertiary-container flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[20px]">calendar_add_on</span>
+</div>
+<div>
+<h4 class="font-label-lg text-label-lg font-bold text-ocean-navy">No scheduled events yet</h4>
+<p class="font-body-sm text-body-sm text-text-muted">Hosting a garden workshop, trunk show, or sunset tasting? List it on the 30A community calendar.</p>
+</div>
+</div>
+<button class="shrink-0 px-4 py-2 rounded-lg bg-card-bg hover:bg-surface text-ocean-navy font-label-md text-label-md font-bold transition-all shadow-sm" type="button">
+          Plan first event
+        </button>
+</div>
+</div>
+<!-- Right Contextual Rail: Guide Reach & Live Advisory (4 Cols) -->
+<div class="lg:col-span-4 flex flex-col gap-space-md">
+<!-- Corridor Syndication Performance Card -->
+<div class="rounded-xl bg-card-bg p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2 text-ocean-navy font-bold">
+<span class="material-symbols-outlined text-[20px] text-teal-interactive">insights</span>
+<span class="font-label-lg text-label-lg">Distribution reach</span>
+</div>
+<span class="font-label-xs text-label-xs px-2 py-0.5 rounded-full bg-teal-surface text-secondary font-bold">Past 7 days</span>
+</div>
+<!-- SVG Mini Progress Ring & Key Stat -->
+<div class="flex items-center gap-space-md p-3 rounded-lg bg-surface-container-low">
+<div class="relative w-14 h-14 shrink-0 flex items-center justify-center">
+<svg class="w-14 h-14 -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-width="3.5"></path>
+<path class="text-teal-interactive" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" stroke-dasharray="82, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-label-xs text-label-xs font-bold text-ocean-navy">82%</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-bold text-ocean-navy">High local affinity</span>
+<span class="font-body-sm text-body-sm text-text-muted">82% of reader taps originate within Walton County.</span>
+</div>
+</div>
+<!-- Town breakdown list -->
+<div class="flex flex-col gap-2 pt-1">
+<div class="flex items-center justify-between text-body-sm font-body-sm">
+<span class="text-ocean-navy font-medium">Seagrove Beach</span>
+<span class="font-label-md text-label-md font-bold text-ocean-navy">64% readers</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+<div class="h-full bg-teal-interactive rounded-full" style="width: 64%"></div>
+</div>
+<div class="flex items-center justify-between text-body-sm font-body-sm mt-2">
+<span class="text-ocean-navy font-medium">Seaside / Watercolor</span>
+<span class="font-label-md text-label-md font-bold text-ocean-navy">28% readers</span>
+</div>
+<div class="w-full h-1.5 rounded-full bg-surface-container-low overflow-hidden">
+<div class="h-full bg-ocean-navy rounded-full" style="width: 28%"></div>
+</div>
+</div>
+</div>
+<!-- Real-Time Advisory / Seasonal Tips Card (Amber Notice) -->
+<div class="rounded-xl bg-amber-surface/70 p-space-md shadow-sm flex flex-col gap-2 relative overflow-hidden">
+<div class="absolute top-0 left-0 bottom-0 w-1.5 bg-amber-warning"></div>
+<div class="flex items-center gap-2 pl-2">
+<span class="material-symbols-outlined text-[18px] text-amber-warning">wb_sunny</span>
+<span class="font-label-md text-label-md font-bold text-on-tertiary-container">Peak Spring Corridor Notice</span>
+</div>
+<p class="pl-2 font-body-sm text-body-sm text-on-tertiary-fixed leading-relaxed">
+          Spring break influx peaks through April 24th. Posts tagged with weekend inventory or parking tips gain 3.4x more bookmark saves.
+        </p>
+</div>
+<!-- Quick Outpost Guidelines Card -->
+<div class="rounded-xl bg-card-bg p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center gap-2 text-ocean-navy font-bold">
+<span class="material-symbols-outlined text-[20px] text-teal-interactive">checklist</span>
+<span class="font-label-lg text-label-lg">Posting recommendations</span>
+</div>
+<ul class="flex flex-col gap-3 font-body-sm text-body-sm text-text-muted">
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive mt-0.5">check_circle</span>
+<span>Tag exact town neighborhood (e.g. Rosemary Beach or Grayton) to optimize guide feeds.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive mt-0.5">check_circle</span>
+<span>Use natural daylight photography capturing outdoor Florida aesthetics.</span>
+</li>
+<li class="flex items-start gap-2.5">
+<span class="material-symbols-outlined text-[16px] text-teal-interactive mt-0.5">check_circle</span>
+<span>Publish updates between 8 AM – 10 AM for daily beach itinerary placement.</span>
+</li>
+</ul>
+<div class="pt-space-sm">
+<a class="inline-flex items-center gap-1.5 text-teal-interactive hover:text-secondary font-label-md text-label-md font-bold transition-colors" href="#">
+<span>Read Merchant Guide Best Practices</span>
+<span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+</a>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  // Simple interaction for the reference toggle & filter pills
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggle-ref-btn');
+    const refPanel = document.getElementById('reference-panel');
+    const btnText = document.getElementById('ref-btn-text');
+
+    if (toggleBtn && refPanel) {
+      toggleBtn.addEventListener('click', () => {
+        const isHidden = refPanel.classList.contains('hidden');
+        if (isHidden) {
+          refPanel.classList.remove('hidden');
+          btnText.textContent = 'Hide reference preview';
+        } else {
+          refPanel.classList.add('hidden');
+          btnText.textContent = 'View reference preview';
+        }
+      });
+    }
+
+    const filterTabs = document.querySelectorAll('.filter-tab');
+    filterTabs.forEach(tab => {
+      tab.addEventListener('click', () => {
+        filterTabs.forEach(t => {
+          t.classList.remove('bg-ocean-navy', 'text-on-primary');
+          t.classList.add('bg-surface-container-low', 'text-on-surface-variant');
+        });
+        tab.classList.add('bg-ocean-navy', 'text-on-primary');
+        tab.classList.remove('bg-surface-container-low', 'text-on-surface-variant');
+      });
+    });
+  });
+</script></main></div></body></html>

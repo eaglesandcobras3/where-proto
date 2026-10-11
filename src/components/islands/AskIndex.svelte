@@ -9,6 +9,7 @@
     answers: number;
     town?: string;
     townSlug?: string;
+    role?: string;
   }
 
   let {
@@ -28,6 +29,7 @@
   let town = $state(initialTown);
   let topic = $state(initialTopic);
   let query = $state(initialQuery);
+  let sort = $state<"trending" | "latest" | "unanswered" | "top">("trending");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -36,10 +38,20 @@
 
   const topicWords: Record<string, string[]> = {
     parking: ["parking", "park", "access"],
-    dining: ["eat", "dinner", "food", "restaurant"],
+    dining: ["eat", "dinner", "food", "restaurant", "dining"],
     family: ["kids", "family", "children"],
     "getting-around": ["bike", "cart", "trail", "golf"],
+    "beach-access": ["beach", "access", "parking"],
   };
+
+  function topicLabel(item: Row) {
+    const hay = `${item.title} ${item.body ?? ""}`.toLowerCase();
+    if (/(park|access|beach)/.test(hay)) return "Beach Access";
+    if (/(eat|dinner|food|restaurant)/.test(hay)) return "Dining & Food";
+    if (/(bike|cart|trail|golf)/.test(hay)) return "Golf Carts & Biking";
+    if (/(kid|family)/.test(hay)) return "Family";
+    return "Local tip";
+  }
 
   let rows = $derived(
     [...questions]
@@ -54,9 +66,13 @@
           const hay = `${item.title} ${item.body ?? ""} ${item.town ?? ""}`.toLowerCase();
           if (!hay.includes(query.trim().toLowerCase())) return false;
         }
+        if (sort === "unanswered" && item.answers > 0) return false;
         return true;
       })
-      .toSorted((a, b) => b.createdAt.localeCompare(a.createdAt)),
+      .toSorted((a, b) => {
+        if (sort === "top" || sort === "trending") return b.answers - a.answers || b.createdAt.localeCompare(a.createdAt);
+        return b.createdAt.localeCompare(a.createdAt);
+      }),
   );
 
   $effect(() => {
@@ -72,36 +88,52 @@
   });
 </script>
 
-<section class="latest">
-  <div class="latest__head">
-    <h2>Latest questions</h2>
-    <p class="count" aria-live="polite">
-      {rows.length} {rows.length === 1 ? "question" : "questions"}
-    </p>
+<section class="feed">
+  <div class="sort" aria-label="Sort questions">
+    <span class="sort__label">Sort:</span>
+    <button class:active={sort === "trending"} type="button" onclick={() => (sort = "trending")}>Trending</button>
+    <button class:active={sort === "latest"} type="button" onclick={() => (sort = "latest")}>Latest</button>
+    <button class:active={sort === "unanswered"} type="button" onclick={() => (sort = "unanswered")}>Unanswered</button>
+    <button class:active={sort === "top"} type="button" onclick={() => (sort = "top")}>Top Rated</button>
   </div>
+
   <div class="list">
     {#each rows as item}
-      <a class="card" href={path(`/ask/${item.slug}`)}>
-        <div class="meta">
-          <span class="avatar" aria-hidden="true">{item.author.charAt(0)}</span>
-          <span>
-            {item.relative}
-            · {item.answers}
-            {item.answers === 1 ? "reply" : "replies"}
-            {#if item.town}
-              · {item.town}
-            {/if}
-          </span>
+      <article class="card">
+        <div class="card__top">
+          <div class="who">
+            <span class="avatar" aria-hidden="true">{item.author.charAt(0)}</span>
+            <div>
+              <p class="name">{item.author}</p>
+              <p class="meta">
+                {item.role ?? "Local"} · {item.relative}
+              </p>
+            </div>
+          </div>
+          <div class="tags">
+            {#if item.town}<span class="tag">{item.town}</span>{/if}
+            <span class="tag tag--topic">{topicLabel(item)}</span>
+          </div>
         </div>
-        <h3>{item.title}</h3>
+        <h3><a href={path(`/ask/${item.slug}`)}>{item.title}</a></h3>
+        {#if item.body}
+          <p class="excerpt">{item.body}</p>
+        {/if}
+        {#if item.answers > 0}
+          <div class="highlight">
+            <span class="highlight__label">Top answer</span>
+            <p>Locals have shared {item.answers} {item.answers === 1 ? "reply" : "replies"} on this thread.</p>
+          </div>
+        {/if}
         <div class="footer">
-          <span class="like">👍 Like</span>
-          <span class="comments">
-            {item.answers}
-            {item.answers === 1 ? "comment" : "comments"} →
-          </span>
+          <div class="stats">
+            <span>Helpful</span>
+            <span>{item.answers} {item.answers === 1 ? "answer" : "answers"}</span>
+            <span>Share</span>
+          </div>
+          <a class="join" href={path(`/ask/${item.slug}`)}>Join discussion →</a>
         </div>
-      </a>
+      </article>
     {:else}
       <p class="empty">No questions match those filters.</p>
     {/each}
@@ -109,74 +141,154 @@
 </section>
 
 <style>
-  .latest__head {
+  .sort {
     display: flex;
     flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: var(--size-3);
+    align-items: center;
+    gap: 0.85rem;
     margin-bottom: var(--size-4);
+    font-size: var(--font-size-1);
   }
-  .latest h2 {
-    margin: 0;
-    font-size: var(--font-size-4);
-    color: var(--brand-deep);
+  .sort__label {
+    color: var(--brand-ink-soft);
+    font-weight: var(--font-weight-7);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: var(--font-size-0);
   }
-  .count {
-    margin: 0;
+  .sort button {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
     font-weight: var(--font-weight-6);
     color: var(--brand-ink-soft);
+    cursor: pointer;
+  }
+  .sort button.active {
+    color: var(--ask-teal, var(--brand-teal));
+    box-shadow: inset 0 -2px 0 currentColor;
   }
   .list {
     display: grid;
     gap: var(--size-3);
   }
   .card {
-    display: grid;
-    gap: var(--size-3);
     background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: 1rem;
-    padding: var(--size-4) var(--size-5);
-    color: var(--brand-ink);
-  }
-  .card:hover {
-    text-decoration: none;
+    border: 1px solid var(--ask-line, var(--brand-line));
+    border-radius: var(--radius-card, 0.75rem);
     box-shadow: var(--shadow-card);
+    padding: var(--size-4) var(--size-5);
   }
-  .meta {
-    display: flex;
-    align-items: center;
-    gap: var(--size-2);
-    font-size: var(--font-size-1);
-    color: var(--brand-ink-soft);
-  }
-  .avatar {
-    width: 1.75rem;
-    height: 1.75rem;
-    border-radius: 50%;
-    background: var(--brand-teal-soft);
-    color: var(--brand-deep);
-    display: grid;
-    place-items: center;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-  }
-  h3 {
-    margin: 0;
-    font-size: var(--font-size-3);
-    color: var(--brand-deep);
-  }
-  .footer {
+  .card__top {
     display: flex;
     justify-content: space-between;
     gap: var(--size-3);
-    font-size: var(--font-size-1);
+    align-items: flex-start;
+    margin-bottom: var(--size-3);
+  }
+  .who {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  .avatar {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: var(--ask-teal-soft, var(--brand-teal-soft));
+    color: var(--ask-navy, var(--brand-deep));
+    display: grid;
+    place-items: center;
+    font-weight: var(--font-weight-7);
+  }
+  .name {
+    margin: 0;
+    font-weight: var(--font-weight-7);
+    color: var(--ask-teal, var(--brand-teal));
+  }
+  .meta {
+    margin: 0;
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
   }
-  .comments {
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+  }
+  .tag {
+    font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
-    color: var(--brand-deep);
+    color: var(--ask-navy, var(--brand-deep));
+    background: var(--ask-teal-soft, var(--brand-teal-soft));
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+  }
+  .tag--topic {
+    background: #eef2f4;
+  }
+  h3 {
+    margin: 0 0 var(--size-2);
+    font-size: var(--font-size-3);
+    color: var(--ask-navy, var(--brand-deep));
+    line-height: 1.3;
+  }
+  h3 a {
+    color: inherit;
+  }
+  h3 a:hover {
+    color: var(--ask-teal, var(--brand-teal));
+  }
+  .excerpt {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .highlight {
+    margin-top: var(--size-3);
+    padding: var(--size-3);
+    border-radius: 0.65rem;
+    background: var(--ask-teal-soft, var(--brand-teal-soft));
+  }
+  .highlight__label {
+    display: inline-block;
+    margin-bottom: 0.25rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ask-teal, var(--brand-teal));
+  }
+  .highlight p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--ask-navy, var(--brand-deep));
+  }
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-3);
+    margin-top: var(--size-4);
+    padding-top: var(--size-3);
+    border-top: 1px solid var(--ask-line, var(--brand-line));
+    font-size: var(--font-size-1);
+  }
+  .stats {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    color: var(--brand-ink-soft);
+  }
+  .join {
+    font-weight: var(--font-weight-7);
+    color: var(--ask-teal, var(--brand-teal));
   }
   .empty {
     color: var(--brand-ink-soft);

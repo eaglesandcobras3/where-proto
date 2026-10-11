@@ -1,24 +1,16 @@
 ---
-import PlaceLayout from "../../layouts/PlaceLayout.astro";
-import TwoPaneMap from "../../components/TwoPaneMap.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import Corridor from "../../components/Corridor.astro";
+import MapToggle from "../../components/MapToggle.astro";
+import ContributeCard from "../../components/ContributeCard.astro";
 import CategoriesInTown from "../../components/CategoriesInTown.astro";
 import AreasInTown from "../../components/AreasInTown.astro";
-import AtAGlance from "../../components/AtAGlance.astro";
-import UpdatesModule from "../../components/UpdatesModule.astro";
+import TownCommunitySections from "../../components/TownCommunitySections.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import GuideCard from "../../components/GuideCard.astro";
-import EventCard from "../../components/EventCard.astro";
 import { isEnabled } from "../../config/flags";
-import {
-  businessesForTown,
-  events,
-  guides,
-  photosFor,
-  towns,
-  updatesForTown,
-} from "../../data/catalog";
+import { businessesForTown, guides, photosFor, towns } from "../../data/catalog";
 import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
@@ -34,118 +26,575 @@ interface Props {
 
 const { item: town } = Astro.props;
 const view = townView(town);
-const townUpdates = updatesForTown(town.slug);
 const photos = photosFor("town", town.slug);
 const localBusinesses = businessesForTown(town.slug);
 const townGuides = guides.filter((item) => item.townSlug === town.slug);
-const townEvents = events.filter((item) => item.townSlug === town.slug);
+const townIndex = towns.findIndex((item) => item.slug === town.slug);
 ---
 
-<PlaceLayout
+<BaseLayout
   title={`${town.name}: stay, eat, and beach on 30A`}
   description={town.summary}
   active="towns"
-  showBrowse
-  browseTown={town.name}
-  crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
-  <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(6, localBusinesses.length)}>
-    <Corridor currentSlug={town.slug} />
-
+  <div class="town-page">
     <section class="hero">
-      <div class="hero-img img-placeholder" aria-hidden="true">{town.name.charAt(0)}</div>
-      <div>
-        <h1>{town.name}</h1>
-        <p class="tagline">{view.tagline}</p>
-        <p class="desc">{town.summary}</p>
+      <div class="container hero__inner">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={href("/")}>Home</a>
+          <span>/</span>
+          <a href={href("/towns")}>Towns</a>
+          <span>/</span>
+          <span class="current">{town.name}</span>
+        </nav>
+
+        <div class="hero__title">
+          <div>
+            <div class="eyebrow-row">
+              <span class="live-pill">Scenic 30A community</span>
+              <span class="tagline">{view.tagline}</span>
+            </div>
+            <h1>{town.name}</h1>
+            <p class="lede">{town.summary}</p>
+          </div>
+          <div class="hero__actions">
+            <button type="button">Save</button>
+            <button type="button">Share</button>
+            <a class="map-btn" href="#map">Corridor map</a>
+          </div>
+        </div>
+
+        <div class="snapshot">
+          <div>
+            <span class="label">Walkability</span>
+            <strong>{town.walkability}</strong>
+          </div>
+          <div>
+            <span class="label">Beach access</span>
+            <strong>{town.beachAccess}</strong>
+          </div>
+        </div>
       </div>
     </section>
 
-    <AtAGlance town={view} />
-    <CategoriesInTown townSlug={town.slug} townName={town.name} />
-    <AreasInTown townSlug={town.slug} townName={town.name} />
+    <Corridor currentSlug={town.slug} />
 
-    {
-      localBusinesses.length > 0 && (
-        <section>
-          <h2 class="section-title">Local businesses in {town.name}</h2>
-          <div class="listing-grid">
-            {localBusinesses.slice(0, 6).map((business) => (
-              <BusinessCard business={business} />
-            ))}
+    <div class="container layout">
+      <div class="main">
+        <section class="panel">
+          <div class="panel__head">
+            <div>
+              <p class="eyebrow">Town essentials</p>
+              <h2>{town.name} at a glance</h2>
+            </div>
           </div>
-          <p class="more">
-            <a href={href(`/search?town=${town.slug}`)}>Browse all businesses</a>
-          </p>
-        </section>
-      )
-    }
-
-    {
-      isEnabled("guides") && townGuides.length > 0 && (
-        <section>
-          <h2 class="section-title">Guides for {town.name}</h2>
-          <div class="listing-grid">
-            {townGuides.map((guide) => (
-              <GuideCard guide={guide} />
-            ))}
+          <div class="glance">
+            {
+              view.glance.map((fact) => (
+                <div>
+                  <p class="label">{fact.label}</p>
+                  <p class="value">{fact.value}</p>
+                  <p class="detail">{fact.detail}</p>
+                </div>
+              ))
+            }
           </div>
         </section>
-      )
-    }
 
-    {
-      isEnabled("events") && townEvents.length > 0 && (
-        <section>
-          <h2 class="section-title">Events in {town.name}</h2>
-          <div class="listing-grid">
-            {townEvents.map((event) => (
-              <EventCard event={event} />
-            ))}
+        <section class="panel" id="map">
+          <h2>{town.name} territory</h2>
+          <div class="map img-placeholder" aria-hidden="true">{town.name} map</div>
+          <div class="highlights">
+            {view.highlights.map((item) => <span>{item}</span>)}
           </div>
         </section>
-      )
-    }
 
-    <section>
-      <h2 class="section-title">Photos</h2>
-      <PhotoGrid photos={photos} empty={`No ${town.name} photos yet.`} />
-    </section>
+        <CategoriesInTown townSlug={town.slug} townName={town.name} />
+        <AreasInTown townSlug={town.slug} townName={town.name} />
 
-    {isEnabled("updates") && <UpdatesModule title={`Updates in ${town.name}`} updates={townUpdates} />}
-  </TwoPaneMap>
-</PlaceLayout>
+        {
+          localBusinesses.length > 0 && (
+            <section class="panel">
+              <div class="panel__head">
+                <h2>Top local businesses</h2>
+                <a href={href(`/search?town=${town.slug}`)}>Browse all</a>
+              </div>
+              <div class="listing-grid">
+                {localBusinesses.slice(0, 4).map((business) => (
+                  <BusinessCard business={business} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <TownCommunitySections town={town} />
+
+        {
+          isEnabled("guides") && townGuides.length > 0 && (
+            <section class="panel">
+              <h2>Guides for {town.name}</h2>
+              <div class="listing-grid">
+                {townGuides.map((guide) => (
+                  <GuideCard guide={guide} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        <section class="panel">
+          <h2>Photos</h2>
+          <PhotoGrid photos={photos} empty={`No ${town.name} photos yet.`} />
+        </section>
+      </div>
+
+      <aside class="rail">
+        <MapToggle title={`${town.name} Map`} href={`/search?town=${town.slug}&view=map`} />
+        <ContributeCard kind="business" />
+
+        <section class="widget">
+          <p class="widget__label">Explore {town.name}</p>
+          <ul class="links">
+            <li><a href={href(`/search?town=${town.slug}`)}>Businesses</a></li>
+            <li><a href={href(`/stays?town=${town.slug}`)}>Stays</a></li>
+            <li><a href={href(`/events?town=${town.slug}`)}>Events</a></li>
+            <li><a href={href("/ask")}>Ask locals</a></li>
+          </ul>
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">Neighboring towns</p>
+          <ul class="links">
+            {
+              [towns[townIndex - 1], towns[townIndex + 1]]
+                .filter(Boolean)
+                .map((item) => (
+                  <li>
+                    <a href={href(`/town/${item.slug}`)}>{item.name}</a>
+                  </li>
+                ))
+            }
+          </ul>
+        </section>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
 
 <style>
-  .hero {
-    display: flex;
-    gap: var(--size-6);
-    align-items: center;
-    padding-block: var(--size-4) var(--size-6);
+  .town-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
   }
-  .hero-img {
-    width: 180px;
-    height: 180px;
-    border-radius: var(--radius-card);
-    flex-shrink: 0;
-    font-size: var(--font-size-8);
+  .hero {
+    background: var(--brand-deep);
+    color: white;
+    padding: var(--size-6) 0 var(--size-7);
+  }
+  .hero__inner {
+    display: grid;
+    gap: var(--size-5);
+  }
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    font-size: var(--font-size-0);
+    color: #94a3b8;
+  }
+  .crumbs a {
+    color: #94a3b8;
+  }
+  .crumbs a:hover {
+    color: #85f6e5;
+  }
+  .crumbs .current {
+    color: #85f6e5;
+    font-weight: var(--font-weight-7);
+  }
+  .hero__title {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-4);
+    align-items: flex-end;
+  }
+  .eyebrow-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  .live-pill {
+    display: inline-flex;
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 137, 123, 0.22);
+    color: #85f6e5;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
   .tagline {
+    font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
+    color: #cbd5e1;
+  }
+  h1 {
+    margin: 0 0 0.5rem;
+    font-size: clamp(2.25rem, 6vw, 3.25rem);
+    color: white;
+  }
+  .lede {
+    margin: 0;
+    max-width: 40rem;
+    color: #cbd5e1;
+    font-size: var(--font-size-2);
+    line-height: 1.55;
+  }
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .hero__actions button,
+  .map-btn {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: var(--radius-2);
+    padding: 0.5rem 0.85rem;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: white;
+    cursor: pointer;
+  }
+  .map-btn {
+    background: var(--brand-teal);
+    border-color: var(--brand-teal);
+    text-decoration: none;
+  }
+  .map-btn:hover {
+    background: #00796b;
+    text-decoration: none;
+  }
+  .snapshot {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--size-3);
+    padding-top: var(--size-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .snapshot .label {
+    display: block;
+    margin-bottom: 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #94a3b8;
+  }
+  .snapshot strong {
+    font-size: var(--font-size-1);
+    color: white;
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: var(--size-4);
+    min-width: 0;
+  }
+  .panel,
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  .panel__head h2,
+  .panel > h2 {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
+  }
+  .panel__head h2 {
+    margin-bottom: 0;
+  }
+  .panel__head a {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
     color: var(--brand-teal);
-    margin-bottom: var(--size-1);
   }
-  .desc {
+  .eyebrow {
+    margin: 0 0 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .glance {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .glance > div {
+    padding: 0.85rem;
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .glance .label {
+    margin: 0 0 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
     color: var(--brand-ink-soft);
-    max-width: 64ch;
   }
-  .more {
-    margin-top: var(--size-4);
+  .glance .value {
+    margin: 0 0 0.25rem;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
   }
-  @media (max-width: 640px) {
-    .hero {
-      flex-direction: column;
-      align-items: flex-start;
+  .glance .detail {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .map {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-2);
+    margin-bottom: var(--size-3);
+    display: grid;
+    place-items: center;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .highlights {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .highlights span {
+    padding: 0.3rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-sand-dark);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+  }
+  .events,
+  .links {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .events a {
+    display: grid;
+    gap: 0.15rem;
+    color: var(--brand-ink);
+  }
+  .events a:hover {
+    text-decoration: none;
+  }
+  .events span {
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .events strong {
+    color: var(--brand-deep);
+  }
+  .events em {
+    font-style: normal;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .bulletin-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .bulletin {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .bulletin__type {
+    display: inline-flex;
+    margin-bottom: 0.35rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-teal-soft);
+    color: var(--brand-teal);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .bulletin h3 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-2);
+    color: var(--brand-deep);
+  }
+  .bulletin p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .bulletin__meta {
+    margin-top: 0.5rem !important;
+    font-size: var(--font-size-0) !important;
+  }
+  .composer {
+    margin-bottom: var(--size-4);
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+  }
+  .composer__prompt {
+    margin: 0 0 var(--size-3);
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .composer__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: var(--size-3);
+  }
+  .composer__tags span {
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    border: 1px solid var(--brand-line);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+  }
+  .composer__btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-deep);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .composer__btn:hover {
+    background: var(--brand-teal);
+    text-decoration: none;
+  }
+  .feed :global(.updates-module) {
+    margin-block: 0;
+  }
+  .feed :global(.section-title) {
+    display: none;
+  }
+  .alert {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--brand-sun);
+  }
+  .alert__label {
+    margin: 0 0 0.5rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #78350f;
+  }
+  .alert ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #92400e;
+    font-size: var(--font-size-1);
+  }
+  .qa {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .qa__q {
+    margin: 0 0 0.5rem;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .qa__a {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+  .rail {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .links a {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-deep);
+  }
+  .links a:hover {
+    color: var(--brand-teal);
+  }
+  @media (min-width: 800px) {
+    .snapshot {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .glance {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 17rem;
+    }
+    .rail {
+      position: sticky;
+      top: calc(var(--header-h) + 1rem);
+    }
+    .glance {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
   }
 </style>

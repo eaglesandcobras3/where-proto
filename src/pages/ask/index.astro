@@ -1,16 +1,36 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
+import MapToggle from "../../components/MapToggle.astro";
+import ContributeCard from "../../components/ContributeCard.astro";
+import TwoPaneMap from "../../components/TwoPaneMap.astro";
+import AskHeroSearch from "../../components/islands/AskHeroSearch.svelte";
 import AskComposer from "../../components/islands/AskComposer.svelte";
 import AskIndex from "../../components/islands/AskIndex.svelte";
-import { commentsFor, questions, townBySlug, userBySlug } from "../../data/catalog";
+import AskSidebarFilters from "../../components/islands/AskSidebarFilters.svelte";
+import { commentsFor, questions, towns, townBySlug, userBySlug } from "../../data/catalog";
 import { relativeTime } from "../../lib/labels";
 import { href } from "../../lib/href";
+import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
 const params = Astro.url.searchParams;
 const town = params.get("town") ?? "";
 const topic = params.get("topic") ?? "";
 const q = params.get("q") ?? "";
+const mapView = params.get("view") === "map";
 const base = import.meta.env.BASE_URL;
+const searchQs = Astro.url.search;
+const mapHref = withViewMap("/ask", searchQs);
+const gridHref = withoutViewMap("/ask", searchQs);
+
+const topicOptions = [
+  { slug: "beach-access", name: "Beach Access" },
+  { slug: "getting-around", name: "Golf Carts & Biking" },
+  { slug: "dining", name: "Dining & Food" },
+  { slug: "parking", name: "Parking Tips" },
+  { slug: "family", name: "Family" },
+];
+
 const rows = questions.map((question) => {
   const author = userBySlug(question.authorUserSlug);
   const townRow = question.townSlug ? townBySlug(question.townSlug) : undefined;
@@ -19,6 +39,7 @@ const rows = questions.map((question) => {
     title: question.title,
     body: question.body,
     author: author?.name ?? "a visitor",
+    role: author?.role === "local" ? "Local" : author?.role === "business-owner" ? "Owner" : "Visitor",
     createdAt: question.createdAt,
     relative: relativeTime(question.createdAt),
     answers: commentsFor("question", question.slug).length,
@@ -26,63 +47,239 @@ const rows = questions.map((question) => {
     townSlug: question.townSlug,
   };
 });
+
+const townCounts = towns
+  .map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    count: questions.filter((question) => question.townSlug === item.slug).length,
+  }))
+  .filter((item) => item.count > 0);
+
+const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
+const mapMarkers = markersFromNames(
+  rows.map((item) => ({
+    name: item.title,
+    href: href(`/ask/${item.slug}`),
+    detail: `${item.town ?? "30A"} · ${item.answers} answers`,
+  })),
+);
 ---
 
 <BaseLayout
   title="Ask locals about 30A"
   description="Local Q and A about visiting or living on 30A."
   active="ask"
-  showAsk
-  askTown={town}
-  askTopic={topic}
-  askQuery={q}
 >
-  <div class="board">
-    <header class="intro">
-      <div>
-        <h1>Ask the locals</h1>
-        <p class="lede">Questions and answers from people who know 30A.</p>
-      </div>
-      <AskComposer
-        signedIn={false}
-        loginHref={href("/auth/login")}
-        signupHref={href("/auth/signup")}
-        client:visible
+  <div class="ask-page">
+    <InteriorHero
+      title="Ask the Locals"
+      lede="Straight answers on golf carts, walkovers, parking, and dining from residents across Scenic Highway 30A."
+    >
+      <AskHeroSearch
+        towns={exploreTowns}
+        initialTown={town}
+        initialTopic={topic}
+        initialQuery={q}
+        client:load
       />
-    </header>
+    </InteriorHero>
 
-    <AskIndex
-      questions={rows}
-      initialTown={town}
-      initialTopic={topic}
-      initialQuery={q}
-      base={base}
-      client:load
-    />
+    {
+      mapView ? (
+        <TwoPaneMap
+          mapLabel="30A ask map"
+          resultLabel={`${questions.length} Questions along Scenic 30A`}
+          gridHref={href(gridHref)}
+          markers={mapMarkers}
+          searchArea
+        >
+          <AskIndex
+            questions={rows}
+            initialTown={town}
+            initialTopic={topic}
+            initialQuery={q}
+            base={base}
+            client:load
+          />
+        </TwoPaneMap>
+      ) : (
+        <div class="container layout">
+          <AskSidebarFilters
+            towns={townCounts}
+            topics={topicOptions}
+            initialTown={town}
+            initialTopic={topic}
+            total={questions.length}
+            client:load
+          />
+
+          <div class="main">
+            <AskComposer towns={exploreTowns} topics={topicOptions} client:visible />
+            <AskIndex
+              questions={rows}
+              initialTown={town}
+              initialTopic={topic}
+              initialQuery={q}
+              base={base}
+              client:load
+            />
+          </div>
+
+          <aside class="rail">
+            <MapToggle title="30A Ask Map" href={mapHref} />
+            <ContributeCard kind="ask" />
+
+        <section class="widget">
+          <p class="widget__label">Top Local Guides</p>
+          <ul class="guides">
+            <li>
+              <span class="guides__avatar" aria-hidden="true">B</span>
+              <div>
+                <strong>beachlocal</strong>
+                <span>99% helpful · Seaside</span>
+              </div>
+            </li>
+            <li>
+              <span class="guides__avatar" aria-hidden="true">L</span>
+              <div>
+                <strong>local_owner</strong>
+                <span>97% helpful · Rosemary</span>
+              </div>
+            </li>
+            <li>
+              <span class="guides__avatar" aria-hidden="true">F</span>
+              <div>
+                <strong>first_timer</strong>
+                <span>New voice · WaterColor</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">Trending in South Walton</p>
+          <ul class="trending">
+            <li>#SeasideParking</li>
+            <li>#GolfCartRules</li>
+            <li>#QuietBeaches</li>
+            <li>#FamilyDinner</li>
+          </ul>
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">30A Neighbor Code</p>
+          <ul class="code">
+            <li>Yield to bikes and carts on shared paths</li>
+            <li>Keep music and gatherings respectful after 10</li>
+            <li>Leave beaches cleaner than you found them</li>
+          </ul>
+        </section>
+          </aside>
+        </div>
+      )
+    }
   </div>
 </BaseLayout>
 
 <style>
-  .board {
-    width: min(44rem, 100%);
-    margin: 0 auto;
-    padding: var(--size-6) var(--size-4) var(--size-10);
+  .ask-page {
+    --ask-navy: var(--brand-deep);
+    --ask-teal: var(--brand-teal);
+    --ask-teal-soft: var(--brand-teal-soft);
+    --ask-line: var(--brand-line);
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .layout {
     display: grid;
     gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
   }
-  .intro {
+  .main {
     display: grid;
-    gap: var(--size-3);
+    gap: var(--size-4);
+    min-width: 0;
   }
-  .intro h1 {
-    margin: 0 0 var(--size-1);
-    font-size: clamp(1.75rem, 4vw, 2.25rem);
-    color: var(--brand-deep);
+  .rail {
+    display: none;
+    gap: var(--size-4);
   }
-  .lede {
-    margin: 0;
+  .widget {
+    background: white;
+    border: 1px solid var(--ask-line);
+    border-radius: var(--radius-card);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--brand-ink-soft);
+  }
+  .guides strong {
+    color: var(--ask-teal);
+  }
+  .guides,
+  .trending,
+  .code {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+  .guides li {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  .guides__avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--ask-teal-soft);
+    color: var(--ask-navy);
+    display: grid;
+    place-items: center;
+    font-weight: var(--font-weight-7);
+  }
+  .guides div {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .guides span,
+  .trending,
+  .code {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .guides strong {
     font-size: var(--font-size-1);
   }
+  .trending li,
+  .code li {
+    color: var(--brand-ink);
+  }
+  .code {
+    list-style: disc;
+    padding-left: 1.1rem;
+  }
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: 15rem minmax(0, 1fr) 16rem;
+    }
+    .rail {
+      display: grid;
+    }
+  }
+  @media (max-width: 959px) {
+    .layout :global(.side) {
+      order: -1;
+    }
+  }
 </style>
-

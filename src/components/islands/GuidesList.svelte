@@ -4,7 +4,15 @@
     title: string;
     summary: string;
     town?: string;
+    townSlug?: string;
     category?: string;
+    topic?: string;
+    author: string;
+    role: string;
+    source: "whereto" | "community";
+    minutes: number;
+    popularity: number;
+    featured?: boolean;
   }
 
   let {
@@ -24,22 +32,43 @@
   let town = $state(initialTown);
   let category = $state(initialCategory);
   let query = $state(initialQuery);
+  let source = $state<"whereto" | "community">("whereto");
+  let sort = $state<"latest" | "popular">("latest");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
     return `${root}${route}`;
   }
 
+  const topicWords: Record<string, string[]> = {
+    "first-timers": ["first", "timer", "arrive", "tabs"],
+    "getting-around": ["bike", "cart", "walk", "car", "lsv"],
+    dining: ["dining", "food", "eat"],
+    family: ["family", "kids"],
+    history: ["called", "history", "name"],
+    "town-compare": ["different", "vs", "compare", "feels"],
+  };
+
   let results = $derived(
-    guides.filter((item) => {
-      if (town && item.town !== town) return false;
-      if (category && item.category !== category) return false;
-      if (query.trim()) {
-        const hay = `${item.title} ${item.summary}`.toLowerCase();
-        if (!hay.includes(query.trim().toLowerCase())) return false;
-      }
-      return true;
-    }),
+    [...guides]
+      .filter((item) => {
+        if (item.source !== source) return false;
+        if (town && item.townSlug !== town) return false;
+        if (category) {
+          const words = topicWords[category] ?? [category];
+          const hay = `${item.title} ${item.summary} ${item.topic ?? ""}`.toLowerCase();
+          if (!words.some((word) => hay.includes(word))) return false;
+        }
+        if (query.trim()) {
+          const hay = `${item.title} ${item.summary} ${item.town ?? ""}`.toLowerCase();
+          if (!hay.includes(query.trim().toLowerCase())) return false;
+        }
+        return true;
+      })
+      .toSorted((a, b) => {
+        if (sort === "popular") return b.popularity - a.popularity || a.title.localeCompare(b.title);
+        return b.minutes - a.minutes || a.title.localeCompare(b.title);
+      }),
   );
 
   $effect(() => {
@@ -55,72 +84,237 @@
   });
 </script>
 
-<div class="guides-list">
-  <p class="count" aria-live="polite">
-    {results.length} {results.length === 1 ? "guide" : "guides"}
-  </p>
-  <div class="story-grid">
-    {#each results as guide (guide.slug)}
-      <a class="story-card" href={path(`/guide/${guide.slug}`)}>
-        <div class="story-card__media img-placeholder" aria-hidden="true">{guide.title.charAt(0)}</div>
-        <h3>{guide.title}</h3>
-        <p>{guide.summary}</p>
-        <span class="story-card__link">Read guide →</span>
-      </a>
+<section class="feed">
+  <div class="toolbar">
+    <div class="source" role="group" aria-label="Guide source">
+      <button class:active={source === "whereto"} type="button" onclick={() => (source = "whereto")}>
+        WhereTo Guides
+      </button>
+      <button class:active={source === "community"} type="button" onclick={() => (source = "community")}>
+        Community Guides
+      </button>
+    </div>
+    <div class="toolbar__meta">
+      <span class="count" aria-live="polite">{results.length} guides</span>
+      <div class="sort" aria-label="Sort guides">
+        <span class="sort__label">Sort</span>
+        <button class:active={sort === "latest"} type="button" onclick={() => (sort = "latest")}>Latest</button>
+        <button class:active={sort === "popular"} type="button" onclick={() => (sort = "popular")}>Popular</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="list">
+    {#each results as item, index (item.slug)}
+      <article class="card">
+        <div class="tags">
+          <span class="tag">{item.town ?? "All 30A"}</span>
+          {#if item.topic}<span class="tag tag--topic">{item.topic}</span>{/if}
+        </div>
+        <h3><a href={path(`/guide/${item.slug}`)}>{item.title}</a></h3>
+        <p class="excerpt">{item.summary}</p>
+        {#if item.featured || index === 0}
+          <div class="banner img-placeholder" aria-hidden="true">
+            <span class="featured">Featured Manual</span>
+          </div>
+        {/if}
+        <div class="footer">
+          <span class="mins">
+            {item.minutes} min read
+            <span class="by"> · {item.author}</span>
+          </span>
+          <a class="join" href={path(`/guide/${item.slug}`)}>
+            {item.featured || index === 0 ? "Read complete guide" : "Read guide"} →
+          </a>
+        </div>
+      </article>
     {:else}
       <p class="empty">No guides match those filters.</p>
     {/each}
   </div>
-</div>
+</section>
 
 <style>
-  .count {
-    margin: 0 0 var(--size-4);
-    font-weight: var(--font-weight-6);
-  }
-  .story-card {
+  .feed {
     display: grid;
-    gap: 0.65rem;
-    align-content: start;
-    color: var(--brand-ink);
+    gap: var(--size-4);
     min-width: 0;
   }
-  .story-card:hover {
-    text-decoration: none;
+  .toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--size-3);
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: 0.75rem 1rem;
   }
-  .story-card:hover .story-card__link {
-    text-decoration: underline;
+  .source {
+    display: inline-flex;
+    flex-wrap: wrap;
+    padding: 0.2rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-sand-dark);
+    gap: 0.15rem;
   }
-  .story-card__media {
-    aspect-ratio: 3 / 4;
-    border-radius: 1.25rem;
-    font-size: var(--font-size-7);
-    margin-bottom: 0.35rem;
+  .source button {
+    border: 0;
+    background: transparent;
+    border-radius: var(--radius-pill);
+    padding: 0.4rem 0.9rem;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink-soft);
+    cursor: pointer;
   }
-  .story-card h3 {
+  .source button.active {
+    background: var(--brand-selected);
+    color: white;
+    font-weight: var(--font-weight-7);
+  }
+  .toolbar__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--size-3);
+  }
+  .count {
     margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .sort {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+  }
+  .sort__label {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .sort button {
+    border: 0;
+    background: none;
+    padding: 0;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink-soft);
+    cursor: pointer;
+  }
+  .sort button.active {
+    color: var(--brand-selected);
+    box-shadow: inset 0 -2px 0 currentColor;
+  }
+  .list {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .card:hover {
+    box-shadow: var(--shadow-card-hover);
+    border-color: #cbd5e1;
+  }
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-bottom: var(--size-3);
+  }
+  .tag {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink-soft);
+    background: var(--brand-sand-dark);
+    border-radius: var(--radius-pill);
+    padding: 0.2rem 0.55rem;
+  }
+  .tag--topic {
+    background: var(--brand-teal-soft);
+    color: var(--brand-teal);
+  }
+  h3 {
+    margin: 0 0 0.5rem;
+    font-family: var(--font-display);
     font-size: var(--font-size-3);
     font-weight: var(--font-weight-7);
     color: var(--brand-deep);
-    line-height: 1.25;
+    line-height: 1.3;
   }
-  .story-card p {
+  h3 a {
+    color: inherit;
+  }
+  h3 a:hover {
+    color: var(--brand-teal);
+    text-decoration: none;
+  }
+  .excerpt {
     margin: 0;
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
-    line-height: 1.45;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
+    line-height: 1.55;
+  }
+  .banner {
+    position: relative;
+    margin-top: var(--size-4);
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-2);
     overflow: hidden;
   }
-  .story-card__link {
-    margin-top: 0.15rem;
-    font-weight: var(--font-weight-7);
+  .featured {
+    position: absolute;
+    top: 0.65rem;
+    left: 0.65rem;
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.85);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-3);
+    margin-top: var(--size-4);
+    padding-top: var(--size-3);
+    border-top: 1px solid var(--brand-sand-dark);
     font-size: var(--font-size-1);
-    color: var(--brand-deep);
+  }
+  .mins {
+    color: var(--brand-ink-soft);
+  }
+  .by {
+    font-weight: var(--font-weight-4);
+  }
+  .join {
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
   }
   .empty {
     color: var(--brand-ink-soft);
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: var(--size-5);
   }
 </style>

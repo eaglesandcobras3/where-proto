@@ -358,9 +358,17 @@ export const categories: Category[] = [
       { slug: "rentals", name: "Rentals" },
     ],
   },
+  {
+    slug: "community",
+    name: "Community",
+    leaves: [
+      { slug: "town-merchants", name: "Town Merchants" },
+      { slug: "area-merchants", name: "Area Merchants" },
+    ],
+  },
 ];
 
-export const businesses: Business[] = [
+const directoryBusinesses: Business[] = [
   {
     slug: "edwards-fine-food-and-wine",
     name: "Edward's Fine Food & Wine",
@@ -679,6 +687,72 @@ export const businesses: Business[] = [
   },
 ];
 
+/** Place desks (town/area) — claimable listings that own feed/events/updates for a place. Hidden from search. */
+export function isPlaceDesk(biz: Pick<Business, "entityKind">) {
+  return biz.entityKind === "town" || biz.entityKind === "area";
+}
+
+/** Consumer-facing directory only — excludes town/area desk entities. */
+export function isSearchableBusiness(biz: Pick<Business, "entityKind">) {
+  return !isPlaceDesk(biz);
+}
+
+/** One claimable town-desk listing per town (e.g. "Rosemary Beach Town Merchants"). */
+export function townMerchantSlug(townSlug: string) {
+  return `${townSlug}-town-merchants`;
+}
+
+export const townMerchantBusinesses: Business[] = towns.map((town) => ({
+  slug: townMerchantSlug(town.slug),
+  name: `${town.name} Town Merchants`,
+  townSlug: town.slug,
+  categorySlug: "community",
+  leafSlug: "town-merchants",
+  summary: `Town desk for ${town.name} — local updates, merchant coordination, and community information.`,
+  tagSlugs: ["walkable"],
+  openNow: true,
+  entityKind: "town" as const,
+  // Demo: town-manager persona (site_admin) already verifies Rosemary Beach.
+  ...(town.slug === "rosemary-beach" ? { ownerUserSlug: "site_admin" } : {}),
+}));
+
+/** One claimable area-desk listing per area (neighborhood / shopping strip). */
+export function areaMerchantSlug(areaSlug: string) {
+  return `${areaSlug}-area-merchants`;
+}
+
+export const areaMerchantBusinesses: Business[] = areas.map((area) => ({
+  slug: areaMerchantSlug(area.slug),
+  name: `${area.name} Merchants`,
+  townSlug: area.townSlug,
+  areaSlug: area.slug,
+  categorySlug: "community",
+  leafSlug: "area-merchants",
+  summary: `Area desk for ${area.name} — posts, events, and local updates for this ${area.kind === "shopping" ? "shopping area" : "neighborhood"}.`,
+  tagSlugs: ["walkable"],
+  openNow: true,
+  entityKind: "area" as const,
+  // Demo: town-manager already verifies Barrett Square area desk.
+  ...(area.slug === "barrett-square" ? { ownerUserSlug: "site_admin" } : {}),
+}));
+
+export const businesses: Business[] = [
+  ...directoryBusinesses,
+  ...townMerchantBusinesses,
+  ...areaMerchantBusinesses,
+];
+
+/** Directory businesses only (no town/area desks) — use for search and consumer listings. */
+export const searchableBusinesses = businesses.filter(isSearchableBusiness);
+
+export function townMerchantForTown(townSlug: string) {
+  return townMerchantBusinesses.find((item) => item.townSlug === townSlug);
+}
+
+export function areaMerchantForArea(areaSlug: string) {
+  return areaMerchantBusinesses.find((item) => item.areaSlug === areaSlug);
+}
+
 export const stays: Stay[] = [
   {
     slug: "the-pearl-hotel",
@@ -780,6 +854,19 @@ export const events: EventItem[] = [
     ticketUrl: "https://example.com/harvest",
     price: "$45",
     bucket: "month",
+  },
+  {
+    slug: "beachy-bean-cupping",
+    name: "Saturday cupping at Beachy Bean",
+    townSlug: "seaside",
+    businessSlug: "beachy-bean-coffee",
+    when: "Saturday, 9:00 AM",
+    time: "9:00 AM – 10:00 AM",
+    summary: "Taste this week’s roast with the baristas near the square. Fake business event.",
+    venue: "Beachy Bean Coffee Co.",
+    category: "Food",
+    price: "Free",
+    bucket: "weekend",
   },
 ];
 
@@ -885,14 +972,14 @@ export const users: User[] = [
     slug: "beachlocal",
     name: "beachlocal",
     role: "local",
-    bio: "Fake signed-in user for profile, favorites, and posts.",
+    bio: "East-end regular tracking coffee stops, town greens, and Timpoochee Trail tips for the next 30A outing.",
     memberSince: "2024-03-12",
   },
   {
     slug: "local_owner",
-    name: "local_owner",
+    name: "Jamie Lee",
     role: "business-owner",
-    bio: "Fake business owner used on manage-my-business screens.",
+    bio: "Business owner managing listings along Scenic Highway 30A.",
     memberSince: "2023-06-01",
   },
   {
@@ -971,6 +1058,26 @@ export const photos: Photo[] = [
     slug: "edwards-plate",
     caption: "Plate from the courtyard",
     attachedTo: { type: "business", slug: "edwards-fine-food-and-wine" },
+  },
+  {
+    slug: "beachy-bean-counter",
+    caption: "Espresso counter",
+    attachedTo: { type: "business", slug: "beachy-bean-coffee" },
+  },
+  {
+    slug: "beachy-bean-patio",
+    caption: "Patio near the square",
+    attachedTo: { type: "business", slug: "beachy-bean-coffee" },
+  },
+  {
+    slug: "beachy-bean-pastries",
+    caption: "Morning pastry case",
+    attachedTo: { type: "business", slug: "beachy-bean-coffee" },
+  },
+  {
+    slug: "beachy-bean-latte",
+    caption: "Latte art",
+    attachedTo: { type: "business", slug: "beachy-bean-coffee" },
   },
   {
     slug: "pearl-lobby",
@@ -1176,7 +1283,7 @@ export function tagBySlug(slug: string) {
 }
 
 export function businessesForTown(townSlug: string) {
-  return businesses.filter((item) => item.townSlug === townSlug);
+  return searchableBusinesses.filter((item) => item.townSlug === townSlug);
 }
 
 export function areasForTown(townSlug: string) {
@@ -1184,7 +1291,7 @@ export function areasForTown(townSlug: string) {
 }
 
 export function businessesForArea(areaSlug: string) {
-  return businesses.filter((item) => item.areaSlug === areaSlug);
+  return searchableBusinesses.filter((item) => item.areaSlug === areaSlug);
 }
 
 export function areaKindLabel(kind: Area["kind"]) {
@@ -1200,7 +1307,7 @@ export function updatesForBusiness(businessSlug: string) {
 }
 
 export function businessesForLeaf(leafSlug: string) {
-  return businesses.filter((item) => item.leafSlug === leafSlug);
+  return searchableBusinesses.filter((item) => item.leafSlug === leafSlug);
 }
 
 export function postsFor(type: "town" | "business", slug: string) {

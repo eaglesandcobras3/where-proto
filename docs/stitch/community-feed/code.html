@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhereTo30A | Coastal Curated Journal &amp; Corridor Directory</title>
+<!-- Google Fonts: Plus Jakarta Sans & Inter -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&amp;family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&amp;family=Playfair+Display:ital,wght@0,600;1,400&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS CDN with plugins -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Custom Configuration -->
+<script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            ocean: {
+              900: '#0c232e',
+              800: '#133545',
+              700: '#1b485d',
+            },
+            teal: {
+              primary: '#00897b',
+              light: '#e0f2f1',
+              dark: '#00695c',
+            },
+            dune: {
+              50: '#fdfcf9',
+              100: '#f8f9ff',
+              200: '#f1f3f7',
+              border: '#e2e8f0',
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            display: ['Plus Jakarta Sans', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          }
+        }
+      }
+    }
+  </script>
+<!-- Stylesheet: General Layout & Micro-Interactions -->
+<style data-purpose="base-styling">
+    body {
+      background-color: #fdfcf9;
+      color: #0c232e;
+      font-family: 'Inter', sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    .font-headline {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+  </style>
+<!-- Stylesheet: Component Polish -->
+<style data-purpose="custom-utilities">
+    .card-hover-effect {
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+    }
+    .card-hover-effect:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 14px 30px -10px rgba(12, 35, 46, 0.08);
+    }
+    .subtle-badge {
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      font-size: 0.685rem;
+      font-weight: 700;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-[#fdfcf9] text-ocean-900 selection:bg-teal-primary selection:text-white">
+<!-- BEGIN: ContextTicker -->
+<!-- Real-time South Walton Beach & Surf Conditions Ticker -->
+<div class="w-full bg-[#f4f7f6] border-b border-dune-border/60 text-xs py-2 px-4 sm:px-8 text-ocean-700" data-purpose="surf-weather-ticker">
+<div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-y-1">
+<div class="flex items-center gap-2">
+<span class="inline-block w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" title="Yellow Flag"></span>
+<span class="font-medium text-ocean-900">Walton Co. Surf:</span>
+<span class="text-ocean-800">Yellow Flag · Moderate Surf</span>
+<span class="text-slate-300 mx-1">|</span>
+<span>76°F Gulf Water</span>
+</div>
+<div class="flex items-center gap-4 text-slate-600">
+<span>Sunny 78°F</span>
+<span class="text-slate-300">|</span>
+<span>Low Tide: 1:14 PM</span>
+<span class="text-slate-300">|</span>
+<span class="hidden md:inline font-medium text-teal-primary">Scenic Hwy 30A Corridor Active</span>
+</div>
+</div>
+</div>
+<!-- END: ContextTicker -->
+<!-- BEGIN: MainHeader -->
+<header class="sticky top-0 z-50 bg-[#ffffff]/95 backdrop-blur-md border-b border-dune-border">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+<!-- Brand Logo -->
+<div class="flex items-center gap-8">
+<a class="group flex items-baseline gap-1" data-purpose="brand-logo" href="#">
+<span class="font-headline font-extrabold text-2xl tracking-tight text-ocean-900">WhereTo<span class="text-teal-primary group-hover:text-ocean-700 transition-colors">30A</span></span>
+<span class="w-1.5 h-1.5 rounded-full bg-teal-primary"></span>
+</a>
+<!-- Main Navigation Links -->
+<nav class="hidden lg:flex items-center space-x-7 text-sm font-medium text-ocean-800">
+<a class="hover:text-teal-primary transition-colors" href="#towns">Towns</a>
+<a class="hover:text-teal-primary transition-colors" href="#businesses">Businesses</a>
+<a class="hover:text-teal-primary transition-colors" href="#stays">Stays</a>
+<a class="hover:text-teal-primary transition-colors" href="#events">Events</a>
+<a class="hover:text-teal-primary transition-colors" href="#journal">Guides</a>
+<a class="hover:text-teal-primary transition-colors" href="#ask">Ask</a>
+</nav>
+</div>
+<!-- Action Elements -->
+<div class="flex items-center gap-4">
+<button aria-label="Search corridor" class="p-2 text-slate-500 hover:text-ocean-900 transition-colors rounded-full hover:bg-slate-100">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg>
+</button>
+<a class="hidden sm:inline-flex items-center justify-center px-4 py-2 text-xs font-semibold text-ocean-900 bg-white border border-slate-300 rounded-full hover:bg-slate-50 transition-colors shadow-xs" href="#add-business">
+          + Add business
+        </a>
+<!-- User Profile Avatar/Icon -->
+<button aria-label="User Account" class="w-9 h-9 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-ocean-800 hover:border-slate-400 transition-colors">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8"></path></svg>
+</button>
+</div>
+</div>
+</header>
+<!-- END: MainHeader -->
+<main class="flex-grow">
+<!-- BEGIN: HeroSection -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-16"><div class="max-w-4xl mx-auto text-center space-y-6 pt-4 pb-4"><div class="inline-flex items-center gap-2 px-3.5 py-1 bg-white border border-slate-200 rounded-full text-slate-700 shadow-2xs subtle-badge"><span class="w-2 h-2 rounded-full bg-teal-primary"></span> Scenic Highway 30A Curated Directory</div><h1 class="font-headline font-bold text-4xl sm:text-5xl lg:text-6xl text-ocean-900 tracking-tight leading-[1.12]">Finding What You're Looking for on 30A Should Be Easier</h1><p class="text-slate-600 leading-relaxed text-sm sm:text-base max-w-2xl mx-auto">Explore 16 iconic beach hamlets, master-planned architectural enclaves, private dune lakes, and verified local favorites along 28 coastal miles.</p><div class="flex flex-wrap items-center justify-center gap-2 pt-2"><button class="px-3.5 py-1.5 rounded-full text-xs font-semibold bg-ocean-900 text-white shadow-xs">All 30A</button><button class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-ocean-800 border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition-colors">Towns &amp; Hamlets</button><button class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-ocean-800 border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition-colors">Businesses &amp; Dining</button><button class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-ocean-800 border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition-colors">Stays &amp; Rentals</button><button class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-ocean-800 border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition-colors">Events &amp; Happenings</button><button class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-ocean-800 border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition-colors">Guides &amp; Articles</button><button class="px-3.5 py-1.5 rounded-full text-xs font-medium bg-white text-ocean-800 border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition-colors">Ask Community</button></div><form class="bg-white rounded-2xl p-2 sm:p-2.5 border border-slate-300 shadow-md flex flex-col md:flex-row items-stretch md:items-center gap-2 max-w-3xl mx-auto text-left"><div class="flex-grow flex items-center px-3 py-1 gap-2.5"><svg class="w-5 h-5 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewbox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path></svg><input class="w-full text-sm text-ocean-900 placeholder-slate-400 bg-transparent outline-none border-none focus:ring-0" placeholder="Search 30A places, fresh seafood, bike rentals, coffee shops, beach..." type="text"/></div><div class="border-t md:border-t-0 md:border-l border-slate-200 md:pl-2 flex items-center shrink-0"><select class="text-xs font-semibold text-ocean-800 bg-transparent border-none py-2 px-3 focus:ring-0 cursor-pointer outline-none"><option>All Towns (Sandestin to Inlet Beach)</option><option>Rosemary Beach</option><option>Alys Beach</option><option>WaterColor</option><option>Seaside</option><option>Grayton Beach</option><option>Blue Mountain Beach</option><option>Gulf Place / Santa Rosa Beach</option></select></div><button class="px-6 py-3 rounded-xl bg-ocean-900 hover:bg-ocean-800 text-white font-semibold text-xs tracking-wide transition-colors shrink-0 flex items-center justify-center gap-1.5 shadow-sm" type="submit">Search 30A →</button></form><div class="flex flex-wrap items-center justify-center gap-2 pt-1 text-xs"><span class="text-slate-400 font-medium text-[11px] uppercase tracking-wider mr-1">Popular:</span><a class="bg-white/80 hover:bg-white text-slate-600 hover:text-ocean-900 px-3 py-1 rounded-full border border-slate-200 transition-colors shadow-2xs text-[11px] font-medium" href="#">Top-rated grouper sandwiches</a><a class="bg-white/80 hover:bg-white text-slate-600 hover:text-ocean-900 px-3 py-1 rounded-full border border-slate-200 transition-colors shadow-2xs text-[11px] font-medium" href="#">Rosemary Beach coffee</a><a class="bg-white/80 hover:bg-white text-slate-600 hover:text-ocean-900 px-3 py-1 rounded-full border border-slate-200 transition-colors shadow-2xs text-[11px] font-medium" href="#">Dog-friendly walkovers</a><a class="bg-white/80 hover:bg-white text-slate-600 hover:text-ocean-900 px-3 py-1 rounded-full border border-slate-200 transition-colors shadow-2xs text-[11px] font-medium" href="#">Live music tonight in Grayton</a><a class="bg-white/80 hover:bg-white text-slate-600 hover:text-ocean-900 px-3 py-1 rounded-full border border-slate-200 transition-colors shadow-2xs text-[11px] font-medium" href="#">Bike rentals along Timpoochee</a></div></div></section>
+<!-- END: HeroSection -->
+<!-- BEGIN: LocalSpotlight -->
+<!-- Editorial Feature Spotlight: Black Bear Bread Co. -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="businesses">
+<div class="bg-white rounded-3xl border border-dune-border overflow-hidden shadow-xs">
+<div class="grid grid-cols-1 md:grid-cols-12">
+<!-- Image Column -->
+<div class="md:col-span-5 relative min-h-[260px] md:min-h-[380px] bg-slate-200">
+<img alt="Artisan Sourdough and Pastries at Black Bear Bread Co" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDkoP2if1dOAcbYqxeyOPboC1FlrpmQJfhxkKtKkak2zXfWpskrOTfRFf-myzApBxZMNPqB1sYzmHBRtCyTbXMZm2WugJDIWbtRn-OGls2Adns9BuTwivbmDEQkMfENtwmrBk7Q6A2GoiwtD2W9wVtVfufrPXNL6hH00mDxGllxR8l-a2zzqMdWP3QsJ6rhVM6vDZoTacf_I5Zstj4sqzs5DF1YUf4XuML1KMYM8c3hewIkbSy2eihl"/>
+<div class="absolute bottom-4 left-4 bg-ocean-900/80 backdrop-blur-md px-3 py-1.5 rounded-lg text-white text-xs font-medium">
+              Grayton Beach &amp; The Shops at Seaside
+            </div>
+</div>
+<!-- Editorial Text Column -->
+<div class="md:col-span-7 p-6 sm:p-10 flex flex-col justify-between">
+<div>
+<div class="flex items-center justify-between mb-4">
+<span class="subtle-badge bg-emerald-50 text-teal-dark border border-teal-primary/20 px-2.5 py-1 rounded-md">
+                  Local Spotlight of the Week
+                </span>
+<span class="text-xs text-slate-500 font-medium">Bakery &amp; Café</span>
+</div>
+<h3 class="font-headline font-bold text-2xl sm:text-3xl text-ocean-900 tracking-tight mb-4">
+                Crafting Community: The Story of Black Bear Bread Co.
+              </h3>
+<blockquote class="font-serif italic text-slate-700 text-base sm:text-lg mb-4 pl-4 border-l-2 border-teal-primary">
+                “From naturally fermented sourdough starters to bustling morning beach crowds, how Chef Phil McDonald created 30A's favorite gathering spot.”
+              </blockquote>
+<p class="text-slate-600 text-sm leading-relaxed mb-6">
+                A Grayton institution that still feels like a neighborhood kitchen — loaves for the beach cooler, espresso for the bike path, and a morning line that locals swear by.
+              </p>
+</div>
+<div class="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-4">
+<a class="inline-flex items-center gap-2 bg-teal-primary hover:bg-teal-dark text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition-colors" href="#blackbear">
+                Read Story &amp; View Menu →
+              </a>
+<span class="text-xs font-medium text-slate-400 flex items-center gap-1.5">
+<svg class="w-3.5 h-3.5 text-teal-primary" fill="currentColor" viewbox="0 0 20 20"><path clip-rule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" fill-rule="evenodd"></path></svg>
+                Featured Partner since 2022
+              </span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: LocalSpotlight -->
+<!-- BEGIN: SponsoredShowcase -->
+<!-- Sponsored Showcase: Coast Love Collection -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+<div class="bg-[#f2ece4]/50 border border-[#e4dcce] rounded-3xl p-6 sm:p-10">
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+<div class="lg:col-span-4 space-y-4">
+<span class="subtle-badge tracking-widest text-slate-500">Sponsored Showcase</span>
+<h3 class="font-headline font-bold text-2xl sm:text-3xl text-ocean-900 tracking-tight">
+              COAST LOVE COLLECTION
+            </h3>
+<p class="font-serif italic text-ocean-800 text-lg">Coastal Photography Prints</p>
+<p class="text-slate-600 text-sm leading-relaxed">
+              Fine-art framed prints of South Walton dunes and emerald shores. Complimentary white-glove delivery across all 30A hamlets.
+            </p>
+<div class="pt-2">
+<a class="inline-flex items-center px-4 py-2 rounded-full border border-ocean-900 text-xs font-semibold text-ocean-900 hover:bg-ocean-900 hover:text-white transition-colors" href="#prints">
+                Shop the Collection
+              </a>
+</div>
+</div>
+<!-- Print Preview Cards -->
+<div class="lg:col-span-8 grid grid-cols-1 sm:grid-cols-3 gap-4">
+<div class="bg-white p-2.5 rounded-2xl shadow-xs group">
+<div class="aspect-[3/4] overflow-hidden rounded-xl bg-slate-100">
+<img alt="30A Sunset Serenity print" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAspMfQ0zjAhPUEKktjbnQUvfEGXZpT83IrTsSDQTS8Mu9HpX2XqynGngaPYMMLvLhHBWUy0oVUM_CYdII6Q7ahAn2_8fm_mnZNRpTRTwyHLXAgoDtuDaJg3NTRQRYEExOxydcdubdfHnEAQaWQjUv7d78-50n0q-8HZyYcY1L0K2vaO2lNrqc_gGeU76iny4ChwsuS5Row7i2nXG3j2yWTUcKtKk0vh-XvTmBqnp-ZUHgU4vnxqB_H"/>
+</div>
+<div class="text-[11px] font-semibold text-ocean-800 text-center mt-2.5">30A Sunset Serenity</div>
+</div>
+<div class="bg-white p-2.5 rounded-2xl shadow-xs group">
+<div class="aspect-[3/4] overflow-hidden rounded-xl bg-slate-100">
+<img alt="Emerald Shoreline print" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA65W1_WwCrLiLwQfTeXVObV9iblIEEb_lZEmPtKl3ct1V8yzRoUh9EUDPi0k_VF3ErXEy5DTTpvsu_SEehoVLNT07MmVar2vVRejGHet06a3QxVeKXy42LolIW4Q6O-JjyILKlIwNv1jImCrRG95UmkZVraksSTi9-RFc8PDQzI13T6-9sVMIOcKZqMFbMV-4hra8bjD5sgKLaJ6nf7y-IGBqN9402NrIuX1TgnD9X7-Aq6JxWUqxN"/>
+</div>
+<div class="text-[11px] font-semibold text-ocean-800 text-center mt-2.5">Emerald Shoreline</div>
+</div>
+<div class="bg-white p-2.5 rounded-2xl shadow-xs group">
+<div class="aspect-[3/4] overflow-hidden rounded-xl bg-slate-100">
+<img alt="Discover Scenic 30A print" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD5FViwLP3FFxitE6Ni6c2Kp-STkbJw0q_FxFFkvI9FqB8D_7y9rRPPL68EiWd_nRnNVQMmFWgUH6DcD1j55jAdeeJPtxMZyufXg6KaT2Clj44qK8bdsnXzkmUB0Hpf_rGeJUpiMDxVIOsI3fVcMUe6ZQsksOwZVyyrhGJC6iNN4Go4zMM45ixvvwymlajDuZBDLs4BUzgpTshnmx6cidg3O7zQGRVsjnEe9uLWoE4b-cW77RjoXkqV"/>
+</div>
+<div class="text-[11px] font-semibold text-ocean-800 text-center mt-2.5">Discover Scenic 30A</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: SponsoredShowcase -->
+<!-- BEGIN: CommunityGallery -->
+<!-- Snapshots Along 30A - Balanced Editorial Bento Grid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="community-gallery">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between mb-6 gap-4">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="subtle-badge text-slate-500">COMMUNITY GALLERY</span>
+<span class="text-xs font-semibold text-teal-primary">@WhereTo30A</span>
+</div>
+<h3 class="font-headline font-bold text-2xl sm:text-3xl text-ocean-900">
+            Snapshots Along 30A
+          </h3>
+<p class="text-slate-600 text-sm mt-1">Real moments shared by locals, second-home owners, and travelers across South Walton.</p>
+</div>
+<button class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-xs font-semibold text-ocean-900 rounded-full hover:bg-slate-50 shadow-2xs transition-colors shrink-0">
+          Share Your Photos
+        </button>
+</div>
+<!-- Balanced Editorial Bento Grid: 12 Columns (5-col Primary Hero + 7-col 2x2 Grid) -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-4">
+<!-- Primary Large Feature Bento Card (Left, 5 cols) -->
+<div class="lg:col-span-5 relative group rounded-2xl overflow-hidden bg-slate-900 min-h-[380px] lg:min-h-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-auto flex flex-col justify-between shadow-xs">
+<img alt="Sunset over emerald waters at Grayton Beach" class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBI5AuKpAidiYVUNuwm4YGGvuoyyxGFhPLknupr0ew8GimuDXfpHEDkVv-_cEApAMVZPQ7OConXhNimWulMn5cbrxXbWr8_XiZAdk2wDr0jh-I5xi19P4g_i4zRFfgieGrJCOr5-mAlrWRiUkS0zm3aGcF2-6q8xta8ew8rvHOwwpX8BKQpWrZhBxnG67ACOruTSnJ3tVRIhTIPbEeWpxONFstwBripIIR9UJBK6Sq6dOSv4gi0twVA"/>
+<!-- Subtle Top & Bottom Gradient Vignettes for Readability -->
+<div class="absolute inset-0 bg-gradient-to-t from-ocean-900/90 via-ocean-900/25 to-ocean-900/40 pointer-events-none"></div>
+<!-- Top Row: Frosted Glass Town Tag & Category -->
+<div class="relative z-10 p-4 sm:p-5 flex items-center justify-between">
+<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-xs font-semibold shadow-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-teal-primary"></span>
+Grayton Beach
+</span>
+<span class="text-[11px] font-medium text-white/80 tracking-wide uppercase">Golden Hour</span>
+</div>
+<!-- Bottom Info Bar: Photographer Credit + Likes -->
+<div class="relative z-10 p-5 sm:p-6 flex items-end justify-between gap-4">
+<div class="space-y-1">
+<div class="inline-flex items-center gap-2 bg-ocean-900/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/20 text-white text-xs font-semibold">
+<span>@coastal_curator · Grayton Beach</span>
+</div>
+<p class="text-white/80 text-xs line-clamp-1 pl-1">Dusk reflections along the coastal shore</p>
+</div>
+<div class="flex items-center gap-1.5 bg-black/40 backdrop-blur-md px-3 py-1 rounded-full text-white text-xs font-medium border border-white/10 shrink-0">
+<svg class="w-3.5 h-3.5 text-rose-400 fill-rose-400" viewbox="0 0 20 20"><path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"></path></svg>
+<span>1.4k</span>
+</div>
+</div>
+</div>
+<!-- Supporting 2x2 Bento Cards (Right, 7 cols) -->
+<div class="lg:col-span-7 grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Bento Card 1: Alys Beach Architecture -->
+<div class="relative group rounded-2xl overflow-hidden aspect-[4/3] bg-slate-900 shadow-xs">
+<img alt="Striking pure white Bermudan architecture at Alys Beach" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA50YwY11MsGkXmwZqZ5jV-V5FZuch9Gjhdrx7Z854PBTWT0gXm0c3_19EX5zrVQkA-00FbDGVkcNChGT7L56qjhe_cnbFKN4lKq4hMC-xCU7mu_yNzL0BOhNMWQaM1oT4_7niAaNNykfZ-KO4yPMY-qr54hHX47Xd9HJdeQW8AIbm9G1I_YsKZ_UGl0YxL_hiky2T7-YPyKszT67JG0Ia28CVbPHeAg0dnCxqTqZLFeaYrFcx1EcQz"/>
+<div class="absolute inset-0 bg-gradient-to-t from-ocean-900/80 via-transparent to-black/30 pointer-events-none"></div>
+<!-- Discreet frosted glass town tag -->
+<div class="absolute top-3 left-3 z-10">
+<span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-[11px] font-semibold shadow-xs">
+Alys Beach
+</span>
+</div>
+<!-- Photographer Instagram handle on hover / bottom strip -->
+<div class="absolute inset-x-0 bottom-0 p-3.5 flex items-center justify-between text-white text-xs">
+<span class="font-medium tracking-tight bg-ocean-900/70 backdrop-blur-sm px-2.5 py-0.5 rounded-full border border-white/10 group-hover:bg-ocean-900 transition-colors">@alys_living</span>
+<span class="text-[11px] text-white/70">Courtyard Vistas</span>
+</div>
+</div>
+<!-- Bento Card 2: Rosemary Beach Promenade / Pavilion -->
+<div class="relative group rounded-2xl overflow-hidden aspect-[4/3] bg-slate-900 shadow-xs">
+<img alt="Biking down Rosemary Beach wooden boardwalk" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjPC76-dB1HfNayYRsW3WyBUpFEksO5rC145-fDHbSXY053fWLP06QaoNNve7TkQxdBbGJ0PAtMSKm32uk974MEZ4UIu4rY24cgjb166zJurcudbaTdHbMcpqbbPSQQEEEuT_F6v0ljEyuDzMKaXX2k82p6mqUzA6Tv1yGW-1slT8F_Ve3vZ8ZiRvPked0Bzkk922ufBoT-A9W0P_TZa7Grzwfw6imGUNRxHbDaLshElbLtfvcA9Kd"/>
+<div class="absolute inset-0 bg-gradient-to-t from-ocean-900/80 via-transparent to-black/30 pointer-events-none"></div>
+<div class="absolute top-3 left-3 z-10">
+<span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-[11px] font-semibold shadow-xs">
+Rosemary Beach
+</span>
+</div>
+<div class="absolute inset-x-0 bottom-0 p-3.5 flex items-center justify-between text-white text-xs">
+<span class="font-medium tracking-tight bg-ocean-900/70 backdrop-blur-sm px-2.5 py-0.5 rounded-full border border-white/10 group-hover:bg-ocean-900 transition-colors">@coastal_crawls</span>
+<span class="text-[11px] text-white/70">Boardwalk Trail</span>
+</div>
+</div>
+<!-- Bento Card 3: WaterColor Rare Dune Lakes & Paddleboarding -->
+<div class="relative group rounded-2xl overflow-hidden aspect-[4/3] bg-slate-900 shadow-xs">
+<img alt="Paddleboarders along Western Lake in WaterColor" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAChaO5qGo8SSUMMe4IESwpFoUueaRzlI93UMOqny7I4lKLkLqlC_GkmMnFnIg2gTZEUXw6Caup-3W6kpnot4eyludgenNBrIC3nluJWh1YXfVMwwQRdVo-QFAXIAEyuMrmwtSzenMYRYm7_5D-C7Lb_68ilMcYBREcXgbclaw7Vd7nqt214p2Zv5eP5MJGQH-Nkh4iHyc6tNFdeTHe1tJJ9kbghZFfSLVZZhqna4O96n9gYGs_cQ_X"/>
+<div class="absolute inset-0 bg-gradient-to-t from-ocean-900/80 via-transparent to-black/30 pointer-events-none"></div>
+<div class="absolute top-3 left-3 z-10">
+<span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-[11px] font-semibold shadow-xs">
+WaterColor
+</span>
+</div>
+<div class="absolute inset-x-0 bottom-0 p-3.5 flex items-center justify-between text-white text-xs">
+<span class="font-medium tracking-tight bg-ocean-900/70 backdrop-blur-sm px-2.5 py-0.5 rounded-full border border-white/10 group-hover:bg-ocean-900 transition-colors">@gulf_light</span>
+<span class="text-[11px] text-white/70">Western Lake</span>
+</div>
+</div>
+<!-- Bento Card 4: Seaside Iconic Pavilions & Gulf Coast Water -->
+<div class="relative group rounded-2xl overflow-hidden aspect-[4/3] bg-slate-900 shadow-xs">
+<img alt="Crystal waters along Seaside beach walkover" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-S5n4GjbrTdRUPG27wbhkjWRNX_LW2HI3UJgvwOK0Xnhp1u5ibkFuLeVnCHN_xY6srqNdpriCZ6sn7xoAWZfc9JXPllA2Xa7Yp_M5S7LbSZp1M-vwiYVHYVVfpBd7akiLPFVDMFEmPfDJhkmQHKi-2DNCc8DuZA2GZ8BZDo3W0tBYuSG574F7lOYRpjvN4kUfJsC-dni1yHHAXuPimNY1w7uDdNKXtO1XIEfAKQt6ipMjEsD9mxwn"/>
+<div class="absolute inset-0 bg-gradient-to-t from-ocean-900/80 via-transparent to-black/30 pointer-events-none"></div>
+<div class="absolute top-3 left-3 z-10">
+<span class="px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-md text-white border border-white/30 text-[11px] font-semibold shadow-xs">
+Seaside
+</span>
+</div>
+<div class="absolute inset-x-0 bottom-0 p-3.5 flex items-center justify-between text-white text-xs">
+<span class="font-medium tracking-tight bg-ocean-900/70 backdrop-blur-sm px-2.5 py-0.5 rounded-full border border-white/10 group-hover:bg-ocean-900 transition-colors">@dune_wanderer</span>
+<span class="text-[11px] text-white/70">Emerald Shore</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- END: CommunityGallery -->
+<!-- BEGIN: CorridorFieldJournal -->
+<!-- Town Highlight Cards along Scenic Highway 30A -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" id="towns">
+<div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
+<div>
+<span class="subtle-badge text-teal-primary">Field Journal Series</span>
+<h2 class="font-headline font-bold text-3xl sm:text-4xl text-ocean-900 mt-1">
+            The 30A Corridor Field Journal
+          </h2>
+<p class="text-slate-600 text-sm mt-1 max-w-2xl">
+            Sixteen hamlets, one scenic highway — start with the towns that set the corridor's distinctive tone.
+          </p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-white border border-slate-300 hover:border-ocean-900 text-ocean-900 text-xs font-semibold rounded-full transition-colors shadow-2xs">
+            Interactive Highway Map
+          </button>
+<a class="px-4 py-2 bg-teal-primary hover:bg-teal-dark text-white text-xs font-semibold rounded-full transition-colors shadow-2xs" href="#hamlets">
+            All 16 Hamlets
+          </a>
+</div>
+</div>
+<!-- 3 Curated Hamlets -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Hamlet 1: Rosemary Beach -->
+<article class="bg-white rounded-3xl border border-dune-border overflow-hidden card-hover-effect flex flex-col justify-between" data-purpose="hamlet-card">
+<div>
+<div class="relative h-48 overflow-hidden bg-slate-100">
+<img alt="Rosemary Beach neo-traditional architecture" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA50YwY11MsGkXmwZqZ5jV-V5FZuch9Gjhdrx7Z854PBTWT0gXm0c3_19EX5zrVQkA-00FbDGVkcNChGT7L56qjhe_cnbFKN4lKq4hMC-xCU7mu_yNzL0BOhNMWQaM1oT4_7niAaNNykfZ-KO4yPMY-qr54hHX47Xd9HJdeQW8AIbm9G1I_YsKZ_UGl0YxL_hiky2T7-YPyKszT67JG0Ia28CVbPHeAg0dnCxqTqZLFeaYrFcx1EcQz"/>
+<span class="absolute top-3 left-3 bg-ocean-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider">
+                MI 18.1 · EAST CORRIDOR
+              </span>
+</div>
+<div class="p-6">
+<div class="subtle-badge text-slate-500 mb-1">Dutch West Indies &amp; Neo-Traditional</div>
+<h3 class="font-headline font-bold text-xl text-ocean-900 mb-2">Rosemary Beach</h3>
+<p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                Where European grand promenades melt into sugar dunes and vintage Havana rooftop evenings.
+              </p>
+<div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">4 Curated Venues</div>
+</div>
+</div>
+<div class="px-6 pb-6 pt-2 border-t border-slate-100">
+<a class="inline-flex items-center text-xs font-bold text-ocean-900 hover:text-teal-primary group" href="#rosemary">
+              Town Guide <span class="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</article>
+<!-- Hamlet 2: Grayton Beach -->
+<article class="bg-white rounded-3xl border border-dune-border overflow-hidden card-hover-effect flex flex-col justify-between" data-purpose="hamlet-card">
+<div>
+<div class="relative h-48 overflow-hidden bg-slate-100">
+<img alt="Grayton Beach historic oaks and charm" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAXEH_ytiXns4RwUAfaScExYzI0A9LlO9AN4tXkcLu-mtqDdkmKLZSzOQaGOUAhXyIV46EKRw6c7g4DomoV1_h7Q3ZNFg-pbJ6yylJftefgHf9CLWPNTeSCUMzQtcGJTsVTTFH0UGRq1sYCJuYppk1QJSkLhc6gDM_sUqfxtzxXW_3Aj_KNPZlgwGv9KnwQIG3ryFSyM63w1gJ_FsMw-X5qu7bd7Wztd5mi47ME6sfcp_6Zv9jckCBo"/>
+<span class="absolute top-3 left-3 bg-ocean-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider">
+                MI 9.0 · CENTRAL CORRIDOR
+              </span>
+</div>
+<div class="p-6">
+<div class="subtle-badge text-slate-500 mb-1">Soulful Old Florida &amp; Bohemia</div>
+<h3 class="font-headline font-bold text-xl text-ocean-900 mb-2">Grayton Beach</h3>
+<p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                “Nice dogs, strange people” — the authentic pulse of 30A before asphalt and high-season queues.
+              </p>
+<div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">3 Curated Venues</div>
+</div>
+</div>
+<div class="px-6 pb-6 pt-2 border-t border-slate-100">
+<a class="inline-flex items-center text-xs font-bold text-ocean-900 hover:text-teal-primary group" href="#grayton">
+              Town Guide <span class="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</article>
+<!-- Hamlet 3: WaterColor -->
+<article class="bg-white rounded-3xl border border-dune-border overflow-hidden card-hover-effect flex flex-col justify-between" data-purpose="hamlet-card">
+<div>
+<div class="relative h-48 overflow-hidden bg-slate-100">
+<img alt="WaterColor Western Lake paddleboarders" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDGGRDc9wLxMqItpIwB8simQ3166K9HsmVOTeo1QHJSEebii0iz74NICD7l8jYXKVyryASetoYvPeDt8sZQMZ3l6ZJ993NjMzKFfMQRyr02E2gDFmj6ZXTMAH3GMoXPPqh0iT5b5RjwbHSTeYH60lOXNsgF2lMb45ypfEXscfC73GUPNxuaFOKOwTE9tnPcDeG1JvMCEuc-UNI0_RuyewiXPC8iDLWgKh9oQ_1pYC-eLZ-SZhhmzj0C"/>
+<span class="absolute top-3 left-3 bg-ocean-900 text-white text-[10px] font-bold px-2.5 py-1 rounded-md tracking-wider">
+                MI 10.5 · CENTRAL CORRIDOR
+              </span>
+</div>
+<div class="p-6">
+<div class="subtle-badge text-slate-500 mb-1">Coastal Southern Lake Retreat</div>
+<h3 class="font-headline font-bold text-xl text-ocean-900 mb-2">WaterColor</h3>
+<p class="text-slate-600 text-xs sm:text-sm leading-relaxed mb-4">
+                A quiet paddle across Western Lake as herons lift from the sawgrass into the afternoon haze.
+              </p>
+<div class="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">4 Curated Venues</div>
+</div>
+</div>
+<div class="px-6 pb-6 pt-2 border-t border-slate-100">
+<a class="inline-flex items-center text-xs font-bold text-ocean-900 hover:text-teal-primary group" href="#watercolor">
+              Town Guide <span class="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+</article>
+</div>
+</section>
+<!-- END: CorridorFieldJournal -->
+<!-- BEGIN: WeekendPlanner -->
+<!-- The 30A Cultural Weekend Planner -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12" id="events">
+<div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+<div>
+<span class="subtle-badge text-teal-primary">Evening Rhythms &amp; Happenings</span>
+<h2 class="font-headline font-bold text-3xl sm:text-4xl text-ocean-900 mt-1">
+            The 30A Cultural Weekend Planner
+          </h2>
+<p class="text-slate-600 text-sm mt-1">
+            Three gatherings worth planning around — lawn sunsets, square markets, and village jazz.
+          </p>
+</div>
+<a class="inline-flex items-center text-xs font-bold text-teal-primary hover:text-teal-dark group" href="#all-events">
+          Full calendar <span class="ml-1 group-hover:translate-x-1 transition-transform">→</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Friday Night -->
+<div class="bg-white rounded-3xl border border-dune-border p-6 flex flex-col justify-between shadow-2xs">
+<div>
+<div class="pb-3 border-b border-slate-100 mb-4">
+<span class="subtle-badge text-teal-dark font-semibold">Friday Night</span>
+<div class="text-xs text-slate-500 mt-1">Today, 5:00 PM – 7:00 PM</div>
+<div class="text-xs font-semibold text-ocean-800">Seaside Amphitheatre</div>
+</div>
+<h4 class="font-headline font-bold text-lg text-ocean-900 mb-4">
+              Sounds of Seaside Wednesday &amp; Friday Concert Series
+            </h4>
+<div class="space-y-3 text-xs mb-6">
+<div>
+<span class="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">Recommended Transit</span>
+<span class="text-ocean-900 font-medium">Lawn Chairs / Coastal Casual</span>
+</div>
+<div>
+<span class="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">Admission</span>
+<span class="text-ocean-900 font-medium">Complimentary Open Lawn</span>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 text-xs">
+<span class="font-bold text-ocean-900">Insider Tip:</span>
+<span class="text-slate-600">Claim lawn space by 5:15 PM before Central Square fills up completely.</span>
+</div>
+</div>
+<!-- Saturday Morning -->
+<div class="bg-white rounded-3xl border border-dune-border p-6 flex flex-col justify-between shadow-2xs">
+<div>
+<div class="pb-3 border-b border-slate-100 mb-4">
+<span class="subtle-badge text-teal-dark font-semibold">Saturday Morning</span>
+<div class="text-xs text-slate-500 mt-1">Saturday, Oct 25, 12:00 PM – 5:00 PM</div>
+<div class="text-xs font-semibold text-ocean-800">WaterColor Town Center</div>
+</div>
+<h4 class="font-headline font-bold text-lg text-ocean-900 mb-4">
+              Harvest Wine &amp; Food Festival
+            </h4>
+<div class="space-y-3 text-xs mb-6">
+<div>
+<span class="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">Recommended Transit</span>
+<span class="text-ocean-900 font-medium">Beach Cruiser / Footpaths</span>
+</div>
+<div>
+<span class="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">Admission</span>
+<span class="text-ocean-900 font-medium">35+ Regional Producers (Ticketed)</span>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 text-xs">
+<span class="font-bold text-ocean-900">Insider Tip:</span>
+<span class="text-slate-600">Sourdough sets out by 10:15 AM sharp. Arrive early for reserved pours.</span>
+</div>
+</div>
+<!-- Sunday Morning -->
+<div class="bg-white rounded-3xl border border-dune-border p-6 flex flex-col justify-between shadow-2xs">
+<div>
+<div class="pb-3 border-b border-slate-100 mb-4">
+<span class="subtle-badge text-teal-dark font-semibold">Sunday Evening</span>
+<div class="text-xs text-slate-500 mt-1">Sunday, 9:00 AM – 10:00 AM</div>
+<div class="text-xs font-semibold text-ocean-800">Beachy Bean Coffee Co.</div>
+</div>
+<h4 class="font-headline font-bold text-lg text-ocean-900 mb-4">
+              Saturday/Sunday Cupping at Beachy Bean
+            </h4>
+<div class="space-y-3 text-xs mb-6">
+<div>
+<span class="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">Recommended Transit</span>
+<span class="text-ocean-900 font-medium">Walk-ins / No Reservations</span>
+</div>
+<div>
+<span class="text-slate-400 block font-semibold uppercase tracking-wider text-[10px]">Admission</span>
+<span class="text-ocean-900 font-medium">No Cover / Cash &amp; Card</span>
+</div>
+</div>
+</div>
+<div class="bg-slate-50 rounded-2xl p-3 border border-slate-100 text-xs">
+<span class="font-bold text-ocean-900">Insider Tip:</span>
+<span class="text-slate-600">Use Grayton town tram parking on Highway 283 for effortless arrival.</span>
+</div>
+</div>
+</div>
+</section>
+<!-- END: WeekendPlanner -->
+<!-- BEGIN: CriticsNotebook -->
+<!-- Critic's Notebook: Boutique Lodging & Culinary Review (The Pearl) -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="stays"><div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4"><div><span class="subtle-badge text-teal-primary">Community Advice Column</span><h2 class="font-headline font-bold text-3xl sm:text-4xl text-ocean-900 mt-1">Locals Know Best: Straight Talk on Golf Carts &amp; Walkovers</h2></div><div class="flex items-center gap-3"><button class="px-4 py-2 bg-ocean-900 hover:bg-ocean-800 text-white text-xs font-semibold rounded-full transition-colors">Ask the Forum</button><a class="inline-flex items-center text-xs font-semibold text-ocean-900 hover:text-teal-primary group" href="#forum">Browse answers <span class="ml-1 group-hover:translate-x-1 transition-transform">→</span></a></div></div><div class="grid grid-cols-1 lg:grid-cols-12 gap-6"><div class="lg:col-span-7 grid grid-cols-1 md:grid-cols-2 gap-6"><div class="bg-white rounded-3xl border border-dune-border p-6 sm:p-7 shadow-2xs flex flex-col justify-between"><div><div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-medium"><span>SEASIDE · ASKED 2026-10-06</span><span class="text-teal-primary font-semibold">14 replies</span></div><h3 class="font-headline font-bold text-base sm:text-lg text-ocean-900 mb-4">Best beach access with parking near Seaside?</h3><div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-4"><div class="flex items-center gap-1.5 mb-2"><span class="subtle-badge text-teal-dark bg-teal-light px-2 py-0.5 rounded text-[10px]">BEACHLOCAL · VERIFIED LOCAL RESIDENT</span></div><p class="text-slate-600 text-xs sm:text-sm leading-relaxed">“Park early at the county regional access west of the square (Santa Clara). It provides ADA ramp walkovers, public bathrooms, and parking spaces that don't tow after 8 PM.”</p></div></div><a class="text-xs font-bold text-ocean-900 hover:text-teal-primary inline-flex items-center" href="#thread-1">View Thread →</a></div><div class="bg-white rounded-3xl border border-dune-border p-6 sm:p-7 shadow-2xs flex flex-col justify-between"><div><div class="flex items-center justify-between text-xs text-slate-400 mb-2 font-medium"><span>ROSEMARY BEACH · ASKED 2026-10-04</span><span class="text-teal-primary font-semibold">28 replies</span></div><h3 class="font-headline font-bold text-base sm:text-lg text-ocean-900 mb-4">Are golf carts allowed in Rosemary Beach?</h3><div class="bg-slate-50 rounded-2xl p-4 border border-slate-100 mb-4"><div class="flex items-center gap-1.5 mb-2"><span class="subtle-badge text-teal-dark bg-teal-light px-2 py-0.5 rounded text-[10px]">LOCAL_OWNER · VERIFIED LOCAL RESIDENT</span></div><p class="text-slate-600 text-xs sm:text-sm leading-relaxed">“LSVs (street-legal carts) are restricted on private town roads within Rosemary. Best to rent cruisers or walk the boardwalk network — you don't need carts inside the town boundary.”</p></div></div><a class="text-xs font-bold text-ocean-900 hover:text-teal-primary inline-flex items-center" href="#thread-2">View Thread →</a></div></div><div class="lg:col-span-5 bg-gradient-to-br from-[#f1f6f8] to-[#e8eff2] rounded-3xl p-6 sm:p-7 border border-slate-200/80 shadow-2xs flex flex-col justify-between" id="ask"><div class="space-y-4"><div class="flex items-center justify-between"><span class="subtle-badge text-teal-dark bg-teal-light/80 px-2.5 py-1 rounded-md font-semibold tracking-wider">Ask 30A Community AI</span><span class="inline-flex items-center text-[11px] font-semibold text-ocean-700 bg-white/70 px-2 py-0.5 rounded-full border border-slate-200"><span class="w-1.5 h-1.5 rounded-full bg-teal-primary mr-1"></span>24/7 Verified Guide</span></div><h3 class="font-headline font-bold text-xl sm:text-2xl text-ocean-900">Instant answers without forum clutter</h3><p class="text-slate-600 text-xs leading-relaxed">Curated recommendations synthesized from verified local coastal guides, secret beach pathways, and real-time corridor conditions.</p><div class="flex flex-wrap gap-1.5"><button class="text-xs bg-white text-ocean-800 px-2.5 py-1 rounded-full border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition font-medium">Sunset cocktails in Seaside</button><button class="text-xs bg-white text-ocean-800 px-2.5 py-1 rounded-full border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition font-medium">Bike rentals in WaterColor</button><button class="text-xs bg-white text-ocean-800 px-2.5 py-1 rounded-full border border-slate-200 hover:border-teal-primary hover:text-teal-primary transition font-medium">Best seafood without reservations</button></div></div><form class="mt-4 relative flex items-center gap-2 bg-white rounded-xl p-1.5 border border-slate-300 shadow-inner focus-within:border-teal-primary"><input class="flex-grow px-2 py-1 text-xs text-ocean-900 placeholder-slate-400 border-none focus:ring-0 bg-transparent outline-none" placeholder="Ask anything about 30A..." type="text"/><button class="px-4 py-2 rounded-lg bg-teal-primary hover:bg-teal-dark text-white font-medium text-xs transition-colors shrink-0" type="submit">Ask AI →</button></form></div></div></section>
+<!-- END: CriticsNotebook -->
+<!-- BEGIN: MerchantCallToAction -->
+<!-- Outpost Listing Claim Banner -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8" id="about"><div class="bg-[#f4f7f6] rounded-3xl p-8 sm:p-12 border border-slate-200/80"><div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center"><div class="lg:col-span-5 space-y-3"><div class="inline-flex items-center gap-2 px-3 py-1 bg-white rounded-full text-slate-600 subtle-badge border border-slate-200/60"><span class="w-2 h-2 rounded-full bg-teal-primary"></span> About WhereTo30A</div><h2 class="font-headline font-bold text-3xl sm:text-4xl text-ocean-900 tracking-tight leading-tight">Crafted for locals, second-home owners, and coastal explorers.</h2><p class="font-serif italic text-ocean-800 text-base">One authentic home for every hamlet, table, boardwalk, and quiet dune lake along Scenic Highway 30A.</p></div><div class="lg:col-span-7 space-y-4 text-slate-600 text-sm sm:text-base leading-relaxed"><p>There are incredible businesses, places and experiences all across 30A. But finding them often means searching around, scrolling social media, checking multiple websites and asking for recommendations, and you can still miss what's right down the road.</p><p>We created WhereTo30A to bring it all together. With a background in technology, product and digital strategy, we're building one place to make it easier to find where to eat, shop, stay, explore and experience 30A while supporting the local businesses that make this community what it is.</p><div class="pt-2 flex items-center gap-6"><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-primary"></span><span class="text-xs font-semibold text-ocean-900">16 Hamlets Covered</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-primary"></span><span class="text-xs font-semibold text-ocean-900">100% Curated Locally</span></div><div class="flex items-center gap-2"><span class="w-2 h-2 rounded-full bg-teal-primary"></span><span class="text-xs font-semibold text-ocean-900">Verified Business Outposts</span></div></div></div></div></div></section><section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10" id="add-business">
+<div class="bg-ocean-900 rounded-3xl p-8 sm:p-12 text-white flex flex-col md:flex-row items-center justify-between gap-8 border border-ocean-800">
+<div class="max-w-2xl">
+<h2 class="font-headline font-bold text-2xl sm:text-3xl text-white tracking-tight mb-2">
+            Own an outpost along Scenic Highway 30A?
+          </h2>
+<p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+            Claim your listing, post seasonal updates, publish daily specials, and reach residents and visitors already exploring the corridor.
+          </p>
+</div>
+<div class="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto shrink-0">
+<a class="w-full sm:w-auto text-center px-6 py-3 rounded-full bg-teal-primary hover:bg-teal-dark font-semibold text-xs tracking-wide text-white transition-colors shadow-md" href="#claim">
+            Claim Your Outpost Listing
+          </a>
+<span class="text-[11px] text-slate-400 font-semibold tracking-wider uppercase">Walton County Audited</span>
+</div>
+</div>
+</section>
+<!-- END: MerchantCallToAction -->
+</main>
+<!-- BEGIN: MainFooter -->
+<footer class="bg-white border-t border-dune-border pt-16 pb-12 text-ocean-900">
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="grid grid-cols-2 md:grid-cols-5 gap-8 mb-12">
+<!-- Brand & Mission Column -->
+<div class="col-span-2 space-y-4 pr-4">
+<a class="font-headline font-extrabold text-2xl tracking-tight text-ocean-900" href="#">
+            WhereTo<span class="text-teal-primary">30A</span>
+</a>
+<p class="text-slate-500 text-xs sm:text-sm leading-relaxed max-w-sm">
+            Your local guide to 30A and Florida's Emerald Coast. Curated start lines, town guides, and hand-picked local favorites.
+          </p>
+<div class="flex items-center space-x-3 pt-2 text-slate-400">
+<!-- Instagram -->
+<a aria-label="Instagram" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:text-ocean-900 hover:border-slate-400 transition-colors" href="#">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path></svg>
+</a>
+<!-- Twitter/X -->
+<a aria-label="Twitter" class="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center hover:text-ocean-900 hover:border-slate-400 transition-colors" href="#">
+<svg class="w-4 h-4" fill="currentColor" viewbox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+</a>
+</div>
+</div>
+<!-- Directory: Towns -->
+<div>
+<div class="font-headline font-bold text-xs uppercase tracking-wider text-ocean-900 mb-3">Towns</div>
+<ul class="space-y-2 text-xs text-slate-600">
+<li><a class="hover:text-teal-primary transition-colors" href="#">Sandestin</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Santa Rosa Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Dune Allen Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Gulf Place</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Blue Mountain Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Grayton Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">WaterColor</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Seaside</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Seagrove Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">WaterSound</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Seacrest Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Alys Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Rosemary Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Inlet Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Carillon Beach</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Panama City Beach</a></li>
+</ul>
+</div>
+<!-- Directory: Areas & Hubs -->
+<div>
+<div class="font-headline font-bold text-xs uppercase tracking-wider text-ocean-900 mb-3">Areas</div>
+<ul class="space-y-2 text-xs text-slate-600">
+<li><a class="hover:text-teal-primary transition-colors" href="#">Barrett Square</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Seaside Town Square</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Ruskin Place</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Alys Town Center</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Hotz Avenue</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">WaterColor Town Center</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">30Avenue</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Sandestin Village</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Gulf Place shops</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Blue Mountain village</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">WaterSound Town Center</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Pier Park</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">All areas</a></li>
+</ul>
+</div>
+<!-- Directory: Businesses & Company -->
+<div class="space-y-6">
+<div>
+<div class="font-headline font-bold text-xs uppercase tracking-wider text-ocean-900 mb-3">Businesses</div>
+<ul class="space-y-2 text-xs text-slate-600">
+<li><a class="hover:text-teal-primary transition-colors" href="#">Food &amp; Drink</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Shopping</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Stay</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Things to Do</a></li>
+</ul>
+</div>
+<div>
+<div class="font-headline font-bold text-xs uppercase tracking-wider text-ocean-900 mb-3">Company</div>
+<ul class="space-y-2 text-xs text-slate-600">
+<li><a class="hover:text-teal-primary transition-colors" href="#">About</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Travel guides</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Events</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Ask</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Businesses</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Categories</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">List your business</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">List a vacation rental</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Advertise</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Privacy</a></li>
+<li><a class="hover:text-teal-primary transition-colors" href="#">Terms</a></li>
+</ul>
+</div>
+</div>
+</div>
+<!-- Legal Bottom Strip -->
+<div class="pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between text-xs text-slate-400 gap-4">
+<div>
+          © 2026 WhereTo30A · Terms · Privacy · Curated with care for South Walton
+        </div>
+<div class="flex items-center gap-2">
+<span>Scenic Highway 30A, Florida</span>
+</div>
+</div>
+</div>
+</footer>
+<!-- END: MainFooter -->
+</body></html>

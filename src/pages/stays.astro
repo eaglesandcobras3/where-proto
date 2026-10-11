@@ -1,56 +1,240 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import InteriorHero from "../components/InteriorHero.astro";
+import MapToggle from "../components/MapToggle.astro";
+import ContributeCard from "../components/ContributeCard.astro";
 import TwoPaneMap from "../components/TwoPaneMap.astro";
+import StaysHeroSearch from "../components/islands/StaysHeroSearch.svelte";
+import StaysSidebarFilters from "../components/islands/StaysSidebarFilters.svelte";
 import StaysList from "../components/islands/StaysList.svelte";
 import { isEnabled } from "../config/flags";
 import { stays, towns } from "../data/catalog";
+import { href } from "../lib/href";
+import { markersFromNames, withoutViewMap, withViewMap } from "../lib/map-markers";
 
 const params = Astro.url.searchParams;
 const town = params.get("town") ?? "";
 const guests = params.get("guests") ?? "";
+const kind = params.get("kind") ?? "";
 const q = params.get("q") ?? "";
-const townName = (slug: string) => towns.find((item) => item.slug === slug)?.name ?? slug;
-const stayItems = stays.map((stay) => ({
-  slug: stay.slug,
-  name: stay.name,
-  town: stay.townSlug,
-  townName: townName(stay.townSlug),
-  summary: stay.summary,
-  sleeps: stay.sleeps,
-}));
+const mapView = params.get("view") === "map";
 const base = import.meta.env.BASE_URL;
+const searchQs = Astro.url.search;
+const mapHref = withViewMap("/stays", searchQs);
+const gridHref = withoutViewMap("/stays", searchQs);
+
+const guestOptions = [
+  { slug: "2", name: "Sleeps 2+" },
+  { slug: "4", name: "Sleeps 4+" },
+  { slug: "6", name: "Sleeps 6+" },
+  { slug: "8", name: "Sleeps 8+" },
+];
+
+const lodgingTypes = [
+  { slug: "inn", name: "Luxury Boutique Inns" },
+  { slug: "cottage", name: "Beachfront Cottages & Houses" },
+  { slug: "villa", name: "Private Courtyard Villas" },
+];
+
+const amenities = [
+  { slug: "lsv", name: "Street-Legal Golf Cart (LSV)" },
+  { slug: "pool", name: "Private Pool or Gulf Views" },
+  { slug: "boardwalk", name: "Private Boardwalk Beach Access" },
+  { slug: "pets", name: "Pet-Friendly Seaside Haven" },
+];
+
+const metaFor = (slug: string) => {
+  if (slug.includes("pearl") || slug.includes("inn")) {
+    return {
+      kind: "inn" as const,
+      badge: "Signature Boutique Inn",
+      vibe: "Couples & Adults",
+      fromPrice: "From $540/night",
+      roomsLabel: "Suites & rooms",
+    };
+  }
+  if (slug.includes("cottage")) {
+    return {
+      kind: "cottage" as const,
+      badge: "Beach Cottage",
+      vibe: "Families",
+      fromPrice: "From $385/night",
+      roomsLabel: "Whole-home rental",
+    };
+  }
+  return {
+    kind: "villa" as const,
+    badge: "Coastal Stay",
+    vibe: "Groups",
+    fromPrice: "From $420/night",
+    roomsLabel: "Private residence",
+  };
+};
+
+const stayItems = stays.map((stay) => {
+  const meta = metaFor(stay.slug);
+  return {
+    slug: stay.slug,
+    name: stay.name,
+    town: stay.townSlug,
+    townName: towns.find((item) => item.slug === stay.townSlug)?.name ?? stay.townSlug,
+    summary: stay.summary,
+    sleeps: stay.sleeps,
+    ...meta,
+  };
+});
+
+const townCounts = towns
+  .map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    count: stays.filter((stay) => stay.townSlug === item.slug).length,
+  }))
+  .filter((item) => item.count > 0);
+
+const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
+const mapMarkers = markersFromNames(
+  stayItems.map((stay) => ({
+    name: stay.name,
+    href: href(`/stay/${stay.slug}`),
+    detail: `${stay.townName} · ${stay.fromPrice}`,
+  })),
+);
 ---
 
 <BaseLayout
-  title="Stays on 30A"
-  description="Book direct with local 30A rental partners."
+  title="30A Stays & Vacation Rentals"
+  description="Curated boutique inns, cottages, and vacation rentals along Scenic Highway 30A."
   active="stays"
-  showStays
-  staysTown={town}
-  staysGuests={guests}
-  staysQuery={q}
 >
-  <TwoPaneMap mapLabel="30A stays map" pinCount={Math.max(6, stays.length)} searchArea>
+  <div class="stays-page">
+    <InteriorHero
+      title="30A Stays & Vacation Rentals"
+      lede="Boutique inns, walkable cottages, and direct-book homes inspected for the corridor — filtered by town, guests, and how you want to move around."
+    >
+      <StaysHeroSearch
+        towns={exploreTowns}
+        guestOptions={guestOptions}
+        initialTown={town}
+        initialGuests={guests}
+        initialQuery={q}
+        client:load
+      />
+    </InteriorHero>
+
     {
-      isEnabled("stays") ? (
-        <StaysList
-          stays={stayItems}
-          initialTown={town}
-          initialGuests={guests}
-          initialQuery={q}
-          base={base}
-          client:load
-        />
+      mapView ? (
+        <TwoPaneMap
+          mapLabel="30A stays map"
+          resultLabel={`${stays.length} Stays along Scenic 30A`}
+          gridHref={href(gridHref)}
+          markers={mapMarkers}
+          searchArea
+        >
+          {isEnabled("stays") ? (
+            <StaysList
+              stays={stayItems}
+              initialTown={town}
+              initialGuests={guests}
+              initialKind={kind}
+              initialQuery={q}
+              base={base}
+              client:load
+            />
+          ) : (
+            <p class="note">Stays are reserved for the real build.</p>
+          )}
+        </TwoPaneMap>
       ) : (
-        <p class="note">Stays are reserved for the real build.</p>
+        <div class="container layout">
+          <StaysSidebarFilters
+            towns={townCounts}
+            lodgingTypes={lodgingTypes}
+            amenities={amenities}
+            initialTown={town}
+            initialKind={kind}
+            total={stays.length}
+            client:load
+          />
+
+          {isEnabled("stays") ? (
+            <StaysList
+              stays={stayItems}
+              initialTown={town}
+              initialGuests={guests}
+              initialKind={kind}
+              initialQuery={q}
+              base={base}
+              client:load
+            />
+          ) : (
+            <p class="note">Stays are reserved for the real build.</p>
+          )}
+
+          <aside class="rail">
+            <MapToggle title="30A Stays Map" href={mapHref} />
+            <ContributeCard kind="stay" />
+
+            <section class="widget">
+              <p class="widget__label">Direct Concierge</p>
+              <p class="copy">
+                Book verified properties with clear town rules, walkability, and host notes — not
+                anonymous inventory dumps.
+              </p>
+            </section>
+          </aside>
+        </div>
       )
     }
-  </TwoPaneMap>
+  </div>
 </BaseLayout>
 
 <style>
+  .stays-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .copy {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
   .note {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
+    }
+    .rail {
+      display: grid;
+    }
   }
 </style>

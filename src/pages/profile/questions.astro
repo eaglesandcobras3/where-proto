@@ -1,22 +1,190 @@
 ---
 import AccountLayout from "../../layouts/AccountLayout.astro";
-import QuestionCard from "../../components/QuestionCard.astro";
-import { currentUserSlug, questions } from "../../data/catalog";
+import {
+  comments,
+  currentUserSlug,
+  townBySlug,
+  questions,
+} from "../../data/catalog";
+import { href } from "../../lib/href";
 
 const mine = questions.filter((item) => item.authorUserSlug === currentUserSlug);
+
+const rows = mine.map((question) => {
+  const answers = comments.filter(
+    (item) => item.on.type === "question" && item.on.slug === question.slug,
+  );
+  const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+  return {
+    ...question,
+    answers,
+    townName: town?.name,
+    answered: answers.length > 0,
+  };
+});
 ---
 
-<AccountLayout title="My questions" active="questions">
-  <div class="stack">
-    {mine.map((question) => <QuestionCard question={question} />)}
-    {mine.length === 0 && <p>No questions yet.</p>}
-  </div>
+<AccountLayout title="My Questions" active="questions">
+  <section class="panel">
+    <div class="panel__head">
+      <div>
+        <h2>Community Questions</h2>
+        <p>Questions you submitted to the 30A community and resident experts.</p>
+      </div>
+      <a class="ask-btn" href={href("/ask")}>Ask a Question</a>
+    </div>
+
+    <div class="stack">
+      {
+        rows.map((question) => (
+          <article class="card">
+            <div class="card__top">
+              <p class="meta">
+                {question.townName ?? "30A"}
+                <span>· Asked {question.createdAt}</span>
+              </p>
+              {question.answered ? (
+                <span class="status status--done">Answered</span>
+              ) : (
+                <span class="status">Awaiting community replies</span>
+              )}
+            </div>
+            <h3>
+              <a href={href(`/ask/${question.slug}`)}>{question.title}</a>
+            </h3>
+            <p class="body">{question.body}</p>
+            {
+              question.answered && question.answers[0] && (
+                <blockquote>
+                  <p>{question.answers[0].body}</p>
+                </blockquote>
+              )
+            }
+            <div class="card__foot">
+              <span>
+                {question.answers.length} {question.answers.length === 1 ? "Answer" : "Answers"}
+              </span>
+              <a href={href(`/ask/${question.slug}`)}>
+                {question.answered ? "View Thread →" : "Share an Answer →"}
+              </a>
+            </div>
+          </article>
+        ))
+      }
+      {rows.length === 0 && <p class="empty">No questions yet.</p>}
+    </div>
+  </section>
 </AccountLayout>
 
 <style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-3);
+    align-items: flex-start;
+    margin-bottom: var(--size-4);
+  }
+  .panel__head h2 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-4);
+  }
+  .panel__head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .ask-btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.35rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-teal);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .ask-btn:hover {
+    background: #00796b;
+    text-decoration: none;
+  }
   .stack {
     display: grid;
     gap: var(--size-3);
-    max-width: 720px;
+  }
+  .card {
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: var(--size-4);
+    background: var(--brand-sand);
+  }
+  .card__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  .meta {
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  .status {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-ink-soft);
+  }
+  .status--done {
+    color: var(--brand-teal);
+  }
+  h3 {
+    margin: 0 0 0.4rem;
+    font-size: var(--font-size-3);
+  }
+  h3 a {
+    color: inherit;
+  }
+  .body {
+    margin: 0 0 0.75rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  blockquote {
+    margin: 0 0 0.85rem;
+    padding: 0.75rem 0.9rem;
+    border-left: 3px solid var(--brand-teal);
+    background: white;
+    border-radius: 0 var(--radius-2) var(--radius-2) 0;
+  }
+  blockquote p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink);
+  }
+  .card__foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .card__foot a {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
   }
 </style>

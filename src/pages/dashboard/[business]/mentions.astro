@@ -1,7 +1,6 @@
 ---
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import DashboardNav from "../../../components/DashboardNav.astro";
-import { postsFor, userBySlug } from "../../../data/catalog";
+import MerchantLayout from "../../../layouts/MerchantLayout.astro";
+import { posts, questions, userBySlug } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
@@ -15,57 +14,129 @@ interface Props {
 }
 
 const { business } = Astro.props;
-const mentions = postsFor("business", business.slug).filter((item) => item.postedAs === "user");
+const mentions = [
+  ...posts
+    .filter((item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user")
+    .map((item) => ({
+      kind: "Community post",
+      excerpt: item.body,
+      time: item.createdAt,
+      username: userBySlug(item.authorUserSlug ?? "")?.name ?? "a visitor",
+      href: href(`/posts/${item.slug}`),
+    })),
+  ...questions
+    .filter((item) =>
+      item.body.toLowerCase().includes(business.name.split(" ")[0]?.toLowerCase() ?? "edward"),
+    )
+    .map((item) => ({
+      kind: "Ask thread",
+      excerpt: item.title,
+      time: item.createdAt,
+      username: userBySlug(item.authorUserSlug)?.name ?? "a visitor",
+      href: href(`/ask/${item.slug}`),
+    })),
+];
 ---
 
-<BaseLayout title={`Mentions · ${business.name}`}>
-  <div class="container section">
-    <h1>Mentions inbox</h1>
-    <DashboardNav businessSlug={business.slug} active="mentions" />
-    <div class="stack">
-      {mentions.map((post) => (
-        <article class="mention">
+<MerchantLayout title={`Community feed · ${business.name}`} business={business} active="community">
+  <header class="head">
+    <div>
+      <h1>Community feed</h1>
+      <p>
+        Mentions and questions about {business.name}. Replies go live with the Owner badge, then follow
+        the 3-flag auto-hide rule.
+      </p>
+    </div>
+    <a class="btn" href={href(`/business/${business.slug}`)}>View public profile</a>
+  </header>
+
+  <div class="stack">
+    {
+      mentions.map((item) => (
+        <article class="card">
           <p class="meta">
-            Community post · {userBySlug(post.authorUserSlug ?? "")?.name ?? "a visitor"} · {post.createdAt}
+            {item.kind} · {item.username} · {item.time}
           </p>
-          <p>{post.body}</p>
-          <p>
-            <a href={href(`/posts/${post.slug}`)}>Open</a> ·
+          <p>{item.excerpt}</p>
+          <p class="actions">
+            <a href={item.href}>Open thread</a>
             <button type="button">Reply as verified owner</button>
           </p>
         </article>
-      ))}
-      {mentions.length === 0 && <p class="empty">No visitor mentions yet.</p>}
-    </div>
+      ))
+    }
+    {mentions.length === 0 && <p class="empty">No mentions yet — check back after weekend traffic.</p>}
   </div>
-</BaseLayout>
+</MerchantLayout>
 
 <style>
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    margin: 0 0 0.35rem;
+    color: var(--brand-deep);
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+  }
+  .head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    max-width: 48ch;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.4rem;
+    padding: 0.45rem 0.95rem;
+    border-radius: var(--radius-pill);
+    background: #f1f5f9;
+    color: var(--brand-deep);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    text-decoration: none;
+  }
   .stack {
     display: grid;
-    gap: var(--size-3);
-    max-width: 720px;
+    gap: 0.75rem;
+    max-width: 46rem;
   }
-  .mention {
+  .card {
     background: white;
     border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-4);
+    border-radius: var(--radius-3);
+    padding: 1rem;
   }
   .meta {
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-soft);
-    text-transform: uppercase;
+    margin: 0 0 0.4rem;
+    font-size: 0.625rem;
     letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
   }
-  button {
+  .card > p:nth-child(2) {
+    margin: 0 0 0.65rem;
+    color: var(--brand-ink);
+  }
+  .actions {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+  }
+  .actions a,
+  .actions button {
     border: 0;
     background: none;
-    color: var(--brand-teal);
-    font: inherit;
-    font-weight: var(--font-weight-7);
-    cursor: pointer;
     padding: 0;
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+    cursor: pointer;
   }
   .empty {
     color: var(--brand-ink-soft);

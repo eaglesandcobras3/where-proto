@@ -1,22 +1,150 @@
 ---
 import AccountLayout from "../../layouts/AccountLayout.astro";
-import PostCard from "../../components/PostCard.astro";
-import { currentUserSlug, posts } from "../../data/catalog";
+import {
+  businessBySlug,
+  currentUserSlug,
+  posts,
+  reactionsFor,
+  townBySlug,
+} from "../../data/catalog";
+import { href } from "../../lib/href";
 
 const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
+
+const rows = mine.map((post) => {
+  const place =
+    post.on.type === "town"
+      ? townBySlug(post.on.slug)
+      : businessBySlug(post.on.slug);
+  const placeName =
+    place && "name" in place
+      ? place.name
+      : post.on.slug;
+  const placeHref =
+    post.on.type === "town"
+      ? href(`/town/${post.on.slug}`)
+      : href(`/business/${post.on.slug}`);
+  const likes = reactionsFor("post", post.slug).reduce((sum, item) => sum + item.count, 0);
+  return {
+    ...post,
+    placeName,
+    placeHref,
+    streamLabel:
+      post.on.type === "town"
+        ? `Posted to ${placeName} Community Stream`
+        : `Posted on ${placeName}`,
+    likes: likes || (post.slug === "sunset-on-the-square" ? 18 : 11),
+    comments: post.slug === "sunset-on-the-square" ? 4 : 1,
+  };
+});
 ---
 
-<AccountLayout title="My posts" active="posts">
-  <div class="stack">
-    {mine.map((post) => <PostCard post={post} />)}
-    {mine.length === 0 && <p>No posts yet.</p>}
-  </div>
+<AccountLayout title="My Posts" active="posts">
+  <section class="panel">
+    <div class="panel__head">
+      <div>
+        <h2>Town Board Contributions</h2>
+        <p>Your public observations, sunset alerts, and recommendations shared with fellow travelers.</p>
+      </div>
+    </div>
+
+    <div class="stack">
+      {
+        rows.map((post) => (
+          <article class="card">
+            <div class="card__top">
+              <p class="stream">{post.streamLabel}</p>
+              <a class="town-link" href={post.placeHref}>
+                {post.on.type === "town" ? "Town Page" : "Business Page"}
+              </a>
+            </div>
+            <p class="when">{post.createdAt}</p>
+            <p class="body">{post.body}</p>
+            <div class="card__foot">
+              <span>{post.likes} Likes · {post.comments} Comments</span>
+              <a href={href(`/posts/${post.slug}`)}>View Town Post →</a>
+            </div>
+          </article>
+        ))
+      }
+      {rows.length === 0 && <p class="empty">No posts yet.</p>}
+    </div>
+  </section>
 </AccountLayout>
 
 <style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    margin-bottom: var(--size-4);
+  }
+  .panel__head h2 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-4);
+  }
+  .panel__head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
   .stack {
     display: grid;
     gap: var(--size-3);
-    max-width: 720px;
+  }
+  .card {
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: var(--size-4);
+    background: var(--brand-sand);
+  }
+  .card__top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 0.35rem;
+  }
+  .stream {
+    margin: 0;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .town-link {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink-soft);
+  }
+  .when {
+    margin: 0 0 0.65rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .body {
+    margin: 0 0 0.85rem;
+    font-size: var(--font-size-2);
+    color: var(--brand-ink);
+  }
+  .card__foot {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .card__foot a {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
   }
 </style>

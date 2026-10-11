@@ -54,7 +54,14 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={question.title} description={question.body} active="ask" jsonLd={jsonLd}>
+<BaseLayout
+  title={question.title}
+  description={question.body}
+  active="ask"
+  showAsk
+  askTown={question.townSlug ?? ""}
+  jsonLd={jsonLd}
+>
   <div class="thread">
     <p class="back">
       <a href={href("/ask")}>← Back to Ask</a>
@@ -102,12 +109,7 @@ const jsonLd = {
       })
     }
 
-    <AskReplyComposer
-      signedIn={false}
-      loginHref={href("/auth/login")}
-      signupHref={href("/auth/signup")}
-      client:visible
-    />
+    <AskReplyComposer client:visible />
   </div>
 </BaseLayout>
 

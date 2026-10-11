@@ -43,7 +43,11 @@ interface Props {
 
 const { town, group, leaf, showAll } = Astro.props;
 const groupListings = businesses.filter(
-  (item) => item.townSlug === town.slug && item.categorySlug === group.slug,
+  (item) =>
+    item.townSlug === town.slug &&
+    item.categorySlug === group.slug &&
+    item.entityKind !== "town" &&
+    item.entityKind !== "area",
 );
 const leafCounts = group.leaves
   .map((item) => ({
@@ -78,7 +82,12 @@ const searchHref = href(`/search?town=${town.slug}&category=${leaf?.slug ?? grou
     { label: leaf?.name ?? group.name },
   ]}
 >
-  <TwoPaneMap mapLabel={`${town.name} map`} pinCount={Math.max(6, displayListings.length * 2)}>
+  <TwoPaneMap
+    mapLabel={`${town.name} map`}
+    pinCount={Math.max(6, displayListings.length * 2)}
+    searchArea
+    resultLabel={`${displayListings.length} Results in ${town.name}`}
+  >
     <Corridor currentSlug={town.slug} />
 
     <h1>{leaf?.name ?? group.name} in {town.name}</h1>

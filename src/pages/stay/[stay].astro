@@ -1,6 +1,6 @@
 ---
-import PlaceLayout from "../../layouts/PlaceLayout.astro";
-import { stays, townBySlug } from "../../data/catalog";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { events, stays, townBySlug } from "../../data/catalog";
 import type { Stay } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -15,61 +15,560 @@ interface Props {
 
 const { item: stay } = Astro.props;
 const town = townBySlug(stay.townSlug);
+const related = stays.filter((item) => item.slug !== stay.slug).slice(0, 3);
+const nearbyEvents = events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
+const isInn = /hotel|inn/i.test(stay.name);
 ---
 
-<PlaceLayout
-  title={stay.name}
-  description={stay.summary}
-  active="stays"
-  crumbs={[{ label: "Stays", path: "/stays" }, { label: stay.name }]}
->
-  <div class="container section">
-    <div class="hero">
-      <div class="hero-img img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
-      <div>
-        <h1>{stay.name}</h1>
-        <p class="lede">{stay.summary}</p>
-        <p>Sleeps {stay.sleeps}</p>
-        {
-          town && (
-            <p>
+<BaseLayout title={stay.name} description={stay.summary} active="stays">
+  <div class="stay-page">
+    <section class="top">
+      <div class="container">
+        <nav class="crumbs" aria-label="Breadcrumb">
+          <a href={href("/")}>Home</a>
+          <span>/</span>
+          <a href={href("/stays")}>Stays</a>
+          {town && (
+            <>
+              <span>/</span>
               <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-              {" · "}
-              <a href={href(`/town/${town.slug}/vacation-rentals`)}>Vacation rentals</a>
-              {" · "}
-              <a href={href(`/town/${town.slug}/hotels`)}>Hotels</a>
+            </>
+          )}
+          <span>/</span>
+          <span class="current">{stay.name}</span>
+        </nav>
+
+        <div class="title-row">
+          <div>
+            <h1>{stay.name}</h1>
+            <p class="meta">
+              4.8 local rating
+              {town && (
+                <>
+                  {" · "}
+                  <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+                </>
+              )}
+              {" · "}Sleeps {stay.sleeps}
             </p>
-          )
-        }
-        {
-          stay.businessSlug && (
-            <p>
-              Listing: <a href={href(`/business/${stay.businessSlug}`)}>{stay.name}</a>
-            </p>
-          )
-        }
+          </div>
+          <div class="title-actions">
+            <button type="button">Save</button>
+            <button type="button">Share</button>
+            {
+              stay.businessSlug ? (
+                <a class="book" href={href(`/business/${stay.businessSlug}`)}>
+                  Visit official booking site
+                </a>
+              ) : (
+                <a class="book" href={href("/ask")}>
+                  Ask about availability
+                </a>
+              )
+            }
+          </div>
+        </div>
+
+        <div class="gallery">
+          <div class="gallery__main img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
+          <div class="gallery__grid">
+            <div class="img-placeholder" aria-hidden="true">1</div>
+            <div class="img-placeholder" aria-hidden="true">2</div>
+            <div class="img-placeholder" aria-hidden="true">3</div>
+            <div class="img-placeholder" aria-hidden="true">4</div>
+          </div>
+        </div>
       </div>
+    </section>
+
+    <div class="container layout">
+      <div class="main">
+        <section class="quick">
+          <div>
+            <p class="label">{isInn ? "Rooms" : "Home"}</p>
+            <p>{isInn ? "Suites & rooms" : `Sleeps ${stay.sleeps}`}</p>
+          </div>
+          <div>
+            <p class="label">Walkability</p>
+            <p>Highly walkable</p>
+          </div>
+          <div>
+            <p class="label">Vibe</p>
+            <p>{isInn ? "Adults & romantic" : "Families & groups"}</p>
+          </div>
+          <div>
+            <p class="label">Orientation</p>
+            <p>Pedestrian town core</p>
+          </div>
+        </section>
+
+        <section class="panel cert">
+          <p class="cert__label">WhereTo30A Guild Lodging Certified</p>
+          <p>Inspected for walkability, guest clarity, and honest corridor fit — not anonymous marketplace filler.</p>
+        </section>
+
+        <section class="panel">
+          <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
+          <p>{stay.summary}</p>
+          <p>
+            Use this stay as a home base for beach days, dinners in the square, and short hops along Scenic 30A. Confirm
+            parking, carts, and quiet-hour rules for {town?.name ?? "the town"} before you arrive.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Curated perks &amp; amenities</h2>
+          <div class="perks">
+            <div><strong>Beach setups</strong><span>Chairs &amp; umbrellas guidance</span></div>
+            <div><strong>Bikes / carts</strong><span>Ask host about LSV rules</span></div>
+            <div><strong>Town access</strong><span>Walkable to dining &amp; shops</span></div>
+            <div><strong>Local insider</strong><span>Concierge-style tips nearby</span></div>
+            <div><strong>Quiet hours</strong><span>Respect neighborhood rhythm</span></div>
+            <div><strong>Direct book</strong><span>Clear host communication</span></div>
+          </div>
+        </section>
+
+        <section class="alert">
+          <p class="alert__label">Local tips &amp; regulations</p>
+          <p>
+            Beach wristbands, pedestrian cores, and evening quiet hours vary by town. Clear beach gear nightly and park only
+            where posted.
+          </p>
+        </section>
+
+        <section class="panel">
+          <h2>Neighborhood &amp; walking distances</h2>
+          <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
+          <div class="walks">
+            <span>Beach access nearby</span>
+            <span>Town square stroll</span>
+            <span>Dining within minutes</span>
+            <span>Trail / bike path hop</span>
+          </div>
+        </section>
+
+        {
+          nearbyEvents.length > 0 && (
+            <section class="panel">
+              <div class="panel__head">
+                <h2>Happening around {town?.name ?? "30A"}</h2>
+                <a href={href("/events")}>View all events</a>
+              </div>
+              <ul class="events">
+                {nearbyEvents.map((item) => (
+                  <li>
+                    <a href={href(`/event/${item.slug}`)}>
+                      <span>{item.when}</span>
+                      <strong>{item.name}</strong>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+
+        <section class="panel ask">
+          <div class="panel__head">
+            <h2>Ask the Locals</h2>
+            <a href={href("/ask")}>Ask a new question</a>
+          </div>
+          <article class="qa">
+            <p class="qa__q">Are golf carts allowed for getting to the beach from this stay?</p>
+            <p class="qa__a">
+              <strong>Local tip:</strong> Cart rules differ by town center. Ask your host for the latest LSV guidance and
+              where overnight parking is allowed.
+            </p>
+          </article>
+        </section>
+      </div>
+
+      <aside class="rail">
+        <section class="widget book">
+          <p class="widget__label">Book this stay</p>
+          <p class="book__meta">{town?.name ?? "30A"} · Sleeps {stay.sleeps}</p>
+          {
+            stay.businessSlug ? (
+              <a class="book__btn" href={href(`/business/${stay.businessSlug}`)}>
+                Book on official website
+              </a>
+            ) : (
+              <a class="book__btn" href={href("/ask")}>
+                Ask about this stay
+              </a>
+            )
+          }
+          <a class="ghost" href={href(`/town/${stay.townSlug}/vacation-rentals`)}>More rentals in town</a>
+        </section>
+
+        {
+          related.length > 0 && (
+            <section class="widget">
+              <p class="widget__label">Similar 30A stays</p>
+              <ul class="related">
+                {related.map((item) => (
+                  <li>
+                    <a href={href(`/stay/${item.slug}`)}>
+                      <strong>{item.name}</strong>
+                      <span>Sleeps {item.sleeps} · Explore stay</span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )
+        }
+      </aside>
     </div>
   </div>
-</PlaceLayout>
+</BaseLayout>
 
 <style>
-  .hero {
+  .stay-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .top {
+    background: white;
+    border-bottom: 1px solid var(--brand-line);
+    padding: var(--size-5) 0 var(--size-6);
+  }
+  .crumbs {
     display: flex;
-    gap: var(--size-6);
-  }
-  .hero-img {
-    width: 220px;
-    height: 180px;
-    border-radius: var(--radius-card);
-    flex-shrink: 0;
-  }
-  .lede {
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    align-items: center;
+    margin-bottom: var(--size-4);
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
   }
+  .crumbs a {
+    color: var(--brand-ink-soft);
+  }
+  .crumbs .current {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
+  }
+  .title-row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-4);
+    margin-bottom: var(--size-5);
+  }
+  h1 {
+    margin: 0 0 0.35rem;
+    font-size: clamp(1.85rem, 4vw, 2.5rem);
+    color: var(--brand-deep);
+  }
+  .meta {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+  .title-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .title-actions button,
+  .ghost {
+    border: 1px solid var(--brand-line);
+    background: white;
+    border-radius: var(--radius-2);
+    padding: 0.45rem 0.85rem;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-ink);
+    cursor: pointer;
+  }
+  .book {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-teal);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .book:hover {
+    background: #00796b;
+    text-decoration: none;
+  }
+  .gallery {
+    display: grid;
+    gap: 0.65rem;
+  }
+  .gallery__main {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-3);
+  }
+  .gallery__grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0.65rem;
+  }
+  .gallery__grid > * {
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-2);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: var(--size-4);
+    min-width: 0;
+  }
+  .quick {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .quick > div,
+  .panel,
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .quick .label {
+    margin: 0 0 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .quick p:last-child {
+    margin: 0;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .cert {
+    background: var(--brand-teal-soft);
+    border-color: #99f6e4;
+  }
+  .cert__label {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-8);
+    color: var(--brand-deep);
+  }
+  .cert p:last-child,
+  .panel p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    line-height: 1.6;
+  }
+  .panel h2 {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
+  }
+  .panel p + p {
+    margin-top: var(--size-3);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  .panel__head h2 {
+    margin: 0;
+  }
+  .panel__head a {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+  }
+  .perks {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem;
+  }
+  .perks div {
+    display: grid;
+    gap: 0.15rem;
+    padding: 0.85rem;
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .perks strong {
+    font-size: var(--font-size-1);
+    color: var(--brand-deep);
+  }
+  .perks span {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .alert {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--brand-sun);
+  }
+  .alert__label {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #78350f;
+  }
+  .alert p:last-child {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: #92400e;
+  }
+  .mini-map {
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-2);
+    margin-bottom: var(--size-3);
+    display: grid;
+    place-items: center;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .walks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .walks span {
+    padding: 0.35rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-sand-dark);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+  }
+  .events,
+  .related {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .events a,
+  .related a {
+    display: grid;
+    gap: 0.15rem;
+    color: var(--brand-ink);
+  }
+  .events a:hover,
+  .related a:hover {
+    text-decoration: none;
+  }
+  .events span,
+  .related span {
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .events strong,
+  .related strong {
+    color: var(--brand-deep);
+  }
+  .qa {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .qa__q {
+    margin: 0 0 0.5rem;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .qa__a {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .rail {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .book__meta {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .book__btn,
+  .ghost {
+    display: inline-flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    min-height: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-decoration: none;
+  }
+  .book__btn {
+    border-radius: var(--radius-2);
+    background: var(--brand-teal);
+    color: white;
+    font-weight: var(--font-weight-7);
+  }
+  .book__btn:hover {
+    background: #00796b;
+    text-decoration: none;
+  }
+  @media (min-width: 800px) {
+    .gallery {
+      grid-template-columns: 1.4fr 1fr;
+    }
+    .gallery__main {
+      min-height: 100%;
+    }
+    .gallery__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+    .quick {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .perks {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+    .rail {
+      position: sticky;
+      top: calc(var(--header-h) + 1rem);
+    }
+  }
   @media (max-width: 640px) {
-    .hero {
-      flex-direction: column;
+    .gallery__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

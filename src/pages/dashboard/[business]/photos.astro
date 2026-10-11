@@ -1,6 +1,5 @@
 ---
-import BaseLayout from "../../../layouts/BaseLayout.astro";
-import DashboardNav from "../../../components/DashboardNav.astro";
+import MerchantLayout from "../../../layouts/MerchantLayout.astro";
 import PhotoGrid from "../../../components/PhotoGrid.astro";
 import ComposerCard from "../../../components/islands/ComposerCard.svelte";
 import { photosFor } from "../../../data/catalog";
@@ -19,26 +18,56 @@ const { business } = Astro.props;
 const photos = photosFor("business", business.slug);
 ---
 
-<BaseLayout title={`Photos · ${business.name}`}>
-  <div class="container section">
-    <h1>Photos</h1>
-    <DashboardNav businessSlug={business.slug} active="photos" />
-    <PhotoGrid photos={photos} />
-    <div class="composer">
+<MerchantLayout title={`Photos · ${business.name}`} business={business} active="photos">
+  <header class="head">
+    <div>
+      <h1>Photo gallery</h1>
+      <p>Images on your public listing. Confirm you own the rights before uploading.</p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <PhotoGrid photos={photos} empty="No photos yet — add a few that show the space." />
+    </section>
+    <section class="card">
       <ComposerCard
-        title="Add a photo"
-        body="Only images you own. Prototype upload does nothing."
-        action="Choose image"
+        title="Upload photos"
+        body="Queued for review. Prototype only."
+        action="Choose images"
         kind="photo"
         client:visible
       />
-    </div>
+    </section>
   </div>
-</BaseLayout>
+</MerchantLayout>
 
 <style>
-  .composer {
-    margin-top: var(--size-6);
-    max-width: 420px;
+  .head {
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    margin: 0 0 0.35rem;
+    color: var(--brand-deep);
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+  }
+  .head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: 1.15rem;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 1.4fr) minmax(14rem, 0.8fr);
+    }
   }
 </style>

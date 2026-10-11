@@ -1,65 +1,301 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
+import MapToggle from "../../components/MapToggle.astro";
+import ContributeCard from "../../components/ContributeCard.astro";
+import TwoPaneMap from "../../components/TwoPaneMap.astro";
+import GuidesHeroSearch from "../../components/islands/GuidesHeroSearch.svelte";
+import GuidesSidebarFilters from "../../components/islands/GuidesSidebarFilters.svelte";
 import GuidesList from "../../components/islands/GuidesList.svelte";
-import { guides } from "../../data/catalog";
+import { guides, towns, townBySlug } from "../../data/catalog";
 import { href } from "../../lib/href";
+import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
 const params = Astro.url.searchParams;
 const town = params.get("town") ?? "";
-const category = params.get("category") ?? "";
+const topic = params.get("topic") ?? params.get("category") ?? "";
 const q = params.get("q") ?? "";
+const mapView = params.get("view") === "map";
 const base = import.meta.env.BASE_URL;
-const guideItems = guides.map((guide) => ({
-  slug: guide.slug,
-  title: guide.title,
-  summary: guide.summary,
-  town: guide.townSlug,
-  category: guide.categorySlug,
-}));
+const searchQs = Astro.url.search;
+const mapHref = withViewMap("/guides", searchQs);
+const gridHref = withoutViewMap("/guides", searchQs);
+
+const topicOptions = [
+  { slug: "first-timers", name: "First-Timers" },
+  { slug: "getting-around", name: "Golf Carts & Biking" },
+  { slug: "dining", name: "Dining & Food" },
+  { slug: "family", name: "Family Friendly" },
+  { slug: "history", name: "Local History" },
+  { slug: "town-compare", name: "Town Compare" },
+];
+
+const topicByGuide: Record<string, string> = {
+  "first-timers-guide": "First-Timers",
+  "guide-to-rosemary-beach": "Walkability",
+  "why-is-it-called-30a": "Local History",
+  "finding-30a": "Beach Access",
+  "town-vs-town": "Town Compare",
+};
+
+const authors: Record<string, { name: string; role: string; source: "whereto" | "community" }> = {
+  "first-timers-guide": { name: "Capt. Dave", role: "Verified Local · Seagrove Resident", source: "whereto" },
+  "guide-to-rosemary-beach": { name: "Brian Turner", role: "Town Specialist", source: "community" },
+  "why-is-it-called-30a": { name: "Editorial Team", role: "WhereTo30A Staff", source: "whereto" },
+  "finding-30a": { name: "Capt. Dave", role: "Emerald Coast Guide", source: "community" },
+  "town-vs-town": { name: "Elena Rostova", role: "Architecture & Stays", source: "community" },
+};
+
+const guideItems = guides.map((guide, index) => {
+  const townRow = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
+  const author = authors[guide.slug] ?? { name: "Local Editor", role: "WhereTo30A", source: "whereto" as const };
+  return {
+    slug: guide.slug,
+    title: guide.title,
+    summary: guide.summary,
+    town: townRow?.name,
+    townSlug: guide.townSlug,
+    category: guide.categorySlug,
+    topic: topicByGuide[guide.slug],
+    author: author.name,
+    role: author.role,
+    source: author.source,
+    minutes: 5 + ((guide.title.length + index * 3) % 8),
+    popularity: guide.slug === "first-timers-guide" ? 98 : 72 - index * 7,
+    featured: guide.slug === "first-timers-guide",
+  };
+});
+
+const townCounts = towns
+  .map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    count: guides.filter((guide) => guide.townSlug === item.slug).length,
+  }))
+  .filter((item) => item.count > 0);
+
+const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
+const mapMarkers = markersFromNames(
+  guideItems.map((guide) => ({
+    name: guide.title,
+    href: href(`/guide/${guide.slug}`),
+    detail: `${guide.town ?? "All 30A"} · ${guide.minutes} min`,
+  })),
+);
 ---
 
 <BaseLayout
   title="Travel Guides"
-  description="Town and travel guides for Scenic Highway 30A."
+  description="Curated itineraries, neighborhood guides, and local tips for Scenic Highway 30A."
   active="guides"
-  showGuides
-  guidesTown={town}
-  guidesCategory={category}
-  guidesQuery={q}
 >
-  <div class="container section">
-    <header class="intro">
-      <p class="eyebrow">30A · South Walton, Florida</p>
-      <h1>Travel Guides</h1>
-      <p>
-        Practical guides for planning a trip along 30A — towns, beaches, and how to move around without
-        opening twenty tabs. Or check the <a href={href("/events")}>events calendar</a>.
-      </p>
-    </header>
-    <GuidesList
-      guides={guideItems}
-      initialTown={town}
-      initialCategory={category}
-      initialQuery={q}
-      base={base}
-      client:load
-    />
+  <div class="guides-page">
+    <InteriorHero
+      title="Travel Guides"
+      lede="Curated itineraries, neighborhood guides, beach regulations, and local tips compiled by resident insiders across the Emerald Coast."
+    >
+      <GuidesHeroSearch
+        towns={exploreTowns}
+        initialTown={town}
+        initialTopic={topic}
+        initialQuery={q}
+        client:load
+      />
+    </InteriorHero>
+
+    {
+      mapView ? (
+        <TwoPaneMap
+          mapLabel="30A guides map"
+          resultLabel={`${guides.length} Guides along Scenic 30A`}
+          gridHref={href(gridHref)}
+          markers={mapMarkers}
+          searchArea
+        >
+          <GuidesList
+            guides={guideItems}
+            initialTown={town}
+            initialCategory={topic}
+            initialQuery={q}
+            base={base}
+            client:load
+          />
+        </TwoPaneMap>
+      ) : (
+        <div class="container layout">
+          <GuidesSidebarFilters
+            towns={townCounts}
+            topics={topicOptions}
+            initialTown={town}
+            initialTopic={topic}
+            total={guides.length}
+            client:load
+          />
+
+          <GuidesList
+            guides={guideItems}
+            initialTown={town}
+            initialCategory={topic}
+            initialQuery={q}
+            base={base}
+            client:load
+          />
+
+          <aside class="rail">
+            <MapToggle title="30A Guides Map" href={mapHref} />
+            <ContributeCard kind="guide" />
+
+            <section class="widget">
+              <p class="widget__label">Top Local Contributors</p>
+              <ul class="guides">
+            <li>
+              <span class="guides__avatar" aria-hidden="true">CD</span>
+              <div>
+                <strong>Capt. Dave</strong>
+                <span>99% helpful · Seagrove</span>
+              </div>
+            </li>
+            <li>
+              <span class="guides__avatar" aria-hidden="true">BT</span>
+              <div>
+                <strong>Brian Turner</strong>
+                <span>97% helpful · Rosemary</span>
+              </div>
+            </li>
+            <li>
+              <span class="guides__avatar" aria-hidden="true">ER</span>
+              <div>
+                <strong>Elena Rostova</strong>
+                <span>Architecture · Alys</span>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">Trending Topics</p>
+          <ul class="trending">
+            <li><span>#FirstTimers</span><span>142</span></li>
+            <li><span>#GolfCartRules</span><span>98</span></li>
+            <li><span>#BeachAccess</span><span>87</span></li>
+            <li><span>#RosemaryDining</span><span>64</span></li>
+          </ul>
+        </section>
+
+        <section class="widget cta">
+          <p class="widget__label">Pocket Cheat Sheet</p>
+          <p class="cta__copy">Flags, LSV rules, and top beach accesses on one printable page.</p>
+          <a class="cta__btn" href={href("/guide/first-timers-guide")}>Download PDF →</a>
+        </section>
+          </aside>
+        </div>
+      )
+    }
   </div>
 </BaseLayout>
 
 <style>
-  .intro {
-    margin-bottom: var(--size-6);
-    max-width: 42rem;
+  .guides-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
   }
-  .intro h1 {
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
     margin: 0 0 var(--size-3);
-    font-size: clamp(2rem, 5vw, 2.75rem);
-    color: var(--brand-deep);
-  }
-  .intro p {
-    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--brand-ink-soft);
-    font-size: var(--font-size-2);
+  }
+  .guides strong {
+    color: var(--brand-teal);
+  }
+  .guides,
+  .trending {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+  .guides li {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  .guides__avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--brand-teal-soft);
+    color: var(--brand-deep);
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+  }
+  .guides div {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .guides span,
+  .trending {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .guides strong {
+    font-size: var(--font-size-1);
+  }
+  .trending li {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    color: var(--brand-ink);
+  }
+  .cta__copy {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .cta__btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-deep);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .cta__btn:hover {
+    background: var(--brand-teal);
+    text-decoration: none;
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 16rem minmax(0, 1fr) 17rem;
+    }
+    .rail {
+      display: grid;
+    }
   }
 </style>

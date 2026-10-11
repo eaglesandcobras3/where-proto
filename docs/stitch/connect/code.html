@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>WhereTo30A - Connect &amp; Mobile Link Hub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600;700&amp;family=Playfair+Display:ital,wght@0,600;0,700;1,400&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        colors: {
+          "ocean-navy": "#0c232e",
+          "teal-interactive": "#00897b",
+          "teal-accent": "#009688",
+          "teal-surface": "#e0f2f1",
+          "card-border": "#e2e8f0",
+          "text-primary": "#0f172a",
+          "text-muted": "#64748b",
+          "background": "#fdfcf9",
+        },
+        fontFamily: {
+          sans: ['Inter', 'sans-serif'],
+          display: ['Plus Jakarta Sans', 'sans-serif'],
+          serif: ['Playfair Display', 'serif'],
+        }
+      }
+    }
+  }
+</script>
+<style>
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f8f9ff;
+    color: #0c232e;
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-headline {
+    font-family: 'Plus Jakarta Sans', sans-serif;
+  }
+  .card-hover {
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+  }
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -6px rgba(12, 35, 46, 0.08);
+  }
+</style>
+</head>
+<body class="min-h-screen bg-[#f8f9ff] flex justify-center items-start p-0 sm:py-8 sm:px-4">
+<!-- Mobile / Hub Card Container -->
+<div class="w-full max-w-[430px] bg-white min-h-screen sm:min-h-0 sm:rounded-[36px] border border-slate-200/80 shadow-[0_20px_50px_rgba(12,35,46,0.08)] flex flex-col overflow-hidden relative">
+<!-- Top Hero Header with Coastal Scenic Photography -->
+<div class="relative w-full h-[260px] overflow-hidden select-none bg-slate-100">
+<img alt="Scenic 30A Emerald Coast Florida Coastline" class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3PsMZ30UL0GWgDNV_nZMhpbmjumP8kaB8W6aB8DDUzsqKDM7wtnxVStr5yX-Hnoj6M50nyItRve88e48Rxwg_b7FLCpnfvGvtgP7dpBO8k2Kx0HJrHDRlDHBukhxK5_rIyl6ffoUrr67T9ABda5_35CNFT5BLlj--Y8tb-mfDpZ_ph71LvP5cZDFGS7IUzyh_8Au7IBvXF5cro271vPgCmDjnnkya-XeP__OZbO_DX1Kbzc1X7FGmiT9QFe5k-Awixw"/>
+<!-- Subtle gradient wash to gently blend into white content card -->
+<div class="absolute inset-0 bg-gradient-to-t from-white via-ocean-navy/20 to-transparent"></div>
+<!-- Masthead Badge and Branding Overlay -->
+<div class="absolute inset-x-0 bottom-4 px-6 flex flex-col">
+<div class="inline-flex items-center gap-1.5 self-start px-3 py-1 rounded-full bg-white/95 backdrop-blur-md border border-slate-200/70 shadow-sm mb-2">
+<span class="w-2 h-2 rounded-full bg-teal-accent"></span>
+<span class="text-[10px] font-extrabold tracking-[0.14em] text-ocean-navy uppercase font-headline">
+          Local Guide · South Walton, FL
+        </span>
+</div>
+<h1 class="font-headline text-[38px] leading-tight font-extrabold tracking-tight text-white drop-shadow-[0_2px_8px_rgba(12,35,46,0.6)]">
+        WhereTo<span class="text-[#85f6e5]">30A</span>
+</h1>
+</div>
+</div>
+<!-- Main Content Body -->
+<div class="flex-1 px-6 pt-4 pb-8 flex flex-col">
+<!-- Value Proposition Section -->
+<div class="mb-6">
+<h2 class="font-headline text-[23px] sm:text-[25px] leading-[1.25] font-bold text-ocean-navy tracking-tight mb-2.5">
+        Helping people find the places and local businesses that make 30A special.
+      </h2>
+<p class="text-[14px] leading-[1.55] text-slate-600 font-normal">
+        Explore towns, discover local favorites, and make your business easier to find. Everything you need along the corridor is right here.
+      </p>
+</div>
+<!-- Links & Navigation Cards -->
+<div class="flex flex-col gap-3.5">
+<!-- 1. Primary Highlight Button: Explore WhereTo30A -->
+<a class="w-full bg-[#00897b] hover:bg-[#007a6e] active:scale-[0.99] transition-all duration-150 rounded-2xl p-4 flex items-center justify-between text-white shadow-md shadow-[#00897b]/20 group" href="#explore">
+<div class="flex items-center gap-3.5">
+<!-- Icon Circle -->
+<div class="w-11 h-11 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0 text-white">
+<svg class="w-6 h-6 stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9" stroke-width="2"></circle>
+<path d="M12 3v18M3 12h18" stroke-width="1.8"></path>
+<path d="M7.5 7.5l9 9M16.5 7.5l-9 9" stroke-width="1.8"></path>
+</svg>
+</div>
+<div class="flex flex-col">
+<span class="font-headline font-bold text-[16.5px] leading-tight text-white tracking-tight">Explore WhereTo30A</span>
+<span class="text-[12.5px] font-normal text-emerald-50/90 mt-0.5">Towns, beaches, local picks &amp; stays</span>
+</div>
+</div>
+<!-- Chevron Right -->
+<div class="w-7 h-7 rounded-full bg-white/10 flex items-center justify-center text-white group-hover:translate-x-0.5 transition-transform flex-shrink-0">
+<svg class="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+</a>
+<!-- 2. Dual Two-Column Split Cards -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Card A: Add your business -->
+<a class="bg-white hover:bg-slate-50/80 active:scale-[0.99] border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[126px] card-hover group" href="#add-business">
+<div class="flex items-center justify-between w-full mb-3">
+<!-- Storefront Icon Badge -->
+<div class="w-9 h-9 rounded-xl bg-[#e0f2f1] flex items-center justify-center text-[#00897b]">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 9l2-5h14l2 5M3 9h18M3 9v10a1 1 0 001 1h16a1 1 0 001-1V9M9 20V13h6v7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<!-- Subtle arrow -->
+<svg class="w-4 h-4 text-slate-400 group-hover:text-ocean-navy group-hover:translate-x-0.5 transition-all stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<div class="font-headline font-bold text-[15px] leading-snug text-ocean-navy">Add your business</div>
+<div class="text-[12px] text-slate-500 mt-0.5">Join the local directory</div>
+</div>
+</a>
+<!-- Card B: Our story -->
+<a class="bg-white hover:bg-slate-50/80 active:scale-[0.99] border border-slate-200 rounded-2xl p-4 flex flex-col justify-between min-h-[126px] card-hover group" href="#story">
+<div class="flex items-center justify-between w-full mb-3">
+<!-- Info Icon Badge -->
+<div class="w-9 h-9 rounded-xl bg-[#e0f2f1] flex items-center justify-center text-[#00897b]">
+<svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<circle cx="12" cy="12" r="9"></circle>
+<path d="M12 8v.01M12 11v5" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<!-- Subtle arrow -->
+<svg class="w-4 h-4 text-slate-400 group-hover:text-ocean-navy group-hover:translate-x-0.5 transition-all stroke-[2.2]" fill="none" stroke="currentColor" viewbox="0 0 24 24">
+<path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+</div>
+<div>
+<div class="font-headline font-bold text-[15px] leading-snug text-ocean-navy">Our story</div>
+<div class="text-[12px] text-slate-500 mt-0.5">Why we built WhereTo30A</div>
+</div>
+</a>
+</div>
+<!-- 3. Dual Utility Row: Email Us & Save Contact -->
+<div class="grid grid-cols-2 gap-3">
+<!-- Button 1: Email us -->
+<a class="h-12 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[14px] font-semibold text-ocean-navy transition-all active:scale-[0.99] shadow-2xs" href="mailto:hello@whereto30a.com">
+<svg class="w-4 h-4 text-[#00897b]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Email us</span>
+</a>
+<!-- Button 2: Save contact -->
+<a class="h-12 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-center gap-2 text-[14px] font-semibold text-ocean-navy transition-all active:scale-[0.99] shadow-2xs" href="#save-contact">
+<svg class="w-4 h-4 text-[#00897b]" fill="none" stroke="currentColor" stroke-width="2" viewbox="0 0 24 24">
+<path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" stroke-linecap="round" stroke-linejoin="round"></path>
+</svg>
+<span>Save contact</span>
+</a>
+</div>
+<!-- 4. Quick Intro Section: Coastal Sand/Teal Tinted Card -->
+<div class="mt-2 bg-[#f4f7f6] border border-slate-200/90 rounded-2xl p-5 relative">
+<div class="flex items-center gap-1.5 mb-2">
+<span class="w-2 h-2 rounded-full bg-[#ef4444]"></span>
+<span class="text-[11px] font-extrabold tracking-[0.14em] text-[#dc2626] uppercase font-headline">
+            Quick Intro
+          </span>
+</div>
+<p class="text-[13.5px] leading-[1.6] text-slate-600 font-normal">
+          WhereTo30A is a local guide that helps visitors and neighbors discover great places across 30A, while giving local businesses a direct way to be found.
+        </p>
+</div>
+</div>
+<!-- Page Footer -->
+<footer class="mt-8 pt-4 text-center flex flex-col items-center gap-1.5 border-t border-slate-200/80">
+<p class="text-[12px] text-slate-500">
+        Coast image via <a class="underline text-ocean-navy hover:text-teal-interactive transition-colors" href="#">The 30A Beach House</a>
+</p>
+<p class="text-[11px] text-slate-400">
+        © 2026 WhereTo30A · South Walton, Florida
+      </p>
+</footer>
+</div>
+</div>
+</body></html>

@@ -1,0 +1,69 @@
+---
+interface Props {
+  title: string;
+  lede?: string;
+}
+
+const { title, lede } = Astro.props;
+---
+
+<section class="interior-hero">
+  <div class="container interior-hero__inner">
+    <header class="interior-hero__copy">
+      <h1 class="interior-hero__heading">{title}</h1>
+      {lede && <p class="interior-hero__lede">{lede}</p>}
+    </header>
+    <div class="interior-hero__search">
+      <slot />
+    </div>
+  </div>
+</section>
+
+<style>
+  .interior-hero {
+    background: var(--brand-deep);
+    color: white;
+    padding: var(--size-8) 0 var(--size-7);
+  }
+  .interior-hero__inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--size-5);
+  }
+  .interior-hero__copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.65rem;
+    max-width: 40rem;
+  }
+  .interior-hero__heading {
+    margin: 0;
+    font-size: clamp(1.85rem, 4vw, 2.5rem);
+    font-weight: var(--font-weight-7);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: white;
+    text-align: left;
+  }
+  .interior-hero__lede {
+    margin: 0;
+    max-width: 38rem;
+    color: #cbd5e1;
+    font-family: var(--font-body);
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-4);
+    line-height: 1.55;
+    text-align: left;
+  }
+  .interior-hero__search {
+    width: 100%;
+    max-width: 52rem;
+  }
+  .interior-hero__search :global(.hero-search) {
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+</style>

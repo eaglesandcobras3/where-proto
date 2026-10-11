@@ -1,0 +1,84 @@
+---
+import HomeHeroSearch from "./islands/HomeHeroSearch.svelte";
+
+interface Named {
+  slug: string;
+  name: string;
+}
+
+interface Props {
+  towns: Named[];
+  base?: string;
+}
+
+const { towns, base = "/" } = Astro.props;
+---
+
+<section class="home-hero">
+  <div class="home-hero__media img-placeholder" aria-hidden="true"></div>
+  <div class="home-hero__veil" aria-hidden="true"></div>
+  <div class="container home-hero__inner">
+    <h1>Finding What You're Looking for on 30A Should Be Easier</h1>
+    <p class="lede">
+      Sixteen towns along Scenic Highway 30A — beaches, dune lakes, and local favorites from Sandestin
+      to Inlet Beach.
+    </p>
+    <HomeHeroSearch towns={towns} base={base} client:load />
+  </div>
+</section>
+
+<style>
+  .home-hero {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(3rem, 6vw, 4.5rem);
+  }
+  .home-hero__media {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: 0;
+    background:
+      linear-gradient(135deg, #7ec8c0 0%, #2a8f9e 38%, #0c232e 100%),
+      var(--brand-map);
+  }
+  .home-hero__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+      linear-gradient(180deg, rgba(253, 252, 249, 0.82) 0%, rgba(253, 252, 249, 0.72) 45%, rgba(253, 252, 249, 0.88) 100%);
+  }
+  .home-hero__inner {
+    position: relative;
+    z-index: 2;
+    max-width: none;
+    text-align: center;
+    display: grid;
+    gap: var(--size-4);
+    justify-items: center;
+  }
+  h1 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-weight: var(--font-weight-8);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: var(--brand-deep);
+    max-width: 20ch;
+  }
+  .lede {
+    margin: 0;
+    max-width: 48rem;
+    font-size: var(--font-size-2);
+    line-height: 1.6;
+    color: var(--brand-ink-soft);
+  }
+  .home-hero__inner :global(.home-search) {
+    width: 100%;
+    max-width: 52rem;
+    margin-top: 0.25rem;
+  }
+</style>

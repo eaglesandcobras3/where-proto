@@ -33,7 +33,9 @@ interface Props {
 }
 
 const { group, leaf, showAll } = Astro.props;
-const groupListings = businesses.filter((item) => item.categorySlug === group.slug);
+const groupListings = businesses.filter(
+  (item) => item.categorySlug === group.slug && item.entityKind !== "town" && item.entityKind !== "area",
+);
 const leafCounts = group.leaves
   .map((item) => ({
     ...item,
@@ -59,7 +61,12 @@ const searchHref = href(`/search?category=${leaf?.slug ?? group.slug}`);
   browseExpanded
   crumbs={[{ label: "Towns", path: "/towns" }, { label: heading }]}
 >
-  <TwoPaneMap mapLabel={`${heading} on 30A map`} pinCount={Math.max(6, displayListings.length * 2)}>
+  <TwoPaneMap
+    mapLabel={`${heading} on 30A map`}
+    pinCount={Math.max(6, displayListings.length * 2)}
+    searchArea
+    resultLabel={`${displayListings.length} Results · ${heading}`}
+  >
     <h1>{heading} on 30A</h1>
 
     <div class="chips">

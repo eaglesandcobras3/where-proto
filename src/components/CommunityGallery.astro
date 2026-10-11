@@ -1,0 +1,363 @@
+---
+import { href } from "../lib/href";
+
+const featured = {
+  town: "Grayton Beach",
+  badge: "Golden Hour",
+  handle: "@coastal_curator",
+  place: "Grayton Beach",
+  caption: "Dusk reflections along the coastal shore",
+  likes: "1.4k",
+  alt: "Sunset over emerald waters at Grayton Beach",
+  src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBI5AuKpAidiYVUNuwm4YGGvuoyyxGFhPLknupr0ew8GimuDXfpHEDkVv-_cEApAMVZPQ7OConXhNimWulMn5cbrxXbWr8_XiZAdk2wDr0jh-I5xi19P4g_i4zRFfgieGrJCOr5-mAlrWRiUkS0zm3aGcF2-6q8xta8ew8rvHOwwpX8BKQpWrZhBxnG67ACOruTSnJ3tVRIhTIPbEeWpxONFstwBripIIR9UJBK6Sq6dOSv4gi0twVA",
+};
+
+const shots = [
+  {
+    town: "Alys Beach",
+    handle: "@alys_living",
+    title: "Courtyard Vistas",
+    alt: "Striking pure white Bermudan architecture at Alys Beach",
+    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuA50YwY11MsGkXmwZqZ5jV-V5FZuch9Gjhdrx7Z854PBTWT0gXm0c3_19EX5zrVQkA-00FbDGVkcNChGT7L56qjhe_cnbFKN4lKq4hMC-xCU7mu_yNzL0BOhNMWQaM1oT4_7niAaNNykfZ-KO4yPMY-qr54hHX47Xd9HJdeQW8AIbm9G1I_YsKZ_UGl0YxL_hiky2T7-YPyKszT67JG0Ia28CVbPHeAg0dnCxqTqZLFeaYrFcx1EcQz",
+  },
+  {
+    town: "Rosemary Beach",
+    handle: "@coastal_crawls",
+    title: "Boardwalk Trail",
+    alt: "Biking down Rosemary Beach wooden boardwalk",
+    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjPC76-dB1HfNayYRsW3WyBUpFEksO5rC145-fDHbSXY053fWLP06QaoNNve7TkQxdBbGJ0PAtMSKm32uk974MEZ4UIu4rY24cgjb166zJurcudbaTdHbMcpqbbPSQQEEEuT_F6v0ljEyuDzMKaXX2k82p6mqUzA6Tv1yGW-1slT8F_Ve3vZ8ZiRvPked0Bzkk922ufBoT-A9W0P_TZa7Grzwfw6imGUNRxHbDaLshElbLtfvcA9Kd",
+  },
+  {
+    town: "WaterColor",
+    handle: "@gulf_light",
+    title: "Western Lake",
+    alt: "Paddleboarders along Western Lake in WaterColor",
+    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuAChaO5qGo8SSUMMe4IESwpFoUueaRzlI93UMOqny7I4lKLkLqlC_GkmMnFnIg2gTZEUXw6Caup-3W6kpnot4eyludgenNBrIC3nluJWh1YXfVMwwQRdVo-QFAXIAEyuMrmwtSzenMYRYm7_5D-C7Lb_68ilMcYBREcXgbclaw7Vd7nqt214p2Zv5eP5MJGQH-Nkh4iHyc6tNFdeTHe1tJJ9kbghZFfSLVZZhqna4O96n9gYGs_cQ_X",
+  },
+  {
+    town: "Seaside",
+    handle: "@dune_wanderer",
+    title: "Emerald Shore",
+    alt: "Crystal waters along Seaside beach walkover",
+    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuC-S5n4GjbrTdRUPG27wbhkjWRNX_LW2HI3UJgvwOK0Xnhp1u5ibkFuLeVnCHN_xY6srqNdpriCZ6sn7xoAWZfc9JXPllA2Xa7Yp_M5S7LbSZp1M-vwiYVHYVVfpBd7akiLPFVDMFEmPfDJhkmQHKi-2DNCc8DuZA2GZ8BZDo3W0tBYuSG574F7lOYRpjvN4kUfJsC-dni1yHHAXuPimNY1w7uDdNKXtO1XIEfAKQt6ipMjEsD9mxwn",
+  },
+];
+---
+
+<section class="gallery-sec" id="community-gallery">
+  <div class="container">
+    <header class="head">
+      <div>
+        <p class="eyebrow">
+          <span>Community Gallery</span>
+          <a class="handle" href={href("/ask")}>@WhereTo30A</a>
+        </p>
+        <h2>Snapshots Along 30A</h2>
+        <p class="lede">
+          Real moments shared by locals, second-home owners, and travelers across South Walton.
+        </p>
+      </div>
+      <a class="share" href={href("/dashboard")}>Share Your Photos</a>
+    </header>
+
+    <div class="mosaic">
+      <article class="shot shot--featured">
+        <img class="shot__img" src={featured.src} alt={featured.alt} loading="lazy" />
+        <div class="shot__veil" aria-hidden="true"></div>
+        <div class="shot__top">
+          <span class="pill">
+            <span class="dot" aria-hidden="true"></span>
+            {featured.town}
+          </span>
+          <span class="badge">{featured.badge}</span>
+        </div>
+        <div class="shot__bottom">
+          <div class="shot__credit">
+            <span class="pill pill--dark">{featured.handle} · {featured.place}</span>
+            <p class="caption">{featured.caption}</p>
+          </div>
+          <span class="likes">
+            <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
+              <path
+                fill="currentColor"
+                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
+              ></path>
+            </svg>
+            {featured.likes}
+          </span>
+        </div>
+      </article>
+
+      <div class="mosaic__grid">
+        {
+          shots.map((shot) => (
+            <article class="shot">
+              <img class="shot__img" src={shot.src} alt={shot.alt} loading="lazy" />
+              <div class="shot__veil shot__veil--soft" aria-hidden="true"></div>
+              <div class="shot__top">
+                <span class="pill">{shot.town}</span>
+              </div>
+              <div class="shot__meta">
+                <span class="handle-pill">{shot.handle}</span>
+                <span class="title">{shot.title}</span>
+              </div>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .gallery-sec {
+    padding-block: var(--size-6) var(--size-7);
+    background: #f7f6f3;
+  }
+  .head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: var(--size-4);
+    margin-bottom: var(--size-5);
+  }
+  .eyebrow {
+    margin: 0 0 0.45rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .handle {
+    letter-spacing: 0.02em;
+    text-transform: none;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+  }
+  h2 {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.75rem, 3.5vw, 2.35rem);
+    font-weight: var(--font-weight-8);
+    color: var(--brand-deep);
+  }
+  .lede {
+    margin: 0;
+    max-width: 46ch;
+    font-size: var(--font-size-2);
+    color: var(--brand-ink-soft);
+    line-height: 1.5;
+  }
+  .share {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    border: 1px solid var(--brand-line);
+    color: var(--brand-deep);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .share:hover {
+    border-color: var(--brand-teal);
+    color: var(--brand-teal);
+    text-decoration: none;
+  }
+  /* Stitch: 12-col bento — featured 5 + 2×2 grid 7 */
+  .mosaic {
+    display: grid;
+    gap: 1rem;
+  }
+  .mosaic__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .shot {
+    position: relative;
+    margin: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    background: #0c232e;
+    color: white;
+    min-height: 14rem;
+  }
+  .shot--featured {
+    min-height: 22rem;
+    aspect-ratio: 16 / 10;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .mosaic__grid .shot {
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+  }
+  .shot__img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.45s ease;
+  }
+  .shot:hover .shot__img {
+    transform: scale(1.04);
+  }
+  .shot__veil {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to top,
+      rgba(12, 35, 46, 0.9) 0%,
+      rgba(12, 35, 46, 0.25) 45%,
+      rgba(12, 35, 46, 0.4) 100%
+    );
+    pointer-events: none;
+  }
+  .shot__veil--soft {
+    background: linear-gradient(
+      to top,
+      rgba(12, 35, 46, 0.8) 0%,
+      transparent 45%,
+      rgba(0, 0, 0, 0.3) 100%
+    );
+  }
+  .shot__top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.1rem;
+  }
+  .mosaic__grid .shot__top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: auto;
+    padding: 0.75rem;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.75rem;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-7);
+    color: white;
+  }
+  .pill--dark {
+    background: rgba(12, 35, 46, 0.6);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+  .dot {
+    width: 0.375rem;
+    height: 0.375rem;
+    border-radius: 50%;
+    background: var(--brand-teal);
+  }
+  .badge {
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-6);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.8);
+  }
+  .shot__bottom {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+  }
+  .shot__credit {
+    display: grid;
+    gap: 0.35rem;
+    min-width: 0;
+  }
+  .caption {
+    margin: 0;
+    padding-left: 0.25rem;
+    font-size: var(--font-size-0);
+    color: rgba(255, 255, 255, 0.8);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .likes {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-6);
+    color: white;
+    flex-shrink: 0;
+  }
+  .likes svg {
+    color: #fb7185;
+  }
+  .shot__meta {
+    position: absolute;
+    z-index: 1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.85rem;
+    font-size: 0.6875rem;
+  }
+  .handle-pill {
+    padding: 0.2rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    font-weight: var(--font-weight-6);
+  }
+  .title {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.6875rem;
+  }
+  @media (min-width: 640px) {
+    .mosaic__grid {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  @media (min-width: 900px) {
+    .mosaic {
+      grid-template-columns: 5fr 7fr;
+      align-items: stretch;
+    }
+    .shot--featured {
+      height: 100%;
+      min-height: 100%;
+      aspect-ratio: auto;
+    }
+  }
+</style>

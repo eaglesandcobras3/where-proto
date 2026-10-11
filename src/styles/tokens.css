@@ -1,4 +1,4 @@
-/* Scale values follow Open Props (copied, not imported). Brand tokens are the WhereTo30A palette. */
+/* Coastal Editorial design system — see DESIGN.md */
 
 :root {
   --size-1: 0.25rem;
@@ -13,10 +13,10 @@
   --size-10: 5rem;
 
   --font-size-0: 0.75rem;
-  --font-size-1: 1rem;
-  --font-size-2: 1.1rem;
-  --font-size-3: 1.25rem;
-  --font-size-4: 1.5rem;
+  --font-size-1: 0.875rem;
+  --font-size-2: 1rem;
+  --font-size-3: 1.125rem;
+  --font-size-4: 1.375rem;
   --font-size-5: 2rem;
   --font-size-6: 2.5rem;
   --font-size-7: 3rem;
@@ -28,34 +28,45 @@
   --font-weight-7: 700;
   --font-weight-8: 800;
 
-  --radius-2: 5px;
-  --radius-3: 1rem;
-  --radius-4: 2rem;
+  --radius-2: 0.5rem;
+  --radius-3: 0.75rem;
+  --radius-4: 1rem;
+  --radius-pill: 9999px;
 
-  --shadow-color: 220 3% 15%;
-  --shadow-strength: 1%;
-  --shadow-2:
-    0 3px 5px -2px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 3%)),
-    0 7px 14px -5px hsl(var(--shadow-color) / calc(var(--shadow-strength) + 5%));
+  --shadow-card: 0 1px 3px 0 rgba(12, 35, 46, 0.04);
+  --shadow-card-hover: 0 8px 16px -4px rgba(12, 35, 46, 0.08);
+  --shadow-2: var(--shadow-card);
 
-  --brand-deep: #0c2f3d;
-  --brand-deep-soft: #134252;
-  --brand-teal: #1f7a8c;
-  --brand-teal-soft: #e3f0f2;
-  --brand-sand: #faf8f4;
-  --brand-sand-dark: #f1ece3;
-  --brand-ink: #1d2b33;
-  --brand-ink-soft: #5b6b74;
+  /* Deep Ocean Navy */
+  --brand-deep: #0c232e;
+  --brand-deep-soft: #213145;
+  /* Coastal Emerald Teal — CTAs / interactive links */
+  --brand-teal: #00897b;
+  --brand-teal-accent: #009688;
+  --brand-teal-soft: #e0f2f1;
+  /* Selected controls (toggles, sort) — distinct from teal buttons */
+  --brand-selected: #3d5a80;
+  --brand-selected-soft: #e8eef4;
+  /* Canvas & cards */
+  --brand-sand: #f8f9fa;
+  --brand-sand-dark: #f1f5f9;
+  /* Text */
+  --brand-ink: #0f172a;
+  --brand-ink-soft: #64748b;
+  /* Warm Amber */
+  --brand-sun: #f59e0b;
+  --brand-sun-soft: #fef3c7;
   --brand-coral: #b85c2e;
-  --brand-line: #e5ded2;
+  --brand-line: #e2e8f0;
   --brand-map: #c9d9c4;
   --brand-map-water: #a8c8d8;
 
-  --font-body: "Avenir Next", "Segoe UI", system-ui, -apple-system, sans-serif;
-  --font-display: "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --font-body: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  --font-display: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
 
-  --max-width: 1200px;
-  --header-h: 64px;
-  --radius-card: var(--radius-3);
-  --shadow-card: var(--shadow-2);
+  --max-width: 1280px;
+  --header-nav-h: 64px;
+  --conditions-h: 2.35rem;
+  --header-h: calc(var(--header-nav-h) + var(--conditions-h));
+  --radius-card: var(--radius-2);
 }

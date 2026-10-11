@@ -1,6 +1,5 @@
 ---
-import PlaceLayout from "../../layouts/PlaceLayout.astro";
-import UpdatesModule from "../../components/UpdatesModule.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import EventCard from "../../components/EventCard.astro";
 import PostCard from "../../components/PostCard.astro";
@@ -46,231 +45,656 @@ const similar = businesses
       (item.townSlug === business.townSlug || item.leafSlug === business.leafSlug),
   )
   .slice(0, 3);
+
+const chipTags = business.tagSlugs
+  .map((slug) => tagBySlug(slug)?.name ?? slug)
+  .concat(leaf?.name ? [leaf.name] : [])
+  .slice(0, 6);
+
+const highlights = [
+  { label: leaf?.name ?? "Local Spot", detail: business.categorySlug.replace(/-/g, " ") },
+  { label: business.openNow ? "Open now" : "See hours", detail: business.hours ?? "Hours vary" },
+  { label: "Town core", detail: town?.name ?? "30A" },
+  { label: business.priceBand ?? "Local", detail: area?.name ?? "Scenic 30A" },
+];
+
+const faq = [
+  {
+    q: "Is there outdoor seating?",
+    a: business.tagSlugs.includes("walkable")
+      ? "Yes — patio or courtyard seating is part of the local vibe here."
+      : "Ask the host on arrival; many 30A spots rotate patio tables seasonally.",
+  },
+  {
+    q: "Any dietary or dairy-free options?",
+    a: "Most corridor cafes and kitchens can guide dairy-free and gluten-aware picks — confirm at the counter.",
+  },
+  {
+    q: "Where should I park or bike?",
+    a: town
+      ? `Use posted ${town.name} lots, or roll up on the Timpoochee Trail when bike racks are available.`
+      : "Use posted town lots or the Timpoochee Trail bike racks nearby.",
+  },
+  {
+    q: "How close is the beach?",
+    a: "Most 30A outposts sit a short walk or golf-cart hop from a public walkover — check the map pin for the nearest access.",
+  },
+];
 ---
 
-<PlaceLayout
-  title={business.name}
-  description={business.summary}
-  active="businesses"
-  back={{ label: "Businesses", path: "/search" }}
-  crumbs={[
-    { label: "Businesses", path: "/search" },
-    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
-    { label: business.name },
-  ]}
->
-  <div class="container">
+<BaseLayout title={business.name} description={business.summary} active="businesses">
+  <div class="biz-page">
     <section class="hero">
-      <div class="hero-img img-placeholder" aria-hidden="true">{business.name.charAt(0)}</div>
-      <div>
-        <h1>{business.name}</h1>
-        <p class="meta">
-          {town && <a href={href(`/town/${town.slug}`)}>{town.name}</a>}
-          {" · "}
-          {town && (
-            <a href={href(`/town/${town.slug}/${business.leafSlug}`)}>{leaf?.name ?? business.leafSlug}</a>
-          )}
-          {area && (
-            <>
-              {" · "}
-              <a href={href(`/area/${area.slug}`)}>{area.name}</a>
-            </>
-          )}
-        </p>
-        {business.openNow && <span class="open">Open now</span>}
-        <p class="desc">{business.summary}</p>
-        <p class="cta-row">
-          <a href={href("/dashboard")}>Own or manage this business? Verify this listing</a>
-        </p>
-        <dl class="facts">
-          {business.address && (
-            <div>
-              <dt>Address</dt>
-              <dd>
-                {business.address}
-                {" · "}
-                <a href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}>Open in Maps</a>
-              </dd>
-            </div>
-          )}
-          {business.phone && (
-            <div>
-              <dt>Phone</dt>
-              <dd>{business.phone}</dd>
-            </div>
-          )}
-          {business.hours && (
-            <div>
-              <dt>Hours</dt>
-              <dd>{business.hours}</dd>
-            </div>
-          )}
-          {business.priceBand && (
-            <div>
-              <dt>Price</dt>
-              <dd>{business.priceBand}</dd>
-            </div>
-          )}
-          {stay && (
-            <div>
-              <dt>Stay</dt>
-              <dd>
-                <a href={href(`/stay/${stay.slug}`)}>{stay.name}</a>
-              </dd>
-            </div>
-          )}
+      <div class="container hero__inner">
+        <div class="hero__top">
+          <a class="back" href={href("/search")}>← Back to Businesses</a>
+          <nav class="crumbs" aria-label="Breadcrumb">
+            <a href={href("/")}>Home</a>
+            <span>/</span>
+            <a href={href("/search")}>Businesses</a>
+            {
+              town && (
+                <>
+                  <span>/</span>
+                  <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+                </>
+              )
+            }
+            <span>/</span>
+            <span class="current">{business.name}</span>
+          </nav>
+        </div>
+
+        <div class="badges">
+          {town && <span class="badge">{town.name} 30A Merchant</span>}
+          {area && <span class="badge">{area.name}</span>}
+          {business.openNow && <span class="badge badge--teal">Open now</span>}
+          <span class="badge badge--teal">Verified 30A Merchant</span>
+        </div>
+
+        <div class="hero__row">
           <div>
-            <dt>Owned by</dt>
-            <dd>a local family</dd>
+            <h1>{business.name}</h1>
+            <p class="place">
+              {business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}
+              {area && <> · {area.name}</>}
+            </p>
           </div>
-        </dl>
-        <div class="tags">
-          {business.tagSlugs.map((slug) => (
-            <a class="tag" href={href(`/search?tag=${slug}`)}>
-              {tagBySlug(slug)?.name ?? slug}
-            </a>
+          <div class="actions">
+            {
+              business.phone && (
+                <a class="btn btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
+                  Call {business.phone}
+                </a>
+              )
+            }
+            {
+              business.website ? (
+                <a class="btn btn--teal" href={business.website} target="_blank" rel="noopener noreferrer">
+                  Visit Official Website →
+                </a>
+              ) : (
+                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing →</a>
+              )
+            }
+          </div>
+        </div>
+
+        <div class="chips">
+          {chipTags.map((label) => (
+            <span class="chip">{label}</span>
           ))}
+          {business.priceBand && <span class="chip">{business.priceBand}</span>}
         </div>
       </div>
     </section>
 
-    <section>
-      <h2 class="section-title">Photos</h2>
-      <PhotoGrid photos={businessPhotos} />
-    </section>
-
-    {
-      businessEvents.length > 0 && (
-        <section>
-          <h2 class="section-title">Events</h2>
-          <div class="listing-grid">
-            {businessEvents.map((event) => (
-              <EventCard event={event} />
+    <div class="container layout">
+      <div class="main">
+        <section class="panel">
+          <p class="eyebrow">Insider Profile · Curated by 30A Editorial</p>
+          <h2>About {business.name}</h2>
+          <p>{business.summary}</p>
+          <p>
+            A locally rooted stop on Scenic 30A
+            {town && <> in {town.name}</>}
+            {leaf && <> for {leaf.name.toLowerCase()}</>}. Arrive early for peak hours, check today’s beach flag if you’re
+            pairing the visit with Gulf time, and follow host guidance for carts and seating.
+          </p>
+          <div class="highlights">
+            {highlights.map((item) => (
+              <div>
+                <p class="label">{item.label}</p>
+                <p>{item.detail}</p>
+              </div>
             ))}
           </div>
         </section>
-      )
-    }
 
-    {
-      isEnabled("communityFeed") && (
-        <section>
-          <h2 class="section-title">Community feed</h2>
-          {businessPosts.length === 0 ? (
-            <p class="empty">Visitor posts about {business.name} will appear here.</p>
-          ) : (
-            <div class="stack">
-              {businessPosts.map((post) => (
-                <PostCard post={post} />
-              ))}
-            </div>
-          )}
+        <section class="panel">
+          <div class="panel__head">
+            <h2>Official Photo Gallery</h2>
+            <span class="muted">{businessPhotos.length || 4} photos</span>
+          </div>
+          <p class="muted">Authentic atmosphere from the corridor outpost.</p>
+          <PhotoGrid
+            photos={businessPhotos}
+            empty={`Photos for ${business.name} will appear here.`}
+          />
         </section>
-      )
-    }
 
-    {
-      isEnabled("updates") && (
-        <UpdatesModule
-          title="Latest updates"
-          updates={businessUpdates}
-          ctaHref="/dashboard"
-          ctaLabel="Own this business? Share an update"
-        />
-      )
-    }
+        {
+          isEnabled("updates") && (
+            <section class="panel">
+              <div class="panel__head">
+                <h2>Latest Updates from {business.name}</h2>
+                <a href={href("/dashboard")}>Post Merchant Bulletin</a>
+              </div>
+              {businessUpdates.length === 0 ? (
+                <p class="muted">Owner updates and seasonal notes will show here.</p>
+              ) : (
+                <div class="updates">
+                  {businessUpdates.slice(0, 4).map((update) => (
+                    <article class="update">
+                      <p class="update__tag">{update.type.replace(/_/g, " ")}</p>
+                      <h3>{update.title}</h3>
+                      <p>{update.body}</p>
+                      <p class="muted">Active through {update.through}</p>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+          )
+        }
+
+        {
+          businessEvents.length > 0 && (
+            <section class="panel">
+              <div class="panel__head">
+                <h2>Events at {business.name}</h2>
+                {town && <a href={href(`/events?town=${town.slug}`)}>See all in {town.name} →</a>}
+              </div>
+              <div class="listing-grid">
+                {businessEvents.map((event) => (
+                  <EventCard event={event} />
+                ))}
+              </div>
+            </section>
+          )
+        }
+
+        {
+          isEnabled("communityFeed") && (
+            <section class="panel">
+              <h2>Community Feedback &amp; Tips</h2>
+              <div class="composer">
+                <p class="muted">Share a tip, photo vibe, or local favorite for visitors.</p>
+                <div class="composer__tags">
+                  <span>Coffee Review</span>
+                  <span>Photo Vibe</span>
+                  <span>Meeting Tip</span>
+                  <span>Local Favorite</span>
+                </div>
+                <a class="btn btn--teal" href={href("/dashboard")}>Post to Feed</a>
+              </div>
+              {businessPosts.length === 0 ? (
+                <p class="muted">Visitor posts about {business.name} will appear here.</p>
+              ) : (
+                <div class="stack">
+                  {businessPosts.map((post) => (
+                    <PostCard post={post} />
+                  ))}
+                </div>
+              )}
+            </section>
+          )
+        }
+
+        <section class="panel faq">
+          <h2>Curated Knowledge Bank</h2>
+          {faq.map((item) => (
+            <details>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </section>
+      </div>
+
+      <aside class="rail">
+        <section class="widget">
+          <p class="widget__label">Location &amp; Access</p>
+          <div class="map img-placeholder" aria-hidden="true">
+            <span class="map__tag">{town?.name ?? "30A"}</span>
+          </div>
+          <p class="addr">{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          {business.hours && <p class="muted">Hours · {business.hours}</p>}
+          {area && <p class="muted">Neighborhood · {area.name}</p>}
+          {
+            town && (
+              <a class="btn btn--deep" href={href(`/town/${town.slug}`)}>
+                Get Turn-By-Turn Directions
+              </a>
+            )
+          }
+        </section>
+
+        <section class="widget">
+          <p class="widget__label">Direct Contact</p>
+          <ul class="contact">
+            {business.phone && (
+              <li>
+                <span>Phone</span>
+                <a href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>{business.phone}</a>
+              </li>
+            )}
+            {business.website && (
+              <li>
+                <span>Website</span>
+                <a href={business.website} target="_blank" rel="noopener noreferrer">
+                  Visit official site →
+                </a>
+              </li>
+            )}
+            {business.address && (
+              <li>
+                <span>Address</span>
+                <a href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}>
+                  Open in Maps
+                </a>
+              </li>
+            )}
+            {stay && (
+              <li>
+                <span>Stay</span>
+                <a href={href(`/stay/${stay.slug}`)}>{stay.name}</a>
+              </li>
+            )}
+          </ul>
+        </section>
+
+        <section class="widget claim">
+          <p class="widget__label">Business Owner or GM?</p>
+          <p>Claim this listing to post updates, events, and verified hours.</p>
+          <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
+        </section>
+      </aside>
+    </div>
 
     {
       similar.length > 0 && (
-        <section>
-          <h2 class="section-title">Similar nearby</h2>
-          <div class="listing-grid">
-            {similar.map((item) => (
-              <BusinessCard business={item} />
-            ))}
+        <section class="similar">
+          <div class="container">
+            <h2>Similar Nearby Places</h2>
+            <div class="listing-grid">
+              {similar.map((item) => (
+                <BusinessCard business={item} />
+              ))}
+            </div>
           </div>
         </section>
       )
     }
   </div>
-</PlaceLayout>
+</BaseLayout>
 
 <style>
+  .biz-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
   .hero {
+    background: var(--brand-deep);
+    color: white;
+    padding: var(--size-6) 0 var(--size-7);
+  }
+  .hero__inner {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .hero__top {
     display: flex;
-    gap: var(--size-6);
-    padding-block: var(--size-6);
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-3);
+    align-items: center;
   }
-  .hero-img {
-    width: 220px;
-    height: 220px;
-    border-radius: var(--radius-card);
-    flex-shrink: 0;
-    font-size: var(--font-size-9);
+  .back,
+  .crumbs a {
+    color: #cbd5e1;
+    font-size: var(--font-size-1);
   }
-  .meta {
+  .crumbs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    font-size: var(--font-size-0);
+    color: #94a3b8;
+  }
+  .crumbs .current {
+    color: white;
+  }
+  .badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: #e2e8f0;
+  }
+  .badge--teal {
+    background: rgba(0, 137, 123, 0.25);
+    border-color: rgba(133, 246, 229, 0.35);
+    color: #85f6e5;
+  }
+  .hero__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-4);
+    align-items: flex-end;
+  }
+  .hero h1 {
+    margin: 0 0 0.4rem;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    color: white;
+  }
+  .place {
+    margin: 0;
+    color: #cbd5e1;
+    font-size: var(--font-size-2);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .btn:hover {
+    text-decoration: none;
+  }
+  .btn--teal {
+    background: var(--brand-teal);
+    color: white;
+  }
+  .btn--teal:hover {
+    background: #00796b;
+  }
+  .btn--ghost {
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: white;
+    background: transparent;
+  }
+  .btn--ghost:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .btn--deep {
+    width: 100%;
+    background: var(--brand-deep);
+    color: white;
+    margin-top: var(--size-3);
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .chip {
+    display: inline-flex;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    font-size: var(--font-size-0);
+    color: #e2e8f0;
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-8);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: var(--size-4);
+    min-width: 0;
+  }
+  .panel,
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  .panel__head h2,
+  .panel > h2 {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-4);
+  }
+  .panel__head h2 {
+    margin-bottom: 0;
+  }
+  .panel__head a {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .eyebrow {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .muted {
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
   }
-  .open {
-    display: inline-block;
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--size-3);
+    margin-top: var(--size-4);
+  }
+  .highlights .label {
+    margin: 0 0 0.2rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .highlights p:last-child {
+    margin: 0;
+    font-size: var(--font-size-1);
+    text-transform: capitalize;
+  }
+  .updates {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .update {
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: var(--size-3);
+    background: var(--brand-sand);
+  }
+  .update__tag {
+    margin: 0 0 0.35rem;
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     color: var(--brand-teal);
-    background: var(--brand-teal-soft);
-    border-radius: var(--radius-4);
-    padding: 2px var(--size-2);
-    margin-bottom: var(--size-2);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
-  .desc {
-    max-width: 64ch;
+  .update h3 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-2);
   }
-  .facts {
-    display: grid;
-    gap: var(--size-2);
-    margin-block: var(--size-4);
-  }
-  .facts div {
-    display: grid;
-    grid-template-columns: 90px 1fr;
-    gap: var(--size-3);
+  .update p {
+    margin: 0;
     font-size: var(--font-size-1);
   }
-  .facts dt {
-    font-weight: var(--font-weight-7);
-    color: var(--brand-ink-soft);
+  .composer {
+    display: grid;
+    gap: var(--size-3);
+    margin-bottom: var(--size-4);
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: var(--brand-sand);
+    border: 1px dashed var(--brand-line);
   }
-  .facts dd {
-    margin: 0;
-  }
-  .tags {
+  .composer__tags {
     display: flex;
     flex-wrap: wrap;
-    gap: var(--size-2);
+    gap: 0.4rem;
   }
-  .tag {
+  .composer__tags span {
     font-size: var(--font-size-0);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-4);
-    padding: 2px var(--size-2);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-pill);
     background: white;
+    border: 1px solid var(--brand-line);
     color: var(--brand-ink-soft);
+  }
+  .composer .btn {
+    justify-self: start;
   }
   .stack {
     display: grid;
     gap: var(--size-3);
   }
-  .empty {
+  .faq details {
+    border-top: 1px solid var(--brand-line);
+    padding: var(--size-3) 0;
+  }
+  .faq details:first-of-type {
+    border-top: 0;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-6);
+  }
+  .faq p {
+    margin: 0.5rem 0 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .rail {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     color: var(--brand-ink-soft);
   }
-  .cta-row {
-    margin: var(--size-3) 0;
+  .map {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-2);
+    margin-bottom: var(--size-3);
+  }
+  .map__tag {
+    position: absolute;
+    top: 0.65rem;
+    left: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.85);
+    color: #85f6e5;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .addr {
+    margin: 0 0 0.35rem;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
   }
-  @media (max-width: 640px) {
-    .hero {
-      flex-direction: column;
+  .contact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .contact li {
+    display: grid;
+    gap: 0.15rem;
+    font-size: var(--font-size-1);
+  }
+  .contact span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .contact a {
+    color: var(--brand-teal);
+  }
+  .claim {
+    background: var(--brand-deep);
+    border-color: var(--brand-deep);
+    color: white;
+  }
+  .claim .widget__label {
+    color: #94a3b8;
+  }
+  .claim p {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: #cbd5e1;
+  }
+  .similar {
+    padding: 0 0 var(--size-10);
+  }
+  .similar h2 {
+    margin: 0 0 var(--size-4);
+    font-size: var(--font-size-4);
+  }
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+    .highlights {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
     }
   }
 </style>

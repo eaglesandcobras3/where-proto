@@ -1,569 +1,221 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import EventCard from "../components/EventCard.astro";
-import UpdatesModule from "../components/UpdatesModule.astro";
+import HomeHero from "../components/HomeHero.astro";
+import LocalSpotlight from "../components/LocalSpotlight.astro";
+import HomeFeaturedGrid from "../components/HomeFeaturedGrid.astro";
+import BeachTownsStrip from "../components/BeachTownsStrip.astro";
+import WeekendPlanner from "../components/WeekendPlanner.astro";
+import GuidesNotebook from "../components/GuidesNotebook.astro";
+import CommunityAdvice from "../components/CommunityAdvice.astro";
+import HomeStaysGrid from "../components/HomeStaysGrid.astro";
+import SponsoredShowcase from "../components/SponsoredShowcase.astro";
+import CommunityGallery from "../components/CommunityGallery.astro";
 import { isEnabled } from "../config/flags";
-import { businesses, events, guides, liveUpdates, towns } from "../data/catalog";
+import {
+  commentsFor,
+  events,
+  questions,
+  towns,
+  townBySlug,
+} from "../data/catalog";
 import { href } from "../lib/href";
 
-const featured = businesses.slice(0, 4);
-const homeGuides = guides.slice(0, 4);
-const homeTownSlugs = [
-  "blue-mountain-beach",
-  "grayton-beach",
-  "watercolor",
-  "seaside",
-  "seagrove-beach",
-  "watersound",
-  "alys-beach",
+const base = import.meta.env.BASE_URL;
+const heroTowns = towns.map(({ slug, name }) => ({ slug, name }));
+
+const homeEvents = [
+  {
+    event: events.find((item) => item.slug === "grayton-farmers-market") ?? events[0]!,
+    badge: "Weekly Favorite",
+    badgeTone: "blue" as const,
+    footerTag: "Free Admission",
+    whenLabel: "Sat · 8:00 AM",
+    types: ["weekend", "market"],
+  },
+  {
+    event: events.find((item) => item.slug === "sounds-of-seaside") ?? events[1]!,
+    badge: "Live Music",
+    badgeTone: "teal" as const,
+    footerTag: "All Ages Welcome",
+    whenLabel: "Wed · 5:00 PM",
+    types: ["music", "weekend"],
+  },
+  {
+    event: events.find((item) => item.slug === "seaside-storytime") ?? events[2]!,
+    badge: "Free Admission",
+    badgeTone: "blue" as const,
+    footerTag: "Family Friendly",
+    whenLabel: "Today · 10:00 AM",
+    types: ["family"],
+  },
+  {
+    event: events.find((item) => item.slug === "alys-sunset-yoga") ?? events[3]!,
+    badge: "Eco Adventure",
+    badgeTone: "mint" as const,
+    footerTag: "Gear Included",
+    whenLabel: "Today · 5:30 PM",
+    types: ["weekend", "family"],
+  },
 ];
-const homeTowns = homeTownSlugs
-  .map((slug) => towns.find((town) => town.slug === slug))
-  .filter((town): town is (typeof towns)[number] => Boolean(town));
-const featuredTownSlug = "seaside";
-const homeEvents = events.slice(0, 4);
+
+const askRows = questions.slice(0, 3).map((question) => {
+  const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
+  const replies = commentsFor("question", question.slug).length;
+  return { question, town, replies };
+});
+
 ---
 
-<BaseLayout title="Your local guide to 30A and Florida's Emerald Coast">
-  <section class="hero" aria-label="Introduction">
-    <div class="hero__plane" aria-hidden="true"></div>
-    <div class="hero__card">
-      <h1>Your local guide to 30A, Florida</h1>
-      <p>
-        Curated listings, town guides, and hand-picked local favorites along Florida’s Emerald Coast.
-        Pick a town, then explore.
-      </p>
-      <div class="hero__actions">
-        <a class="btn btn--ghost" href={href("/towns")}>All towns &amp; communities</a>
-        <a class="btn btn--solid" href={href("/search")}>Explore 30A</a>
-      </div>
-    </div>
-  </section>
+<BaseLayout title="WhereTo30A — Scenic 30A Chronicle & Field Guide">
+  <div class="home">
+    <HomeHero towns={heroTowns} base={base} />
 
-  <section class="section">
-    <div class="container">
-      <header class="section-head">
-        <div>
-          <h2 class="section-title">Featured Today</h2>
-          <p class="section-lede">A few places to start. Wireframe cards — no production photos.</p>
-        </div>
-      </header>
-      <div class="story-grid">
-        {
-          featured.map((business) => (
-            <a class="story-card" href={href(`/business/${business.slug}`)}>
-              <div class="story-card__media img-placeholder" aria-hidden="true">
-                {business.name.charAt(0)}
-              </div>
-              <h3>{business.name}</h3>
-              <p>{business.summary}</p>
-              <span class="story-card__link">Read more →</span>
-            </a>
-          ))
-        }
-      </div>
-      <p class="more center">
-        <a href={href("/search")}>View more →</a>
-      </p>
-    </div>
-  </section>
+    <LocalSpotlight href="/business/cafe-thirty-a" />
+    <HomeFeaturedGrid />
+    <BeachTownsStrip />
+    {isEnabled("events") && <WeekendPlanner items={homeEvents} base={base} />}
+    <GuidesNotebook />
+    {isEnabled("ask") && <CommunityAdvice rows={askRows} />}
+    {isEnabled("stays") && <HomeStaysGrid />}
+    <CommunityGallery />
+    <SponsoredShowcase />
 
-  <section class="section towns-band">
-    <div class="container">
-      <header class="towns-head">
-        <div class="towns-head__copy">
-          <p class="towns-head__eyebrow">Discover</p>
-          <h2 class="towns-head__title">Beach Towns of 30A</h2>
-          <p class="towns-head__lede">
-            Rosemary feels different from Grayton, and Seaside from WaterColor. Compare the towns,
-            then dive into local listings and guides.
-          </p>
-        </div>
-        <a class="towns-head__link" href={href("/towns")}>Explore all towns →</a>
-      </header>
-      <div class="town-track" aria-label="Towns on 30A">
-        {
-          homeTowns.map((town) => (
-            <a
-              class:list={["town-node", { featured: town.slug === featuredTownSlug }]}
-              href={href(`/town/${town.slug}`)}
-              aria-current={town.slug === featuredTownSlug ? "true" : undefined}
-            >
-              <span class="town-node__name">{town.name}</span>
-              <span class="town-node__dot img-placeholder" aria-hidden="true">
-                {town.name.charAt(0)}
-              </span>
-            </a>
-          ))
-        }
-      </div>
-    </div>
-  </section>
-
-  {
-    isEnabled("guides") && (
-      <section class="section">
-        <div class="container">
-          <header class="section-head">
-            <div>
-              <h2 class="section-title">Travel Guides</h2>
-              <p class="section-lede">How-to pages for planning a trip along 30A.</p>
-            </div>
-          </header>
-          <div class="story-grid">
-            {homeGuides.map((guide) => (
-              <a class="story-card" href={href(`/guide/${guide.slug}`)}>
-                <div class="story-card__media img-placeholder" aria-hidden="true">
-                  {guide.title.charAt(0)}
-                </div>
-                <h3>{guide.title}</h3>
-                <p>{guide.summary}</p>
-                <span class="story-card__link">Read guide →</span>
-              </a>
-            ))}
+    <section class="merchant">
+      <div class="container merchant__inner">
+        <div class="merchant__content">
+          <div class="merchant__copy">
+            <p class="merchant__eyebrow">For local businesses</p>
+            <h2>Add your business to WhereTo30A</h2>
+            <p>
+              Make it easier for people exploring 30A to find your business. Add your listing for free
+              and share what you offer, where to find you, and what visitors should know.
+            </p>
+            <p>
+              Every submission is reviewed before publishing to help keep WhereTo30A accurate, relevant,
+              and up to date.
+            </p>
           </div>
-          <p class="more center">
-            <a href={href("/guides")}>View all →</a>
-          </p>
-        </div>
-      </section>
-    )
-  }
-
-  {
-    isEnabled("events") && (
-      <section class="section band">
-        <div class="container">
-          <header class="section-head section-head--row">
-            <div>
-              <h2 class="section-title">Upcoming events</h2>
-              <p class="section-lede">What’s on along the corridor.</p>
-            </div>
-            <a class="section-link" href={href("/events")}>See all events →</a>
-          </header>
-          <div class="event-grid">
-            {homeEvents.map((event) => (
-              <EventCard event={event} />
-            ))}
+          <div class="merchant__actions">
+            <a class="btn btn--teal" href={href("/merchants")}>For businesses</a>
           </div>
         </div>
-      </section>
-    )
-  }
-
-  {
-    isEnabled("updates") && (
-      <section class="section">
-        <div class="container">
-          <UpdatesModule title="Latest updates" updates={liveUpdates()} />
-        </div>
-      </section>
-    )
-  }
-
-  <section class="cta-band">
-    <div class="container cta-band__grid">
-      <div>
-        <h2>Add your business to WhereTo30A</h2>
-        <p>
-          Every submission is reviewed before publishing. Get listed where locals and visitors already
-          explore towns, categories, and the map.
-        </p>
-        <div class="hero__actions">
-          <a class="btn btn--light" href={href("/add-business")}>Add your business</a>
-          <a class="btn btn--ghost-light" href={href("/search")}>Search for a business</a>
+        <div class="merchant__media">
+          <img
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuC-S5n4GjbrTdRUPG27wbhkjWRNX_LW2HI3UJgvwOK0Xnhp1u5ibkFuLeVnCHN_xY6srqNdpriCZ6sn7xoAWZfc9JXPllA2Xa7Yp_M5S7LbSZp1M-vwiYVHYVVfpBd7akiLPFVDMFEmPfDJhkmQHKi-2DNCc8DuZA2GZ8BZDo3W0tBYuSG574F7lOYRpjvN4kUfJsC-dni1yHHAXuPimNY1w7uDdNKXtO1XIEfAKQt6ipMjEsD9mxwn"
+            alt="Emerald Gulf water along Scenic Highway 30A"
+            loading="lazy"
+          />
         </div>
       </div>
-      <div class="cta-band__device" aria-hidden="true">
-        <div class="device">
-          <div class="device__screen">
-            <div class="device__list"></div>
-            <div class="device__map"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="container about">
-      <div class="about__media img-placeholder" aria-hidden="true">30A</div>
-      <div>
-        <h2>Finding what you’re looking for on 30A should be easier</h2>
-        <p>
-          Town pages, category combos, and a simple explore bar help you move from “somewhere on 30A”
-          to a specific place — without dumping everything into a single search page.
-        </p>
-        <p>
-          This wireframe keeps the structure of the live site while we rebuild the pieces in this
-          proto.
-        </p>
-        <p class="more">
-          <a href={href("/about")}>Read more →</a>
-        </p>
-      </div>
-    </div>
-  </section>
-
-  <section class="coast-love" aria-label="Coast Love Collection placeholder">
-    <div class="container coast-love__inner">
-      <p class="coast-love__brand">Coast Love Collection</p>
-      <div class="coast-love__frames" aria-hidden="true">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <a class="btn btn--solid" href={href("/about")}>Shop now</a>
-    </div>
-  </section>
+    </section>
+  </div>
 </BaseLayout>
 
 <style>
-  .hero {
-    position: relative;
-    min-height: min(70vh, 36rem);
-    display: grid;
-    place-items: center;
-    padding: var(--size-8) var(--size-4);
-    overflow: hidden;
-  }
-  .hero__plane {
-    position: absolute;
-    inset: 0;
-    background:
-      linear-gradient(180deg, rgba(250, 248, 244, 0.35), rgba(12, 47, 61, 0.18)),
-      linear-gradient(135deg, #c8dce4 0%, #e8efe6 42%, #d5c4a8 100%);
-  }
-  .hero__card {
-    position: relative;
-    z-index: 1;
-    width: min(36rem, 100%);
-    padding: var(--size-7) var(--size-6);
-    background: rgba(255, 255, 255, 0.92);
-    border-radius: var(--radius-card);
-    text-align: center;
-    box-shadow: var(--shadow-card);
-  }
-  .hero__card h1 {
-    font-size: clamp(1.75rem, 5vw, 2.5rem);
-    margin-bottom: var(--size-3);
-  }
-  .hero__card p {
-    color: var(--brand-ink-soft);
-    margin: 0 auto var(--size-5);
-    max-width: 38ch;
-  }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--size-3);
-    justify-content: center;
+  .home {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
   }
   .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-height: 44px;
-    padding: 0.7rem 1.25rem;
-    border-radius: 999px;
-    font-weight: var(--font-weight-7);
+    min-height: 2.5rem;
+    padding: 0.55rem 1.1rem;
+    border-radius: var(--radius-pill);
     font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
   }
   .btn:hover {
     text-decoration: none;
   }
-  .btn--ghost {
-    border: 1px solid var(--brand-deep);
-    color: var(--brand-deep);
-    background: white;
-  }
-  .btn--solid {
+  .btn--teal {
     background: var(--brand-teal);
     color: white;
   }
-  .btn--light {
-    background: white;
-    color: var(--brand-deep);
+  .btn--teal:hover {
+    background: #00796b;
   }
-  .btn--ghost-light {
-    border: 1px solid rgba(255, 255, 255, 0.65);
+  .btn--ghost {
+    border: 1px solid rgba(255, 255, 255, 0.35);
     color: white;
+    background: transparent;
   }
-  .section-head {
-    margin-bottom: var(--size-5);
+  .btn--ghost:hover {
+    border-color: white;
+    background: rgba(255, 255, 255, 0.06);
   }
-  .section-head--row {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--size-3);
-  }
-  .section-title {
-    margin-bottom: var(--size-2);
-  }
-  .section-lede {
-    margin: 0;
-    color: var(--brand-ink-soft);
-    max-width: 42ch;
-  }
-  .section-link {
-    font-weight: var(--font-weight-7);
-    white-space: nowrap;
-  }
-  .band {
-    background: white;
-    border-block: 1px solid var(--brand-line);
-  }
-  .towns-band {
-    background: #eef5f3;
-    border-block: 1px solid #dce8e4;
-  }
-  .towns-head {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    justify-content: space-between;
-    gap: var(--size-4);
-    margin-bottom: var(--size-7);
-  }
-  .towns-head__eyebrow {
-    margin: 0 0 var(--size-2);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
-  }
-  .towns-head__title {
-    margin: 0 0 var(--size-3);
-    font-size: clamp(1.75rem, 4vw, 2.35rem);
-    color: var(--brand-deep);
-  }
-  .towns-head__lede {
-    margin: 0;
-    max-width: 42ch;
-    color: var(--brand-ink-soft);
-    font-size: var(--font-size-2);
-  }
-  .towns-head__link {
-    font-weight: var(--font-weight-7);
-    color: var(--brand-deep);
-    white-space: nowrap;
-  }
-  .town-track {
-    --dot: 5.5rem;
-    position: relative;
-    display: flex;
-    align-items: flex-start;
-    justify-content: safe center;
-    gap: clamp(0.75rem, 2.5vw, 2rem);
-    overflow-x: auto;
-    padding: 0.75rem 0.25rem 1.25rem;
-    scroll-snap-type: x proximity;
-  }
-  .town-track::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    /* Name block (~2.4em) + gap + half dot */
-    top: calc(0.75rem + 2.4em + var(--size-3) + var(--dot) / 2);
-    height: 1px;
-    background: #c9d5d1;
-    pointer-events: none;
-  }
-  .town-node {
-    position: relative;
-    z-index: 1;
-    flex: 0 0 auto;
-    width: 6.75rem;
-    display: grid;
-    justify-items: center;
-    gap: var(--size-3);
-    text-align: center;
-    color: var(--brand-deep);
-    scroll-snap-align: center;
-  }
-  .town-node:hover {
-    text-decoration: none;
-  }
-  .town-node__name {
-    display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    min-height: 2.4em;
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
-    line-height: 1.2;
-  }
-  .town-node__dot {
-    width: var(--dot);
-    height: var(--dot);
-    border-radius: 50%;
-    border: 3px solid #fff;
-    box-shadow: 0 0 0 1px #c9d5d1;
-    font-size: var(--font-size-4);
-    transition:
-      transform 160ms ease,
-      border-color 160ms ease,
-      box-shadow 160ms ease,
-      font-size 160ms ease;
-  }
-  .town-node.featured .town-node__name,
-  .town-node:hover .town-node__name,
-  .town-node:focus-visible .town-node__name {
-    font-weight: var(--font-weight-8);
-  }
-  .town-node.featured .town-node__dot,
-  .town-node:hover .town-node__dot,
-  .town-node:focus-visible .town-node__dot {
-    transform: scale(1.28);
-    border-width: 4px;
-    border-color: var(--brand-deep);
-    box-shadow: none;
-    font-size: var(--font-size-5);
-  }
-  .story-card {
-    display: grid;
-    gap: 0.65rem;
-    align-content: start;
-    color: var(--brand-ink);
-    min-width: 0;
-  }
-  .story-card:hover {
-    text-decoration: none;
-  }
-  .story-card:hover .story-card__link {
-    text-decoration: underline;
-  }
-  .story-card__media {
-    aspect-ratio: 3 / 4;
-    border-radius: 1.25rem;
-    font-size: var(--font-size-7);
-    margin-bottom: 0.35rem;
-  }
-  .story-card h3 {
-    margin: 0;
-    font-size: var(--font-size-3);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-deep);
-    line-height: 1.25;
-  }
-  .story-card p {
-    margin: 0;
-    color: var(--brand-ink-soft);
-    font-size: var(--font-size-1);
-    line-height: 1.45;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-  .story-card__link {
-    margin-top: 0.15rem;
-    font-weight: var(--font-weight-7);
-    font-size: var(--font-size-1);
-    color: var(--brand-deep);
-  }
-  .more {
-    margin-top: var(--size-5);
-  }
-  .more.center {
-    text-align: center;
-  }
-  .cta-band {
-    background: linear-gradient(135deg, var(--brand-deep) 0%, #16485c 100%);
-    color: white;
-    padding-block: var(--size-9);
-  }
-  .cta-band h2 {
-    color: white;
-    font-size: clamp(1.6rem, 4vw, 2.25rem);
-  }
-  .cta-band p {
-    color: rgba(255, 255, 255, 0.85);
-    max-width: 42ch;
-  }
-  .cta-band__grid {
-    display: grid;
-    gap: var(--size-7);
-    align-items: center;
-  }
-  .device {
-    width: min(100%, 22rem);
-    margin-inline: auto;
-    padding: 0.85rem;
-    border-radius: 1rem;
-    background: #2a2f33;
-    box-shadow: var(--shadow-card);
-  }
-  .device__screen {
-    display: grid;
-    grid-template-columns: 1.1fr 0.9fr;
-    min-height: 11rem;
-    border-radius: 0.45rem;
-    overflow: hidden;
-    background: white;
-  }
-  .device__list {
-    background: repeating-linear-gradient(
-      180deg,
-      #f4f6f8,
-      #f4f6f8 18px,
-      #e8eef1 18px,
-      #e8eef1 19px
-    );
-  }
-  .device__map {
-    background: var(--brand-map);
-  }
-  .about {
-    display: grid;
-    gap: var(--size-6);
-    align-items: center;
-  }
-  .about__media {
-    min-height: 18rem;
-    border-radius: var(--radius-card);
-    font-size: var(--font-size-6);
-  }
-  .about h2 {
-    font-size: clamp(1.5rem, 4vw, 2.1rem);
-  }
-  .coast-love {
-    background: #1a3340;
+  .merchant {
+    background: var(--brand-deep);
     color: white;
     padding-block: var(--size-8);
   }
-  .coast-love__inner {
+  .merchant__inner {
     display: grid;
     gap: var(--size-5);
-    justify-items: center;
-    text-align: center;
+    align-items: center;
   }
-  .coast-love__brand {
-    margin: 0;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+  .merchant__content {
+    display: grid;
+    gap: var(--size-4);
+    justify-items: start;
+    min-width: 0;
+  }
+  .merchant__copy {
+    max-width: 36rem;
+  }
+  .merchant__eyebrow {
+    margin: 0 0 0.35rem;
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #94a3b8;
   }
-  .coast-love__frames {
-    display: grid;
-    grid-template-columns: repeat(3, minmax(0, 8rem));
-    gap: var(--size-3);
-    width: min(100%, 28rem);
+  .merchant h2 {
+    margin: 0 0 0.45rem;
+    color: white;
+    font-size: clamp(1.45rem, 3vw, 2rem);
+    line-height: 1.2;
   }
-  .coast-love__frames span {
-    aspect-ratio: 3 / 4;
-    border: 4px solid rgba(255, 255, 255, 0.85);
-    background: linear-gradient(145deg, #8eb8c8, #dfe9ee 45%, #b7c4a8);
+  .merchant__copy > p:not(.merchant__eyebrow) {
+    margin: 0 0 0.4rem;
+    color: #cbd5e1;
+    font-size: var(--font-size-2);
+    line-height: 1.5;
+    max-width: 48ch;
   }
-  @media (min-width: 720px) {
-    .cta-band__grid,
-    .about {
-      grid-template-columns: 1.1fr 0.9fr;
+  .merchant__copy > p:last-child {
+    margin-bottom: 0;
+  }
+  .merchant__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  .merchant__media {
+    min-width: 0;
+    border-radius: var(--radius-4);
+    overflow: hidden;
+    background: #163545;
+    aspect-ratio: 4 / 3;
+  }
+  .merchant__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  @media (min-width: 900px) {
+    .merchant__inner {
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+      gap: var(--size-6);
+    }
+    .merchant__media {
+      aspect-ratio: 3 / 2;
+      min-height: 8rem;
+      max-height: 20rem;
     }
   }
 </style>

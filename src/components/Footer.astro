@@ -2,17 +2,19 @@
 import { areas, categories, towns } from "../data/catalog";
 import { href } from "../lib/href";
 
-const companyLinks = [
+const companyLinks: { label: string; path: string; proto?: string }[] = [
   { label: "About", path: "/about" },
+  { label: "Connect", path: "/connect" },
   { label: "Travel guides", path: "/guides" },
   { label: "Events", path: "/events" },
-  { label: "Updates", path: "/updates" },
   { label: "Ask", path: "/ask" },
   { label: "Businesses", path: "/search" },
   { label: "Categories", path: "/search" },
-  { label: "List your business", path: "/add-business" },
+  { label: "Manage business", path: "/dashboard", proto: "manage-business" },
+  { label: "Add a business", path: "/add-business", proto: "manage-business" },
+  { label: "Manage town", path: "/dashboard", proto: "town-desk" },
   { label: "List a vacation rental", path: "/stays" },
-  { label: "Advertise", path: "/advertise" },
+  { label: "Merchants", path: "/merchants" },
   { label: "Privacy", path: "/legal/privacy" },
   { label: "Terms", path: "/legal/terms" },
 ];
@@ -97,7 +99,7 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
       <ul>
         {
           companyLinks.map((link) => (
-            <li>
+            <li data-proto={link.proto}>
               <a href={href(link.path)}>{link.label}</a>
             </li>
           ))
@@ -115,6 +117,13 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
 </footer>
 
 <style>
+  :global(html[data-persona="guest"]) [data-proto="manage-business"],
+  :global(html[data-persona="guest"]) [data-proto="town-desk"],
+  :global(html[data-persona="visitor"]) [data-proto="town-desk"],
+  :global(html[data-persona="employer"]) [data-proto="town-desk"],
+  :global(html[data-persona="town-manager"]) [data-proto="manage-business"] {
+    display: none !important;
+  }
   .site-footer {
     border-top: 1px solid var(--brand-line);
     margin-top: auto;

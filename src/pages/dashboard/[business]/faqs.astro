@@ -1,0 +1,122 @@
+---
+import MerchantLayout from "../../../layouts/MerchantLayout.astro";
+import ComposerCard from "../../../components/islands/ComposerCard.svelte";
+import type { Business } from "../../../data/types";
+import { ownedBusinessPaths } from "../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return ownedBusinessPaths();
+}
+
+interface Props {
+  business: Business;
+}
+
+const { business } = Astro.props;
+
+const faqs = [
+  {
+    q: "Do you take reservations?",
+    a: "Walk-ins welcome most days. For parties of 6+, call ahead during peak season.",
+  },
+  {
+    q: "Is there parking nearby?",
+    a: "Limited lot spots plus town shared parking a short walk away. Bikes preferred on 30A.",
+  },
+  {
+    q: "Are dogs allowed?",
+    a: "Leashed dogs welcome on the patio. Indoor seating is people-only.",
+  },
+];
+---
+
+<MerchantLayout title={`FAQs & knowledge · ${business.name}`} business={business} active="faqs">
+  <header class="head">
+    <div>
+      <h1>FAQs &amp; knowledge</h1>
+      <p>
+        Answers visitors see on your listing and in search. Keep them short, factual, and up to date.
+      </p>
+    </div>
+  </header>
+
+  <div class="grid">
+    <section class="card">
+      <h2>Published answers</h2>
+      <ul>
+        {
+          faqs.map((item) => (
+            <li>
+              <strong>{item.q}</strong>
+              <p>{item.a}</p>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+    <section class="card">
+      <h2>Add knowledge</h2>
+      <ComposerCard
+        title="New FAQ"
+        body="Prototype only — submissions queue for review before publishing."
+        action="Submit FAQ"
+        kind="settings"
+        client:visible
+      />
+    </section>
+  </div>
+</MerchantLayout>
+
+<style>
+  .head {
+    margin-bottom: 1.25rem;
+  }
+  h1 {
+    margin: 0 0 0.35rem;
+    color: var(--brand-deep);
+    font-size: clamp(1.45rem, 3vw, 1.9rem);
+  }
+  .head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    max-width: 48ch;
+  }
+  .grid {
+    display: grid;
+    gap: 1rem;
+  }
+  .card {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    padding: 1.15rem;
+  }
+  h2 {
+    margin: 0 0 0.85rem;
+    color: var(--brand-deep);
+    font-size: var(--font-size-3);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+  }
+  li strong {
+    display: block;
+    color: var(--brand-deep);
+    margin-bottom: 0.25rem;
+  }
+  li p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+    line-height: 1.45;
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: minmax(0, 1.35fr) minmax(14rem, 0.85fr);
+    }
+  }
+</style>

@@ -21,23 +21,24 @@ const routes = [
   ["Question", "/ask/parking-near-seaside"],
   ["Stays", "/stays"],
   ["Stay", "/stay/the-pearl-hotel"],
-  ["Updates (footer only)", "/updates"],
   ["Post", "/posts/sunset-on-the-square"],
-  ["Dashboard", "/dashboard"],
-  ["Manage business", "/dashboard/edwards-fine-food-and-wine"],
-  ["Post feed as business", "/dashboard/edwards-fine-food-and-wine/feed"],
-  ["Post event", "/dashboard/edwards-fine-food-and-wine/events/new"],
-  ["Mentions", "/dashboard/edwards-fine-food-and-wine/mentions"],
-  ["Edit listing", "/dashboard/edwards-fine-food-and-wine/listing"],
+  ["Manage business", "/dashboard"],
+  ["Overview", "/dashboard/edwards-fine-food-and-wine"],
+  ["Business profile", "/dashboard/edwards-fine-food-and-wine/listing"],
+  ["Posts & events", "/dashboard/edwards-fine-food-and-wine/feed"],
+  ["FAQs & knowledge", "/dashboard/edwards-fine-food-and-wine/faqs"],
+  ["Community feed", "/dashboard/edwards-fine-food-and-wine/mentions"],
+  ["Guide mentions", "/dashboard/edwards-fine-food-and-wine/guides"],
+  ["Advertise & grow", "/dashboard/edwards-fine-food-and-wine/advertise"],
   ["Photos", "/dashboard/edwards-fine-food-and-wine/photos"],
+  ["Post event", "/dashboard/edwards-fine-food-and-wine/events/new"],
   ["Profile", "/profile"],
   ["Favorites", "/profile/favorites"],
   ["Posts (user)", "/profile/posts"],
   ["Account settings", "/profile/settings"],
   ["External profile", "/u/beachlocal"],
-  ["Update detail", "/updates/edwards-weekend-hours"],
   ["My questions", "/profile/questions"],
-  ["Add business", "/add-business"],
+  ["Add another business", "/add-business"],
   ["Admin", "/admin"],
   ["Review queue", "/admin/review-queue"],
   ["SEO overrides", "/admin/seo"],
@@ -47,8 +48,9 @@ const routes = [
   ["Sign up", "/auth/signup"],
   ["Forgot password", "/auth/forgot-password"],
   ["About", "/about"],
+  ["Connect", "/connect"],
   ["Legal", "/legal"],
-  ["Advertise", "/advertise"],
+  ["Merchants", "/merchants"],
 ];
 ---
 
@@ -61,7 +63,7 @@ const routes = [
       <li>/search is the business finder and stays noindex, follow.</li>
       <li>Town hubs are discovery surfaces with local businesses, plus /town/{"{town}"}/{"{leaf}"} leaves.</li>
       <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
-      <li>Updates appear on town and business pages. /updates is footer only.</li>
+      <li>Updates appear on the homepage, town pages, and business pages — not as standalone routes.</li>
       <li>Areas extend a town: shopping areas and neighborhoods.</li>
     </ol>
     <ul class="routes">

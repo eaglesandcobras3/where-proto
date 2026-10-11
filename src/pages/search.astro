@@ -1,10 +1,23 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import InteriorHero from "../components/InteriorHero.astro";
+import MapToggle from "../components/MapToggle.astro";
+import ContributeCard from "../components/ContributeCard.astro";
 import TwoPaneMap from "../components/TwoPaneMap.astro";
+import SearchHeroSearch from "../components/islands/SearchHeroSearch.svelte";
+import SearchSidebarFilters from "../components/islands/SearchSidebarFilters.svelte";
 import FilterBar from "../components/islands/FilterBar.svelte";
-import { allLeaves, businesses, categories, tags, towns } from "../data/catalog";
+import {
+  allLeaves,
+  categories,
+  searchableBusinesses,
+  tags,
+  towns,
+  townBySlug,
+} from "../data/catalog";
 import { toFilterBusiness } from "../lib/listing";
 import { href } from "../lib/href";
+import { markersFromNames, withoutViewMap, withViewMap } from "../lib/map-markers";
 
 const params = Astro.url.searchParams;
 const town = params.get("town") ?? "";
@@ -12,60 +25,216 @@ const category = params.get("category") ?? "";
 const tag = params.get("tag") ?? "";
 const q = params.get("q") ?? "";
 const openNow = params.get("open") === "1";
+const mapView = params.get("view") === "map";
 const comboCanonical = Boolean(town && category && !tag && !openNow && !q);
 const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
+/** Place desks live under Community — omit from consumer search filters. */
+const searchCategories = categories.filter((item) => item.slug !== "community");
 const filterCategories = [
-  ...categories.map((item) => ({ slug: item.slug, name: item.name })),
-  ...allLeaves().map((item) => ({ slug: item.slug, name: `${item.groupName} / ${item.name}` })),
+  ...searchCategories.map((item) => ({ slug: item.slug, name: item.name })),
+  ...allLeaves()
+    .filter((item) => item.groupSlug !== "community")
+    .map((item) => ({ slug: item.slug, name: `${item.groupName} / ${item.name}` })),
 ];
 const base = import.meta.env.BASE_URL;
+const searchQs = Astro.url.search;
+const mapHref = withViewMap("/search", searchQs);
+const gridHref = withoutViewMap("/search", searchQs);
+
+const categoryCounts = searchCategories.map((item) => ({
+  slug: item.slug,
+  name: item.name,
+  count: searchableBusinesses.filter((biz) => biz.categorySlug === item.slug).length,
+}));
+
+const townCounts = towns
+  .map((item) => ({
+    slug: item.slug,
+    name: item.name,
+    count: searchableBusinesses.filter((biz) => biz.townSlug === item.slug).length,
+  }))
+  .filter((item) => item.count > 0);
+
+const heroTowns = towns.map(({ slug, name }) => ({ slug, name }));
+const heroCategories = searchCategories.map(({ slug, name }) => ({ slug, name }));
+const pick =
+  searchableBusinesses.find((item) => item.slug === "beachy-bean-coffee") ?? searchableBusinesses[0];
+const mapMarkers = markersFromNames(
+  searchableBusinesses.map((biz) => ({
+    name: biz.name,
+    href: href(`/business/${biz.slug}`),
+    detail: `${townBySlug(biz.townSlug)?.name ?? "30A"} · Open Now`,
+  })),
+);
 ---
 
 <BaseLayout
-  title="Search businesses on 30A"
-  description="Search every business on 30A by town, category, tag, or keyword."
+  title="30A Local Businesses & Curated Outposts"
+  description="Discover coffee, dining, boutiques, and local outposts across Scenic Highway 30A — verified by residents and editorial."
   active="businesses"
   noindex
   canonicalPath={canonicalPath}
-  showSearch
-  searchTown={town}
-  searchCategory={category}
-  searchQuery={q}
 >
-  {
-    comboCanonical && (
-      <div class="container notice">
-        <p>
-          Indexable page for this combo:
-          <a href={href(`/town/${town}/${category}`)}>
-            /town/{town}/{category}
-          </a>
-        </p>
-      </div>
-    )
-  }
-  <TwoPaneMap mapLabel="30A businesses map" pinCount={Math.max(8, businesses.length)} searchArea>
-    <FilterBar
-      businesses={businesses.map(toFilterBusiness)}
-      towns={towns}
-      categories={filterCategories}
-      tags={tags}
-      initialTown={town}
-      initialCategory={category}
-      initialTag={tag}
-      initialOpenNow={openNow}
-      initialQuery={q}
-      externalChrome
-      base={base}
-      client:load
-    />
-  </TwoPaneMap>
+  <div class="search-page">
+    <InteriorHero
+      title="30A Local Businesses & Curated Outposts"
+      lede="Discover coffee, dining, boutiques, and neighborhood favorites verified by residents and the WhereTo30A editorial desk."
+    >
+      <SearchHeroSearch
+        towns={heroTowns}
+        categories={heroCategories}
+        initialTown={town}
+        initialCategory={category}
+        initialQuery={q}
+        initialTag={tag}
+        client:load
+      />
+    </InteriorHero>
+
+    {
+      comboCanonical && (
+        <div class="container notice">
+          <p>
+            Indexable page for this combo:
+            <a href={href(`/town/${town}/${category}`)}>
+              /town/{town}/{category}
+            </a>
+          </p>
+        </div>
+      )
+    }
+
+    {
+      mapView ? (
+        <TwoPaneMap
+          mapLabel="30A businesses map"
+          resultLabel={`${searchableBusinesses.length} Results along Scenic 30A`}
+          gridHref={href(gridHref)}
+          markers={mapMarkers}
+          searchArea
+        >
+          <FilterBar
+            businesses={searchableBusinesses.map(toFilterBusiness)}
+            towns={towns}
+            categories={filterCategories}
+            tags={tags}
+            initialTown={town}
+            initialCategory={category}
+            initialTag={tag}
+            initialOpenNow={openNow}
+            initialQuery={q}
+            externalChrome
+            base={base}
+            client:load
+          />
+        </TwoPaneMap>
+      ) : (
+        <div class="container layout">
+          <SearchSidebarFilters
+            categories={categoryCounts}
+            towns={townCounts}
+            tags={tags}
+            initialTown={town}
+            initialCategory={category}
+            initialTag={tag}
+            total={searchableBusinesses.length}
+            client:load
+          />
+
+          <FilterBar
+            businesses={searchableBusinesses.map(toFilterBusiness)}
+            towns={towns}
+            categories={filterCategories}
+            tags={tags}
+            initialTown={town}
+            initialCategory={category}
+            initialTag={tag}
+            initialOpenNow={openNow}
+            initialQuery={q}
+            externalChrome
+            base={base}
+            client:load
+          />
+
+          <aside class="rail">
+            <MapToggle title="30A Businesses Map" href={mapHref} />
+            <ContributeCard kind="business" />
+
+            {pick && (
+              <section class="widget pick">
+                <p class="widget__label">Locals’ Morning Pick</p>
+                <p class="pick__quote">
+                  “{pick.name} is the courtyard stop before the square wakes up — cold brew, pastry case, and a bike rack on the Timpoochee.”
+                </p>
+                <p class="pick__by">Caroline L. · WaterColor Resident &amp; Guide</p>
+                <a href={href(`/business/${pick.slug}`)}>Explore {pick.name} →</a>
+              </section>
+            )}
+          </aside>
+        </div>
+      )
+    }
+  </div>
 </BaseLayout>
 
 <style>
+  .search-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
   .notice {
     padding-block: var(--size-3);
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .pick a {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .pick__quote {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink);
+    line-height: 1.55;
+  }
+  .pick__by {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
+    }
+    .rail {
+      display: grid;
+    }
   }
 </style>

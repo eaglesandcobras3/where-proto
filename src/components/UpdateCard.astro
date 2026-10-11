@@ -21,7 +21,15 @@ const sourceName = business?.name ?? town?.name;
   </div>
   {sourceName && <p class="source-name">{sourceName}</p>}
   <h3>
-    <a href={href(`/updates/${update.slug}`)}>{update.title}</a>
+    {
+      business ? (
+        <a href={href(`/business/${business.slug}`)}>{update.title}</a>
+      ) : town ? (
+        <a href={href(`/town/${town.slug}`)}>{update.title}</a>
+      ) : (
+        update.title
+      )
+    }
   </h3>
   <p>{update.body}</p>
   <p class="source">

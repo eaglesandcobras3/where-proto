@@ -1,5 +1,6 @@
 ---
 import SearchBar from "./islands/SearchBar.svelte";
+import ConditionsBar from "./ConditionsBar.astro";
 import { href } from "../lib/href";
 
 interface Props {
@@ -14,7 +15,6 @@ const links = [
   { label: "Businesses", path: "/search", key: "businesses" },
   { label: "Stays", path: "/stays", key: "stays" },
   { label: "Events", path: "/events", key: "events" },
-  { label: "Updates", path: "/updates", key: "updates" },
   { label: "Guides", path: "/guides", key: "guides" },
   { label: "Ask", path: "/ask", key: "ask" },
 ];
@@ -35,21 +35,12 @@ const links = [
     </nav>
 
     <div class="header-actions">
-      <a class="add-business" href={href("/add-business")}>Add business</a>
-      <a class="icon-btn" href={href("/ask")} aria-label="Ask locals">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-          <path
-            d="M4 12.5 20 4l-4.5 16-3.2-5.3L4 12.5z"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="1.75"
-            stroke-linejoin="round"
-          ></path>
-        </svg>
-      </a>
+      <a class="add-business" data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
+      <a class="add-business" data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
+      <button class="sign-in" data-proto="sign-in" type="button" id="header-sign-in">Sign in</button>
       <SearchBar base={base} client:load />
-      <a class="icon-btn" href={href("/profile")} aria-label="Profile">
-        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+      <a class="icon-btn" data-proto="profile" href={href("/profile")} aria-label="Profile">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.75"></circle>
           <path d="M5 19c0-3.3 3.1-6 7-6s7 2.7 7 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path>
         </svg>
@@ -68,6 +59,7 @@ const links = [
       </button>
     </div>
   </div>
+  <ConditionsBar />
 </header>
 
 <dialog class="mobile-drawer" id="mobile-drawer" aria-label="Menu">
@@ -77,9 +69,11 @@ const links = [
     </form>
     <nav class="mobile-nav">
       {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
-      <a href={href("/add-business")}>Add business</a>
-      <a href={href("/profile")}>Profile</a>
-      <a href={href("/dashboard")}>Dashboard</a>
+      <button type="button" data-proto="sign-in" class="mobile-sign-in" id="mobile-sign-in">Sign in</button>
+      <a data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
+      <a data-proto="manage-business" href={href("/add-business")}>Add another business</a>
+      <a data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
+      <a data-proto="profile" href={href("/profile")}>Profile</a>
     </nav>
   </div>
 </dialog>
@@ -104,6 +98,14 @@ const links = [
       drawer.close();
     }
   });
+
+  function openAuth() {
+    window.dispatchEvent(new CustomEvent("w30a:auth", { detail: { mode: "login" } }));
+    if (drawer instanceof HTMLDialogElement && drawer.open) drawer.close();
+  }
+
+  document.getElementById("header-sign-in")?.addEventListener("click", openAuth);
+  document.getElementById("mobile-sign-in")?.addEventListener("click", openAuth);
 </script>
 
 <style>
@@ -111,15 +113,16 @@ const links = [
     position: sticky;
     top: 0;
     z-index: 50;
-    background: var(--brand-sand);
-    border-bottom: 1px solid var(--brand-line);
+    background: white;
   }
   .header-inner {
     display: flex;
     align-items: center;
     gap: var(--size-2);
-    min-height: var(--header-h);
+    min-height: var(--header-nav-h);
     min-width: 0;
+    background: white;
+    border-bottom: 1px solid var(--brand-line);
   }
   .logo {
     font-size: var(--font-size-4);
@@ -170,7 +173,8 @@ const links = [
     min-width: 0;
     justify-content: flex-end;
   }
-  .add-business {
+  .add-business,
+  .sign-in {
     display: none;
     margin-right: 0.35rem;
     font-size: var(--font-size-1);
@@ -178,9 +182,50 @@ const links = [
     color: var(--brand-ink-soft);
     white-space: nowrap;
   }
-  .add-business:hover {
+  .add-business:hover,
+  .sign-in:hover {
     color: var(--brand-ink);
     text-decoration: none;
+  }
+  .sign-in {
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+  }
+  .mobile-sign-in {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: var(--size-3);
+    min-height: 44px;
+    font: inherit;
+    font-size: var(--font-size-3);
+    color: var(--brand-ink);
+    border: 0;
+    border-bottom: 1px solid var(--brand-line);
+    background: none;
+    cursor: pointer;
+  }
+
+  /* Prototype persona visibility — set on <html data-persona> */
+  :global(html[data-persona="guest"]) [data-proto="profile"],
+  :global(html[data-persona="guest"]) [data-proto="manage-business"],
+  :global(html[data-persona="guest"]) [data-proto="town-desk"] {
+    display: none !important;
+  }
+  :global(html[data-persona="visitor"]) [data-proto="sign-in"],
+  :global(html[data-persona="visitor"]) [data-proto="town-desk"] {
+    display: none !important;
+  }
+  :global(html[data-persona="employer"]) [data-proto="sign-in"],
+  :global(html[data-persona="employer"]) [data-proto="town-desk"] {
+    display: none !important;
+  }
+  :global(html[data-persona="town-manager"]) [data-proto="sign-in"],
+  :global(html[data-persona="town-manager"]) [data-proto="manage-business"] {
+    display: none !important;
   }
   .icon-btn {
     width: 2.75rem;
@@ -193,6 +238,10 @@ const links = [
     color: var(--brand-ink);
     box-shadow: 0 0 0 1px var(--brand-line);
     flex-shrink: 0;
+    line-height: 0;
+  }
+  .icon-btn svg {
+    display: block;
   }
   .icon-btn:hover {
     color: var(--brand-deep);
@@ -269,8 +318,10 @@ const links = [
       flex: 0 0 auto;
     }
     .desktop-nav,
-    .add-business {
+    .add-business,
+    .sign-in {
       display: flex;
+      align-items: center;
     }
     .menu-btn {
       display: none;

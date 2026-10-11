@@ -1,0 +1,315 @@
+---
+/**
+ * Shared town community modules (events, official updates, live feed, rules, Ask).
+ * Areas reuse these from their parent town — not area-specific feeds.
+ */
+import UpdatesModule from "./UpdatesModule.astro";
+import { isEnabled } from "../config/flags";
+import { events, liveUpdates, updatesForTown } from "../data/catalog";
+import type { Town } from "../data/types";
+import { href } from "../lib/href";
+import { formatThrough, updateTypeLabels } from "../lib/labels";
+
+interface Props {
+  town: Town;
+  /** When set, copy frames the section as town context for this area */
+  areaName?: string;
+}
+
+const { town, areaName } = Astro.props;
+const townUpdates = liveUpdates(updatesForTown(town.slug));
+const townEvents = events.filter((item) => item.townSlug === town.slug);
+const placeLabel = areaName ? `${areaName} · ${town.name}` : town.name;
+---
+
+{
+  isEnabled("events") && townEvents.length > 0 && (
+    <section class="panel">
+      <div class="panel__head">
+        <div>
+          <p class="eyebrow">From {town.name}</p>
+          <h2>Upcoming events in {town.name}</h2>
+        </div>
+        <a href={href(`/events?town=${town.slug}`)}>View calendar</a>
+      </div>
+      <ul class="events">
+        {townEvents.map((event) => (
+          <li>
+            <a href={href(`/event/${event.slug}`)}>
+              <span>{event.when}</span>
+              <strong>{event.name}</strong>
+              <em>{event.venue ?? town.name}</em>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+{
+  isEnabled("updates") && (
+    <section class="panel bulletins" id="updates">
+      <div class="panel__head">
+        <div>
+          <p class="eyebrow">Government &amp; HOA · {town.name}</p>
+          <h2>Official town bulletins</h2>
+        </div>
+      </div>
+      {townUpdates.length > 0 ? (
+        <div class="bulletin-list">
+          {townUpdates.slice(0, 4).map((update) => (
+            <article class="bulletin">
+              <span class="bulletin__type">{updateTypeLabels[update.type]}</span>
+              <h3>{update.title}</h3>
+              <p>{update.body}</p>
+              <p class="bulletin__meta">Through {formatThrough(update.through)}</p>
+            </article>
+          ))}
+        </div>
+      ) : (
+        <p class="empty">No live bulletins for {town.name} right now.</p>
+      )}
+    </section>
+  )
+}
+
+{
+  isEnabled("updates") && (
+    <section class="panel feed">
+      <div class="panel__head">
+        <div>
+          <p class="eyebrow">Real-time community · {town.name}</p>
+          <h2>{town.name} live feed</h2>
+        </div>
+      </div>
+      <div class="composer">
+        <p class="composer__prompt">
+          What’s happening in {placeLabel} today? Tips and conditions post to the {town.name} town feed.
+        </p>
+        <div class="composer__tags">
+          <span>Dining tips</span>
+          <span>Beach report</span>
+          <span>Lost &amp; found</span>
+          <span>Local secret</span>
+        </div>
+        <a class="composer__btn" href={href("/ask")}>Post to Ask the Locals</a>
+      </div>
+      <UpdatesModule title="" updates={townUpdates} />
+    </section>
+  )
+}
+
+<section class="alert">
+  <p class="alert__label">Walton County rules · {town.name}</p>
+  <ul>
+    <li>Beach gear cleared nightly under Leave No Trace</li>
+    <li>LSV / golf cart rules vary by town center</li>
+    <li>Bonfire permits required for evening beach fires</li>
+  </ul>
+</section>
+
+<section class="panel ask">
+  <div class="panel__head">
+    <h2>{town.name} knowledge bank</h2>
+    <a href={href("/ask")}>Ask a question</a>
+  </div>
+  <article class="qa">
+    <p class="qa__q">What’s the best public beach access near {town.name}?</p>
+    <p class="qa__a">
+      <strong>Local tip:</strong> Prefer Walton County regional accesses when you need parking, restrooms, and seasonal
+      lifeguards. Guest-only paths may be marked private.
+    </p>
+  </article>
+</section>
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  .panel__head h2 {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
+  }
+  .panel__head a {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
+  }
+  .eyebrow {
+    margin: 0 0 0.2rem;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .events {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .events a {
+    display: grid;
+    gap: 0.15rem;
+    color: var(--brand-ink);
+  }
+  .events a:hover {
+    text-decoration: none;
+  }
+  .events span {
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-teal);
+  }
+  .events strong {
+    color: var(--brand-deep);
+  }
+  .events em {
+    font-style: normal;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .bulletin-list {
+    display: grid;
+    gap: 0.75rem;
+  }
+  .bulletin {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .bulletin__type {
+    display: inline-flex;
+    margin-bottom: 0.35rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-teal-soft);
+    color: var(--brand-teal);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .bulletin h3 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-2);
+    color: var(--brand-deep);
+  }
+  .bulletin p {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .bulletin__meta {
+    margin-top: 0.5rem !important;
+    font-size: var(--font-size-0) !important;
+  }
+  .composer {
+    margin-bottom: var(--size-4);
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f0fdfa;
+    border: 1px solid #99f6e4;
+  }
+  .composer__prompt {
+    margin: 0 0 var(--size-3);
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .composer__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: var(--size-3);
+  }
+  .composer__tags span {
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    border: 1px solid var(--brand-line);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+  }
+  .composer__btn {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.25rem;
+    padding: 0.45rem 0.9rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-deep);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .composer__btn:hover {
+    background: var(--brand-teal);
+    text-decoration: none;
+  }
+  .feed :global(.updates-module) {
+    margin-block: 0;
+  }
+  .feed :global(.section-title) {
+    display: none;
+  }
+  .alert {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 4px solid var(--brand-sun);
+  }
+  .alert__label {
+    margin: 0 0 0.5rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #78350f;
+  }
+  .alert ul {
+    margin: 0;
+    padding-left: 1.1rem;
+    color: #92400e;
+    font-size: var(--font-size-1);
+  }
+  .qa {
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: #f8fafc;
+    border: 1px solid var(--brand-line);
+  }
+  .qa__q {
+    margin: 0 0 0.5rem;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-deep);
+  }
+  .qa__a {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+</style>

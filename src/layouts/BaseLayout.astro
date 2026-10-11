@@ -4,8 +4,10 @@ import Footer from "../components/Footer.astro";
 import ExploreFilterBar from "../components/islands/ExploreFilterBar.svelte";
 import SearchFilterBar from "../components/islands/SearchFilterBar.svelte";
 import EventsFilterBar from "../components/islands/EventsFilterBar.svelte";
+import AuthModal from "../components/islands/AuthModal.svelte";
+import ProtoPersonaSwitch from "../components/islands/ProtoPersonaSwitch.svelte";
 import { allLeaves, categories, towns } from "../data/catalog";
-import { absHref } from "../lib/href";
+import { absHref, href } from "../lib/href";
 import "../styles/tokens.css";
 import "../styles/global.css";
 import "../styles/grids.css";
@@ -24,7 +26,6 @@ interface Props {
   showStays?: boolean;
   /** Events chrome — search + date range expand/collapse */
   showEvents?: boolean;
-  showUpdates?: boolean;
   showGuides?: boolean;
   showAsk?: boolean;
   browseTown?: string;
@@ -42,9 +43,6 @@ interface Props {
   eventsFrom?: string;
   eventsTo?: string;
   eventsQuery?: string;
-  updatesTown?: string;
-  updatesType?: string;
-  updatesQuery?: string;
   guidesTown?: string;
   guidesCategory?: string;
   guidesQuery?: string;
@@ -52,6 +50,8 @@ interface Props {
   askTopic?: string;
   askQuery?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  /** Skip site header/footer (merchant portal shell) */
+  bare?: boolean;
 }
 
 const {
@@ -64,7 +64,6 @@ const {
   showSearch = false,
   showStays = false,
   showEvents = false,
-  showUpdates = false,
   showGuides = false,
   showAsk = false,
   browseTown,
@@ -81,9 +80,6 @@ const {
   eventsFrom = "",
   eventsTo = "",
   eventsQuery = "",
-  updatesTown = "",
-  updatesType = "",
-  updatesQuery = "",
   guidesTown = "",
   guidesCategory = "",
   guidesQuery = "",
@@ -91,6 +87,7 @@ const {
   askTopic = "",
   askQuery = "",
   jsonLd,
+  bare = false,
 } = Astro.props;
 
 const stayGuestOptions = [
@@ -128,15 +125,33 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title} | WhereTo30A</title>
     <meta name="description" content={description} />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
     {noindex && <meta name="robots" content="noindex, follow" />}
     {canonicalPath && <link rel="canonical" href={absHref(canonicalPath)} />}
     {!canonicalPath && <link rel="canonical" href={absHref(Astro.url.pathname.replace(import.meta.env.BASE_URL.replace(/\/$/, ""), "") || "/")} />}
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+    <script is:inline>
+      try {
+        var p = localStorage.getItem("w30a:persona");
+        if (p === "guest" || p === "visitor" || p === "employer" || p === "town-manager") {
+          document.documentElement.dataset.persona = p;
+        } else {
+          document.documentElement.dataset.persona = "guest";
+        }
+      } catch (e) {
+        document.documentElement.dataset.persona = "guest";
+      }
+    </script>
   </head>
-  <body>
-    <Header active={active} />
+  <body class:list={[bare && "bare-shell"]}>
+    {!bare && <Header active={active} />}
     {
-      showBrowse && (
+      !bare && showBrowse && (
         <ExploreFilterBar
           towns={exploreTowns}
           categories={exploreCategories}
@@ -152,7 +167,7 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
       )
     }
     {
-      showSearch && (
+      !bare && showSearch && (
         <SearchFilterBar
           towns={exploreTowns}
           categories={[
@@ -167,7 +182,7 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
       )
     }
     {
-      showStays && (
+      !bare && showStays && (
         <SearchFilterBar
           towns={exploreTowns}
           categories={stayGuestOptions}
@@ -186,7 +201,7 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
       )
     }
     {
-      showEvents && (
+      !bare && showEvents && (
         <EventsFilterBar
           towns={exploreTowns}
           initialTown={eventsTown}
@@ -198,31 +213,7 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
       )
     }
     {
-      showUpdates && (
-        <SearchFilterBar
-          towns={exploreTowns}
-          categories={[
-            { slug: "new_item", name: "New item" },
-            { slug: "limited_offer", name: "Limited offer" },
-            { slug: "business_news", name: "Business news" },
-            { slug: "hours_change", name: "Hours change" },
-          ]}
-          initialTown={updatesTown}
-          initialCategory={updatesType}
-          initialQuery={updatesQuery}
-          eventName="w30a:updates-filters"
-          facetParam="type"
-          facetLabel="Type"
-          facetEmpty="Any type"
-          facetCollapsedEmpty="Any type"
-          keywordsPlaceholder="Update, business, or town..."
-          searchAriaLabel="Search updates"
-          client:load
-        />
-      )
-    }
-    {
-      showGuides && (
+      !bare && showGuides && (
         <SearchFilterBar
           towns={exploreTowns}
           categories={categories.map(({ slug, name }) => ({ slug, name }))}
@@ -241,7 +232,7 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
       )
     }
     {
-      showAsk && (
+      !bare && showAsk && (
         <SearchFilterBar
           towns={exploreTowns}
           categories={askTopicOptions}
@@ -262,7 +253,14 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
     <main>
       <slot />
     </main>
-    <Footer />
+    {!bare && <Footer />}
+    <AuthModal
+      homeHref={href("/")}
+      legalTermsHref={href("/legal/terms")}
+      legalPrivacyHref={href("/legal/privacy")}
+      client:load
+    />
+    <ProtoPersonaSwitch client:load />
   </body>
 </html>
 

@@ -24,15 +24,11 @@ const shown = liveUpdates(updates).slice(0, 3);
           <UpdateCard update={update} />
         ))}
       </div>
-      <p class="more">
-        {ctaHref && ctaLabel && (
-          <>
-            <a href={href(ctaHref)}>{ctaLabel}</a>
-            {" · "}
-          </>
-        )}
-        <a href={href("/updates")}>See all updates</a>
-      </p>
+      {ctaHref && ctaLabel && (
+        <p class="more">
+          <a href={href(ctaHref)}>{ctaLabel}</a>
+        </p>
+      )}
     </section>
   )
 }

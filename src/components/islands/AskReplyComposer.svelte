@@ -1,13 +1,14 @@
 <script lang="ts">
-  let {
-    signedIn = false,
-    loginHref = "/auth/login",
-    signupHref = "/auth/signup",
-  }: { signedIn?: boolean; loginHref?: string; signupHref?: string } = $props();
+  import { PERSONA_EVENT, personaSignedIn, readPersona } from "../../lib/proto-persona";
 
+  let signedIn = $state(false);
   let body = $state("");
   let mode = $state<"idle" | "compose" | "gate">("idle");
   let submitted = $state(false);
+
+  function openAuth(next: "login" | "signup") {
+    window.dispatchEvent(new CustomEvent("w30a:auth", { detail: { mode: next } }));
+  }
 
   function onPrompt() {
     mode = signedIn ? "compose" : "gate";
@@ -21,6 +22,16 @@
     }
     submitted = true;
   }
+
+  $effect(() => {
+    const sync = () => {
+      signedIn = personaSignedIn(readPersona());
+      if (signedIn && mode === "gate") mode = "compose";
+    };
+    sync();
+    window.addEventListener(PERSONA_EVENT, sync);
+    return () => window.removeEventListener(PERSONA_EVENT, sync);
+  });
 </script>
 
 <section class="composer">
@@ -34,8 +45,8 @@
       <p class="gate__title">Log in to reply</p>
       <p class="gate__copy">Create an account or sign in to share a tip. Reading stays open to everyone.</p>
       <div class="actions">
-        <a class="btn btn--solid" href={loginHref}>Log in</a>
-        <a class="btn btn--quiet" href={signupHref}>Create account</a>
+        <button class="btn btn--solid" type="button" onclick={() => openAuth("login")}>Log in</button>
+        <button class="btn btn--quiet" type="button" onclick={() => openAuth("signup")}>Create account</button>
         <button class="text-btn" type="button" onclick={() => (mode = "idle")}>Not now</button>
       </div>
     </div>
@@ -144,6 +155,7 @@
     min-height: 40px;
     padding: 0.55rem 1rem;
     border-radius: 999px;
+    font: inherit;
     font-weight: var(--font-weight-7);
     font-size: var(--font-size-1);
     text-decoration: none;

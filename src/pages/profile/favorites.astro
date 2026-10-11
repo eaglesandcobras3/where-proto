@@ -2,80 +2,261 @@
 import AccountLayout from "../../layouts/AccountLayout.astro";
 import {
   businessBySlug,
-  currentUser,
+  businessesForTown,
   currentUserSlug,
   eventBySlug,
   favorites,
   guideBySlug,
+  leafBySlug,
   townBySlug,
 } from "../../data/catalog";
+import { cardImageSrc } from "../../lib/card-image";
 import { href } from "../../lib/href";
 
-const user = currentUser();
 const mine = favorites.filter((item) => item.userSlug === currentUserSlug);
+const typeFilter = Astro.url.searchParams.get("type") ?? "all";
+const filtered =
+  typeFilter === "all" ? mine : mine.filter((item) => item.type === typeFilter);
 
-function label(item: (typeof mine)[number]) {
-  if (item.type === "business") return businessBySlug(item.slug)?.name ?? item.slug;
-  if (item.type === "event") return eventBySlug(item.slug)?.name ?? item.slug;
-  if (item.type === "guide") return guideBySlug(item.slug)?.title ?? item.slug;
-  return townBySlug(item.slug)?.name ?? item.slug;
-}
+const cards = filtered.map((item) => {
+  if (item.type === "business") {
+    const biz = businessBySlug(item.slug);
+    const town = biz ? townBySlug(biz.townSlug) : undefined;
+    const leaf = biz ? leafBySlug(biz.leafSlug) : undefined;
+    return {
+      type: "Business" as const,
+      title: biz?.name ?? item.slug,
+      meta: [town?.name, leaf?.name ?? "Dining"].filter(Boolean).join(" · "),
+      summary: biz?.summary ?? "",
+      href: href(`/business/${item.slug}`),
+      cta: "View Business",
+      detail: `${biz?.priceBand ?? "$$"} · ${biz?.address?.split(",")[0] ?? town?.name ?? "30A"}`,
+      letter: (biz?.name ?? "B").charAt(0),
+    };
+  }
+  if (item.type === "event") {
+    const event = eventBySlug(item.slug);
+    const town = event?.townSlug ? townBySlug(event.townSlug) : undefined;
+    return {
+      type: "Event" as const,
+      title: event?.name ?? item.slug,
+      meta: [town?.name, event?.category ?? "Live Music"].filter(Boolean).join(" · "),
+      summary: event?.summary ?? "",
+      href: href(`/event/${item.slug}`),
+      cta: "Event Details",
+      detail: `${event?.when ?? ""}${event?.time ? ` · ${event.time}` : ""}${event?.price ? ` · ${event.price}` : ""}`,
+      letter: (event?.name ?? "E").charAt(0),
+    };
+  }
+  if (item.type === "guide") {
+    const guide = guideBySlug(item.slug);
+    return {
+      type: "Guide" as const,
+      title: guide?.title ?? item.slug,
+      meta: "Editorial · 12 Min Read",
+      summary: guide?.summary ?? "",
+      href: href(`/guide/${item.slug}`),
+      cta: "Read Guide",
+      detail: "Updated Autumn 2025 · Local Editorial Desk",
+      letter: (guide?.title ?? "G").charAt(0),
+    };
+  }
+  const town = townBySlug(item.slug);
+  return {
+    type: "Town" as const,
+    title: town?.name ?? item.slug,
+    meta: "East End 30A · Neo-Traditional",
+    summary: town?.summary ?? "",
+    href: href(`/town/${item.slug}`),
+    cta: "Explore Town",
+    detail: `${businessesForTown(item.slug).length} Local Businesses · Beach access nearby`,
+    letter: (town?.name ?? "T").charAt(0),
+  };
+});
 
-function path(item: (typeof mine)[number]) {
-  if (item.type === "business") return href(`/business/${item.slug}`);
-  if (item.type === "event") return href(`/event/${item.slug}`);
-  if (item.type === "guide") return href(`/guide/${item.slug}`);
-  return href(`/town/${item.slug}`);
-}
+const filters = [
+  { slug: "all", label: `All (${mine.length})` },
+  { slug: "town", label: "Towns" },
+  { slug: "business", label: "Food" },
+  { slug: "event", label: "Events" },
+  { slug: "guide", label: "Guides" },
+];
 ---
 
-<AccountLayout title="Saved" active="favorites">
-  <p class="bio">{user?.bio}</p>
-  <p class="links">
-    <a href={href(`/u/${user?.slug}`)}>Public profile</a> · <a href={href("/dashboard")}>Dashboard</a> ·
-    <a href={href("/profile/settings")}>Account settings</a>
-  </p>
-  <ul class="list">
-    {
-      mine.map((item) => (
-        <li>
-          <span class="type">{item.type}</span>
-          <a href={path(item)}>{label(item)}</a>
-        </li>
-      ))
-    }
-  </ul>
+<AccountLayout title="Saved Items" active="favorites">
+  <section class="panel">
+    <div class="panel__head">
+      <div>
+        <h2>Saved Coastal Bookmarks</h2>
+        <p>Places, curated seasonal guides, and happenings pinned for your next 30A outing.</p>
+      </div>
+    </div>
+
+    <div class="filters" role="list">
+      {
+        filters.map((item) => (
+          <a
+            role="listitem"
+            class:list={["chip", { active: typeFilter === item.slug }]}
+            href={href(item.slug === "all" ? "/profile/favorites" : `/profile/favorites?type=${item.slug}`)}
+          >
+            {item.label}
+          </a>
+        ))
+      }
+    </div>
+
+    <div class="cards">
+      {
+        cards.map((card) => (
+          <article class="card">
+            <div class="media">
+              <img src={cardImageSrc(card.letter, "4/3")} alt="" width="400" height="300" />
+              <span class="type">{card.type}</span>
+            </div>
+            <div class="body">
+              <p class="meta">{card.meta}</p>
+              <h3>
+                <a href={card.href}>{card.title}</a>
+              </h3>
+              <p class="summary">{card.summary}</p>
+              <p class="detail">{card.detail}</p>
+              <a class="cta" href={card.href}>
+                {card.cta} →
+              </a>
+            </div>
+          </article>
+        ))
+      }
+      {cards.length === 0 && <p class="empty">No saved items in this filter yet.</p>}
+    </div>
+  </section>
 </AccountLayout>
 
 <style>
-  .bio {
-    margin: 0 0 var(--size-2);
-    color: var(--brand-ink-soft);
-  }
-  .links {
-    margin: 0 0 var(--size-5);
-  }
-  .list {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: var(--size-3);
-    max-width: 560px;
-  }
-  li {
+  .panel {
     background: white;
     border: 1px solid var(--brand-line);
-    border-radius: var(--radius-2);
-    padding: var(--size-3) var(--size-4);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head h2 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-4);
+  }
+  .panel__head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .filters {
     display: flex;
-    gap: var(--size-3);
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    margin: var(--size-4) 0;
+  }
+  .chip {
+    display: inline-flex;
     align-items: center;
+    min-height: 2rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--brand-line);
+    background: var(--brand-sand);
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .chip:hover {
+    text-decoration: none;
+    border-color: var(--brand-teal);
+    color: var(--brand-teal);
+  }
+  .chip.active {
+    background: var(--brand-teal);
+    border-color: var(--brand-teal);
+    color: white;
+  }
+  .cards {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .card {
+    display: grid;
+    gap: var(--size-3);
+    grid-template-columns: 1fr;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    overflow: hidden;
+    background: var(--brand-sand);
+  }
+  .media {
+    position: relative;
+    aspect-ratio: 16 / 10;
+    background: var(--brand-teal-soft);
+  }
+  .media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
   }
   .type {
-    font-size: var(--font-size-0);
-    text-transform: uppercase;
+    position: absolute;
+    top: 0.65rem;
+    left: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.88);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .body {
+    padding: 0 var(--size-4) var(--size-4);
+  }
+  .meta {
+    margin: 0 0 0.25rem;
+    font-size: var(--font-size-0);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  h3 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-3);
+  }
+  h3 a {
+    color: inherit;
+  }
+  .summary,
+  .detail {
+    margin: 0 0 0.45rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .cta {
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
     color: var(--brand-teal);
+  }
+  .empty {
+    color: var(--brand-ink-soft);
+  }
+  @media (min-width: 720px) {
+    .card {
+      grid-template-columns: 11rem minmax(0, 1fr);
+      align-items: stretch;
+    }
+    .media {
+      aspect-ratio: auto;
+      min-height: 100%;
+    }
+    .body {
+      padding: var(--size-4);
+    }
   }
 </style>

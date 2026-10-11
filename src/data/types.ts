@@ -30,6 +30,12 @@ export interface Category {
   leaves: CategoryLeaf[];
 }
 
+/**
+ * Listing kinds. Feed, events, and updates attach to business and stay listings.
+ * Town/area desks are claimable place entities (hidden from search) that hold that content.
+ */
+export type BusinessEntityKind = "business" | "stay" | "town" | "area";
+
 export interface Business {
   slug: Slug;
   name: string;
@@ -46,6 +52,11 @@ export interface Business {
   hours?: string;
   priceBand?: string;
   isStay?: boolean;
+  /**
+   * Default business. Town/area = claimable place desk (e.g. "Rosemary Beach Town Merchants").
+   * Place desks are hidden from consumer search; towns/areas themselves are not content hosts.
+   */
+  entityKind?: BusinessEntityKind;
   ownerUserSlug?: Slug;
 }
 

@@ -1,31 +1,195 @@
 ---
 import AccountLayout from "../../layouts/AccountLayout.astro";
-import { currentUser } from "../../data/catalog";
+import { currentUser, towns } from "../../data/catalog";
+import { href } from "../../lib/href";
 
 const user = currentUser();
+const neighborhoodOptions = towns.slice(0, 8);
 ---
 
-<AccountLayout title="Account settings" active="settings">
-  <form class="form" onsubmit="return false;">
-    <wa-input label="Display name" value={user?.name ?? ""}></wa-input>
-    <wa-input label="Email" type="email" value="beachlocal@example.com"></wa-input>
-    <wa-switch checked>Email me weekly town roundups</wa-switch>
-    <wa-button variant="brand">Save settings</wa-button>
-  </form>
+<AccountLayout title="Account Settings" active="settings">
+  <section class="panel">
+    <div class="panel__head">
+      <div>
+        <h2>Account Preferences</h2>
+        <p>Manage your insider credentials, notification digest, and public contributor profile.</p>
+      </div>
+      <a class="dash" href={href("/dashboard")}>Business dashboard →</a>
+    </div>
+
+    <form class="form" onsubmit="return false;">
+      <label>
+        <span>Display Name / Handle</span>
+        <small>Visible on community questions and comments.</small>
+        <input type="text" value={user?.name ?? ""} />
+      </label>
+
+      <label>
+        <span>Account Email Address</span>
+        <small>Used for login authentication and advisory emails.</small>
+        <input type="email" value="beachlocal@example.com" />
+      </label>
+
+      <label>
+        <span>Insider Bio</span>
+        <small>Help fellow visitors know which 30A areas you know best.</small>
+        <textarea rows="4">{user?.bio ?? ""}</textarea>
+      </label>
+
+      <fieldset>
+        <legend>Primary Neighborhood / Town</legend>
+        <div class="towns">
+          {
+            neighborhoodOptions.map((town, index) => (
+              <label class="check">
+                <input type="radio" name="town" checked={index === 1} />
+                {town.name}
+              </label>
+            ))
+          }
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Notifications &amp; Digests</legend>
+        <label class="check">
+          <input type="checkbox" checked />
+          Weekly Town Roundups &amp; 30A Surf Advisories
+        </label>
+        <label class="check">
+          <input type="checkbox" checked />
+          Replies to my questions and town posts
+        </label>
+        <label class="check">
+          <input type="checkbox" />
+          New events near my saved towns
+        </label>
+      </fieldset>
+
+      <div class="actions">
+        <button type="submit">Save settings</button>
+        <a href={href(`/u/${user?.slug}`)}>View public profile</a>
+      </div>
+    </form>
+  </section>
 </AccountLayout>
 
 <style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-3);
+    margin-bottom: var(--size-5);
+  }
+  .panel__head h2 {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-4);
+  }
+  .panel__head p {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .dash {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
   .form {
     display: grid;
     gap: var(--size-4);
-    max-width: 480px;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-card);
-    padding: var(--size-5);
-    justify-items: start;
+    max-width: 36rem;
   }
-  .form wa-input {
+  label,
+  fieldset {
+    display: grid;
+    gap: 0.35rem;
+  }
+  fieldset {
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: var(--size-3);
+    margin: 0;
+  }
+  legend,
+  label > span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  small {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  input[type="text"],
+  input[type="email"],
+  textarea {
     width: 100%;
+    min-height: 2.75rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    padding: 0.65rem 0.85rem;
+    font: inherit;
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  textarea {
+    min-height: 7rem;
+    resize: vertical;
+  }
+  .towns {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink);
+    text-transform: none;
+    letter-spacing: normal;
+    font-weight: var(--font-weight-5);
+  }
+  .check input {
+    width: 1.05rem;
+    height: 1.05rem;
+    accent-color: var(--brand-teal);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    align-items: center;
+  }
+  button {
+    min-height: 2.5rem;
+    padding: 0.55rem 1.1rem;
+    border: 0;
+    border-radius: var(--radius-2);
+    background: var(--brand-teal);
+    color: white;
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    cursor: pointer;
+  }
+  button:hover {
+    background: #00796b;
+  }
+  .actions a {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
   }
 </style>

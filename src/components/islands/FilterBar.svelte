@@ -102,10 +102,13 @@
     if (typeof window === "undefined") return;
     if (externalChrome) {
       const onFilters = (event: Event) => {
-        const detail = (event as CustomEvent<{ town: string; category: string; query: string }>).detail;
+        const detail = (
+          event as CustomEvent<{ town: string; category: string; query: string; tag?: string }>
+        ).detail;
         town = detail.town;
         category = detail.category;
         query = detail.query;
+        if (detail.tag !== undefined) tag = detail.tag;
       };
       window.addEventListener("w30a:search-filters", onFilters);
       return () => window.removeEventListener("w30a:search-filters", onFilters);
@@ -165,12 +168,23 @@
     </details>
   {/if}
 
-  <p class="count" aria-live="polite">
-    {results.length} {results.length === 1 ? "result" : "results"}
-    {#if searchHref}
-      · <a href={searchHref}>Browse all on Search</a>
-    {/if}
-  </p>
+  {#if externalChrome}
+    <div class="results-head">
+      <p class="count" aria-live="polite">
+        {results.length} {results.length === 1 ? "Result" : "Results"}
+      </p>
+      <p class="sort">
+        Sort by: <span>Recommended Insider</span>
+      </p>
+    </div>
+  {:else}
+    <p class="count" aria-live="polite">
+      {results.length} {results.length === 1 ? "result" : "results"}
+      {#if searchHref}
+        · <a href={searchHref}>Browse all on Search</a>
+      {/if}
+    </p>
+  {/if}
 
   <div class="listing-grid-split" class:search-grid={externalChrome}>
     {#each results as item}
@@ -209,7 +223,7 @@
   .filter-bar {
     margin-block: var(--size-6);
     position: sticky;
-    top: 64px;
+    top: var(--header-h);
     z-index: 20;
     background: var(--brand-sand);
     padding-block: var(--size-2);
@@ -220,25 +234,54 @@
     background: transparent;
     padding-block: 0;
   }
+  .results-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    margin-bottom: var(--size-4);
+  }
   .filter-bar.external .count {
-    margin-top: 0;
-    margin-bottom: var(--size-3);
-    font-weight: var(--font-weight-6);
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-3);
+    font-weight: var(--font-weight-7);
     color: var(--brand-ink);
+  }
+  .sort {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+  .sort span {
+    font-weight: var(--font-weight-7);
+    color: var(--brand-ink);
+  }
+  .search-grid {
+    gap: var(--size-3);
+  }
+  .search-card {
+    text-decoration: none;
+    color: inherit;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-3);
+  }
+  .search-card:hover {
+    border-color: #b8c4ce;
+  }
+  .search-card:hover .explore {
+    text-decoration: underline;
   }
   .explore {
     display: inline-block;
     margin-top: var(--size-2);
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-deep);
-  }
-  .search-card {
-    text-decoration: none;
-    color: inherit;
-  }
-  .search-card:hover .explore {
-    text-decoration: underline;
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
   }
   .filter-panel {
     background: white;

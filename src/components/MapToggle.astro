@@ -1,0 +1,119 @@
+---
+import { href } from "../lib/href";
+
+interface Props {
+  title: string;
+  /** Path opened by the full-map CTA — usually current hub with ?view=map */
+  href: string;
+  ctaLabel?: string;
+  badge?: string;
+  resultHint?: string;
+}
+
+const {
+  title,
+  href: path,
+  ctaLabel = "Open Split Map View",
+  badge = "Search this area",
+  resultHint = "List + map",
+} = Astro.props;
+---
+
+<section class="map-toggle">
+  <p class="map-toggle__label">{title}</p>
+  <div class="map-toggle__panel" aria-hidden="true">
+    <span class="map-toggle__badge">{badge}</span>
+    <span class="pin" style="top:42%;left:38%">Cafe · 4.8</span>
+    <span class="pin" style="top:55%;left:58%">Bike · 4.9</span>
+    <span class="pin pin--active" style="top:48%;left:48%">Coffee</span>
+    <span class="map-toggle__hint">{resultHint}</span>
+  </div>
+  <a class="map-toggle__btn" href={href(path)}>{ctaLabel}</a>
+</section>
+
+<style>
+  .map-toggle {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .map-toggle__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .map-toggle__panel {
+    position: relative;
+    aspect-ratio: 1;
+    border-radius: var(--radius-2);
+    margin-bottom: var(--size-3);
+    overflow: hidden;
+    background:
+      radial-gradient(ellipse 80% 40% at 50% 100%, rgba(168, 200, 216, 0.9) 0%, transparent 55%),
+      linear-gradient(180deg, #dff0d8 0%, #e8f4e4 30%, #d4ebf2 65%, #a8c8d8 100%);
+  }
+  .map-toggle__badge {
+    position: absolute;
+    top: 0.55rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    color: var(--brand-deep);
+    font-size: 0.5625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.04em;
+    box-shadow: var(--shadow-card);
+    white-space: nowrap;
+  }
+  .pin {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    padding: 0.15rem 0.4rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    color: var(--brand-deep);
+    font-size: 0.5rem;
+    font-weight: var(--font-weight-7);
+    box-shadow: var(--shadow-card);
+    white-space: nowrap;
+  }
+  .pin--active {
+    background: var(--brand-deep);
+    color: white;
+  }
+  .map-toggle__hint {
+    position: absolute;
+    left: 0.55rem;
+    bottom: 0.55rem;
+    font-size: 0.5625rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #004f59;
+    opacity: 0.7;
+  }
+  .map-toggle__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 2.5rem;
+    border-radius: var(--radius-2);
+    background: var(--brand-deep);
+    color: white;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .map-toggle__btn:hover {
+    background: #163545;
+    text-decoration: none;
+  }
+</style>
