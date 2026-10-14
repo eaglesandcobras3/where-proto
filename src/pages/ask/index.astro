@@ -1,19 +1,15 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
-import MapToggle from "../../components/MapToggle.astro";
-import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import AskHeroSearch from "../../components/islands/AskHeroSearch.svelte";
 import AskComposer from "../../components/islands/AskComposer.svelte";
 import AskIndex from "../../components/islands/AskIndex.svelte";
-import AskSidebarFilters from "../../components/islands/AskSidebarFilters.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
 import TopContributors from "../../components/TopContributors.astro";
 import { townCountsFor } from "../../lib/unified-layout";
 import { commentsFor, questions, towns, townBySlug, userBySlug } from "../../data/catalog";
-import { relativeTime } from "../../lib/labels";
+import { formatDate, roleLabel, userHandle } from "../../lib/labels";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
@@ -42,10 +38,11 @@ const rows = questions.map((question) => {
     slug: question.slug,
     title: question.title,
     body: question.body,
-    author: author?.name ?? "a visitor",
-    role: author?.role === "local" ? "Local" : author?.role === "business-owner" ? "Owner" : "Visitor",
+    author: author ? userHandle(author.slug) : "a visitor",
+    handle: author ? userHandle(author.slug) : "",
+    role: author ? roleLabel(author.role) : "Visitor",
     createdAt: question.createdAt,
-    relative: relativeTime(question.createdAt),
+    relative: formatDate(question.createdAt),
     answers: commentsFor("question", question.slug).length,
     town: townRow?.name,
     townSlug: question.townSlug,
@@ -81,7 +78,7 @@ const mapMarkers = markersFromNames(
   rows.map((item) => ({
     name: item.title,
     href: href(`/ask/${item.slug}`),
-    detail: `${item.town ?? "30A"} · ${item.answers} answers`,
+    detail: `${item.town ?? "30A"} · ${item.answers === 1 ? "1 answer" : `${item.answers} answers`}`,
   })),
 );
 ---
@@ -95,17 +92,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="Ask the Locals"
       lede="Straight answers on golf carts, walkovers, parking, and dining from residents across Scenic Highway 30A."
-    >
-      <div data-when="legacy">
-        <AskHeroSearch
-          towns={exploreTowns}
-          initialTown={town}
-          initialTopic={topic}
-          initialQuery={q}
-          client:load
-        />
-      </div>
-    </InteriorHero>
+    />
 
     {
       mapView ? (
@@ -127,19 +114,10 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout layout--content-forward">
-          <div class="filters-col" data-when="legacy">
-            <AskSidebarFilters
-              towns={townCounts}
-              topics={topicOptions}
-              initialTown={town}
-              initialTopic={topic}
-              total={questions.length}
-              client:load
-            />
-          </div>
+          
 
           <div class="main">
-            <div data-when="unified">
+            <div>
               <ListingFilters
                 surface="ask"
                 placement="inline"
@@ -172,57 +150,7 @@ const mapMarkers = markersFromNames(
           </div>
 
           <aside class="rail">
-            <div data-when="legacy">
-            <MapToggle title="30A Ask Map" href={mapHref} />
-            <ContributeCard kind="ask" />
-
-        <section class="widget">
-          <p class="widget__label">Top Local Guides</p>
-          <ul class="guides">
-            <li>
-              <span class="guides__avatar" aria-hidden="true">B</span>
-              <div>
-                <strong>beachlocal</strong>
-                <span>99% helpful · Seaside</span>
-              </div>
-            </li>
-            <li>
-              <span class="guides__avatar" aria-hidden="true">L</span>
-              <div>
-                <strong>local_owner</strong>
-                <span>97% helpful · Rosemary</span>
-              </div>
-            </li>
-            <li>
-              <span class="guides__avatar" aria-hidden="true">F</span>
-              <div>
-                <strong>first_timer</strong>
-                <span>New voice · WaterColor</span>
-              </div>
-            </li>
-          </ul>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Trending in South Walton</p>
-          <ul class="trending">
-            <li>#SeasideParking</li>
-            <li>#GolfCartRules</li>
-            <li>#QuietBeaches</li>
-            <li>#FamilyDinner</li>
-          </ul>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">30A Neighbor Code</p>
-          <ul class="code">
-            <li>Yield to bikes and carts on shared paths</li>
-            <li>Keep music and gatherings respectful after 10</li>
-            <li>Leave beaches cleaner than you found them</li>
-          </ul>
-        </section>
-            </div>
-            <div data-when="unified">
+            <div>
               <ListingRail mapTitle="Questions map" mapHref={mapHref} contributeKind="ask" current="ask">
                 <TopContributors
                   slot="discovery"
@@ -276,7 +204,7 @@ const mapMarkers = markersFromNames(
   .widget__label {
     margin: 0 0 var(--size-3);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);

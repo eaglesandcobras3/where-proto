@@ -1,11 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
-import MapToggle from "../../components/MapToggle.astro";
-import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import GuidesHeroSearch from "../../components/islands/GuidesHeroSearch.svelte";
-import GuidesSidebarFilters from "../../components/islands/GuidesSidebarFilters.svelte";
 import GuidesList from "../../components/islands/GuidesList.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
@@ -120,17 +116,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="Travel Guides"
       lede="Curated itineraries, neighborhood guides, beach regulations, and local tips compiled by resident insiders across the Emerald Coast."
-    >
-      <div data-when="legacy">
-        <GuidesHeroSearch
-          towns={exploreTowns}
-          initialTown={town}
-          initialTopic={topic}
-          initialQuery={q}
-          client:load
-        />
-      </div>
-    </InteriorHero>
+    />
 
     {
       mapView ? (
@@ -152,19 +138,10 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout layout--content-forward">
-          <div class="filters-col" data-when="legacy">
-            <GuidesSidebarFilters
-              towns={townCounts}
-              topics={topicOptions}
-              initialTown={town}
-              initialTopic={topic}
-              total={guides.length}
-              client:load
-            />
-          </div>
+          
 
           <div class="main">
-            <div data-when="unified">
+            <div>
               <ListingFilters
                 surface="guides"
                 placement="inline"
@@ -193,54 +170,8 @@ const mapMarkers = markersFromNames(
           </div>
 
           <aside class="rail">
-            <div data-when="legacy">
-            <MapToggle title="30A Guides Map" href={mapHref} />
-            <ContributeCard kind="guide" />
-
-            <section class="widget">
-              <p class="widget__label">Top Local Contributors</p>
-              <ul class="guides">
-            <li>
-              <span class="guides__avatar" aria-hidden="true">CD</span>
-              <div>
-                <strong>Capt. Dave</strong>
-                <span>99% helpful · Seagrove</span>
-              </div>
-            </li>
-            <li>
-              <span class="guides__avatar" aria-hidden="true">BT</span>
-              <div>
-                <strong>Brian Turner</strong>
-                <span>97% helpful · Rosemary</span>
-              </div>
-            </li>
-            <li>
-              <span class="guides__avatar" aria-hidden="true">ER</span>
-              <div>
-                <strong>Elena Rostova</strong>
-                <span>Architecture · Alys</span>
-              </div>
-            </li>
-          </ul>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Trending Topics</p>
-          <ul class="trending">
-            <li><span>#FirstTimers</span><span>142</span></li>
-            <li><span>#GolfCartRules</span><span>98</span></li>
-            <li><span>#BeachAccess</span><span>87</span></li>
-            <li><span>#RosemaryDining</span><span>64</span></li>
-          </ul>
-        </section>
-
-        <section class="widget cta">
-          <p class="widget__label">Pocket Cheat Sheet</p>
-          <p class="cta__copy">Flags, LSV rules, and top beach accesses on one printable page.</p>
-          <a class="cta__btn" href={href("/guide/first-timers-guide")}>Download PDF →</a>
-        </section>
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingRail mapTitle="Guides map" mapHref={mapHref} contributeKind="guide" current="guides">
                 <TopContributors
                   slot="discovery"
@@ -295,7 +226,7 @@ const mapMarkers = markersFromNames(
     margin: 0 0 var(--size-3);
     font-family: var(--font-display);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);

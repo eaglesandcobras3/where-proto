@@ -113,16 +113,8 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar" data-when="legacy">
-    <div class="sort" aria-label="Filter stays">
-      <button class:active={view === "all"} type="button" onclick={() => (view = "all")}>All Stays</button>
-      <button class:active={view === "beachfront"} type="button" onclick={() => (view = "beachfront")}>Beachfront</button>
-      <button class:active={view === "lsv"} type="button" onclick={() => (view = "lsv")}>LSV Included</button>
-      <button class:active={view === "inn"} type="button" onclick={() => (view = "inn")}>Boutique Inns</button>
-    </div>
-    <span class="count" aria-live="polite">{results.length} stays · Sort: Recommended</span>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar
       surface="stays"
       count={results.length}
@@ -164,7 +156,7 @@
             <span>{item.townName} walkable core</span>
           </div>
           <div class="footer">
-            <span class="rating" data-when="legacy">4.{8 + (item.sleeps % 2)} · local favorites</span>
+            
             <a class="explore" href={path(`/stay/${item.slug}`)}>Explore Stay →</a>
           </div>
         </div>
@@ -230,7 +222,7 @@
   }
   .card:hover {
     box-shadow: var(--shadow-card-hover);
-    border-color: #cbd5e1;
+    border-color: var(--brand-line);
   }
   .media {
     position: relative;
@@ -308,8 +300,8 @@
     gap: 0.65rem;
     padding: 0.65rem 0.85rem;
     border-radius: var(--radius-2);
-    background: #f0f9ff;
-    border: 1px solid #dbeafe;
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
     color: var(--brand-ink);

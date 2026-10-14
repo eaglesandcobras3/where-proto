@@ -8,6 +8,7 @@ import ExploreLinks from "../../components/ExploreLinks.astro";
 import StayCard from "../../components/StayCard.astro";
 import { events, guides, photosFor, stays, townBySlug } from "../../data/catalog";
 import type { Stay } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -50,7 +51,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
           <div>
             <h1>{stay.name}</h1>
             <p class="meta">
-              <span data-when="legacy">4.8 local rating · </span>
+              
               {town && (
                 <>
                   <a href={href(`/town/${town.slug}`)}>{town.name}</a>
@@ -61,8 +62,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
             </p>
           </div>
           <div class="title-actions">
-            <button type="button">Save</button>
-            <button type="button">Share</button>
+            <SaveShare type="stay" slug={stay.slug} name={stay.name} href={href(`/stay/${stay.slug}`)} client:load />
             {
               stay.businessSlug ? (
                 <a class="book" href={href(`/business/${stay.businessSlug}`)}>
@@ -77,121 +77,14 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
           </div>
         </div>
 
-        <div class="gallery" data-when="legacy">
-          <div class="gallery__main img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
-          <div class="gallery__grid">
-            <div class="img-placeholder" aria-hidden="true">1</div>
-            <div class="img-placeholder" aria-hidden="true">2</div>
-            <div class="img-placeholder" aria-hidden="true">3</div>
-            <div class="img-placeholder" aria-hidden="true">4</div>
-          </div>
-        </div>
+        
       </div>
     </section>
 
     <div class="container layout">
-      <div class="main" data-when="legacy">
-        <section class="quick">
-          <div>
-            <p class="label">{isInn ? "Rooms" : "Home"}</p>
-            <p>{isInn ? "Suites & rooms" : `Sleeps ${stay.sleeps}`}</p>
-          </div>
-          <div>
-            <p class="label">Walkability</p>
-            <p>Highly walkable</p>
-          </div>
-          <div>
-            <p class="label">Vibe</p>
-            <p>{isInn ? "Adults & romantic" : "Families & groups"}</p>
-          </div>
-          <div>
-            <p class="label">Orientation</p>
-            <p>Pedestrian town core</p>
-          </div>
-        </section>
+      
 
-        <section class="panel cert">
-          <p class="cert__label">WhereTo30A Guild Lodging Certified</p>
-          <p>Inspected for walkability, guest clarity, and honest corridor fit — not anonymous marketplace filler.</p>
-        </section>
-
-        <section class="panel">
-          <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
-          <p>{stay.summary}</p>
-          <p>
-            Use this stay as a home base for beach days, dinners in the square, and short hops along Scenic 30A. Confirm
-            parking, carts, and quiet-hour rules for {town?.name ?? "the town"} before you arrive.
-          </p>
-        </section>
-
-        <section class="panel">
-          <h2>Curated perks &amp; amenities</h2>
-          <div class="perks">
-            <div><strong>Beach setups</strong><span>Chairs &amp; umbrellas guidance</span></div>
-            <div><strong>Bikes / carts</strong><span>Ask host about LSV rules</span></div>
-            <div><strong>Town access</strong><span>Walkable to dining &amp; shops</span></div>
-            <div><strong>Local insider</strong><span>Concierge-style tips nearby</span></div>
-            <div><strong>Quiet hours</strong><span>Respect neighborhood rhythm</span></div>
-            <div><strong>Direct book</strong><span>Clear host communication</span></div>
-          </div>
-        </section>
-
-        <section class="alert">
-          <p class="alert__label">Local tips &amp; regulations</p>
-          <p>
-            Beach wristbands, pedestrian cores, and evening quiet hours vary by town. Clear beach gear nightly and park only
-            where posted.
-          </p>
-        </section>
-
-        <section class="panel">
-          <h2>Neighborhood &amp; walking distances</h2>
-          <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
-          <div class="walks">
-            <span>Beach access nearby</span>
-            <span>Town square stroll</span>
-            <span>Dining within minutes</span>
-            <span>Trail / bike path hop</span>
-          </div>
-        </section>
-
-        {
-          nearbyEvents.length > 0 && (
-            <section class="panel">
-              <div class="panel__head">
-                <h2>Happening around {town?.name ?? "30A"}</h2>
-                <a href={href("/events")}>View all events</a>
-              </div>
-              <ul class="events">
-                {nearbyEvents.map((item) => (
-                  <li>
-                    <a href={href(`/event/${item.slug}`)}>
-                      <span>{item.when}</span>
-                      <strong>{item.name}</strong>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
-
-        <section class="panel ask">
-          <div class="panel__head">
-            <h2>Ask the Locals</h2>
-            <a href={href("/ask")}>Ask a new question</a>
-          </div>
-          <article class="qa">
-            <p class="qa__q">Are golf carts allowed for getting to the beach from this stay?</p>
-            <p class="qa__a">
-              <strong>Local tip:</strong> Cart rules differ by town center. Ask your host for the latest LSV guidance and
-              where overnight parking is allowed.
-            </p>
-          </article>
-        </section>
-      </div>
-
-      <div class="main" data-when="unified">
+      <div class="main">
         <section class="panel">
           <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
           <p>{stay.summary}</p>
@@ -223,43 +116,8 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
       </div>
 
       <aside class="rail">
-        <div data-when="legacy">
-        <section class="widget book">
-          <p class="widget__label">Book this stay</p>
-          <p class="book__meta">{town?.name ?? "30A"} · Sleeps {stay.sleeps}</p>
-          {
-            stay.businessSlug ? (
-              <a class="book__btn" href={href(`/business/${stay.businessSlug}`)}>
-                Book on official website
-              </a>
-            ) : (
-              <a class="book__btn" href={href("/ask")}>
-                Ask about this stay
-              </a>
-            )
-          }
-          <a class="ghost" href={href(`/town/${stay.townSlug}/vacation-rentals`)}>More rentals in town</a>
-        </section>
-
-        {
-          related.length > 0 && (
-            <section class="widget">
-              <p class="widget__label">Similar 30A stays</p>
-              <ul class="related">
-                {related.map((item) => (
-                  <li>
-                    <a href={href(`/stay/${item.slug}`)}>
-                      <strong>{item.name}</strong>
-                      <span>Sleeps {item.sleeps} · Explore stay</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
-        </div>
-        <div data-when="unified">
+        
+        <div>
           <section class="widget">
             <p class="widget__label">Location</p>
             <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
@@ -354,7 +212,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     font-weight: var(--font-weight-7);
   }
   .book:hover {
-    background: #00796b;
+    background: var(--brand-teal-hover);
     text-decoration: none;
   }
   .gallery {
@@ -414,7 +272,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
   }
   .cert {
     background: var(--brand-teal-soft);
-    border-color: #99f6e4;
+    border-color: var(--mint);
   }
   .cert__label {
     margin: 0 0 0.35rem;
@@ -463,7 +321,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     gap: 0.15rem;
     padding: 0.85rem;
     border-radius: var(--radius-2);
-    background: #f8fafc;
+    background: var(--brand-sand);
     border: 1px solid var(--brand-line);
   }
   .perks strong {
@@ -477,8 +335,8 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
   .alert {
     padding: var(--size-4);
     border-radius: var(--radius-2);
-    background: #fffbeb;
-    border: 1px solid #fde68a;
+    background: var(--brand-teal-soft);
+    border: 1px solid var(--brand-line);
     border-left: 4px solid var(--brand-sun);
   }
   .alert__label {
@@ -487,12 +345,12 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     font-weight: var(--font-weight-8);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .alert p:last-child {
     margin: 0;
     font-size: var(--font-size-1);
-    color: #92400e;
+    color: var(--brand-coral);
   }
   .mini-map {
     aspect-ratio: 16 / 9;
@@ -548,7 +406,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
   .qa {
     padding: var(--size-4);
     border-radius: var(--radius-2);
-    background: #f8fafc;
+    background: var(--brand-sand);
     border: 1px solid var(--brand-line);
   }
   .qa__q {
@@ -569,7 +427,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     margin: 0 0 var(--size-3);
     font-family: var(--font-display);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);
@@ -596,7 +454,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     font-weight: var(--font-weight-7);
   }
   .book__btn:hover {
-    background: #00796b;
+    background: var(--brand-teal-hover);
     text-decoration: none;
   }
   @media (min-width: 800px) {

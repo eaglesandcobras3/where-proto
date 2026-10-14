@@ -6,6 +6,7 @@
     title: string;
     body?: string;
     author: string;
+    handle?: string;
     createdAt: string;
     relative: string;
     answers: number;
@@ -91,14 +92,8 @@
 </script>
 
 <section class="feed">
-  <div class="sort" aria-label="Sort questions" data-when="legacy">
-    <span class="sort__label">Sort:</span>
-    <button class:active={sort === "trending"} type="button" onclick={() => (sort = "trending")}>Trending</button>
-    <button class:active={sort === "latest"} type="button" onclick={() => (sort = "latest")}>Latest</button>
-    <button class:active={sort === "unanswered"} type="button" onclick={() => (sort = "unanswered")}>Unanswered</button>
-    <button class:active={sort === "top"} type="button" onclick={() => (sort = "trending")}>Top Rated</button>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar surface="ask" count={rows.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 
@@ -107,11 +102,11 @@
       <article class="card">
         <div class="card__top">
           <div class="who">
-            <span class="avatar" aria-hidden="true">{item.author.charAt(0)}</span>
+            <span class="avatar" aria-hidden="true">{(item.handle || item.author).replace(/^@/, "").charAt(0)}</span>
             <div>
-              <p class="name">{item.author}</p>
+              <p class="name">{item.handle || item.author}</p>
               <p class="meta">
-                {item.role ?? "Local"} · {item.relative}
+                {item.handle || item.author} · {item.role ?? "Local"} · {item.relative}
               </p>
             </div>
           </div>
@@ -232,7 +227,7 @@
     padding: 0.2rem 0.65rem;
   }
   .tag--topic {
-    background: #eef2f4;
+    background: var(--brand-sand);
   }
   h3 {
     margin: 0 0 var(--size-2);

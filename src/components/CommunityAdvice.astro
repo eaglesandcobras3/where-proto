@@ -1,5 +1,6 @@
 ---
 import { href } from "../lib/href";
+import { formatDate } from "../lib/labels";
 
 interface Row {
   question: { slug: string; title: string; createdAt: string };
@@ -39,7 +40,7 @@ const prompts = [
           <article class="thread">
             <div class="thread__meta">
               <span>
-                {(town?.name ?? "30A").toUpperCase()} · Asked {question.createdAt}
+                {(town?.name ?? "30A").toUpperCase()} · Asked {formatDate(question.createdAt)}
               </span>
               <span class="replies">{replies} {replies === 1 ? "reply" : "replies"}</span>
             </div>
@@ -86,7 +87,7 @@ const prompts = [
 <style>
   .advice {
     padding-block: clamp(2rem, 4vw, 3rem);
-    background: #faf8f4;
+    background: var(--brand-sand);
   }
   .head {
     display: flex;
@@ -103,7 +104,7 @@ const prompts = [
     font-weight: var(--font-weight-7);
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--brand-teal);
+    color: var(--brand-ink-soft);
   }
   h2 {
     margin: 0;
@@ -125,14 +126,14 @@ const prompts = [
     align-items: center;
     min-height: 2.5rem;
     padding: 0.5rem 1.15rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-button);
     background: var(--brand-deep);
     color: white;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
   }
   .ask-btn:hover {
-    background: #163545;
+    background: var(--brand-deep);
     text-decoration: none;
   }
   .browse {
@@ -268,7 +269,7 @@ const prompts = [
     white-space: nowrap;
   }
   .composer button:hover {
-    background: #00796b;
+    background: var(--brand-teal-hover);
   }
   .sr-only {
     position: absolute;

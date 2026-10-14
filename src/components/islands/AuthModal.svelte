@@ -310,7 +310,7 @@
     place-items: center;
   }
   .close:hover {
-    background: #f1f5f9;
+    background: var(--brand-sand-dark);
     color: var(--brand-deep);
   }
   .body {
@@ -345,7 +345,7 @@
     justify-content: center;
     gap: 0.65rem;
     min-height: 2.85rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--brand-line);
     border-radius: 0.65rem;
     background: white;
     color: var(--brand-deep);
@@ -355,7 +355,7 @@
     cursor: pointer;
   }
   .social button:hover {
-    background: #f8fafc;
+    background: var(--brand-sand);
   }
   .g {
     width: 1.25rem;
@@ -365,8 +365,8 @@
     place-items: center;
     font-size: 0.75rem;
     font-weight: 800;
-    color: #4285f4;
-    background: #eef3fe;
+    color: var(--brand-teal);
+    background: var(--brand-teal-soft);
   }
   .a {
     width: 1.1rem;
@@ -380,19 +380,19 @@
     align-items: center;
     gap: 0.75rem;
     margin-bottom: 1rem;
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
     font-size: 0.8125rem;
   }
   .or::before,
   .or::after {
     content: "";
     height: 1px;
-    background: #e2e8f0;
+    background: var(--brand-line);
   }
   .required {
     margin: 0 0 0.75rem;
     font-size: 0.75rem;
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
   }
   .form {
     display: grid;
@@ -410,7 +410,7 @@
   input {
     min-height: 2.75rem;
     padding: 0.65rem 0.85rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--brand-line);
     border-radius: 0.65rem;
     font: inherit;
     font-size: var(--font-size-1);
@@ -433,8 +433,8 @@
     align-items: center;
     gap: 0.75rem;
     padding: 0.9rem 1.35rem 1.15rem;
-    border-top: 1px solid #e2e8f0;
-    background: #fafbfc;
+    border-top: 1px solid var(--brand-line);
+    background: var(--brand-sand);
   }
   .switch {
     display: flex;
@@ -469,6 +469,6 @@
     cursor: not-allowed;
   }
   .continue:not(:disabled):hover {
-    background: #007a6e;
+    background: var(--brand-teal-hover);
   }
 </style>

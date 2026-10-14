@@ -4,6 +4,8 @@ import PostCard from "../../components/PostCard.astro";
 import QuestionCard from "../../components/QuestionCard.astro";
 import { posts, questions, users } from "../../data/catalog";
 import type { User } from "../../data/types";
+import { href } from "../../lib/href";
+import { formatDate, roleLabel, userHandle } from "../../lib/labels";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -20,17 +22,23 @@ const userQuestions = questions.filter((item) => item.authorUserSlug === user.sl
 ---
 
 <PlaceLayout
-  title={`${user.name} on WhereTo30A`}
+  title={`${userHandle(user.slug)} on WhereTo30A`}
   description={user.bio}
   showBrowse={false}
-  crumbs={[{ label: "Profile", path: "/profile" }, { label: user.name }]}
+  crumbs={[{ label: "Profile", path: "/profile" }, { label: userHandle(user.slug) }]}
 >
   <div class="container section">
+    <p class="back">
+      <a href={href("/profile")}>← Back to Profile</a>
+    </p>
     <section class="head">
-      <div class="avatar img-placeholder" aria-hidden="true">{user.name.charAt(0)}</div>
+      <div class="avatar img-placeholder" aria-hidden="true">{user.slug.charAt(0)}</div>
       <div>
-        <h1>{user.name}</h1>
-        <p class="meta">{user.role}</p>
+        <h1>{userHandle(user.slug)}</h1>
+        <p class="meta">
+          {roleLabel(user.role)}
+          · Member since {formatDate(user.memberSince)}
+        </p>
         <p>{user.bio}</p>
       </div>
     </section>
@@ -48,6 +56,13 @@ const userQuestions = questions.filter((item) => item.authorUserSlug === user.sl
 </PlaceLayout>
 
 <style>
+  .back {
+    margin: 0 0 var(--size-4);
+  }
+  .back a {
+    color: var(--brand-ink-soft);
+    font-weight: var(--font-weight-6);
+  }
   .head {
     display: flex;
     gap: var(--size-5);
@@ -62,7 +77,6 @@ const userQuestions = questions.filter((item) => item.authorUserSlug === user.sl
   }
   .meta {
     color: var(--brand-ink-soft);
-    text-transform: capitalize;
   }
   .stack {
     display: grid;

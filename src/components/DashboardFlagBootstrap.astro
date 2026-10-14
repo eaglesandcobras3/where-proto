@@ -1,0 +1,43 @@
+---
+interface Props {
+  compileOn: boolean;
+}
+
+const { compileOn } = Astro.props;
+---
+
+<script is:inline define:vars={{ compileOn }}>
+  (function () {
+    var query = new URLSearchParams(location.search);
+    var forceOn = query.get("dashboard") === "1";
+    var forceOff = query.get("dashboard") === "0";
+    var stored = null;
+    try {
+      stored = localStorage.getItem("business_dashboard_v1");
+    } catch (error) {
+      stored = null;
+    }
+    var on = forceOff ? false : forceOn || stored === "1" || compileOn;
+    if (forceOn) {
+      try {
+        localStorage.setItem("business_dashboard_v1", "1");
+      } catch (error) {
+        /* proto preview may block storage */
+      }
+    }
+    if (forceOff) {
+      try {
+        localStorage.setItem("business_dashboard_v1", "0");
+      } catch (error) {
+        /* proto preview may block storage */
+      }
+    }
+    document.documentElement.dataset.dashboardV1 = on ? "on" : "off";
+    document.addEventListener("DOMContentLoaded", function () {
+      var drop = on ? "legacy" : "v1";
+      document.querySelectorAll('[data-dash="' + drop + '"]').forEach(function (node) {
+        node.remove();
+      });
+    });
+  })();
+</script>

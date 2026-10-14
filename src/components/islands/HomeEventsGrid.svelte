@@ -90,7 +90,7 @@
   .pills button {
     border: 0;
     border-radius: var(--radius-pill);
-    background: #eef2f4;
+    background: var(--brand-sand);
     color: var(--brand-deep);
     padding: 0.45rem 0.9rem;
     font: inherit;
@@ -99,7 +99,7 @@
     cursor: pointer;
   }
   .pills button:hover {
-    background: #e2e8f0;
+    background: var(--brand-line);
   }
   .pills button.active {
     background: var(--brand-teal);
@@ -139,16 +139,16 @@
     text-transform: uppercase;
   }
   .badge--blue {
-    background: #e8f0f8;
-    color: #1e4a6e;
+    background: var(--brand-sand);
+    color: var(--brand-coral);
   }
   .badge--teal {
-    background: #d9f3ef;
-    color: #0f5c54;
+    background: var(--brand-teal-soft);
+    color: var(--brand-coral);
   }
   .badge--mint {
-    background: #e8f5e4;
-    color: #3d6b2e;
+    background: var(--brand-teal-soft);
+    color: var(--brand-coral);
   }
   .when {
     font-size: var(--font-size-0);

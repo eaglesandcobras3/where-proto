@@ -1,12 +1,12 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PhotoGrid from "../../components/PhotoGrid.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
 import ExploreLinks from "../../components/ExploreLinks.astro";
 import { businessBySlug, events, guides, photosFor, townBySlug } from "../../data/catalog";
 import type { EventItem } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -84,7 +84,10 @@ const jsonLd = {
         <dl class="facts">
           <div>
             <dt>Date &amp; time</dt>
-            <dd>{event.when}{event.time ? ` · ${event.time}` : ""}</dd>
+            <dd>
+              {event.when}{event.time ? ` · ${event.time}` : ""}
+              <p class="save-nudge">Interested? Save it to your trip.</p>
+            </dd>
           </div>
           <div>
             <dt>Venue</dt>
@@ -101,11 +104,17 @@ const jsonLd = {
 
         <div class="actions">
           <a class="btn btn--teal" href={event.ticketUrl ?? href(`/event/${event.slug}.ics`)}>
-            {isFree ? "Save RSVP (Free)" : event.price ? `Tickets · ${event.price}` : "Get details"}
+            {isFree ? "Free event" : event.price ? `Tickets · ${event.price}` : "Get details"}
           </a>
           <a class="btn btn--ghost" href={href(`/event/${event.slug}.ics`)}>Add to Calendar</a>
-          <button class="btn btn--ghost" type="button" data-when="unified">Save</button>
-          <button class="btn btn--ghost" type="button">Share Event</button>
+          <SaveShare
+            type="event"
+            slug={event.slug}
+            name={event.name}
+            href={href(`/event/${event.slug}`)}
+            saveLabel="Save"
+            client:load
+          />
           {town && (
             <a class="btn btn--link" href={href(`/town/${town.slug}`)}>Get Directions</a>
           )}
@@ -114,88 +123,9 @@ const jsonLd = {
     </section>
 
     <div class="container layout">
-      <div class="main" data-when="legacy">
-        <div class="hero-media img-placeholder" aria-hidden="true">
-          <span class="hero-media__tag">Weekly community tradition</span>
-          <div class="hero-media__caption">
-            <span>Live Gulf weather</span>
-            <p>{event.venue ?? "Scenic 30A"} · {town?.name ?? "South Walton"}</p>
-          </div>
-        </div>
+      
 
-        <section class="panel glance">
-          <h2>At a glance</h2>
-          <div class="glance__grid">
-            <div>
-              <p class="label">Cost</p>
-              <p>{event.price ?? "See host"}</p>
-            </div>
-            <div>
-              <p class="label">Bring</p>
-              <p>{event.category === "Wellness" ? "Mat & water" : "Comfortable shoes"}</p>
-            </div>
-            <div>
-              <p class="label">Parking</p>
-              <p>{town?.name ?? "Nearby lots"}</p>
-            </div>
-            <div>
-              <p class="label">Weather</p>
-              <p>Rain plan active</p>
-            </div>
-          </div>
-        </section>
-
-        <section class="panel">
-          <h2>About the gathering</h2>
-          <p>{event.summary}</p>
-          <p>
-            Arrive a few minutes early, follow host guidance for seating and carts, and check today’s beach flag if you’re
-            pairing the event with Gulf time.
-          </p>
-          {
-            event.category === "Wellness" && (
-              <ol class="timeline">
-                <li><span>5:15 PM</span> Arrival & lawn settle-in</li>
-                <li><span>5:30 PM</span> Sunset flow begins</li>
-                <li><span>6:20 PM</span> Golden-hour close</li>
-              </ol>
-            )
-          }
-        </section>
-
-        <section class="alert">
-          <p class="alert__label">Local ordinance</p>
-          <p>
-            Low-speed vehicles follow posted town rules. Park only in marked stalls and keep dune accesses clear after dusk.
-          </p>
-        </section>
-
-        {
-          photos.length > 0 && (
-            <section class="panel">
-              <h2>Photos</h2>
-              <PhotoGrid photos={photos} />
-            </section>
-          )
-        }
-
-        <section class="panel ask">
-          <div class="ask__head">
-            <h2>Questions from the 30A community</h2>
-            <a href={href("/ask")}>Ask a question</a>
-          </div>
-          <article class="qa">
-            <span class="qa__tag">Equipment</span>
-            <p class="qa__q">Do I need to bring my own mat for outdoor sessions?</p>
-            <p class="qa__a">
-              <strong>Local tip:</strong> Bring a mat or towel when you can. Hosts sometimes have a few extras, but they go fast near sunset.
-            </p>
-          </article>
-          <a class="ask__cta" href={href("/ask")}>+ Ask the 30A community</a>
-        </section>
-      </div>
-
-      <div class="main" data-when="unified">
+      <div class="main">
         <section class="panel">
           <h2>About the gathering</h2>
           <p>{event.summary}</p>
@@ -228,61 +158,8 @@ const jsonLd = {
       </div>
 
       <aside class="rail">
-        <div data-when="legacy">
-        <section class="widget status">
-          <span class="status__badge">{isFree ? "Free weekly series" : event.category ?? "Community event"}</span>
-          <p class="status__copy">{event.when}</p>
-          <a class="status__btn" href={href(`/event/${event.slug}.ics`)}>Get event reminder</a>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Host</p>
-          <div class="host">
-            <span class="avatar" aria-hidden="true">{hostName.charAt(0)}</span>
-            <div>
-              <strong>{hostName}</strong>
-              <span>Verified community partner</span>
-            </div>
-          </div>
-          {
-            business ? (
-              <a class="ghost" href={href(`/business/${business.slug}`)}>
-                View host listing
-              </a>
-            ) : (
-              <a class="ghost" href={href("/ask")}>
-                Contact organizer
-              </a>
-            )
-          }
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Map</p>
-          <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
-          {town && <a href={href(`/town/${town.slug}`)}>Open town page →</a>}
-        </section>
-
-        {
-          related.length > 0 && (
-            <section class="widget">
-              <p class="widget__label">More 30A gatherings</p>
-              <ul class="related">
-                {related.map((item) => (
-                  <li>
-                    <a href={href(`/event/${item.slug}`)}>
-                      <span class="related__when">{item.when}</span>
-                      <strong>{item.name}</strong>
-                      <span>{item.venue ?? "30A"}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
-        </div>
-        <div data-when="unified">
+        
+        <div>
           <section class="widget">
             <p class="widget__label">Location</p>
             <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
@@ -325,16 +202,16 @@ const jsonLd = {
     gap: 0.4rem;
     align-items: center;
     font-size: var(--font-size-0);
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
   }
   .crumbs a {
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
   }
   .crumbs a:hover {
-    color: #85f6e5;
+    color: var(--mint);
   }
   .crumbs .current {
-    color: #85f6e5;
+    color: var(--mint);
     font-weight: var(--font-weight-7);
   }
   .badges {
@@ -352,7 +229,7 @@ const jsonLd = {
   .badge--teal {
     background: rgba(0, 137, 123, 0.25);
     border-color: rgba(133, 246, 229, 0.45);
-    color: #85f6e5;
+    color: var(--mint);
   }
   h1 {
     margin: 0;
@@ -363,7 +240,7 @@ const jsonLd = {
   .lede {
     margin: 0;
     max-width: 46rem;
-    color: #cbd5e1;
+    color: var(--brand-line);
     font-size: var(--font-size-2);
     line-height: 1.55;
   }
@@ -381,7 +258,12 @@ const jsonLd = {
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
+  }
+  .save-nudge {
+    margin: 0.35rem 0 0;
+    font-size: var(--font-size-0);
+    color: var(--mint);
   }
   .facts dd {
     margin: 0;
@@ -392,7 +274,7 @@ const jsonLd = {
     margin-left: 0.4rem;
     font-size: 0.625rem;
     font-weight: var(--font-weight-7);
-    color: #85f6e5;
+    color: var(--mint);
     background: rgba(0, 137, 123, 0.25);
     border-radius: 0.25rem;
     padding: 0.1rem 0.35rem;
@@ -420,7 +302,7 @@ const jsonLd = {
     color: white;
   }
   .btn--teal:hover {
-    background: #00796b;
+    background: var(--brand-teal-hover);
     text-decoration: none;
   }
   .btn--ghost {
@@ -434,7 +316,7 @@ const jsonLd = {
   }
   .btn--link {
     background: transparent;
-    color: #85f6e5;
+    color: var(--mint);
     margin-left: auto;
   }
   .layout {
@@ -480,7 +362,7 @@ const jsonLd = {
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #85f6e5;
+    color: var(--mint);
   }
   .hero-media__caption p {
     margin: 0.25rem 0 0;
@@ -512,7 +394,7 @@ const jsonLd = {
     gap: 0.75rem;
   }
   .glance__grid div {
-    background: #f8fafc;
+    background: var(--brand-sand);
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
     padding: 0.85rem;
@@ -558,8 +440,8 @@ const jsonLd = {
   .alert {
     padding: var(--size-4);
     border-radius: var(--radius-2);
-    background: #fffbeb;
-    border: 1px solid #fde68a;
+    background: var(--brand-teal-soft);
+    border: 1px solid var(--brand-line);
     border-left: 4px solid var(--brand-sun);
   }
   .alert__label {
@@ -568,12 +450,12 @@ const jsonLd = {
     font-weight: var(--font-weight-8);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .alert p:last-child {
     margin: 0;
     font-size: var(--font-size-1);
-    color: #92400e;
+    color: var(--brand-coral);
   }
   .ask__head {
     display: flex;
@@ -590,7 +472,7 @@ const jsonLd = {
   .qa {
     padding: var(--size-4);
     border-radius: var(--radius-2);
-    background: #f8fafc;
+    background: var(--brand-sand);
     border: 1px solid var(--brand-line);
   }
   .qa__tag {
@@ -627,7 +509,7 @@ const jsonLd = {
     margin: 0 0 var(--size-3);
     font-family: var(--font-display);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);

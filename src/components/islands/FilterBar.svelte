@@ -173,15 +173,8 @@
   {/if}
 
   {#if externalChrome}
-    <div class="results-head" data-when="legacy">
-      <p class="count" aria-live="polite">
-        {results.length} {results.length === 1 ? "Result" : "Results"}
-      </p>
-      <p class="sort">
-        Sort by: <span>Recommended Insider</span>
-      </p>
-    </div>
-    <div data-when="unified">
+    
+    <div>
       <ListingToolbar surface="search" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
     </div>
   {:else}
@@ -278,7 +271,7 @@
     padding: var(--size-3);
   }
   .search-card:hover {
-    border-color: #b8c4ce;
+    border-color: var(--brand-line);
   }
   .search-card:hover .explore {
     text-decoration: underline;

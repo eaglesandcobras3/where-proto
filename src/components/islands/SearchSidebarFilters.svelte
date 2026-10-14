@@ -71,7 +71,7 @@
 <aside class="side">
   <section class="panel">
     <div class="panel__head">
-      <h2>Categories</h2>
+      <p class="eyebrow">Categories</p>
       {#if town || category || tag}
         <button class="reset" type="button" onclick={() => publish("", "", "")}>Reset</button>
       {/if}
@@ -99,7 +99,7 @@
   </section>
 
   <section class="panel">
-    <h2>Town Corridor</h2>
+      <p class="eyebrow">Town Corridor</p>
     <ul>
       <li>
         <button class:active={!town} type="button" onclick={() => publish("", category, tag)}>
@@ -123,7 +123,7 @@
   </section>
 
   <section class="panel">
-    <h2>Vibe &amp; Amenities</h2>
+      <p class="eyebrow">Vibe &amp; Amenities</p>
     <div class="checks">
       {#each tags as item (item.slug)}
         <button
@@ -158,16 +158,8 @@
     gap: 0.5rem;
     margin-bottom: var(--size-3);
   }
-  .panel__head h2 {
+  .panel__head .eyebrow {
     margin: 0;
-  }
-  h2 {
-    margin: 0 0 var(--size-3);
-    font-family: var(--font-display);
-    font-size: var(--font-size-0);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
   }
   .reset {
     border: 0;
@@ -204,7 +196,7 @@
     border-radius: var(--radius-2);
   }
   button:hover {
-    background: #f8fafc;
+    background: var(--brand-sand);
   }
   button.active {
     background: var(--brand-teal);

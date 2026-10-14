@@ -1,4 +1,4 @@
-/* Coastal Editorial design system — see DESIGN.md */
+/* Canonical design tokens — one system end to end. */
 
 :root {
   --size-1: 0.25rem;
@@ -17,7 +17,7 @@
   --font-size-2: 1rem;
   --font-size-3: 1.125rem;
   --font-size-4: 1.375rem;
-  --font-size-5: 2rem;
+  --font-size-5: 1.625rem;
   --font-size-6: 2.5rem;
   --font-size-7: 3rem;
   --font-size-8: 3.5rem;
@@ -32,32 +32,36 @@
   --radius-3: 0.75rem;
   --radius-4: 1rem;
   --radius-pill: 9999px;
+  --radius-button: 8px;
+  --radius-card: 12px;
 
-  --shadow-card: 0 1px 3px 0 rgba(12, 35, 46, 0.04);
+  --shadow-card: 0 1px 3px rgba(12, 35, 46, 0.04);
   --shadow-card-hover: 0 8px 16px -4px rgba(12, 35, 46, 0.08);
   --shadow-2: var(--shadow-card);
 
-  /* Deep Ocean Navy */
+  --brand-teal: #00897b;
+  --brand-teal-hover: #00796b;
+  --brand-teal-accent: var(--brand-teal);
+  --brand-teal-soft: #e0f2f1;
   --brand-deep: #0c232e;
   --brand-deep-soft: #213145;
-  /* Coastal Emerald Teal — CTAs / interactive links */
-  --brand-teal: #00897b;
-  --brand-teal-accent: #009688;
-  --brand-teal-soft: #e0f2f1;
-  /* Selected controls (toggles, sort) — distinct from teal buttons */
-  --brand-selected: #3d5a80;
-  --brand-selected-soft: #e8eef4;
-  /* Canvas & cards */
+  --brand-deep-hover: #071820;
   --brand-sand: #f8f9fa;
   --brand-sand-dark: #f1f5f9;
-  /* Text */
   --brand-ink: #0f172a;
   --brand-ink-soft: #64748b;
-  /* Warm Amber */
-  --brand-sun: #f59e0b;
-  --brand-sun-soft: #fef3c7;
-  --brand-coral: #b85c2e;
+  --brand-ink-on-navy: #94a3b8;
   --brand-line: #e2e8f0;
+  --brand-coral: #92400e;
+  --mint: #85f6e5;
+
+  /* Selected chips are teal fill + white text — no navy/soft variants. */
+  --brand-selected: var(--brand-teal);
+  --brand-selected-soft: var(--brand-teal-soft);
+  /* Warnings use coral. Soft fill is teal-soft (status-pill recipe). */
+  --brand-sun: var(--brand-coral);
+  --brand-sun-soft: var(--brand-teal-soft);
+
   --brand-map: #c9d9c4;
   --brand-map-water: #a8c8d8;
 
@@ -68,5 +72,4 @@
   --header-nav-h: 64px;
   --conditions-h: 2.35rem;
   --header-h: calc(var(--header-nav-h) + var(--conditions-h));
-  --radius-card: var(--radius-2);
 }

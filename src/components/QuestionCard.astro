@@ -1,7 +1,7 @@
 ---
 import { href } from "../lib/href";
 import { commentsFor, townBySlug, userBySlug } from "../data/catalog";
-import { relativeTime } from "../lib/labels";
+import { countLabel, formatDate, userHandle } from "../lib/labels";
 import type { Question } from "../data/types";
 
 interface Props {
@@ -15,12 +15,12 @@ const answers = commentsFor("question", question.slug).length;
 ---
 
 <a class="row" href={href(`/ask/${question.slug}`)}>
-  <div class="avatar img-placeholder" aria-hidden="true">{author?.name.charAt(0) ?? "?"}</div>
+  <div class="avatar img-placeholder" aria-hidden="true">{author?.slug.charAt(0) ?? "?"}</div>
   <div class="body">
     <h3>{question.title}</h3>
     <p class="meta">
-      {author?.name ?? "a visitor"} · {relativeTime(question.createdAt)} · {answers}
-      {answers === 1 ? " answer" : " answers"}
+      {author ? userHandle(author.slug) : "a visitor"}
+      · {formatDate(question.createdAt)} · {countLabel(answers, "answer")}
     </p>
     {town && <span class="chip">{town.name}</span>}
   </div>

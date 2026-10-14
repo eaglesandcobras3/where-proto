@@ -47,10 +47,11 @@ export function seedOwnershipsFromCatalog(
     ownerUserSlug?: string;
     entityKind?: OwnershipKind;
     isStay?: boolean;
+    ownershipStatus?: OwnershipStatus;
   }[],
   townName: (slug: string) => string,
 ): Ownership[] {
-  return businesses
+  const rows: Ownership[] = businesses
     .filter((biz) => biz.ownerUserSlug)
     .map((biz) => ({
       id: `seed:${biz.ownerUserSlug}:${biz.slug}`,
@@ -60,10 +61,28 @@ export function seedOwnershipsFromCatalog(
       town: townName(biz.townSlug),
       summary: biz.summary,
       role: "owner" as const,
-      status: "verified" as const,
+      status: (biz.ownershipStatus ?? "verified") as OwnershipStatus,
       source: "seed" as const,
       kind: (biz.entityKind ?? (biz.isStay ? "stay" : "business")) as OwnershipKind,
     }));
+
+  if (rows.some((row) => row.personSlug === "local_owner")) {
+    rows.push({
+      id: "seed:local_owner:seaside-tasting-tent",
+      personSlug: "local_owner",
+      listingSlug: "seaside-tasting-tent",
+      listingName: "Seaside tasting tent",
+      town: "Seaside",
+      summary: "Pop-up listing sent back — add a street address and hours, then resubmit.",
+      role: "owner",
+      status: "rejected",
+      source: "add",
+      kind: "business",
+      rejectionReason: "Add a street address and hours, then resubmit.",
+    });
+  }
+
+  return rows;
 }
 
 function readOverlay(): Ownership[] {
@@ -212,13 +231,13 @@ export function startClaim(
 export function statusLabel(status: OwnershipStatus) {
   switch (status) {
     case "pending_approval":
-      return "Pending approval";
+      return "In review";
     case "pending_verification":
-      return "Verification pending";
+      return "In review";
     case "verified":
-      return "Verified";
+      return "Live";
     case "rejected":
-      return "Rejected";
+      return "Needs attention";
   }
 }
 

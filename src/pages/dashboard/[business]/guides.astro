@@ -1,6 +1,6 @@
 ---
 import MerchantLayout from "../../../layouts/MerchantLayout.astro";
-import { guides } from "../../../data/catalog";
+import { guideMentionsForBusiness } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
@@ -14,12 +14,9 @@ interface Props {
 }
 
 const { business } = Astro.props;
-const mentions = guides.slice(0, 4).map((guide, index) => ({
+const mentions = guideMentionsForBusiness(business).map((guide) => ({
   guide,
-  note:
-    index === 0
-      ? `Featured as a stop near ${business.name}.`
-      : "Mentioned in corridor itinerary coverage.",
+  note: `Your business was mentioned in ${guide.title}. Share it with your followers.`,
 }));
 ---
 
@@ -27,7 +24,7 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
   <header class="head">
     <div>
       <h1>Guide mentions</h1>
-      <p>Editorial guides and lists where {business.name} appears for travelers planning 30A.</p>
+      <p>Published guides that name {business.name}.</p>
     </div>
   </header>
 
@@ -36,16 +33,43 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
       mentions.map(({ guide, note }) => (
         <article class="card">
           <div>
-            <p class="eyebrow">Editorial</p>
+            <p class="eyebrow">Guide</p>
             <h2>{guide.title}</h2>
             <p>{note}</p>
           </div>
-          <a href={href(`/guide/${guide.slug}`)}>Open guide →</a>
+          <div class="card__actions">
+            <a href={href(`/guide/${guide.slug}`)}>Open guide →</a>
+            <button type="button" data-share={href(`/guide/${guide.slug}`)}>Share it with your followers</button>
+          </div>
         </article>
       ))
     }
+    {mentions.length === 0 && <p class="empty">No published guides mention this listing yet.</p>}
   </div>
 </MerchantLayout>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>("[data-share]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const path = button.dataset.share ?? "";
+      const url = new URL(path, window.location.origin).toString();
+      try {
+        if (navigator.share) {
+          await navigator.share({ title: "Guide mention", url });
+          return;
+        }
+      } catch {
+        /* copy fallback */
+      }
+      try {
+        await navigator.clipboard.writeText(url);
+        button.textContent = "Link copied";
+      } catch {
+        button.textContent = url;
+      }
+    });
+  });
+</script>
 
 <style>
   .head {
@@ -94,9 +118,23 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
   }
-  .card a {
+  .card__actions {
+    display: grid;
+    gap: 0.45rem;
+    justify-items: end;
+  }
+  .card a,
+  .card button {
     color: var(--brand-teal);
     font-weight: var(--font-weight-7);
     white-space: nowrap;
+    background: none;
+    border: 0;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+  }
+  .empty {
+    color: var(--brand-ink-soft);
   }
 </style>

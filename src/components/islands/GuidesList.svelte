@@ -93,25 +93,8 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar" data-when="legacy">
-    <div class="source" role="group" aria-label="Guide source">
-      <button class:active={source === "whereto"} type="button" onclick={() => (source = "whereto")}>
-        WhereTo Guides
-      </button>
-      <button class:active={source === "community"} type="button" onclick={() => (source = "community")}>
-        Community Guides
-      </button>
-    </div>
-    <div class="toolbar__meta">
-      <span class="count" aria-live="polite">{results.length} guides</span>
-      <div class="sort" aria-label="Sort guides">
-        <span class="sort__label">Sort</span>
-        <button class:active={sort === "latest"} type="button" onclick={() => (sort = "latest")}>Latest</button>
-        <button class:active={sort === "popular"} type="button" onclick={() => (sort = "popular")}>Popular</button>
-      </div>
-    </div>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar surface="guides" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 
@@ -238,7 +221,7 @@
   }
   .card:hover {
     box-shadow: var(--shadow-card-hover);
-    border-color: #cbd5e1;
+    border-color: var(--brand-line);
   }
   .tags {
     display: flex;

@@ -1,8 +1,9 @@
 ---
 import MerchantLayout from "../../../layouts/MerchantLayout.astro";
-import { posts, questions, userBySlug } from "../../../data/catalog";
+import { mentionsForBusiness } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { VIEW_PUBLIC_LABEL } from "../../../lib/dashboard-v1";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -14,40 +15,19 @@ interface Props {
 }
 
 const { business } = Astro.props;
-const mentions = [
-  ...posts
-    .filter((item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user")
-    .map((item) => ({
-      kind: "Community post",
-      excerpt: item.body,
-      time: item.createdAt,
-      username: userBySlug(item.authorUserSlug ?? "")?.name ?? "a visitor",
-      href: href(`/posts/${item.slug}`),
-    })),
-  ...questions
-    .filter((item) =>
-      item.body.toLowerCase().includes(business.name.split(" ")[0]?.toLowerCase() ?? "edward"),
-    )
-    .map((item) => ({
-      kind: "Ask thread",
-      excerpt: item.title,
-      time: item.createdAt,
-      username: userBySlug(item.authorUserSlug)?.name ?? "a visitor",
-      href: href(`/ask/${item.slug}`),
-    })),
-];
+const mentions = mentionsForBusiness(business);
 ---
 
-<MerchantLayout title={`Community feed · ${business.name}`} business={business} active="community">
+<MerchantLayout title={`Mentions · ${business.name}`} business={business} active="community">
   <header class="head">
     <div>
-      <h1>Community feed</h1>
+      <h1>Mentions</h1>
       <p>
         Mentions and questions about {business.name}. Replies go live with the Owner badge, then follow
         the 3-flag auto-hide rule.
       </p>
     </div>
-    <a class="btn" href={href(`/business/${business.slug}`)}>View public profile</a>
+    <a class="btn" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
   </header>
 
   <div class="stack">
@@ -59,13 +39,13 @@ const mentions = [
           </p>
           <p>{item.excerpt}</p>
           <p class="actions">
-            <a href={item.href}>Open thread</a>
-            <button type="button">Reply as verified owner</button>
+            <a href={href(item.href)}>Open thread</a>
+            <button type="button">Reply as {business.name}</button>
           </p>
         </article>
       ))
     }
-    {mentions.length === 0 && <p class="empty">No mentions yet — check back after weekend traffic.</p>}
+    {mentions.length === 0 && <p class="empty">No mentions yet.</p>}
   </div>
 </MerchantLayout>
 
@@ -92,8 +72,8 @@ const mentions = [
     align-items: center;
     min-height: 2.4rem;
     padding: 0.45rem 0.95rem;
-    border-radius: var(--radius-pill);
-    background: #f1f5f9;
+    border-radius: var(--radius-button);
+    background: var(--brand-sand-dark);
     color: var(--brand-deep);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);

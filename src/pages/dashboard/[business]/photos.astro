@@ -4,6 +4,7 @@ import PhotoGrid from "../../../components/PhotoGrid.astro";
 import ComposerCard from "../../../components/islands/ComposerCard.svelte";
 import { photosFor } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
+import { REVIEW_QUEUE_SENTENCE } from "../../../lib/dashboard-v1";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -33,8 +34,8 @@ const photos = photosFor("business", business.slug);
     <section class="card">
       <ComposerCard
         title="Upload photos"
-        body="Queued for review. Prototype only."
-        action="Choose images"
+        body={REVIEW_QUEUE_SENTENCE}
+        action="Upload photos"
         kind="photo"
         client:visible
       />
