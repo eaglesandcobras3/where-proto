@@ -5,6 +5,12 @@ import { href } from "../lib/href";
 interface Props {
   /** When set, that town is “YOU ARE HERE”; omit on the towns hub */
   currentSlug?: string;
+  /** Larger circles for the home beach-towns strip */
+  size?: "default" | "large";
+  /** Drop the corridor heading and page chrome when nested in another section */
+  bare?: boolean;
+  /** Scroll this town to the center on load, without marking it current */
+  centerSlug?: string;
 }
 
 /** Approximate corridor mile markers west → east (wireframe). */
@@ -27,7 +33,8 @@ const mileBySlug: Record<string, number> = {
   "panama-city-beach": 28.0,
 };
 
-const { currentSlug } = Astro.props;
+const { currentSlug, size = "default", bare = false, centerSlug } = Astro.props;
+const Root = bare ? "div" : "section";
 const currentMile = currentSlug ? (mileBySlug[currentSlug] ?? 0) : 0;
 
 function formatMiles(delta: number) {
@@ -37,9 +44,12 @@ function formatMiles(delta: number) {
 }
 ---
 
-<section class="corridor" aria-label="The 30A corridor">
-  <div class="container">
-    <p class="eyebrow">The 30A Corridor</p>
+<Root
+  class:list={["corridor", { "corridor--bare": bare, "corridor--large": size === "large" }]}
+  aria-label="The 30A corridor"
+>
+  <div class:list={[{ container: !bare }]}>
+    {!bare && <p class="eyebrow">The 30A Corridor</p>}
     <div class="scroller" data-corridor-scroller>
       <div class="track">
         {
@@ -56,7 +66,7 @@ function formatMiles(delta: number) {
                 class:list={["item", { current: here }]}
                 href={href(`/town/${item.slug}`)}
                 aria-current={here ? "true" : undefined}
-                data-corridor-item={here ? "current" : undefined}
+                data-corridor-item={here ? "current" : item.slug === centerSlug ? "center" : undefined}
               >
                 <p class="name">{item.name}</p>
                 <div class="dot img-placeholder" aria-hidden="true">
@@ -80,16 +90,32 @@ function formatMiles(delta: number) {
       </div>
     </div>
   </div>
-</section>
+</Root>
 
-{
-  currentSlug && (
-    <script>
-      const current = document.querySelector("[data-corridor-item='current']");
-      current?.scrollIntoView({ inline: "center", block: "nearest", behavior: "auto" });
-    </script>
-  )
-}
+<script>
+  function placeCorridor(scroll: boolean) {
+    document.querySelectorAll("[data-corridor-scroller]").forEach((scroller) => {
+      if (!(scroller instanceof HTMLElement)) return;
+      const track = scroller.querySelector(".track");
+      const dots = scroller.querySelectorAll(".dot");
+      if (!(track instanceof HTMLElement) || dots.length < 2) return;
+      const trackRect = track.getBoundingClientRect();
+      const first = dots[0].getBoundingClientRect();
+      const last = dots[dots.length - 1].getBoundingClientRect();
+      track.style.setProperty("--line-left", `${first.left + first.width / 2 - trackRect.left}px`);
+      track.style.setProperty("--line-right", `${trackRect.right - (last.left + last.width / 2)}px`);
+      if (!scroll) return;
+      const item = scroller.querySelector("[data-corridor-item='current'], [data-corridor-item='center']");
+      if (!(item instanceof HTMLElement)) return;
+      const scrollerRect = scroller.getBoundingClientRect();
+      const itemRect = item.getBoundingClientRect();
+      scroller.scrollLeft += itemRect.left + itemRect.width / 2 - (scrollerRect.left + scrollerRect.width / 2);
+    });
+  }
+
+  placeCorridor(true);
+  document.fonts?.ready.then(() => placeCorridor(true));
+</script>
 
 <style>
   .corridor {
@@ -109,12 +135,31 @@ function formatMiles(delta: number) {
   }
   .scroller {
     overflow-x: auto;
-    padding-bottom: 0.25rem;
+    overflow-y: clip;
+    overflow-anchor: none;
+    padding-bottom: 0.85rem;
     scroll-snap-type: x proximity;
     -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(12, 35, 46, 0.35) transparent;
+  }
+  .scroller::-webkit-scrollbar {
+    height: 4px;
+  }
+  .scroller::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .scroller::-webkit-scrollbar-thumb {
+    background: rgba(12, 35, 46, 0.35);
+    border-radius: 999px;
   }
   .track {
     --dot: 4.5rem;
+    --name-h: 2.1rem;
+    --stack-gap: 0.45rem;
+    --item: 7.25rem;
+    --pad-top: 0.25rem;
+    --pad-x: 1rem;
     position: relative;
     display: flex;
     align-items: flex-start;
@@ -122,26 +167,27 @@ function formatMiles(delta: number) {
     gap: clamp(1.25rem, 3vw, 2.25rem);
     min-width: max-content;
     margin-inline: auto;
-    padding: 0.25rem 1rem 0.5rem;
+    padding: var(--pad-top) var(--pad-x) 0;
   }
   .track::before {
     content: "";
     position: absolute;
-    left: 1rem;
-    right: 1rem;
-    top: calc(1.35em + 0.55rem + var(--dot) / 2);
+    left: var(--line-left, calc(var(--pad-x) + var(--item) / 2));
+    right: var(--line-right, calc(var(--pad-x) + var(--item) / 2));
+    top: calc(var(--pad-top) + var(--name-h) + var(--stack-gap) + var(--dot) / 2);
     height: 1px;
     background: var(--brand-line);
+    transform: translateY(-50%);
     pointer-events: none;
   }
   .item {
     position: relative;
     z-index: 1;
     flex: 0 0 auto;
-    width: 5.75rem;
+    width: var(--item);
     display: grid;
     justify-items: center;
-    gap: 0.45rem;
+    gap: var(--stack-gap);
     text-align: center;
     color: var(--brand-deep);
     scroll-snap-align: center;
@@ -151,7 +197,7 @@ function formatMiles(delta: number) {
   }
   .name {
     margin: 0;
-    min-height: 2.4em;
+    height: var(--name-h);
     display: flex;
     align-items: flex-end;
     justify-content: center;
@@ -168,10 +214,7 @@ function formatMiles(delta: number) {
     border: 3px solid white;
     box-shadow: 0 0 0 1px var(--brand-line);
     font-size: var(--font-size-3);
-    transition:
-      transform 160ms ease,
-      box-shadow 160ms ease,
-      border-color 160ms ease;
+    transition: transform 160ms ease;
   }
   .item:hover .dot {
     transform: scale(1.06);
@@ -180,11 +223,13 @@ function formatMiles(delta: number) {
     font-weight: var(--font-weight-8);
   }
   .item.current .dot {
-    --dot: 5.25rem;
     border-width: 4px;
     border-color: var(--brand-deep);
     box-shadow: none;
     font-size: var(--font-size-4);
+  }
+  .item.current:hover .dot {
+    transform: scale(1.06);
   }
   .pin {
     position: absolute;
@@ -207,5 +252,49 @@ function formatMiles(delta: number) {
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--brand-deep);
+  }
+  .corridor--bare {
+    background: transparent;
+    border: 0;
+    padding: 0;
+  }
+  .corridor--large .track {
+    --dot: 6.25rem;
+    --name-h: 1.05rem;
+    --stack-gap: 1.75rem;
+    gap: clamp(1.5rem, 3vw, 2.25rem);
+    justify-content: flex-start;
+    padding-bottom: 1.15rem;
+  }
+  .corridor--large .item {
+    width: max-content;
+    min-width: var(--dot);
+  }
+  .corridor--large .name {
+    white-space: nowrap;
+  }
+  .corridor--large .scroller {
+    scroll-snap-type: none;
+  }
+  .corridor--large .dot {
+    font-size: var(--font-size-5);
+    border-width: 3px;
+  }
+  .corridor--large .item.current .dot {
+    --grow: 1.22;
+    width: calc(var(--dot) * var(--grow));
+    height: calc(var(--dot) * var(--grow));
+    margin: calc(var(--dot) * (1 - var(--grow)) / 2);
+    transform: none;
+    transition: none;
+    border-width: 1px;
+    border-color: var(--brand-teal);
+    font-size: var(--font-size-5);
+  }
+  .corridor--large .item.current:hover .dot {
+    transform: none;
+  }
+  .corridor--large .meta {
+    display: none;
   }
 </style>

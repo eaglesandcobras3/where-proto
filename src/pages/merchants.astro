@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
 import AuthGateLink from "../components/islands/AuthGateLink.svelte";
 import { businessBySlug, towns } from "../data/catalog";
 import { href } from "../lib/href";
@@ -177,6 +178,7 @@ const townImgs = [
   <div class="mkt">
     <section class="hero">
       <div class="container hero__inner">
+        <Breadcrumbs />
         <p class="eyebrow hero__eyebrow">For business owners · Scenic Highway 30A</p>
         <h1>
           Connecting 30A’s best local businesses with

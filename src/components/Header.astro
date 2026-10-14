@@ -1,6 +1,7 @@
 ---
 import SearchBar from "./islands/SearchBar.svelte";
 import ConditionsBar from "./ConditionsBar.astro";
+import { towns } from "../data/catalog";
 import { href } from "../lib/href";
 
 interface Props {
@@ -9,6 +10,7 @@ interface Props {
 
 const { active = "" } = Astro.props;
 const base = import.meta.env.BASE_URL;
+const townOptions = towns.map(({ slug, name }) => ({ slug, name }));
 
 const links = [
   { label: "Towns", path: "/towns", key: "towns" },
@@ -22,7 +24,9 @@ const links = [
 
 <header class="site-header">
   <div class="container header-inner">
-    <a class="logo" href={href("/")}>WhereTo<span>30A</span></a>
+    <a class="logo" href={href("/")}>
+      <img src={href("/logo.png")} alt="WhereTo30A" width="320" height="79" />
+    </a>
 
     <nav class="desktop-nav" aria-label="Primary">
       {
@@ -35,17 +39,31 @@ const links = [
     </nav>
 
     <div class="header-actions">
-      <a class="add-business" data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
-      <a class="add-business" data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
+      <a class="add-business" data-proto="add-business" href={href("/add-business")}>Add your business</a>
       <button class="sign-in" data-proto="sign-in" type="button" id="header-sign-in">Sign in</button>
-      <button class="sign-in" data-proto="sign-out" type="button" id="header-sign-out">Sign out</button>
-      <SearchBar base={base} client:load />
-      <a class="icon-btn" data-proto="profile" href={href("/profile")} aria-label="Profile">
-        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-          <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.75"></circle>
-          <path d="M5 19c0-3.3 3.1-6 7-6s7 2.7 7 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path>
-        </svg>
-      </a>
+      <SearchBar towns={townOptions} base={base} client:load />
+      <div class="profile" data-proto="profile">
+        <button
+          class="icon-btn"
+          type="button"
+          id="profile-menu-btn"
+          aria-label="Account"
+          aria-haspopup="menu"
+          aria-expanded="false"
+          aria-controls="profile-menu"
+        >
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <circle cx="12" cy="8" r="3.25" fill="none" stroke="currentColor" stroke-width="1.75"></circle>
+            <path d="M5 19c0-3.3 3.1-6 7-6s7 2.7 7 6" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path>
+          </svg>
+        </button>
+        <div class="profile-menu" id="profile-menu" role="menu">
+          <a role="menuitem" href={href("/profile")}>Profile</a>
+          <a role="menuitem" data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
+          <a role="menuitem" data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
+          <button role="menuitem" type="button" data-proto="sign-out" id="menu-sign-out">Sign out</button>
+        </div>
+      </div>
       <button
         class="menu-btn"
         id="menu-btn"
@@ -70,12 +88,12 @@ const links = [
     </form>
     <nav class="mobile-nav">
       {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
+      <a data-proto="add-business" href={href("/add-business")}>Add your business</a>
       <button type="button" data-proto="sign-in" class="mobile-sign-in" id="mobile-sign-in">Sign in</button>
-      <button type="button" data-proto="sign-out" class="mobile-sign-in" id="mobile-sign-out">Sign out</button>
-      <a data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
-      <a data-proto="manage-business" href={href("/add-business")}>Add another business</a>
-      <a data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
       <a data-proto="profile" href={href("/profile")}>Profile</a>
+      <a data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
+      <a data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
+      <button type="button" data-proto="sign-out" class="mobile-sign-in" id="mobile-sign-out">Sign out</button>
     </nav>
   </div>
 </dialog>
@@ -109,14 +127,38 @@ const links = [
   document.getElementById("header-sign-in")?.addEventListener("click", openAuth);
   document.getElementById("mobile-sign-in")?.addEventListener("click", openAuth);
 
+  const profileBtn = document.getElementById("profile-menu-btn");
+  const profileMenu = document.getElementById("profile-menu");
+
+  function setProfileOpen(open: boolean) {
+    if (!(profileMenu instanceof HTMLElement) || !(profileBtn instanceof HTMLButtonElement)) return;
+    profileMenu.classList.toggle("is-open", open);
+    profileBtn.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  profileBtn?.addEventListener("click", () => {
+    setProfileOpen(profileBtn.getAttribute("aria-expanded") !== "true");
+  });
+
+  document.addEventListener("pointerdown", (event) => {
+    if (!(event.target instanceof Node)) return;
+    if (profileBtn?.contains(event.target) || profileMenu?.contains(event.target)) return;
+    setProfileOpen(false);
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") setProfileOpen(false);
+  });
+
   function signOut() {
+    setProfileOpen(false);
     window.localStorage.setItem("w30a:persona", "guest");
     document.documentElement.dataset.persona = "guest";
     window.dispatchEvent(new CustomEvent("w30a:persona", { detail: { persona: "guest" } }));
     if (drawer instanceof HTMLDialogElement && drawer.open) drawer.close();
   }
 
-  document.getElementById("header-sign-out")?.addEventListener("click", signOut);
+  document.getElementById("menu-sign-out")?.addEventListener("click", signOut);
   document.getElementById("mobile-sign-out")?.addEventListener("click", signOut);
 </script>
 
@@ -137,15 +179,16 @@ const links = [
     border-bottom: 1px solid var(--brand-line);
   }
   .logo {
-    font-size: var(--font-size-4);
-    font-weight: var(--font-weight-8);
-    font-style: italic;
-    color: var(--brand-deep);
+    display: inline-flex;
+    align-items: center;
+    line-height: 0;
     text-decoration: none;
-    white-space: nowrap;
+    flex-shrink: 0;
   }
-  .logo span {
-    color: var(--brand-teal);
+  .logo img {
+    display: block;
+    height: 2.15rem;
+    width: auto;
   }
   .logo:hover {
     text-decoration: none;
@@ -155,7 +198,6 @@ const links = [
     align-self: stretch;
     align-items: center;
     gap: 0.15rem;
-    margin-inline: auto;
   }
   .desktop-nav a {
     display: flex;
@@ -224,7 +266,8 @@ const links = [
   /* Prototype persona visibility — set on <html data-persona> */
   :global(html[data-persona="guest"]) [data-proto="profile"],
   :global(html[data-persona="guest"]) [data-proto="manage-business"],
-  :global(html[data-persona="guest"]) [data-proto="town-desk"] {
+  :global(html[data-persona="guest"]) [data-proto="town-desk"],
+  :global(html[data-persona="town-manager"]) [data-proto="add-business"] {
     display: none !important;
   }
   :global(html:not([data-persona="guest"])) [data-proto="sign-in"],
@@ -260,6 +303,51 @@ const links = [
     display: block;
   }
   .icon-btn:hover {
+    color: var(--brand-deep);
+    text-decoration: none;
+  }
+  .profile {
+    position: relative;
+    display: inline-flex;
+    flex-shrink: 0;
+  }
+  .profile-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 0.45rem);
+    right: 0;
+    z-index: 70;
+    min-width: 12.5rem;
+    padding: 0.35rem;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: 0.85rem;
+    box-shadow: 0 12px 32px rgba(8, 24, 40, 0.12);
+  }
+  .profile-menu.is-open {
+    display: grid;
+  }
+  .profile-menu a,
+  .profile-menu button {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0.55rem 0.7rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background: none;
+    color: var(--brand-ink);
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-5);
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .profile-menu a:hover,
+  .profile-menu button:hover {
+    background: var(--brand-sand);
     color: var(--brand-deep);
     text-decoration: none;
   }
@@ -328,10 +416,20 @@ const links = [
   }
   @media (min-width: 960px) {
     .header-inner {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
       gap: var(--size-4);
     }
+    .logo {
+      justify-self: start;
+    }
+    .desktop-nav {
+      justify-self: center;
+    }
     .header-actions {
-      flex: 0 0 auto;
+      justify-self: end;
+      margin-left: 0;
+      flex: none;
     }
     .desktop-nav,
     .add-business,

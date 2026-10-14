@@ -1,5 +1,5 @@
 ---
-import HomeHeroSearch from "./islands/HomeHeroSearch.svelte";
+import SearchBar from "./islands/SearchBar.svelte";
 
 interface Named {
   slug: string;
@@ -23,7 +23,7 @@ const { towns, base = "/" } = Astro.props;
       Sixteen towns along Scenic Highway 30A — beaches, dune lakes, and local favorites from Sandestin
       to Inlet Beach.
     </p>
-    <HomeHeroSearch towns={towns} base={base} client:load />
+    <SearchBar towns={towns} base={base} variant="inline" client:load />
   </div>
 </section>
 
@@ -75,10 +75,5 @@ const { towns, base = "/" } = Astro.props;
     font-size: var(--font-size-2);
     line-height: 1.6;
     color: var(--brand-ink-soft);
-  }
-  .home-hero__inner :global(.home-search) {
-    width: 100%;
-    max-width: 52rem;
-    margin-top: 0.25rem;
   }
 </style>

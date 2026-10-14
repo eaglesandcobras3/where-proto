@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
 import AddBusinessFlow from "../components/islands/AddBusinessFlow.svelte";
 import { isEnabled } from "../config/flags";
 import { businesses, categories, towns } from "../data/catalog";
@@ -28,6 +29,7 @@ const seedBusinesses = businesses.map((biz) => ({
 <BaseLayout title="Add your business" description="Add a new listing, claim one already on WhereTo30A, or attach a rental property.">
   <div class="container section add-page">
     <header class="page-head">
+      <Breadcrumbs onDark={false} />
       <p class="eyebrow">Add a business or stay</p>
       <h1>Add your business</h1>
       <p>

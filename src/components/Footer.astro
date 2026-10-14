@@ -4,16 +4,10 @@ import { href } from "../lib/href";
 
 const companyLinks: { label: string; path: string; proto?: string }[] = [
   { label: "About", path: "/about" },
-  { label: "Connect", path: "/connect" },
-  { label: "Travel guides", path: "/guides" },
+  { label: "Guides", path: "/guides" },
   { label: "Events", path: "/events" },
   { label: "Ask", path: "/ask" },
   { label: "Businesses", path: "/search" },
-  { label: "Categories", path: "/search" },
-  { label: "Manage business", path: "/dashboard", proto: "manage-business" },
-  { label: "Add a business", path: "/add-business", proto: "manage-business" },
-  { label: "Manage town", path: "/dashboard", proto: "town-desk" },
-  { label: "List a vacation rental", path: "/stays" },
   { label: "Merchants", path: "/merchants" },
   { label: "Privacy", path: "/legal/privacy" },
   { label: "Terms", path: "/legal/terms" },
@@ -25,7 +19,9 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
 <footer class="site-footer">
   <div class="container footer-grid">
     <div class="brand-block">
-      <a class="logo" href={href("/")}>WhereTo<span>30A</span></a>
+      <a class="logo" href={href("/")}>
+        <img src={href("/logo.png")} alt="WhereTo30A" width="320" height="79" />
+      </a>
       <p>
         Your local guide to 30A and Florida's Emerald Coast. Curated listings, town guides, and
         hand-picked local favorites.
@@ -62,22 +58,6 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
             </li>
           ))
         }
-      </ul>
-    </nav>
-
-    <nav class="col" aria-label="Areas">
-      <h4>Areas</h4>
-      <ul>
-        {
-          shoppingAreas.map((area) => (
-            <li>
-              <a href={href(`/area/${area.slug}`)}>{area.name}</a>
-            </li>
-          ))
-        }
-        <li>
-          <a href={href("/areas")}>All areas</a>
-        </li>
       </ul>
     </nav>
 
@@ -133,17 +113,21 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
   .footer-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: var(--size-6);
+    gap: var(--size-6) var(--size-5);
+    align-items: start;
   }
   .logo {
-    font-size: var(--font-size-4);
-    font-weight: var(--font-weight-8);
-    font-style: italic;
-    color: var(--brand-teal);
+    display: inline-flex;
+    line-height: 0;
     text-decoration: none;
   }
-  .logo span {
-    color: var(--brand-teal);
+  .logo img {
+    display: block;
+    height: 2.15rem;
+    width: auto;
+  }
+  .logo:hover {
+    text-decoration: none;
   }
   .brand-block p {
     font-size: var(--font-size-1);
@@ -177,7 +161,7 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);
-    margin: 0 0 var(--size-3);
+    margin: 0 0 0.85rem;
   }
   .col ul {
     list-style: none;
@@ -189,8 +173,9 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
   }
   .col a {
     display: block;
-    padding-block: 0.45rem;
+    padding-block: 0.28rem;
     font-size: var(--font-size-1);
+    line-height: 1.35;
     color: var(--brand-ink-soft);
   }
   .col a:hover {
@@ -208,7 +193,8 @@ const shoppingAreas = areas.filter((item) => item.kind === "shopping");
   }
   @media (min-width: 900px) {
     .footer-grid {
-      grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+      grid-template-columns: minmax(16rem, 1.3fr) minmax(12.5rem, 0.85fr) minmax(11rem, 0.7fr) minmax(10rem, 0.6fr);
+      column-gap: clamp(2.75rem, 4.5vw, 4.5rem);
     }
   }
 </style>

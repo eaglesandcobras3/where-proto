@@ -81,9 +81,6 @@
   <div class="list">
     {#each results as item (item.slug)}
       <article class="card">
-        <a class="media img-placeholder" href={path(`/town/${item.slug}`)} aria-hidden="true">
-          <span class="walk">Walk Score {item.walkScore}</span>
-        </a>
         <div class="body">
           <div class="title-row">
             <div>
@@ -151,23 +148,6 @@
     box-shadow: var(--shadow-card-hover);
     border-color: var(--brand-line);
   }
-  .media {
-    position: relative;
-    display: block;
-    aspect-ratio: 16 / 9;
-    text-decoration: none;
-  }
-  .walk {
-    position: absolute;
-    right: 0.75rem;
-    bottom: 0.75rem;
-    padding: 0.3rem 0.55rem;
-    border-radius: var(--radius-2);
-    background: rgba(12, 35, 46, 0.9);
-    color: white;
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-7);
-  }
   .body {
     padding: var(--size-5);
     display: grid;
@@ -189,7 +169,6 @@
     color: inherit;
   }
   h3 a:hover {
-    color: var(--brand-teal);
     text-decoration: none;
   }
   .tagline {

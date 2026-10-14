@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import {
   areas,
   businesses,
@@ -33,6 +34,7 @@ const rows = [
 <BaseLayout title="Entities">
   <div class="container section">
     <p><a href={href("/admin")}>Admin</a></p>
+    <Breadcrumbs onDark={false} />
     <h1>Entities</h1>
     <p>Catalog counts from the mock data. Most do not have admin CRUD yet.</p>
     <ul class="list">

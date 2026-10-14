@@ -239,7 +239,7 @@
     color: inherit;
   }
   h3 a:hover {
-    color: var(--ask-teal, var(--brand-teal));
+    text-decoration: none;
   }
   .excerpt {
     margin: 0;

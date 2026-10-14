@@ -3,12 +3,21 @@
     slug: string;
     name: string;
     summary: string;
+    town: string;
     venue: string;
     whenLabel: string;
-    badge: string;
-    badgeTone: "blue" | "teal" | "mint";
-    footerTag: string;
     types: string[];
+    reactions?: { label: "up" | "heart" | "wow"; count: number }[];
+  }
+
+  const emoji = { heart: "❤️", up: "👍", wow: "😮" } as const;
+
+  function reactionView(reactions: Card["reactions"]) {
+    const list = (reactions ?? []).filter((item) => item.count > 0).sort((a, b) => b.count - a.count);
+    return {
+      faces: list.map((item) => emoji[item.label]),
+      total: list.reduce((sum, item) => sum + item.count, 0),
+    };
   }
 
   const filters = [
@@ -54,20 +63,30 @@
 
   <div class="grid">
     {#each visible as item (item.slug)}
+      {@const reaction = reactionView(item.reactions)}
       <article class="card">
         <div class="meta">
-          <span class:list={["badge", `badge--${item.badgeTone}`]}>{item.badge}</span>
+          {#if reaction.total > 0}
+            <span class="reactions" aria-label="{reaction.total} reactions">
+              <span class="faces" aria-hidden="true">
+                {#each reaction.faces as face}
+                  <span class="face">{face}</span>
+                {/each}
+              </span>
+              {reaction.total}
+            </span>
+          {/if}
           <span class="when">{item.whenLabel}</span>
         </div>
         <h3>
           <a href={path(`/event/${item.slug}`)}>{item.name}</a>
         </h3>
-        <p class="venue">{item.venue}</p>
+        <p class="town">{item.town}</p>
+        {#if item.venue && item.venue !== item.town}
+          <p class="venue">{item.venue}</p>
+        {/if}
         <p class="summary">{item.summary}</p>
-        <div class="foot">
-          <span>{item.footerTag}</span>
-          <a href={path(`/event/${item.slug}`)}>Details →</a>
-        </div>
+        <a class="details" href={path(`/event/${item.slug}`)}>Details →</a>
       </article>
     {/each}
   </div>
@@ -124,31 +143,46 @@
   }
   .meta {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-end;
     align-items: center;
     gap: 0.5rem;
-    margin-bottom: 0.35rem;
+    margin-bottom: 0.15rem;
   }
-  .badge {
+  .reactions {
     display: inline-flex;
-    padding: 0.2rem 0.55rem;
-    border-radius: var(--radius-pill);
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
+    align-items: center;
+    gap: 0.3rem;
+    margin-right: auto;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-5);
+    color: var(--brand-ink-soft);
+    line-height: 1.4;
   }
-  .badge--blue {
-    background: var(--brand-sand);
-    color: var(--brand-coral);
+  .faces {
+    display: inline-flex;
+    align-items: center;
   }
-  .badge--teal {
-    background: var(--brand-teal-soft);
-    color: var(--brand-coral);
+  .face {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -0.28rem;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 1px white;
+    font-size: 0.72rem;
+    line-height: 1;
   }
-  .badge--mint {
-    background: var(--brand-teal-soft);
-    color: var(--brand-coral);
+  .face:first-child {
+    margin-left: 0;
+  }
+  .town {
+    margin: 0;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-5);
+    color: var(--brand-ink-soft);
   }
   .when {
     font-size: var(--font-size-0);
@@ -167,7 +201,6 @@
     color: inherit;
   }
   h3 a:hover {
-    color: var(--brand-teal);
     text-decoration: none;
   }
   .venue {
@@ -176,7 +209,7 @@
     color: var(--brand-ink-soft);
   }
   .summary {
-    margin: 0.35rem 0 0.75rem;
+    margin: 0.35rem 0 0;
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
     line-height: 1.45;
@@ -185,23 +218,16 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .foot {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-    margin-top: auto;
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--brand-line);
-    font-size: var(--font-size-0);
-  }
-  .foot span {
-    color: var(--brand-ink-soft);
-  }
-  .foot a {
+  .details {
+    justify-self: start;
+    margin-top: 0.85rem;
     color: var(--brand-teal);
+    font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     white-space: nowrap;
+  }
+  .details:hover {
+    text-decoration: none;
   }
   .empty {
     margin: 0;

@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { href } from "../../lib/href";
 ---
 
 <BaseLayout title="Privacy">
   <div class="container section article">
     <p><a href={href("/legal")}>Legal</a></p>
+    <Breadcrumbs onDark={false} />
     <h1>Privacy</h1>
     <p>Placeholder privacy page. No legal copy yet.</p>
   </div>

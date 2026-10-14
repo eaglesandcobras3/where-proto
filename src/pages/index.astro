@@ -27,33 +27,21 @@ const heroTowns = towns.map(({ slug, name }) => ({ slug, name }));
 const homeEvents = [
   {
     event: events.find((item) => item.slug === "grayton-farmers-market") ?? events[0]!,
-    badge: "Weekly Favorite",
-    badgeTone: "blue" as const,
-    footerTag: "Free Admission",
     whenLabel: "Sat · 8:00 AM",
     types: ["weekend", "market"],
   },
   {
     event: events.find((item) => item.slug === "sounds-of-seaside") ?? events[1]!,
-    badge: "Live Music",
-    badgeTone: "teal" as const,
-    footerTag: "All Ages Welcome",
     whenLabel: "Wed · 5:00 PM",
     types: ["music", "weekend"],
   },
   {
     event: events.find((item) => item.slug === "seaside-storytime") ?? events[2]!,
-    badge: "Free Admission",
-    badgeTone: "blue" as const,
-    footerTag: "Family Friendly",
     whenLabel: "Today · 10:00 AM",
     types: ["family"],
   },
   {
     event: events.find((item) => item.slug === "alys-sunset-yoga") ?? events[3]!,
-    badge: "Eco Adventure",
-    badgeTone: "mint" as const,
-    footerTag: "Gear Included",
     whenLabel: "Today · 5:30 PM",
     types: ["weekend", "family"],
   },
@@ -85,11 +73,11 @@ const askRows = questions.slice(0, 3).map((question) => {
       <div class="container merchant__inner">
         <div class="merchant__content">
           <div class="merchant__copy">
-            <p class="merchant__eyebrow">For local businesses</p>
-            <h2>Add your business to WhereTo30A</h2>
+            <p class="merchant__eyebrow">Merchants</p>
+            <h2>For businesses and rental managers</h2>
             <p>
-              Make it easier for people exploring 30A to find your business. Add your listing for free
-              and share what you offer, where to find you, and what visitors should know.
+              List a shop, restaurant, or service. Rental managers can list the homes they look after.
+              Add it for free and share what you offer, where to find you, and what guests should know.
             </p>
             <p>
               Every submission is reviewed before publishing to help keep WhereTo30A accurate, relevant,
@@ -97,7 +85,7 @@ const askRows = questions.slice(0, 3).map((question) => {
             </p>
           </div>
           <div class="merchant__actions">
-            <a class="btn btn--teal" href={href("/merchants")}>For businesses</a>
+            <a class="btn btn--teal" href={href("/merchants")}>How listing works</a>
           </div>
         </div>
         <div class="merchant__media">

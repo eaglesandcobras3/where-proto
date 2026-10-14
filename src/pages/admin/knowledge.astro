@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { knowledge } from "../../data/catalog";
 import { href } from "../../lib/href";
 ---
@@ -7,6 +8,7 @@ import { href } from "../../lib/href";
 <BaseLayout title="Knowledge">
   <div class="container section">
     <p><a href={href("/admin")}>Admin</a></p>
+    <Breadcrumbs onDark={false} />
     <h1>Knowledge</h1>
     <div class="list">
       {

@@ -1,42 +1,51 @@
 ---
+import { reactionsFor } from "../data/catalog";
 import { href } from "../lib/href";
 import { businessPathBySlug } from "../lib/listing";
+import ReactionCluster from "./ReactionCluster.astro";
 
 const items = [
   {
+    slug: "beach-cow-creamery",
     name: "Beach Cow Creamery",
+    town: "Seacrest Beach",
     category: "Bakeries & Desserts",
     summary:
       "Beach Cow Creamery serves up hand-dipped ice cream, milkshakes, and sweet treats in the heart of Peddlers Pavilion in Seacrest Beach.",
-    href: "/search?q=Beach+Cow+Creamery",
+    href: businessPathBySlug("beach-cow-creamery"),
   },
   {
+    slug: "ascension-sacred-heart-30a",
     name: "Ascension Medical Group Sacred Heart at 30A",
+    town: "Inlet Beach",
     category: "Medical Clinics",
     summary:
       "Ascension Medical Group Sacred Heart at 30A provides primary care, internal medicine, and wellness services in Inlet Beach.",
-    href: "/search?q=Ascension+Medical",
+    href: businessPathBySlug("ascension-sacred-heart-30a"),
   },
   {
+    slug: "fiddle-haus",
     name: "Fiddle Haus",
+    town: "Seacrest Beach",
     category: "Boutiques & Apparel",
     summary:
       "Fiddle Haus is a cozy coastal boutique at The Big Chill featuring curated women’s apparel, loungewear, home decor, and gifts.",
-    href: "/search?q=Fiddle+Haus",
+    href: businessPathBySlug("fiddle-haus"),
   },
   {
+    slug: "amavida-donuts",
     name: "Amavida Donuts",
+    town: "Seaside",
     category: "Bakeries & Desserts",
     summary:
       "Handcrafted artisan donuts, specialty cold brew, and sweet treats served from a vintage food truck in Seaside’s Central Square.",
-      href: businessPathBySlug("amavida"),
+    href: businessPathBySlug("amavida-donuts"),
   },
 ];
 ---
 
 <section class="featured">
   <div class="container">
-    <div class="scroller">
     <div class="grid">
       {
         items.map((item) => (
@@ -46,12 +55,13 @@ const items = [
             </div>
             <p class="cat">{item.category}</p>
             <h3>{item.name}</h3>
+            <p class="town">{item.town}</p>
+            <ReactionCluster reactions={reactionsFor("business", item.slug)} />
             <p class="summary">{item.summary}</p>
             <span class="explore">Explore →</span>
           </a>
         ))
       }
-    </div>
     </div>
   </div>
 </section>
@@ -60,17 +70,10 @@ const items = [
   .featured {
     padding-block: var(--size-5) var(--size-6);
   }
-  .scroller {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-  }
   .grid {
     display: grid;
-    gap: var(--size-5);
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    min-width: 56rem;
-    width: 100%;
+    gap: var(--size-4);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .card {
     display: grid;
@@ -78,12 +81,12 @@ const items = [
     align-content: start;
     color: inherit;
     min-width: 0;
+    border: 0;
+    box-shadow: none;
+    background: transparent;
   }
   .card:hover {
     text-decoration: none;
-  }
-  .card:hover h3 {
-    color: var(--brand-teal);
   }
   .media {
     aspect-ratio: 3 / 4;
@@ -107,6 +110,11 @@ const items = [
     color: var(--brand-deep);
     line-height: 1.25;
   }
+  .town {
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
   .summary {
     margin: 0;
     font-size: var(--font-size-1);
@@ -119,8 +127,14 @@ const items = [
   }
   .explore {
     margin-top: 0.15rem;
-    font-size: var(--font-size-1);
+    font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
-    color: var(--brand-deep);
+    color: var(--brand-teal);
+  }
+  @media (min-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: var(--size-5);
+    }
   }
 </style>

@@ -50,76 +50,101 @@
 
 <aside class="side">
   <section class="panel">
-    <p class="eyebrow">Town Vibe</p>
-    <div class="checks">
-      {#each vibes as item (item.slug)}
-        <button
-          class="check"
-          class:active={vibe === item.slug}
-          type="button"
-          onclick={() => publish(vibe === item.slug ? "" : item.slug, beach)}
+    <label class="field">
+      <span>Town vibe</span>
+      <span class="control">
+        <select
+          aria-label="Town vibe"
+          value={vibe}
+          onchange={(event) => publish((event.currentTarget as HTMLSelectElement).value, beach)}
         >
-          {item.name}
-        </button>
-      {/each}
-    </div>
-  </section>
+          <option value="">Any vibe</option>
+          {#each vibes as item (item.slug)}
+            <option value={item.slug}>{item.name}</option>
+          {/each}
+        </select>
+        <svg class="chevron" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+          <path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </span>
+    </label>
 
-  <section class="panel">
-    <p class="eyebrow">Beach Access Types</p>
-    <div class="checks">
-      {#each beachTypes as item (item.slug)}
-        <button
-          class="check"
-          class:active={beach === item.slug}
-          type="button"
-          onclick={() => publish(vibe, beach === item.slug ? "" : item.slug)}
+    <label class="field">
+      <span>Beach access</span>
+      <span class="control">
+        <select
+          aria-label="Beach access"
+          value={beach}
+          onchange={(event) => publish(vibe, (event.currentTarget as HTMLSelectElement).value)}
         >
-          {item.name}
-        </button>
-      {/each}
-    </div>
+          <option value="">Any beach access</option>
+          {#each beachTypes as item (item.slug)}
+            <option value={item.slug}>{item.name}</option>
+          {/each}
+        </select>
+        <svg class="chevron" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+          <path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
+        </svg>
+      </span>
+    </label>
   </section>
 </aside>
 
 <style>
   .side {
     display: grid;
-    gap: var(--size-4);
   }
   .panel {
+    display: grid;
+    gap: var(--size-4);
     background: white;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-3);
     box-shadow: var(--shadow-card);
     padding: var(--size-4);
   }
-  .eyebrow {
-    margin-bottom: var(--size-3);
-  }
-  .checks {
+  .field {
     display: grid;
-    gap: 0.35rem;
+    gap: 0.4rem;
   }
-  .check {
+  .field > span {
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .control {
+    position: relative;
+    display: block;
+  }
+  select {
     width: 100%;
-    border: 0;
-    background: var(--brand-sand-dark);
+    appearance: none;
+    border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
-    padding: 0.55rem 0.75rem;
-    text-align: left;
+    background: white;
+    padding: 0.7rem 2.4rem 0.7rem 0.8rem;
     font: inherit;
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-5);
+    font-weight: var(--font-weight-6);
     color: var(--brand-ink);
     cursor: pointer;
   }
-  .check:hover {
-    background: var(--brand-sand);
+  select:hover {
+    border-color: #cbd5e1;
   }
-  .check.active {
-    background: var(--brand-teal-soft);
-    color: var(--brand-teal);
-    font-weight: var(--font-weight-7);
+  select:focus-visible {
+    outline: 2px solid var(--brand-teal);
+    outline-offset: 2px;
+  }
+  .chevron {
+    position: absolute;
+    top: 50%;
+    right: 0.7rem;
+    transform: translateY(-50%);
+    color: var(--brand-deep);
+    pointer-events: none;
   }
 </style>

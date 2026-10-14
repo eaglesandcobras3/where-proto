@@ -1,23 +1,30 @@
 ---
 /** Site-wide beach flag + weather strip (wireframe static values). */
 const flag = "Yellow Flag: Moderate Surf";
-const gulf = "76°F Gulf Temp";
-const sky = "Sunny 78°F";
-const tide = "Low Tide 1:14 PM";
+const flagHref = "https://www.visitsouthwalton.com/beach-safety/";
+const low = "68°";
+const high = "79°";
+const sunrise = "6:48 AM";
+const sunset = "6:18 PM";
 ---
 
-<div class="conditions" role="status" aria-label="Beach and weather conditions">
+<div class="conditions" aria-label="Beach and weather conditions">
   <div class="container conditions__inner">
-    <p class="conditions__flag">
-      <span class="dot" aria-hidden="true"></span>
-      {flag}
-      <span class="sep">·</span>
-      {gulf}
-    </p>
-    <p class="conditions__weather">
-      {sky}
-      <span class="sep">·</span>
-      {tide}
+    <div class="conditions__left">
+      <a class="conditions__flag" href={flagHref} target="_blank" rel="noopener noreferrer">
+        <span class="dot" aria-hidden="true"></span>
+        {flag}
+      </a>
+      <p class="conditions__temps">
+        <span>Low {low}</span>
+        <span class="sep" aria-hidden="true">·</span>
+        <span>High {high}</span>
+      </p>
+    </div>
+    <p class="conditions__sun">
+      <span>Sunrise {sunrise}</span>
+      <span class="sep" aria-hidden="true">·</span>
+      <span>Sunset {sunset}</span>
     </p>
   </div>
 </div>
@@ -39,17 +46,28 @@ const tide = "Low Tide 1:14 PM";
     min-height: var(--conditions-h);
     padding-block: 0.4rem;
   }
-  .conditions__flag,
-  .conditions__weather {
+  .conditions__left,
+  .conditions__temps,
+  .conditions__sun,
+  .conditions__flag {
     margin: 0;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 0.35rem 0.45rem;
   }
+  .conditions__left {
+    gap: 0.35rem 1rem;
+  }
   .conditions__flag {
     font-weight: var(--font-weight-7);
     color: var(--brand-deep);
+  }
+  .conditions__flag:hover {
+    color: var(--brand-teal);
+  }
+  .conditions__sun {
+    margin-left: auto;
   }
   .dot {
     width: 0.55rem;

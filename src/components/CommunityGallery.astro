@@ -1,45 +1,48 @@
 ---
-import { href } from "../lib/href";
-
 const featured = {
   town: "Grayton Beach",
-  badge: "Golden Hour",
-  handle: "@coastal_curator",
-  place: "Grayton Beach",
+  tags: ["Golden Hour"],
   caption: "Dusk reflections along the coastal shore",
-  likes: "1.4k",
   alt: "Sunset over emerald waters at Grayton Beach",
+  heart: 18,
+  up: 6,
+  wow: 2,
   src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBI5AuKpAidiYVUNuwm4YGGvuoyyxGFhPLknupr0ew8GimuDXfpHEDkVv-_cEApAMVZPQ7OConXhNimWulMn5cbrxXbWr8_XiZAdk2wDr0jh-I5xi19P4g_i4zRFfgieGrJCOr5-mAlrWRiUkS0zm3aGcF2-6q8xta8ew8rvHOwwpX8BKQpWrZhBxnG67ACOruTSnJ3tVRIhTIPbEeWpxONFstwBripIIR9UJBK6Sq6dOSv4gi0twVA",
 };
 
 const shots = [
   {
     town: "Alys Beach",
-    handle: "@alys_living",
-    title: "Courtyard Vistas",
-    alt: "Striking pure white Bermudan architecture at Alys Beach",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuA50YwY11MsGkXmwZqZ5jV-V5FZuch9Gjhdrx7Z854PBTWT0gXm0c3_19EX5zrVQkA-00FbDGVkcNChGT7L56qjhe_cnbFKN4lKq4hMC-xCU7mu_yNzL0BOhNMWQaM1oT4_7niAaNNykfZ-KO4yPMY-qr54hHX47Xd9HJdeQW8AIbm9G1I_YsKZ_UGl0YxL_hiky2T7-YPyKszT67JG0Ia28CVbPHeAg0dnCxqTqZLFeaYrFcx1EcQz",
+    alt: "White courtyard architecture at Alys Beach",
+    heart: 11,
+    up: 4,
+    wow: 1,
+    src: "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=1400&q=70",
   },
   {
     town: "Rosemary Beach",
-    handle: "@coastal_crawls",
-    title: "Boardwalk Trail",
-    alt: "Biking down Rosemary Beach wooden boardwalk",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuDjPC76-dB1HfNayYRsW3WyBUpFEksO5rC145-fDHbSXY053fWLP06QaoNNve7TkQxdBbGJ0PAtMSKm32uk974MEZ4UIu4rY24cgjb166zJurcudbaTdHbMcpqbbPSQQEEEuT_F6v0ljEyuDzMKaXX2k82p6mqUzA6Tv1yGW-1slT8F_Ve3vZ8ZiRvPked0Bzkk922ufBoT-A9W0P_TZa7Grzwfw6imGUNRxHbDaLshElbLtfvcA9Kd",
+    alt: "Sunrise over an empty Rosemary Beach shoreline",
+    heart: 9,
+    up: 3,
+    wow: 0,
+    src: "https://images.unsplash.com/photo-1476673160081-cf065607f449?auto=format&fit=crop&w=1400&q=70",
   },
   {
     town: "WaterColor",
-    handle: "@gulf_light",
-    title: "Western Lake",
-    alt: "Paddleboarders along Western Lake in WaterColor",
+    alt: "Western Lake and the gulf shoreline in WaterColor",
+    heart: 14,
+    up: 5,
+    wow: 2,
     src: "https://lh3.googleusercontent.com/aida-public/AB6AXuAChaO5qGo8SSUMMe4IESwpFoUueaRzlI93UMOqny7I4lKLkLqlC_GkmMnFnIg2gTZEUXw6Caup-3W6kpnot4eyludgenNBrIC3nluJWh1YXfVMwwQRdVo-QFAXIAEyuMrmwtSzenMYRYm7_5D-C7Lb_68ilMcYBREcXgbclaw7Vd7nqt214p2Zv5eP5MJGQH-Nkh4iHyc6tNFdeTHe1tJJ9kbghZFfSLVZZhqna4O96n9gYGs_cQ_X",
   },
   {
     town: "Seaside",
-    handle: "@dune_wanderer",
-    title: "Emerald Shore",
-    alt: "Crystal waters along Seaside beach walkover",
-    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuC-S5n4GjbrTdRUPG27wbhkjWRNX_LW2HI3UJgvwOK0Xnhp1u5ibkFuLeVnCHN_xY6srqNdpriCZ6sn7xoAWZfc9JXPllA2Xa7Yp_M5S7LbSZp1M-vwiYVHYVVfpBd7akiLPFVDMFEmPfDJhkmQHKi-2DNCc8DuZA2GZ8BZDo3W0tBYuSG574F7lOYRpjvN4kUfJsC-dni1yHHAXuPimNY1w7uDdNKXtO1XIEfAKQt6ipMjEsD9mxwn",
+    alt: "Crystal water along the Seaside shore",
+    frame: "water",
+    heart: 21,
+    up: 7,
+    wow: 1,
+    src: "https://lh3.googleusercontent.com/aida-public/AB6AXuC-S5n4GjbrTdRUPG27wbhkjWRNX_LW2HI3UJgvwOK0Xnhp1u5ibkFuLeVnCHN_xY6srqNdpriCZ6sn7xoAWZfc9JXPllA2Xa7Yp_M5S7LbSZp1M-vwiYVHYVVfpBd7akiLPFVDMFEmPfDJhkmQHKi-2DNCc8DuZA2GZ8BZDo3W0tBYuSG574F7lOYRpjvN4kUfJsC-dni1yHHAXuPimNY1w7uDdNKXtO1XIEfAKQt6ipMjEsD9mxwn=w1400",
   },
 ];
 ---
@@ -47,100 +50,156 @@ const shots = [
 <section class="gallery-sec" id="community-gallery">
   <div class="container">
     <header class="head">
-      <div>
-        <p class="eyebrow">
-          <span>Community Gallery</span>
-          <a class="handle" href={href("/ask")}>@WhereTo30A</a>
-        </p>
-        <h2>Snapshots Along 30A</h2>
-        <p class="lede">
-          Real moments shared by locals, second-home owners, and travelers across South Walton.
-        </p>
-      </div>
-      <a class="share" href={href("/dashboard")}>Share Your Photos</a>
+      <p class="eyebrow">Community Gallery</p>
+      <h2>Snapshots Along 30A</h2>
+      <p class="lede">
+        Real moments shared by locals, second-home owners, and travelers across South Walton.
+      </p>
     </header>
 
-    <div class="scroller">
     <div class="mosaic">
-      <article class="shot shot--featured">
-        <img class="shot__img" src={featured.src} alt={featured.alt} loading="lazy" />
+      <button
+        class="shot shot--featured"
+        type="button"
+        data-gallery-shot
+        data-src={featured.src}
+        data-alt={featured.alt}
+        data-town={featured.town}
+        data-heart={featured.heart}
+        data-up={featured.up}
+        data-wow={featured.wow}
+        aria-label={`${featured.town} photo`}
+      >
+        <img class="shot__img" src={featured.src} alt="" loading="lazy" />
         <div class="shot__veil" aria-hidden="true"></div>
         <div class="shot__top">
-          <span class="pill">
-            <span class="dot" aria-hidden="true"></span>
-            {featured.town}
-          </span>
-          <span class="badge">{featured.badge}</span>
+          <span class="pill">{featured.town}</span>
         </div>
-        <div class="shot__bottom">
-          <div class="shot__credit">
-            <span class="pill pill--dark">{featured.handle} · {featured.place}</span>
-            <p class="caption">{featured.caption}</p>
-          </div>
-          <span class="likes">
-            <svg viewBox="0 0 20 20" width="14" height="14" aria-hidden="true">
-              <path
-                fill="currentColor"
-                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-              ></path>
-            </svg>
-            {featured.likes}
-          </span>
-        </div>
-      </article>
+      </button>
 
       <div class="mosaic__grid">
         {
           shots.map((shot) => (
-            <article class="shot">
-              <img class="shot__img" src={shot.src} alt={shot.alt} loading="lazy" />
+            <button
+              class:list={["shot", shot.frame && `shot--${shot.frame}`]}
+              type="button"
+              data-gallery-shot
+              data-src={shot.src}
+              data-alt={shot.alt}
+              data-town={shot.town}
+              data-frame={shot.frame}
+              data-heart={shot.heart}
+              data-up={shot.up}
+              data-wow={shot.wow}
+              aria-label={`${shot.town} photo`}
+            >
+              <img class="shot__img" src={shot.src} alt="" loading="lazy" />
               <div class="shot__veil shot__veil--soft" aria-hidden="true"></div>
               <div class="shot__top">
                 <span class="pill">{shot.town}</span>
               </div>
-              <div class="shot__meta">
-                <span class="handle-pill">{shot.handle}</span>
-                <span class="title">{shot.title}</span>
-              </div>
-            </article>
+            </button>
           ))
         }
       </div>
     </div>
-    </div>
   </div>
 </section>
+
+<dialog class="lightbox" id="gallery-lightbox" aria-label="Photo">
+  <div class="lightbox__frame">
+    <form method="dialog">
+      <button class="lightbox__close" type="submit" aria-label="Close">×</button>
+    </form>
+    <div class="lightbox__stage">
+      <img class="lightbox__img" alt="" />
+    </div>
+    <div class="lightbox__bar">
+      <p class="lightbox__place"></p>
+      <div class="lightbox__reactions" role="group" aria-label="Reactions">
+        <button type="button" data-reaction="heart" aria-label="Love">
+          <span aria-hidden="true">❤️</span>
+          <span data-count="heart">0</span>
+        </button>
+        <button type="button" data-reaction="up" aria-label="Thumbs up">
+          <span aria-hidden="true">👍</span>
+          <span data-count="up">0</span>
+        </button>
+        <button type="button" data-reaction="wow" aria-label="Surprised">
+          <span aria-hidden="true">😮</span>
+          <span data-count="wow">0</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById("gallery-lightbox");
+  const image = dialog?.querySelector(".lightbox__img");
+  const place = dialog?.querySelector(".lightbox__place");
+  const counts = {
+    heart: dialog?.querySelector("[data-count='heart']"),
+    up: dialog?.querySelector("[data-count='up']"),
+    wow: dialog?.querySelector("[data-count='wow']"),
+  };
+
+  document.querySelectorAll("[data-gallery-shot]").forEach((shot) => {
+    shot.addEventListener("click", () => {
+      if (!(dialog instanceof HTMLDialogElement) || !(image instanceof HTMLImageElement)) return;
+      if (!(shot instanceof HTMLElement)) return;
+      image.src = shot.dataset.src ?? "";
+      image.alt = shot.dataset.alt ?? "";
+      if (shot.dataset.frame) image.dataset.frame = shot.dataset.frame;
+      else delete image.dataset.frame;
+      if (place) place.textContent = shot.dataset.town ?? "";
+      for (const key of ["heart", "up", "wow"] as const) {
+        const node = counts[key];
+        if (node) node.textContent = shot.dataset[key] ?? "0";
+      }
+      dialog.querySelectorAll("[data-reaction]").forEach((button) => {
+        if (button instanceof HTMLButtonElement) button.setAttribute("aria-pressed", "false");
+      });
+      dialog.showModal();
+    });
+  });
+
+  dialog?.querySelectorAll("[data-reaction]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (!(button instanceof HTMLButtonElement)) return;
+      const key = button.dataset.reaction;
+      if (key !== "heart" && key !== "up" && key !== "wow") return;
+      const pressed = button.getAttribute("aria-pressed") === "true";
+      const node = counts[key];
+      const current = Number(node?.textContent ?? "0");
+      if (node) node.textContent = String(pressed ? current - 1 : current + 1);
+      button.setAttribute("aria-pressed", pressed ? "false" : "true");
+    });
+  });
+
+  dialog?.addEventListener("click", (event) => {
+    if (event.target === dialog && dialog instanceof HTMLDialogElement) dialog.close();
+  });
+</script>
 
 <style>
   .gallery-sec {
     padding-block: var(--size-6) var(--size-7);
-    background: var(--brand-sand);
+    background: #f7f6f3;
   }
   .head {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--size-4);
-    margin-bottom: var(--size-5);
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: var(--size-4);
   }
   .eyebrow {
     margin: 0 0 0.45rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.65rem;
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);
-  }
-  .handle {
-    letter-spacing: 0.02em;
-    text-transform: none;
-    font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
   }
   h2 {
     margin: 0 0 0.4rem;
@@ -156,63 +215,38 @@ const shots = [
     color: var(--brand-ink-soft);
     line-height: 1.5;
   }
-  .share {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.5rem;
-    padding: 0.5rem 1.1rem;
-    border-radius: var(--radius-pill);
-    background: white;
-    border: 1px solid var(--brand-line);
-    color: var(--brand-deep);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-  }
-  .share:hover {
-    border-color: var(--brand-teal);
-    color: var(--brand-teal);
-    text-decoration: none;
-  }
-  /* Keep the desktop bento (featured 5 + 2×2 grid 7) and scroll sideways on small screens. */
-  .scroller {
-    overflow-x: auto;
-    overscroll-behavior-x: contain;
-    -webkit-overflow-scrolling: touch;
-  }
   .mosaic {
     display: grid;
-    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: 1rem;
-    align-items: stretch;
-    min-width: 56rem;
-    width: 100%;
   }
   .mosaic__grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 1rem;
   }
-  .shot {
+  button.shot {
     position: relative;
+    display: block;
+    width: 100%;
+    height: auto;
     margin: 0;
+    padding: 0;
+    border: 0;
     overflow: hidden;
     border-radius: 1rem;
-    background: var(--brand-deep);
+    background: #0c232e;
     color: white;
-    min-height: 14rem;
+    text-align: left;
+    white-space: normal;
+    cursor: pointer;
+    font: inherit;
+    aspect-ratio: 16 / 9;
   }
   .shot--featured {
-    min-height: 22rem;
-    height: 100%;
-    aspect-ratio: auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
+    aspect-ratio: 2 / 1;
   }
   .mosaic__grid .shot {
-    aspect-ratio: 4 / 3;
-    min-height: 0;
+    aspect-ratio: 16 / 9;
   }
   .shot__img {
     position: absolute;
@@ -226,28 +260,35 @@ const shots = [
   .shot:hover .shot__img {
     transform: scale(1.04);
   }
+  .shot--water .shot__img {
+    object-position: right center;
+    transform: scale(1.65);
+    transform-origin: 100% 62%;
+  }
+  .shot--water:hover .shot__img {
+    transform: scale(1.7);
+  }
   .shot__veil {
     position: absolute;
     inset: 0;
     background: linear-gradient(
-      to top,
-      rgba(12, 35, 46, 0.9) 0%,
-      rgba(12, 35, 46, 0.25) 45%,
-      rgba(12, 35, 46, 0.4) 100%
+      to bottom,
+      rgba(12, 35, 46, 0.5) 0%,
+      transparent 28%,
+      transparent 62%,
+      rgba(12, 35, 46, 0.72) 100%
     );
     pointer-events: none;
   }
   .shot__veil--soft {
-    background: linear-gradient(
-      to top,
-      rgba(12, 35, 46, 0.8) 0%,
-      transparent 45%,
-      rgba(0, 0, 0, 0.3) 100%
-    );
+    background: linear-gradient(to bottom, rgba(12, 35, 46, 0.4) 0%, transparent 36%);
   }
   .shot__top {
-    position: relative;
+    position: absolute;
     z-index: 1;
+    top: 0;
+    left: 0;
+    right: 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -255,9 +296,6 @@ const shots = [
     padding: 1rem 1.1rem;
   }
   .mosaic__grid .shot__top {
-    position: absolute;
-    top: 0;
-    left: 0;
     right: auto;
     padding: 0.75rem;
   }
@@ -274,86 +312,140 @@ const shots = [
     font-weight: var(--font-weight-7);
     color: white;
   }
-  .pill--dark {
-    background: rgba(12, 35, 46, 0.6);
-    border-color: rgba(255, 255, 255, 0.2);
+  @media (min-width: 640px) {
+    .mosaic__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
   }
-  .dot {
-    width: 0.375rem;
-    height: 0.375rem;
-    border-radius: 50%;
-    background: var(--brand-teal);
+  @media (min-width: 900px) {
+    .mosaic {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      align-items: stretch;
+    }
+    button.shot.shot--featured {
+      height: auto;
+      min-height: 26rem;
+      aspect-ratio: 4 / 3;
+    }
+    .mosaic__grid {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      grid-template-rows: minmax(10rem, 1fr) minmax(10rem, 1fr);
+      height: 100%;
+      min-height: 26rem;
+    }
+    .mosaic__grid button.shot {
+      width: 100%;
+      height: 100%;
+      min-width: 0;
+      min-height: 10rem;
+      aspect-ratio: auto;
+    }
   }
-  .badge {
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-6);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.8);
-  }
-  .shot__bottom {
-    position: relative;
-    z-index: 1;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 1rem;
-    padding: 1.15rem 1.25rem;
-  }
-  .shot__credit {
-    display: grid;
-    gap: 0.35rem;
-    min-width: 0;
-  }
-  .caption {
-    margin: 0;
-    padding-left: 0.25rem;
-    font-size: var(--font-size-0);
-    color: rgba(255, 255, 255, 0.8);
-    white-space: nowrap;
+  .lightbox {
+    width: min(48rem, calc(100vw - 2rem));
+    max-width: calc(100vw - 2rem);
+    max-height: calc(100vh - 2rem);
+    margin: auto;
+    padding: 0;
     overflow: hidden;
-    text-overflow: ellipsis;
+    border: 0;
+    border-radius: 1rem;
+    background: #0c232e;
+    color: white;
   }
-  .likes {
+  .lightbox[open] {
+    display: block;
+  }
+  .lightbox::backdrop {
+    background: rgba(8, 18, 24, 0.72);
+  }
+  .lightbox__frame {
+    display: grid;
+    width: 100%;
+  }
+  .lightbox form {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    z-index: 2;
+    margin: 0;
+  }
+  .lightbox__close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(8, 18, 24, 0.72);
+    color: white;
+    font: inherit;
+    font-size: 1.25rem;
+    line-height: 1;
+    cursor: pointer;
+  }
+  .lightbox__close:focus-visible {
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+  .lightbox__stage {
+    width: 100%;
+    overflow: hidden;
+    aspect-ratio: 16 / 9;
+    background: black;
+  }
+  .lightbox__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background: black;
+  }
+  .lightbox__img[data-frame="water"] {
+    object-position: right center;
+    transform: scale(1.65);
+    transform-origin: 100% 62%;
+  }
+  .lightbox__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.8rem 1rem 0.95rem;
+  }
+  .lightbox__place {
+    margin: 0;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .lightbox__reactions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .lightbox__reactions > button {
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
-    padding: 0.3rem 0.7rem;
+    height: auto;
+    margin: 0;
+    padding: 0.3rem 0.65rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: var(--radius-pill);
-    background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    font-size: 0.6875rem;
-    font-weight: var(--font-weight-6);
+    background: rgba(255, 255, 255, 0.08);
     color: white;
-    flex-shrink: 0;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    white-space: nowrap;
+    cursor: pointer;
   }
-  .likes svg {
-    color: #fb7185;
-  }
-  .shot__meta {
-    position: absolute;
-    z-index: 1;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.85rem;
-    font-size: 0.6875rem;
-  }
-  .handle-pill {
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-pill);
-    background: rgba(12, 35, 46, 0.7);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(8px);
-    font-weight: var(--font-weight-6);
-  }
-  .title {
-    color: rgba(255, 255, 255, 0.7);
-    font-size: 0.6875rem;
+  .lightbox__reactions > button[aria-pressed="true"] {
+    border-color: var(--brand-teal);
+    background: rgba(0, 137, 123, 0.35);
   }
 </style>

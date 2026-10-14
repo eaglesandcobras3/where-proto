@@ -167,7 +167,9 @@
 >
   <div class="panel">
     <header class="top">
-      <a class="logo" href={homeHref} onclick={hide}>WhereTo<span>30A</span></a>
+      <a class="logo" href={homeHref} onclick={hide}>
+        <img src={`${homeHref}logo.png`} alt="WhereTo30A" width="320" height="79" />
+      </a>
       <button class="close" type="button" aria-label="Close" onclick={hide}>
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
           <path d="M6 6l12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"></path>
@@ -289,14 +291,17 @@
     padding: 1rem 1.15rem 0.35rem;
   }
   .logo {
-    font-family: var(--font-display);
-    font-weight: var(--font-weight-8);
-    color: var(--brand-deep);
+    display: inline-flex;
+    line-height: 0;
     text-decoration: none;
-    font-size: var(--font-size-2);
   }
-  .logo span {
-    color: var(--brand-teal);
+  .logo img {
+    display: block;
+    height: 1.85rem;
+    width: auto;
+  }
+  .logo:hover {
+    text-decoration: none;
   }
   .close {
     width: 2.25rem;

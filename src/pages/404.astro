@@ -1,10 +1,12 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { href } from "../lib/href";
 ---
 
 <BaseLayout title="Not found">
   <div class="container section">
+    <Breadcrumbs onDark={false} />
     <h1>Not found</h1>
     <p>That route is not in this prototype.</p>
     <p>

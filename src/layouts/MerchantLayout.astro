@@ -67,7 +67,9 @@ const v1Links: NavLink[] = [
   <div class="portal">
     <aside class="sidebar">
       <div class="sidebar__brand">
-        <a class="logo" href={href("/")}>WhereTo<span>30A</span></a>
+        <a class="logo" href={href("/")}>
+          <img src={href("/logo.png")} alt="WhereTo30A" width="320" height="79" />
+        </a>
         <span class="badge">Merchant</span>
       </div>
 
@@ -183,13 +185,17 @@ const v1Links: NavLink[] = [
     padding: 0 1.25rem;
   }
   .logo {
-    font-family: var(--font-display);
-    font-weight: var(--font-weight-8);
-    color: var(--brand-deep);
+    display: inline-flex;
+    line-height: 0;
     text-decoration: none;
   }
-  .logo span {
-    color: var(--brand-teal);
+  .logo img {
+    display: block;
+    height: 1.85rem;
+    width: auto;
+  }
+  .logo:hover {
+    text-decoration: none;
   }
   .badge {
     padding: 0.15rem 0.5rem;

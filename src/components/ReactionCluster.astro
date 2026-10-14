@@ -1,0 +1,60 @@
+---
+import type { Reaction } from "../data/types";
+
+interface Props {
+  reactions?: Reaction[];
+}
+
+const { reactions = [] } = Astro.props;
+
+const emoji = { heart: "❤️", up: "👍", wow: "😮" } as const;
+const list = reactions.filter((item) => item.count > 0).sort((a, b) => b.count - a.count);
+const total = list.reduce((sum, item) => sum + item.count, 0);
+---
+
+{
+  total > 0 && (
+    <span class="reactions" aria-label={`${total} reactions`}>
+      <span class="faces" aria-hidden="true">
+        {list.map((item) => (
+          <span class="face">{emoji[item.label]}</span>
+        ))}
+      </span>
+      {total}
+    </span>
+  )
+}
+
+<style>
+  .reactions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-5);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--brand-ink-soft);
+    line-height: 1.4;
+  }
+  .faces {
+    display: inline-flex;
+    align-items: center;
+  }
+  .face {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -0.28rem;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 1px white;
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+  .face:first-child {
+    margin-left: 0;
+  }
+</style>

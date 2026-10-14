@@ -1,9 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import Breadcrumbs from "../../components/Breadcrumbs.astro";
 ---
 
 <BaseLayout title="Sign in">
   <div class="container section">
+    <Breadcrumbs onDark={false} />
     <p>Sign in to save favorites, ask questions, and manage a business.</p>
   </div>
 </BaseLayout>

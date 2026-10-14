@@ -1,199 +1,25 @@
 ---
-import { href } from "../lib/href";
-import { townBySlug } from "../data/catalog";
-
-const slugs = [
-  "blue-mountain-beach",
-  "grayton-beach",
-  "watercolor",
-  "seaside",
-  "seagrove-beach",
-  "watersound",
-  "alys-beach",
-];
-
-const activeSlug = "seaside";
-
-const towns = slugs
-  .map((slug) => townBySlug(slug))
-  .filter((town): town is NonNullable<typeof town> => Boolean(town));
+import Corridor from "./Corridor.astro";
+import SectionIntro from "./SectionIntro.astro";
 ---
 
 <section class="beach-towns">
   <div class="container">
-    <header class="head">
-      <div>
-        <p class="eyebrow">Discover</p>
-        <h2>Beach Towns of 30A</h2>
-        <p class="lede">
-          Rosemary feels different from Grayton, and Seaside from WaterColor. Compare the towns, then
-          dive into local listings and guides.
-        </p>
-      </div>
-      <div class="actions">
-        <a class="map-btn" href={href("/towns")}>Interactive Highway Map</a>
-        <a class="all" href={href("/towns")}>Explore all towns →</a>
-      </div>
-    </header>
+    <SectionIntro
+      eyebrow="Discover"
+      title="Beach Towns of 30A"
+      lede="Rosemary feels different from Grayton, and Seaside from WaterColor. Compare the towns, then dive into local listings and guides."
+      linkHref="/towns"
+      link="Explore all towns →"
+    />
 
-    <div class="rail" role="list">
-      {
-        towns.map((town) => (
-          <a
-            class:list={["town", town.slug === activeSlug && "town--active"]}
-            href={href(`/town/${town.slug}`)}
-            role="listitem"
-          >
-            <span class="name">{town.name}</span>
-            <span class="avatar img-placeholder" aria-hidden="true">
-              {town.name.charAt(0)}
-            </span>
-          </a>
-        ))
-      }
-    </div>
+    <Corridor size="large" bare currentSlug="seaside" />
   </div>
 </section>
 
 <style>
   .beach-towns {
-    background: var(--brand-sand);
+    background: #f0f4f5;
     padding-block: clamp(2rem, 4vw, 3rem);
-  }
-  .head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: var(--size-4);
-    margin-bottom: var(--size-6);
-  }
-  .eyebrow {
-    margin: 0 0 0.4rem;
-    font-family: var(--font-display);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
-  }
-  h2 {
-    margin: 0 0 0.5rem;
-    font-family: var(--font-display);
-    font-size: clamp(1.65rem, 3vw, 2.15rem);
-    font-weight: var(--font-weight-8);
-    color: var(--brand-deep);
-  }
-  .lede {
-    margin: 0;
-    max-width: 40rem;
-    font-size: var(--font-size-2);
-    line-height: 1.55;
-    color: var(--brand-ink-soft);
-  }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.75rem 1rem;
-  }
-  .map-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.5rem;
-    padding: 0.5rem 1.15rem;
-    border-radius: var(--radius-button);
-    border: 1px solid var(--brand-deep);
-    background: white;
-    color: var(--brand-deep);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
-    white-space: nowrap;
-  }
-  .map-btn:hover {
-    background: rgba(12, 35, 46, 0.04);
-    text-decoration: none;
-  }
-  .all {
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-deep);
-    white-space: nowrap;
-  }
-  .all:hover {
-    color: var(--brand-teal);
-  }
-  .rail {
-    display: flex;
-    gap: clamp(0.75rem, 2vw, 1.5rem);
-    overflow-x: auto;
-    padding-block: 0.5rem 0.25rem;
-    scrollbar-width: thin;
-  }
-  .town {
-    flex: 0 0 auto;
-    display: grid;
-    justify-items: center;
-    gap: 0.75rem;
-    min-width: 5.5rem;
-    color: inherit;
-    position: relative;
-  }
-  .town:hover {
-    text-decoration: none;
-  }
-  .town:hover .name {
-    color: var(--brand-teal);
-  }
-  .name {
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-deep);
-    text-align: center;
-    white-space: nowrap;
-  }
-  .avatar {
-    width: 5.5rem;
-    height: 5.5rem;
-    border-radius: 50%;
-    border: 3px solid transparent;
-    font-size: var(--font-size-4);
-    position: relative;
-    z-index: 1;
-  }
-  .town--active .name {
-    font-weight: var(--font-weight-8);
-  }
-  .town--active .avatar {
-    border-color: var(--brand-deep);
-    box-shadow: 0 0 0 3px white;
-  }
-  .rail {
-    position: relative;
-  }
-  .rail::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: calc(1.5rem + 0.75rem + 2.75rem);
-    height: 1px;
-    background: var(--brand-line);
-    z-index: 0;
-    pointer-events: none;
-  }
-  @media (min-width: 900px) {
-    .rail {
-      justify-content: space-between;
-      overflow: visible;
-    }
-    .avatar {
-      width: 6.25rem;
-      height: 6.25rem;
-    }
-    .rail::after {
-      top: calc(1.5rem + 0.75rem + 3.125rem);
-    }
   }
 </style>
