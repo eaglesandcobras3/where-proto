@@ -1,0 +1,218 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import {
+  businessBySlug,
+  businesses,
+  stayBySlug,
+  stays,
+  townBySlug,
+  towns,
+  videos,
+} from "../../data/catalog";
+import { href } from "../../lib/href";
+import { businessPath, stayPath } from "../../lib/listing";
+import type { VideoHost } from "../../data/types";
+
+function hostName(type: VideoHost, slug: string) {
+  if (type === "town") return townBySlug(slug)?.name ?? slug;
+  if (type === "business") return businessBySlug(slug)?.name ?? slug;
+  return stayBySlug(slug)?.name ?? slug;
+}
+
+function publicPath(type: VideoHost, slug: string) {
+  if (type === "town") return `/town/${slug}`;
+  if (type === "business") return businessPathBySafe(slug);
+  const stay = stayBySlug(slug);
+  return stay ? stayPath(stay) : `/stay/${slug}`;
+}
+
+function businessPathBySafe(slug: string) {
+  const biz = businessBySlug(slug);
+  return biz ? businessPath(biz) : `/business/${slug}`;
+}
+
+const rows = videos.map((video) => ({
+  ...video,
+  hostName: hostName(video.attachedTo.type, video.attachedTo.slug),
+  publicPath: publicPath(video.attachedTo.type, video.attachedTo.slug),
+}));
+---
+
+<BaseLayout title="Videos">
+  <div class="container section">
+    <p><a href={href("/admin")}>Admin</a></p>
+    <h1>Videos</h1>
+    <p>
+      YouTube links attached to a town, business, or stay. They render on that entity page only —
+      there is no public videos hub. Merchant dashboards cannot add these.
+    </p>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>On</th>
+            <th>YouTube</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            rows.map((item) => (
+              <tr>
+                <td>{item.title}</td>
+                <td>
+                  <span class="kind">{item.attachedTo.type}</span>
+                  <a href={href(item.publicPath)}>{item.hostName}</a>
+                </td>
+                <td>
+                  <a href={item.youtubeUrl} target="_blank" rel="noopener noreferrer">
+                    {item.youtubeUrl}
+                  </a>
+                </td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <form class="add">
+      <h2>Add a YouTube video</h2>
+      <p class="hint">Prototype form. Does not persist yet.</p>
+      <label>
+        Attach to
+        <select name="type">
+          <option value="town">Town</option>
+          <option value="business">Business</option>
+          <option value="stay">Stay</option>
+        </select>
+      </label>
+      <label>
+        Town
+        <select name="town">
+          {towns.map((item) => (
+            <option value={item.slug}>{item.name}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Business
+        <select name="business">
+          {businesses.map((item) => (
+            <option value={item.slug}>{item.name}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Stay
+        <select name="stay">
+          {stays.map((item) => (
+            <option value={item.slug}>{item.name}</option>
+          ))}
+        </select>
+      </label>
+      <label>
+        Title
+        <input type="text" name="title" placeholder="A walk through Rosemary Beach" />
+      </label>
+      <label>
+        YouTube URL
+        <input type="url" name="youtubeUrl" placeholder="https://www.youtube.com/watch?v=…" />
+      </label>
+      <button type="button">Add video</button>
+    </form>
+  </div>
+</BaseLayout>
+
+<style>
+  p {
+    max-width: 40rem;
+    color: var(--brand-ink-soft);
+  }
+  .table-wrap {
+    overflow-x: auto;
+    margin: var(--size-5) 0;
+  }
+  table {
+    width: 100%;
+    min-width: 640px;
+    border-collapse: collapse;
+    background: white;
+    border: 1px solid var(--brand-line);
+  }
+  th,
+  td {
+    text-align: left;
+    padding: var(--size-3) var(--size-4);
+    border-bottom: 1px solid var(--brand-line);
+    font-size: var(--font-size-1);
+    vertical-align: top;
+  }
+  th {
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .kind {
+    display: inline-block;
+    margin-right: 0.45rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .add {
+    display: grid;
+    gap: var(--size-3);
+    max-width: 32rem;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-card);
+    padding: var(--size-5);
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-3);
+  }
+  .hint {
+    margin: 0;
+    font-size: var(--font-size-0);
+  }
+  label {
+    display: grid;
+    gap: 0.35rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  input,
+  select {
+    min-height: 2.5rem;
+    padding: 0.45rem 0.7rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-button);
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-4);
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--brand-ink);
+  }
+  button {
+    justify-self: start;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border: 0;
+    border-radius: var(--radius-button);
+    background: var(--brand-deep);
+    color: white;
+    font: inherit;
+    font-weight: var(--font-weight-7);
+    cursor: pointer;
+  }
+</style>

@@ -45,6 +45,7 @@ const routes = [
   ["SEO overrides", "/admin/seo"],
   ["Knowledge", "/admin/knowledge"],
   ["Entities", "/admin/entities"],
+  ["Videos (admin)", "/admin/videos"],
   ["Login", "/auth/login"],
   ["Sign up", "/auth/signup"],
   ["Forgot password", "/auth/forgot-password"],
@@ -65,6 +66,7 @@ const routes = [
       <li>Town hubs are discovery surfaces. Business leaves live at /town/{"{town}"}/business/{"{category}"}; stays at /town/{"{town}"}/stay/{"{category}"}.</li>
       <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
       <li>Updates are modules on town, area, and business pages only — never a public /updates rollup or homepage module.</li>
+      <li>Videos are admin-only YouTube links on town, business, and stay pages — never a public /videos rollup.</li>
       <li>Areas extend a town: shopping areas and neighborhoods.</li>
     </ol>
     <ul class="routes">

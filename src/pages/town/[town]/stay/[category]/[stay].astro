@@ -2,6 +2,7 @@
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import InteriorHero from "../../../../../components/InteriorHero.astro";
 import EntityGallery from "../../../../../components/EntityGallery.astro";
+import EntityVideos from "../../../../../components/EntityVideos.astro";
 import CommunityQA from "../../../../../components/CommunityQA.astro";
 import RelatedGuides from "../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../components/HappeningHere.astro";
@@ -15,6 +16,7 @@ import {
   faqsForStay,
   guides,
   photosFor,
+  videosFor,
   stays,
   townBySlug,
   updateSharePath,
@@ -51,6 +53,7 @@ const nearbyEvents =
     : events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
 const isInn = /hotel|inn/i.test(stay.name);
 const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
+const stayVideos = videosFor("stay", stay.slug);
 const relatedGuides = guides
   .filter((item) => item.townSlug === stay.townSlug)
   .concat(guides)
@@ -120,6 +123,7 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
           <p>{stay.summary}</p>
         </section>
         <EntityGallery photos={stayPhotos} fallbackName={stay.name} />
+        <EntityVideos videos={stayVideos} />
         <section class="panel">
           <h2>Amenities</h2>
           <div class="perks">

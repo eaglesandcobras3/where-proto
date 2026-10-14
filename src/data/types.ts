@@ -135,6 +135,15 @@ export interface Photo {
   attachedTo: { type: "town" | "business" | "event" | "post" | "area"; slug: Slug };
 }
 
+export type VideoHost = "town" | "business" | "stay";
+
+export interface Video {
+  slug: Slug;
+  title: string;
+  youtubeUrl: string;
+  attachedTo: { type: VideoHost; slug: Slug };
+}
+
 export interface Question {
   slug: Slug;
   title: string;

@@ -9,6 +9,7 @@ import type {
   KnowledgeItem,
   Photo,
   Post,
+  Video,
   Question,
   Reaction,
   ReviewQueueItem,
@@ -1147,6 +1148,39 @@ export const photos: Photo[] = [
   },
 ];
 
+export const videos: Video[] = [
+  {
+    slug: "rosemary-beach-walk",
+    title: "A walk through Rosemary Beach",
+    youtubeUrl: "https://www.youtube.com/watch?v=30ARosemary",
+    attachedTo: { type: "town", slug: "rosemary-beach" },
+  },
+  {
+    slug: "seaside-square",
+    title: "Seaside town square",
+    youtubeUrl: "https://youtu.be/30ASeaside1",
+    attachedTo: { type: "town", slug: "seaside" },
+  },
+  {
+    slug: "edwards-courtyard-reel",
+    title: "Courtyard dinner at Edward's",
+    youtubeUrl: "https://www.youtube.com/watch?v=Edwards30A1",
+    attachedTo: { type: "business", slug: "edwards-fine-food-and-wine" },
+  },
+  {
+    slug: "pearl-stay-tour",
+    title: "Tour of The Pearl Hotel",
+    youtubeUrl: "https://www.youtube.com/watch?v=PearlStay30",
+    attachedTo: { type: "stay", slug: "the-pearl-hotel" },
+  },
+  {
+    slug: "watercolor-inn-lawn",
+    title: "Sunset on the WaterColor Inn lawn",
+    youtubeUrl: "https://www.youtube.com/watch?v=WaterColr30",
+    attachedTo: { type: "stay", slug: "watercolor-inn" },
+  },
+];
+
 export const questions: Question[] = [
   {
     slug: "parking-near-seaside",
@@ -1426,6 +1460,10 @@ export function photosFor(
   slug: string,
 ) {
   return photos.filter((item) => item.attachedTo.type === type && item.attachedTo.slug === slug);
+}
+
+export function videosFor(type: Video["attachedTo"]["type"], slug: string) {
+  return videos.filter((item) => item.attachedTo.type === type && item.attachedTo.slug === slug);
 }
 
 export function reactionsFor(type: Reaction["on"]["type"], slug: string) {

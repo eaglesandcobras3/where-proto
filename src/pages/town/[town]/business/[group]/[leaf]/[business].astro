@@ -3,6 +3,7 @@ import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
 import InteriorHero from "../../../../../../components/InteriorHero.astro";
 import BusinessCard from "../../../../../../components/BusinessCard.astro";
 import EntityGallery from "../../../../../../components/EntityGallery.astro";
+import EntityVideos from "../../../../../../components/EntityVideos.astro";
 import CommunityQA from "../../../../../../components/CommunityQA.astro";
 import RelatedGuides from "../../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../../components/HappeningHere.astro";
@@ -15,6 +16,7 @@ import {
   faqsForBusiness,
   leafBySlug,
   photosFor,
+  videosFor,
   tagBySlug,
   townBySlug,
   guides,
@@ -47,6 +49,7 @@ const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
 const businessPhotos = photosFor("business", business.slug);
+const businessVideos = videosFor("business", business.slug);
 const similar = businesses
   .filter(
     (item) =>
@@ -130,6 +133,7 @@ const businessUpdates = updatesForBusiness(business.slug);
           <p>{business.summary}</p>
         </section>
         <EntityGallery photos={businessPhotos} fallbackName={business.name} />
+        <EntityVideos videos={businessVideos} />
         <section class="panel">
           <h2>Hours &amp; location</h2>
           <p>{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>

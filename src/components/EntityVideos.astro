@@ -1,0 +1,86 @@
+---
+import type { Video } from "../data/types";
+import { youtubeEmbedSrc } from "../lib/youtube";
+
+interface Props {
+  videos: Video[];
+}
+
+const { videos } = Astro.props;
+const items = videos
+  .map((video) => ({ video, embed: youtubeEmbedSrc(video.youtubeUrl) }))
+  .filter((item) => item.embed);
+---
+
+{
+  items.length > 0 && (
+    <section class="panel entity-videos">
+      <h2>Videos</h2>
+      <div class="grid">
+        {items.map(({ video, embed }) => (
+          <figure>
+            <div class="frame">
+              <iframe
+                src={embed}
+                title={video.title}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              />
+            </div>
+            <figcaption>
+              <a href={video.youtubeUrl} target="_blank" rel="noopener noreferrer">
+                {video.title}
+              </a>
+            </figcaption>
+          </figure>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  h2 {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-3);
+  }
+  .grid {
+    display: grid;
+    gap: var(--size-4);
+  }
+  figure {
+    margin: 0;
+  }
+  .frame {
+    position: relative;
+    aspect-ratio: 16 / 9;
+    border-radius: var(--radius-2);
+    overflow: hidden;
+    background: var(--brand-sand-dark);
+  }
+  iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+  }
+  figcaption {
+    margin-top: var(--size-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  @media (min-width: 720px) {
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+    }
+  }
+</style>
