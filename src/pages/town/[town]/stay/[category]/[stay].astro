@@ -13,7 +13,7 @@ import UpdatesModule from "../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../components/islands/PostedUpdates.svelte";
 import {
   businessBySlug,
-  events,
+  eventsForBusiness,
   faqsForStay,
   guides,
   communityPhotosForPosts,
@@ -49,11 +49,7 @@ const { item: stay } = Astro.props;
 const town = townBySlug(stay.townSlug);
 const listing = stay.businessSlug ? businessBySlug(stay.businessSlug) : undefined;
 const related = stays.filter((item) => item.slug !== stay.slug).slice(0, 3);
-const listingEvents = listing ? events.filter((item) => item.businessSlug === listing.slug) : [];
-const nearbyEvents =
-  listingEvents.length > 0
-    ? listingEvents
-    : events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
+const stayEvents = listing ? eventsForBusiness(listing.slug) : [];
 const isInn = /hotel|inn/i.test(stay.name);
 const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
 const feedPosts = visitorPostsAboutStay(stay);
@@ -148,18 +144,14 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
           <p>{listing?.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
           <p class="muted">{listing?.hours ?? "Hours vary"}</p>
         </section>
-        {
-          listing && (
-            <UpdatesModule
-              entityKind="stay"
-              entityName={stay.name}
-              updates={stayUpdates}
-              ctaHref={updateSharePath("business", listing.slug)}
-            />
-          )
-        }
+        <UpdatesModule
+          entityKind="stay"
+          entityName={stay.name}
+          updates={stayUpdates}
+          ctaHref={listing ? updateSharePath("business", listing.slug) : "/dashboard"}
+        />
         {listing && <PostedUpdates businessSlug={listing.slug} client:load />}
-        <HappeningHere events={nearbyEvents} placeName={stay.name} townSlug={stay.townSlug} />
+        <HappeningHere events={stayEvents} placeName={stay.name} townSlug={stay.townSlug} persist />
         <EntityFeed posts={feedPosts} placeName={stay.name} />
         <section class="panel faq">
           <h2>Good to know</h2>

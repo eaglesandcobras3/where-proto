@@ -13,10 +13,10 @@ import UpdatesModule from "../../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../../components/islands/PostedUpdates.svelte";
 import {
   businesses,
-  events,
   faqsForBusiness,
   leafBySlug,
   communityPhotosForPosts,
+  eventsForBusiness,
   photosFor,
   videosFor,
   visitorPostsAboutBusiness,
@@ -50,7 +50,7 @@ interface Props {
 const { item: business } = Astro.props;
 const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
-const businessEvents = events.filter((item) => item.businessSlug === business.slug);
+const businessEvents = eventsForBusiness(business.slug);
 const businessPhotos = photosFor("business", business.slug);
 const feedPosts = visitorPostsAboutBusiness(business.slug);
 const communityPhotos = communityPhotosForPosts(feedPosts);
@@ -151,7 +151,7 @@ const businessUpdates = updatesForBusiness(business.slug);
           ctaHref={updateSharePath("business", business.slug)}
         />
         <PostedUpdates businessSlug={business.slug} client:load />
-        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
+        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} persist />
         <EntityFeed posts={feedPosts} placeName={business.name} />
         <section class="panel faq">
           <h2>Good to know</h2>

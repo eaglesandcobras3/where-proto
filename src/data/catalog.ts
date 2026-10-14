@@ -852,6 +852,19 @@ export const events: EventItem[] = [
     bucket: "weekend",
   },
   {
+    slug: "pearl-porch-hour",
+    name: "Porch hour at The Pearl",
+    townSlug: "rosemary-beach",
+    businessSlug: "the-pearl-hotel",
+    when: "Friday, 5:00 PM",
+    time: "5:00 PM – 6:00 PM",
+    summary: "Hosted hour on the hotel porch. Fake stay event.",
+    venue: "The Pearl Hotel porch",
+    category: "Food",
+    price: "Free",
+    bucket: "weekend",
+  },
+  {
     slug: "watercolor-inn-sundown",
     name: "Gulf-front sundown at the inn",
     townSlug: "watercolor",
@@ -1528,6 +1541,10 @@ export function updatesForArea(areaSlug: string) {
 
 export function updatesForBusiness(businessSlug: string) {
   return updates.filter((item) => item.businessSlug === businessSlug);
+}
+
+export function eventsForBusiness(businessSlug: string) {
+  return events.filter((item) => item.businessSlug === businessSlug);
 }
 
 /** Composer or claim flow scoped to one entity — never a generic /updates destination. */

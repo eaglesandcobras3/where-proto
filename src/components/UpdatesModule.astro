@@ -13,6 +13,7 @@ interface Props {
 
 const { entityKind, entityName, updates, ctaHref } = Astro.props;
 const shown = liveUpdates(updates).slice(0, 3);
+const persist = entityKind === "business" || entityKind === "stay";
 const title = entityKind === "town" || entityKind === "area" ? `Updates in ${entityName}` : "Latest updates";
 const ctaLabel =
   entityKind === "stay"
@@ -22,17 +23,22 @@ const ctaLabel =
       : entityKind === "town"
         ? "Share a town update"
         : "Share an area update";
+const empty = `No live updates from ${entityName} right now.`;
 ---
 
 {
-  shown.length > 0 && (
+  (shown.length > 0 || persist) && (
     <section class="updates-module" id="updates" data-updates-entity={entityKind}>
       <h2 class="section-title">{title}</h2>
-      <div class="grid">
-        {shown.map((update) => (
-          <UpdateCard update={update} />
-        ))}
-      </div>
+      {shown.length > 0 ? (
+        <div class="grid">
+          {shown.map((update) => (
+            <UpdateCard update={update} />
+          ))}
+        </div>
+      ) : (
+        <p class="empty">{empty}</p>
+      )}
       <p class="more">
         <a href={href(ctaHref)}>{ctaLabel}</a>
       </p>
@@ -60,6 +66,11 @@ const ctaLabel =
     grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
     gap: var(--size-4);
     align-items: start;
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
   }
   .more {
     margin: var(--size-4) 0 0;
