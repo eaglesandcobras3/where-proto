@@ -5,30 +5,35 @@ import { liveUpdates } from "../data/catalog";
 import type { Update } from "../data/types";
 
 interface Props {
-  title: string;
+  entityKind: "business" | "town" | "area";
+  entityName: string;
   updates: Update[];
-  ctaHref?: string;
-  ctaLabel?: string;
+  ctaHref: string;
 }
 
-const { title, updates, ctaHref, ctaLabel } = Astro.props;
+const { entityKind, entityName, updates, ctaHref } = Astro.props;
 const shown = liveUpdates(updates).slice(0, 3);
+const title = entityKind === "business" ? "Latest updates" : `Updates in ${entityName}`;
+const ctaLabel =
+  entityKind === "business"
+    ? "Own this business? Share an update"
+    : entityKind === "town"
+      ? "Share a town update"
+      : "Share an area update";
 ---
 
 {
   shown.length > 0 && (
-    <section class="updates-module">
+    <section class="updates-module" id="updates" data-updates-entity={entityKind}>
       <h2 class="section-title">{title}</h2>
       <div class="grid">
         {shown.map((update) => (
           <UpdateCard update={update} />
         ))}
       </div>
-      {ctaHref && ctaLabel && (
-        <p class="more">
-          <a href={href(ctaHref)}>{ctaLabel}</a>
-        </p>
-      )}
+      <p class="more">
+        <a href={href(ctaHref)}>{ctaLabel}</a>
+      </p>
     </section>
   )
 }
@@ -36,6 +41,17 @@ const shown = liveUpdates(updates).slice(0, 3);
 <style>
   .updates-module {
     margin-block: var(--size-8);
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .section-title {
+    margin: 0 0 var(--size-4);
+    font-family: var(--font-display);
+    font-size: var(--font-size-4);
+    color: var(--brand-deep);
   }
   .grid {
     display: grid;
@@ -44,7 +60,11 @@ const shown = liveUpdates(updates).slice(0, 3);
     align-items: start;
   }
   .more {
-    margin-top: var(--size-4);
+    margin: var(--size-4) 0 0;
     font-size: var(--font-size-1);
+  }
+  .more a {
+    font-weight: var(--font-weight-7);
+    color: var(--brand-teal);
   }
 </style>

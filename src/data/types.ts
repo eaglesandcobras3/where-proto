@@ -102,7 +102,9 @@ export interface Update {
   createdAt: string;
   through: string;
   type: "new_item" | "limited_offer" | "business_news" | "hours_change";
+  /** Public updates belong to exactly one entity. Untied updates never render. */
   townSlug?: Slug;
+  areaSlug?: Slug;
   businessSlug?: Slug;
 }
 

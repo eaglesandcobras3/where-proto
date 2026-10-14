@@ -6,11 +6,19 @@ import ContributeCard from "../../components/ContributeCard.astro";
 import CategoriesInTown from "../../components/CategoriesInTown.astro";
 import AreasInTown from "../../components/AreasInTown.astro";
 import TownCommunitySections from "../../components/TownCommunitySections.astro";
+import UpdatesModule from "../../components/UpdatesModule.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import GuideCard from "../../components/GuideCard.astro";
 import { isEnabled } from "../../config/flags";
-import { businessesForTown, guides, photosFor, towns } from "../../data/catalog";
+import {
+  businessesForTown,
+  guides,
+  photosFor,
+  towns,
+  updateSharePath,
+  updatesForTown,
+} from "../../data/catalog";
 import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
@@ -125,6 +133,17 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
                 ))}
               </div>
             </section>
+          )
+        }
+
+        {
+          isEnabled("updates") && (
+            <UpdatesModule
+              entityKind="town"
+              entityName={town.name}
+              updates={updatesForTown(town.slug)}
+              ctaHref={updateSharePath("town", town.slug)}
+            />
           )
         }
 
@@ -508,12 +527,6 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
   .composer__btn:hover {
     background: var(--brand-teal);
     text-decoration: none;
-  }
-  .feed :global(.updates-module) {
-    margin-block: 0;
-  }
-  .feed :global(.section-title) {
-    display: none;
   }
   .alert {
     padding: var(--size-4);

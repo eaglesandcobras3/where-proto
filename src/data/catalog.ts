@@ -965,6 +965,25 @@ export const updates: Update[] = [
     townSlug: "rosemary-beach",
     businessSlug: "edwards-fine-food-and-wine",
   },
+  {
+    slug: "square-pavers-weekend",
+    title: "Pavers closed Friday morning",
+    body: "Town square pavers get a rinse before the weekend. Fake area update.",
+    createdAt: "2026-10-08",
+    through: "2026-10-10",
+    type: "business_news",
+    areaSlug: "seaside-town-square",
+  },
+  {
+    slug: "expired-beachy-bean-hours",
+    title: "Summer hours ended",
+    body: "Back to regular hours. Fake expired update — must never render publicly.",
+    createdAt: "2026-09-01",
+    through: "2026-09-30",
+    type: "hours_change",
+    townSlug: "seaside",
+    businessSlug: "beachy-bean-coffee",
+  },
 ];
 
 export const users: User[] = [
@@ -1298,12 +1317,60 @@ export function areaKindLabel(kind: Area["kind"]) {
   return kind === "shopping" ? "Shopping area" : "Neighborhood";
 }
 
+/** An update renders publicly only when it belongs to a business, town, or area. */
+export function isTiedUpdate(update: Update) {
+  return Boolean(update.businessSlug || update.areaSlug || update.townSlug);
+}
+
+/**
+ * Town announcements (town-only, no business/area host) plus updates from
+ * businesses that sit in this town. Area announcements stay on the area page.
+ */
 export function updatesForTown(townSlug: string) {
-  return updates.filter((item) => item.townSlug === townSlug);
+  return updates.filter((item) => {
+    if (!isTiedUpdate(item)) return false;
+    if (item.businessSlug) {
+      return businessBySlug(item.businessSlug)?.townSlug === townSlug;
+    }
+    if (item.areaSlug) return false;
+    return item.townSlug === townSlug;
+  });
+}
+
+/**
+ * Area announcements plus updates from businesses in this area.
+ * Town-wide announcements do not inherit onto area pages.
+ */
+export function updatesForArea(areaSlug: string) {
+  return updates.filter((item) => {
+    if (!isTiedUpdate(item)) return false;
+    if (item.businessSlug) {
+      return businessBySlug(item.businessSlug)?.areaSlug === areaSlug;
+    }
+    return item.areaSlug === areaSlug;
+  });
 }
 
 export function updatesForBusiness(businessSlug: string) {
   return updates.filter((item) => item.businessSlug === businessSlug);
+}
+
+/** Composer or claim flow scoped to one entity — never a generic /updates destination. */
+export function updateSharePath(kind: "business" | "town" | "area", slug: string) {
+  if (kind === "business") {
+    const biz = businessBySlug(slug);
+    return biz?.ownerUserSlug ? `/dashboard/${biz.slug}/feed` : "/dashboard";
+  }
+  if (kind === "town") {
+    const desk = townMerchantForTown(slug);
+    return desk?.ownerUserSlug
+      ? `/dashboard/${desk.slug}/feed`
+      : `/dashboard?share=update&town=${slug}`;
+  }
+  const desk = areaMerchantForArea(slug);
+  return desk?.ownerUserSlug
+    ? `/dashboard/${desk.slug}/feed`
+    : `/dashboard?share=update&area=${slug}`;
 }
 
 export function businessesForLeaf(leafSlug: string) {

@@ -1,9 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import TownCommunitySections from "../../components/TownCommunitySections.astro";
+import UpdatesModule from "../../components/UpdatesModule.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import AreaCard from "../../components/AreaCard.astro";
+import { isEnabled } from "../../config/flags";
 import {
   areaKindLabel,
   areas,
@@ -12,6 +14,8 @@ import {
   photosFor,
   townBySlug,
   towns,
+  updateSharePath,
+  updatesForArea,
 } from "../../data/catalog";
 import type { Area } from "../../data/types";
 import { href } from "../../lib/href";
@@ -187,6 +191,17 @@ const kindLabel = areaKindLabel(area.kind);
           )
         }
 
+        {
+          isEnabled("updates") && (
+            <UpdatesModule
+              entityKind="area"
+              entityName={area.name}
+              updates={updatesForArea(area.slug)}
+              ctaHref={updateSharePath("area", area.slug)}
+            />
+          )
+        }
+
         <TownCommunitySections town={town} areaName={area.name} />
 
         <section class="panel">
@@ -217,7 +232,7 @@ const kindLabel = areaKindLabel(area.kind);
             <li><a href={href(`/search?town=${town.slug}`)}>Businesses</a></li>
             <li><a href={href(`/stays?town=${town.slug}`)}>Stays</a></li>
             <li><a href={href(`/events?town=${town.slug}`)}>Events</a></li>
-            <li><a href={href(`/town/${town.slug}#updates`)}>Town bulletins</a></li>
+            <li><a href={href(`/town/${town.slug}`)}>Town page</a></li>
             <li><a href={href("/ask")}>Ask locals</a></li>
           </ul>
         </section>

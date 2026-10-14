@@ -4,6 +4,7 @@ import PhotoGrid from "../../components/PhotoGrid.astro";
 import EventCard from "../../components/EventCard.astro";
 import PostCard from "../../components/PostCard.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
+import UpdatesModule from "../../components/UpdatesModule.astro";
 import { isEnabled } from "../../config/flags";
 import {
   areaBySlug,
@@ -15,6 +16,7 @@ import {
   stayBySlug,
   tagBySlug,
   townBySlug,
+  updateSharePath,
   updatesForBusiness,
 } from "../../data/catalog";
 import type { Business } from "../../data/types";
@@ -185,26 +187,12 @@ const faq = [
 
         {
           isEnabled("updates") && (
-            <section class="panel">
-              <div class="panel__head">
-                <h2>Latest Updates from {business.name}</h2>
-                <a href={href("/dashboard")}>Post Merchant Bulletin</a>
-              </div>
-              {businessUpdates.length === 0 ? (
-                <p class="muted">Owner updates and seasonal notes will show here.</p>
-              ) : (
-                <div class="updates">
-                  {businessUpdates.slice(0, 4).map((update) => (
-                    <article class="update">
-                      <p class="update__tag">{update.type.replace(/_/g, " ")}</p>
-                      <h3>{update.title}</h3>
-                      <p>{update.body}</p>
-                      <p class="muted">Active through {update.through}</p>
-                    </article>
-                  ))}
-                </div>
-              )}
-            </section>
+            <UpdatesModule
+              entityKind="business"
+              entityName={business.name}
+              updates={businessUpdates}
+              ctaHref={updateSharePath("business", business.slug)}
+            />
           )
         }
 
@@ -538,32 +526,6 @@ const faq = [
     margin: 0;
     font-size: var(--font-size-1);
     text-transform: capitalize;
-  }
-  .updates {
-    display: grid;
-    gap: var(--size-3);
-  }
-  .update {
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-2);
-    padding: var(--size-3);
-    background: var(--brand-sand);
-  }
-  .update__tag {
-    margin: 0 0 0.35rem;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .update h3 {
-    margin: 0 0 0.35rem;
-    font-size: var(--font-size-2);
-  }
-  .update p {
-    margin: 0;
-    font-size: var(--font-size-1);
   }
   .composer {
     display: grid;

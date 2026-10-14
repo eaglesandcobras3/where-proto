@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import BusinessesPanel from "../components/islands/BusinessesPanel.svelte";
-import { businesses, towns } from "../data/catalog";
+import ShareUpdateForm from "../components/islands/ShareUpdateForm.svelte";
+import { areas, businesses, towns } from "../data/catalog";
 import { href } from "../lib/href";
 
 const seedBusinesses = businesses.map((biz) => ({
@@ -15,6 +16,7 @@ const seedBusinesses = businesses.map((biz) => ({
 }));
 
 const townNames = Object.fromEntries(towns.map((town) => [town.slug, town.name]));
+const areaNames = Object.fromEntries(areas.map((area) => [area.slug, area.name]));
 ---
 
 <BaseLayout
@@ -23,6 +25,7 @@ const townNames = Object.fromEntries(towns.map((town) => [town.slug, town.name])
   active="dashboard"
 >
   <div class="container section dash">
+    <ShareUpdateForm townNames={townNames} areaNames={areaNames} client:load />
     <BusinessesPanel
       seedBusinesses={seedBusinesses}
       townNames={townNames}
