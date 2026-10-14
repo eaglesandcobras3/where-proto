@@ -60,6 +60,7 @@ const shots = [
       <a class="share" href={href("/dashboard")}>Share Your Photos</a>
     </header>
 
+    <div class="scroller">
     <div class="mosaic">
       <article class="shot shot--featured">
         <img class="shot__img" src={featured.src} alt={featured.alt} loading="lazy" />
@@ -105,6 +106,7 @@ const shots = [
           ))
         }
       </div>
+    </div>
     </div>
   </div>
 </section>
@@ -172,14 +174,23 @@ const shots = [
     color: var(--brand-teal);
     text-decoration: none;
   }
-  /* Stitch: 12-col bento — featured 5 + 2×2 grid 7 */
+  /* Keep the desktop bento (featured 5 + 2×2 grid 7) and scroll sideways on small screens. */
+  .scroller {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
   .mosaic {
     display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: 1rem;
+    align-items: stretch;
+    min-width: 56rem;
+    width: 100%;
   }
   .mosaic__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
     gap: 1rem;
   }
   .shot {
@@ -193,7 +204,8 @@ const shots = [
   }
   .shot--featured {
     min-height: 22rem;
-    aspect-ratio: 16 / 10;
+    height: 100%;
+    aspect-ratio: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -343,21 +355,5 @@ const shots = [
   .title {
     color: rgba(255, 255, 255, 0.7);
     font-size: 0.6875rem;
-  }
-  @media (min-width: 640px) {
-    .mosaic__grid {
-      grid-template-columns: 1fr 1fr;
-    }
-  }
-  @media (min-width: 900px) {
-    .mosaic {
-      grid-template-columns: 5fr 7fr;
-      align-items: stretch;
-    }
-    .shot--featured {
-      height: 100%;
-      min-height: 100%;
-      aspect-ratio: auto;
-    }
   }
 </style>
