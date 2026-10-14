@@ -20,7 +20,7 @@ const pages = {
   ask: "ask/index.html",
   town: "town/seaside/index.html",
   townCategory: "town/seaside/restaurants/index.html",
-  business: "business/beachy-bean-coffee/index.html",
+  business: "town/seaside/food-and-drink/coffee-shops/beachy-bean-coffee/index.html",
   stay: "stay/watercolor-inn/index.html",
   event: "event/alys-sunset-yoga/index.html",
   guide: "guide/first-timers-guide/index.html",

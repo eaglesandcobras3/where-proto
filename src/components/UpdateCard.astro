@@ -2,6 +2,7 @@
 import { href } from "../lib/href";
 import { areaBySlug, businessBySlug, townBySlug } from "../data/catalog";
 import { formatThrough, updateTypeLabels } from "../lib/labels";
+import { businessPath } from "../lib/listing";
 import type { Update } from "../data/types";
 
 interface Props {
@@ -13,7 +14,7 @@ const business = update.businessSlug ? businessBySlug(update.businessSlug) : und
 const area = !business && update.areaSlug ? areaBySlug(update.areaSlug) : undefined;
 const town = !business && !area && update.townSlug ? townBySlug(update.townSlug) : undefined;
 const source = business
-  ? { name: business.name, path: `/business/${business.slug}` }
+  ? { name: business.name, path: businessPath(business) }
   : area
     ? { name: area.name, path: `/area/${area.slug}` }
     : town

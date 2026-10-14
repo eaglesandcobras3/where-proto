@@ -2,6 +2,7 @@
 import { href } from "../lib/href";
 import { leafBySlug, townBySlug } from "../data/catalog";
 import { cardImageSrc, featuredSizes } from "../lib/card-image";
+import { businessPath } from "../lib/listing";
 import type { Business } from "../data/types";
 
 interface Props {
@@ -13,7 +14,7 @@ const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
 ---
 
-<a class="featured" href={href(`/business/${business.slug}`)}>
+<a class="featured" href={href(businessPath(business))}>
   <div class="media">
     <img
       src={cardImageSrc(business.name.charAt(0), "2/3")}

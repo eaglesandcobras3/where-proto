@@ -50,14 +50,17 @@ const sections = [
   title={guide.title}
   description={guide.summary}
   active="guides"
-  crumbs={[
-    { label: "Guides", path: "/guides" },
-    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
-    { label: guide.title },
-  ]}
 >
   <div class="guide-page">
-    <InteriorHero title={guide.title} lede={guide.summary}>
+    <InteriorHero
+      title={guide.title}
+      lede={guide.summary}
+      crumbs={[
+        { label: "Guides", path: "/guides" },
+        ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+        { label: guide.title },
+      ]}
+    >
       <div slot="badges" class="badges">
         <span class="badge badge--teal">{town?.name ?? "All 30A Corridor"}</span>
         <span class="badge">First-Timers</span>

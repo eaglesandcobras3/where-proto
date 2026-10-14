@@ -7,7 +7,7 @@
 
 ## The scaffold
 
-**Directory:** `/` (homepage), `/towns`, `/town/{town}`, `/town/{town}/{category}`, `/areas`, `/area/{area}`, `/business/{business}`, `/search`
+**Directory:** `/` (homepage), `/towns`, `/town/{town}`, `/town/{town}/{category}`, `/town/{town}/{parent}/{leaf}/{business}`, `/areas`, `/area/{area}`, `/search`
 
 **Content:** `/events`, `/event/{event}`, `/guides`, `/guide/{guide}`, `/ask`, `/ask/{question}`, `/posts/{post}`
 
@@ -29,7 +29,9 @@
 
 Stories are guides. `/stories` and `/story/{story}` redirect to `/guides`.
 
-Updates are not a route. They only render on `/town/{town}` and `/business/{business}`.
+Updates are not a route. They only render on `/town/{town}` and `/town/{town}/{parent}/{leaf}/{business}`.
+
+`/business/{business}` redirects to `/town/{town}/{parent}/{leaf}/{business}`.
 
 `/happenings` redirects to `/`.
 

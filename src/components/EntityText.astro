@@ -1,6 +1,7 @@
 ---
 import { areas, searchableBusinesses, towns } from "../data/catalog";
 import { href } from "../lib/href";
+import { businessPath } from "../lib/listing";
 
 interface Props {
   text: string;
@@ -9,7 +10,7 @@ interface Props {
 const { text } = Astro.props;
 
 const entities = [
-  ...searchableBusinesses.map((item) => ({ name: item.name, path: `/business/${item.slug}` })),
+  ...searchableBusinesses.map((item) => ({ name: item.name, path: businessPath(item) })),
   ...towns.map((item) => ({ name: item.name, path: `/town/${item.slug}` })),
   ...areas.map((item) => ({ name: item.name, path: `/area/${item.slug}` })),
 ].sort((a, b) => b.name.length - a.name.length);

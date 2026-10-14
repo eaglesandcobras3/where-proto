@@ -3,6 +3,7 @@ import MerchantLayout from "../../../layouts/MerchantLayout.astro";
 import { mentionsForBusiness } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { businessPath } from "../../../lib/listing";
 import { VIEW_PUBLIC_LABEL } from "../../../lib/dashboard-v1";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
@@ -27,7 +28,7 @@ const mentions = mentionsForBusiness(business);
         the 3-flag auto-hide rule.
       </p>
     </div>
-    <a class="btn" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
+    <a class="btn" href={href(businessPath(business))}>{VIEW_PUBLIC_LABEL}</a>
   </header>
 
   <div class="stack">

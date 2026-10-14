@@ -59,16 +59,16 @@ const jsonLd = {
   description={question.body}
   active="ask"
   jsonLd={jsonLd}
-  crumbs={[
-    { label: "Ask", path: "/ask" },
-    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
-    { label: question.title },
-  ]}
 >
   <InteriorHero
     title={question.title}
     kicker="Ask the locals"
     lede={town ? `${town.name} · ${formatDate(question.createdAt)}` : formatDate(question.createdAt)}
+    crumbs={[
+      { label: "Ask", path: "/ask" },
+      ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+      { label: question.title },
+    ]}
   />
   <div class="thread">
     <article class="card">

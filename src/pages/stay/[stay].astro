@@ -23,6 +23,7 @@ import {
 import type { Stay } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
+import { businessPathBySlug } from "../../lib/listing";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -58,17 +59,17 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
   title={stay.name}
   description={stay.summary}
   active="stays"
-  crumbs={[
-    { label: "Stays", path: "/stays" },
-    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
-    { label: stay.name },
-  ]}
 >
   <div class="stay-page">
     <InteriorHero
       title={stay.name}
       kicker={isInn ? "Boutique inn" : "Coastal stay"}
       lede={stay.summary}
+      crumbs={[
+        { label: "Stays", path: "/stays" },
+        ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+        { label: stay.name },
+      ]}
     >
       <div slot="actions">
         <SaveShare type="stay" slug={stay.slug} name={stay.name} href={href(`/stay/${stay.slug}`)} client:load />
@@ -81,7 +82,7 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
         }
         {
           stay.businessSlug ? (
-            <a class="hero-btn" href={href(`/business/${stay.businessSlug}`)}>
+            <a class="hero-btn" href={href(businessPathBySlug(stay.businessSlug))}>
               Visit official booking site
             </a>
           ) : (
@@ -180,7 +181,7 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
             <p class="book__meta">{town?.name ?? "30A"} · Sleeps {stay.sleeps}</p>
             {
               stay.businessSlug ? (
-                <a class="book__btn" href={href(`/business/${stay.businessSlug}`)}>Book this stay</a>
+                <a class="book__btn" href={href(businessPathBySlug(stay.businessSlug))}>Book this stay</a>
               ) : (
                 <a class="book__btn" href={href("/ask")}>Ask about this stay</a>
               )

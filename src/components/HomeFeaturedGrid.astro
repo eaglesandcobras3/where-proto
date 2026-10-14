@@ -1,5 +1,6 @@
 ---
 import { href } from "../lib/href";
+import { businessPathBySlug } from "../lib/listing";
 
 const items = [
   {
@@ -28,7 +29,7 @@ const items = [
     category: "Bakeries & Desserts",
     summary:
       "Handcrafted artisan donuts, specialty cold brew, and sweet treats served from a vintage food truck in Seaside’s Central Square.",
-    href: "/business/amavida",
+      href: businessPathBySlug("amavida"),
   },
 ];
 ---

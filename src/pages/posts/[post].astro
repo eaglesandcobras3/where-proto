@@ -13,6 +13,7 @@ import {
 import type { Post } from "../../data/types";
 import { href } from "../../lib/href";
 import { formatDate, userHandle } from "../../lib/labels";
+import { businessPath, businessPathBySlug } from "../../lib/listing";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -27,7 +28,7 @@ const { item: post } = Astro.props;
 const user = post.authorUserSlug ? userBySlug(post.authorUserSlug) : undefined;
 const business = post.authorBusinessSlug ? businessBySlug(post.authorBusinessSlug) : undefined;
 const target = post.on.type === "town" ? townBySlug(post.on.slug) : businessBySlug(post.on.slug);
-const targetHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(`/business/${post.on.slug}`);
+const targetHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(businessPathBySlug(post.on.slug));
 const postComments = commentsFor("post", post.slug);
 const postReactions = reactionsFor("post", post.slug);
 ---
@@ -55,7 +56,7 @@ const postReactions = reactionsFor("post", post.slug);
         business && (
           <>
             {" from "}
-            <a href={href(`/business/${business.slug}`)}>{business.name}</a>
+            <a href={href(businessPath(business))}>{business.name}</a>
           </>
         )
       }

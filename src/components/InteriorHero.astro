@@ -1,15 +1,20 @@
 ---
+import Breadcrumbs from "./Breadcrumbs.astro";
+import type { Crumb } from "../lib/crumbs";
+
 interface Props {
   title: string;
   lede?: string;
   kicker?: string;
+  crumbs?: Crumb[];
 }
 
-const { title, lede, kicker } = Astro.props;
+const { title, lede, kicker, crumbs = [] } = Astro.props;
 ---
 
 <section class="interior-hero">
   <div class="container interior-hero__inner">
+    {crumbs.length > 0 && <Breadcrumbs items={crumbs} tone="hero" />}
     <div class="interior-hero__row">
       <header class="interior-hero__copy">
         {kicker && <p class="interior-hero__kicker">{kicker}</p>}
@@ -30,7 +35,7 @@ const { title, lede, kicker } = Astro.props;
   .interior-hero {
     background: var(--brand-deep);
     color: white;
-    padding: var(--size-8) 0 var(--size-7);
+    padding: var(--size-5) 0 var(--size-7);
   }
   .interior-hero__inner {
     display: grid;

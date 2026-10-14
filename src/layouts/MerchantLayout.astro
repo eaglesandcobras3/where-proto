@@ -4,6 +4,7 @@ import BusinessSwitcher from "../components/islands/BusinessSwitcher.svelte";
 import { businessesOwnedBy, currentUser, mentionsForBusiness, townBySlug } from "../data/catalog";
 import type { Business } from "../data/types";
 import { href } from "../lib/href";
+import { businessPath } from "../lib/listing";
 import {
   listingPublicStatusFromBusiness,
   listingPublicStatusLabel,
@@ -36,7 +37,7 @@ const root = `/dashboard/${business.slug}`;
 const mentionCount = mentionsForBusiness(business).length;
 const listingStatus = listingPublicStatusFromBusiness(business);
 const listingStatusLabel = listingPublicStatusLabel(listingStatus);
-const publicHref = href(`/business/${business.slug}`);
+const publicHref = href(businessPath(business));
 
 type NavLink = { key: NavKey; label: string; path: string; badge?: string; badgeTone?: "teal" | "amber" };
 

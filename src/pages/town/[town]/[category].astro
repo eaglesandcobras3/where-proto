@@ -65,14 +65,17 @@ const mapHref = withViewMap("/search", `?town=${town.slug}&category=${leaf?.slug
   title={`${heading} in ${town.name}`}
   description={`Find ${heading.toLowerCase()} in ${town.name}, Florida.`}
   active="towns"
-  crumbs={[
-    { label: "Towns", path: "/towns" },
-    { label: town.name, path: `/town/${town.slug}` },
-    { label: heading },
-  ]}
 >
   <div class="category-page">
-    <InteriorHero title={`${heading} in ${town.name}`} lede={`Businesses in ${town.name} along Scenic Highway 30A.`} />
+    <InteriorHero
+      title={`${heading} in ${town.name}`}
+      lede={`Businesses in ${town.name} along Scenic Highway 30A.`}
+      crumbs={[
+        { label: "Towns", path: "/towns" },
+        { label: town.name, path: `/town/${town.slug}` },
+        { label: heading },
+      ]}
+    />
     <div class="container layout">
       <div class="filters-col">
         <ListingFilters

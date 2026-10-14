@@ -19,6 +19,7 @@ import {
   townBySlug,
 } from "../data/catalog";
 import { href } from "../lib/href";
+import { businessPathBySlug } from "../lib/listing";
 
 const base = import.meta.env.BASE_URL;
 const heroTowns = towns.map(({ slug, name }) => ({ slug, name }));
@@ -70,7 +71,7 @@ const askRows = questions.slice(0, 3).map((question) => {
   <div class="home">
     <HomeHero towns={heroTowns} base={base} />
 
-    <LocalSpotlight href="/business/cafe-thirty-a" />
+    <LocalSpotlight href={businessPathBySlug("cafe-thirty-a")} />
     <HomeFeaturedGrid />
     <BeachTownsStrip />
     {isEnabled("events") && <WeekendPlanner items={homeEvents} base={base} />}

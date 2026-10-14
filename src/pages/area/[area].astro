@@ -51,14 +51,18 @@ const kindLabel = areaKindLabel(area.kind);
   title={`${area.name} in ${town.name}`}
   description={area.summary}
   active="towns"
-  crumbs={[
-    { label: "Towns", path: "/towns" },
-    { label: town.name, path: `/town/${town.slug}` },
-    { label: area.name },
-  ]}
 >
   <div class="area-page">
-    <InteriorHero title={area.name} kicker={kindLabel} lede={area.summary}>
+    <InteriorHero
+      title={area.name}
+      kicker={kindLabel}
+      lede={area.summary}
+      crumbs={[
+        { label: "Towns", path: "/towns" },
+        { label: town.name, path: `/town/${town.slug}` },
+        { label: area.name },
+      ]}
+    >
       <div slot="actions">
         <SaveShare type="area" slug={area.slug} name={area.name} href={href(`/area/${area.slug}`)} client:load />
         <a class="hero-btn hero-btn--ghost" href={href(`/town/${town.slug}`)}>View full town</a>
