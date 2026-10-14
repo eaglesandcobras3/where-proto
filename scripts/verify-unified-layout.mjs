@@ -39,6 +39,7 @@ for (const [name, rel] of Object.entries(pages)) {
   const text = textOf(raw);
 
   assert(name, "flag", !raw.includes("data-when=") && !raw.includes("unified_listing_detail_layout"), "flag leftover");
+  assert(name, "hero", /class="interior-hero"/.test(raw), "shared navy header missing");
 
   if (["towns", "search", "stays", "events", "guides", "ask"].includes(name)) {
     assert(name, 3, forbidden.every((term) => !text.includes(term)), `found ${forbidden.filter((t) => text.includes(t)).join(", ")}`);

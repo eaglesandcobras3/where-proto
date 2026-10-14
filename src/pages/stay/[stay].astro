@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
@@ -40,41 +41,40 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
   ]}
 >
   <div class="stay-page">
-    <section class="top">
-      <div class="container">
-        <div class="title-row">
-          <div>
-            <h1>{stay.name}</h1>
-            <p class="meta">
-              
-              {town && (
-                <>
-                  <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-                  {" · "}
-                </>
-              )}
-              Sleeps {stay.sleeps}
-            </p>
-          </div>
-          <div class="title-actions">
-            <SaveShare type="stay" slug={stay.slug} name={stay.name} href={href(`/stay/${stay.slug}`)} client:load />
-            {
-              stay.businessSlug ? (
-                <a class="book" href={href(`/business/${stay.businessSlug}`)}>
-                  Visit official booking site
-                </a>
-              ) : (
-                <a class="book" href={href("/ask")}>
-                  Ask about availability
-                </a>
-              )
-            }
-          </div>
-        </div>
-
-        
+    <InteriorHero
+      title={stay.name}
+      kicker={isInn ? "Boutique inn" : "Coastal stay"}
+      lede={stay.summary}
+    >
+      <div slot="actions">
+        <SaveShare type="stay" slug={stay.slug} name={stay.name} href={href(`/stay/${stay.slug}`)} client:load />
+        {
+          stay.businessSlug ? (
+            <a class="hero-btn" href={href(`/business/${stay.businessSlug}`)}>
+              Visit official booking site
+            </a>
+          ) : (
+            <a class="hero-btn" href={href("/ask")}>
+              Ask about availability
+            </a>
+          )
+        }
       </div>
-    </section>
+      <div class="snapshot">
+        <div>
+          <span class="label">Town</span>
+          <strong>{town?.name ?? "30A"}</strong>
+        </div>
+        <div>
+          <span class="label">Sleeps</span>
+          <strong>{stay.sleeps}</strong>
+        </div>
+        <div>
+          <span class="label">Type</span>
+          <strong>{isInn ? "Boutique inn" : "Coastal stay"}</strong>
+        </div>
+      </div>
+    </InteriorHero>
 
     <div class="container layout">
       
@@ -139,60 +139,6 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
   .stay-page {
     background: var(--brand-sand);
     color: var(--brand-ink);
-  }
-  .top {
-    background: white;
-    border-bottom: 1px solid var(--brand-line);
-    padding: var(--size-5) 0 var(--size-6);
-  }
-  .title-row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-4);
-    margin-bottom: var(--size-5);
-  }
-  h1 {
-    margin: 0 0 0.35rem;
-    font-size: clamp(1.85rem, 4vw, 2.5rem);
-    color: var(--brand-deep);
-  }
-  .meta {
-    margin: 0;
-    color: var(--brand-ink-soft);
-  }
-  .title-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-    align-items: center;
-  }
-  .title-actions button,
-  .ghost {
-    border: 1px solid var(--brand-line);
-    background: white;
-    border-radius: var(--radius-2);
-    padding: 0.45rem 0.85rem;
-    font: inherit;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-ink);
-    cursor: pointer;
-  }
-  .book {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2.5rem;
-    padding: 0.55rem 1rem;
-    border-radius: var(--radius-2);
-    background: var(--brand-teal);
-    color: white;
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-  }
-  .book:hover {
-    background: var(--brand-teal-hover);
-    text-decoration: none;
   }
   .gallery {
     display: grid;

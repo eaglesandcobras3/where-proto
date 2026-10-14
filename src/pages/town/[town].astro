@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import Corridor from "../../components/Corridor.astro";
 import MapToggle from "../../components/MapToggle.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
@@ -46,36 +47,22 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
   crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
   <div class="town-page">
-    <section class="hero">
-      <div class="container hero__inner">
-        <div class="hero__title">
-          <div>
-            <div class="eyebrow-row">
-              <span class="live-pill">Scenic 30A community</span>
-              <span class="tagline">{view.tagline}</span>
-            </div>
-            <h1>{town.name}</h1>
-            <p class="lede">{town.summary}</p>
-          </div>
-          <div class="hero__actions">
-            <SaveShare type="town" slug={town.slug} name={town.name} href={href(`/town/${town.slug}`)} client:load />
-            <p class="save-nudge">Save {town.name} to your trip</p>
-            <a class="map-btn" href="#map">Corridor map</a>
-          </div>
+    <InteriorHero title={town.name} kicker="Scenic 30A community" lede={town.summary}>
+      <div slot="actions">
+        <SaveShare type="town" slug={town.slug} name={town.name} href={href(`/town/${town.slug}`)} client:load />
+        <a class="hero-btn hero-btn--ghost" href="#map">Corridor map</a>
+      </div>
+      <div class="snapshot">
+        <div>
+          <span class="label">Walkability</span>
+          <strong>{town.walkability}</strong>
         </div>
-
-        <div class="snapshot">
-          <div>
-            <span class="label">Walkability</span>
-            <strong>{town.walkability}</strong>
-          </div>
-          <div>
-            <span class="label">Beach access</span>
-            <strong>{town.beachAccess}</strong>
-          </div>
+        <div>
+          <span class="label">Beach access</span>
+          <strong>{town.beachAccess}</strong>
         </div>
       </div>
-    </section>
+    </InteriorHero>
 
     <Corridor currentSlug={town.slug} />
 
@@ -159,109 +146,23 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
     background: var(--brand-sand);
     color: var(--brand-ink);
   }
-  .hero {
-    background: var(--brand-deep);
-    color: white;
-    padding: var(--size-6) 0 var(--size-7);
-  }
-  .hero__inner {
-    display: grid;
-    gap: var(--size-5);
-  }
-  .hero__title {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-4);
-    align-items: flex-end;
-  }
-  .eyebrow-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  .live-pill {
+  .map-btn {
     display: inline-flex;
-    padding: 0.2rem 0.65rem;
-    border-radius: var(--radius-pill);
-    background: rgba(0, 137, 123, 0.22);
-    color: var(--mint);
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .tagline {
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-line);
-  }
-  h1 {
-    margin: 0 0 0.5rem;
-    font-size: clamp(2.25rem, 6vw, 3.25rem);
-    color: white;
-  }
-  .lede {
-    margin: 0;
-    max-width: 40rem;
-    color: var(--brand-line);
-    font-size: var(--font-size-2);
-    line-height: 1.55;
-  }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
     align-items: center;
-  }
-  .save-nudge {
-    margin: 0;
-    width: 100%;
-    font-size: var(--font-size-0);
-    color: var(--mint);
-  }
-  .hero__actions button,
-  .map-btn {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.08);
-    border-radius: var(--radius-2);
+    justify-content: center;
+    min-height: 2.5rem;
     padding: 0.5rem 0.85rem;
-    font: inherit;
+    border-radius: var(--radius-2);
+    background: var(--brand-teal);
+    border: 1px solid var(--brand-teal);
+    color: white;
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
-    color: white;
-    cursor: pointer;
-  }
-  .map-btn {
-    background: var(--brand-teal);
-    border-color: var(--brand-teal);
     text-decoration: none;
   }
   .map-btn:hover {
     background: var(--brand-teal-hover);
     text-decoration: none;
-  }
-  .snapshot {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--size-3);
-    padding-top: var(--size-4);
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  .snapshot .label {
-    display: block;
-    margin-bottom: 0.2rem;
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--brand-ink-on-navy);
-  }
-  .snapshot strong {
-    font-size: var(--font-size-1);
-    color: white;
   }
   .layout {
     display: grid;
@@ -538,9 +439,6 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
     color: var(--brand-teal);
   }
   @media (min-width: 800px) {
-    .snapshot {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
     .glance {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }

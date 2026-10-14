@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import EntityText from "../../components/EntityText.astro";
 import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
 import ReactionBar from "../../components/ReactionBar.astro";
@@ -64,6 +65,11 @@ const jsonLd = {
     { label: question.title },
   ]}
 >
+  <InteriorHero
+    title={question.title}
+    kicker="Ask the locals"
+    lede={town ? `${town.name} · ${formatDate(question.createdAt)}` : formatDate(question.createdAt)}
+  />
   <div class="thread">
     <article class="card">
       <div class="meta">
@@ -78,7 +84,6 @@ const jsonLd = {
         <span>· {formatDate(question.createdAt)}</span>
         {town && <span class="town">· {town.name}</span>}
       </div>
-      <h1>{question.title}</h1>
       {
         question.body && (
           <p class="body">
@@ -157,12 +162,6 @@ const jsonLd = {
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     flex-shrink: 0;
-  }
-  h1 {
-    margin: 0;
-    font-size: clamp(1.4rem, 3vw, 1.85rem);
-    line-height: 1.25;
-    color: var(--brand-deep);
   }
   h2 {
     margin: var(--size-3) 0 0;

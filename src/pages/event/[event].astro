@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
@@ -66,57 +67,44 @@ const jsonLd = {
   ]}
 >
   <div class="event-page">
-    <section class="hero">
-      <div class="container hero__inner">
-        <div class="badges">
-          {event.category && <span class="badge badge--teal">{event.category}</span>}
-          {isFree && <span class="badge">Free Admission</span>}
-          {town && <span class="badge">{town.name}</span>}
-        </div>
-
-        <h1>{event.name}</h1>
-        <p class="lede">{event.summary}</p>
-
-        <dl class="facts">
-          <div>
-            <dt>Date &amp; time</dt>
-            <dd>
-              {event.when}{event.time ? ` · ${event.time}` : ""}
-              <p class="save-nudge">Interested? Save it to your trip.</p>
-            </dd>
-          </div>
-          <div>
-            <dt>Venue</dt>
-            <dd>{event.venue ?? town?.name ?? "30A"}</dd>
-          </div>
-          <div>
-            <dt>Host</dt>
-            <dd>
-              {hostName}
-              <span class="verified">Verified</span>
-            </dd>
-          </div>
-        </dl>
-
-        <div class="actions">
-          <a class="btn btn--teal" href={event.ticketUrl ?? href(`/event/${event.slug}.ics`)}>
-            {isFree ? "Free event" : event.price ? `Tickets · ${event.price}` : "Get details"}
-          </a>
-          <a class="btn btn--ghost" href={href(`/event/${event.slug}.ics`)}>Add to Calendar</a>
-          <SaveShare
-            type="event"
-            slug={event.slug}
-            name={event.name}
-            href={href(`/event/${event.slug}`)}
-            saveLabel="Save"
-            client:load
-          />
-          {town && (
-            <a class="btn btn--link" href={href(`/town/${town.slug}`)}>Get Directions</a>
-          )}
-        </div>
+    <InteriorHero title={event.name} lede={event.summary}>
+      <div slot="badges" class="badges">
+        {event.category && <span class="badge badge--teal">{event.category}</span>}
+        {isFree && <span class="badge">Free Admission</span>}
+        {town && <span class="badge">{town.name}</span>}
       </div>
-    </section>
+      <div slot="actions">
+        <a class="hero-btn" href={event.ticketUrl ?? href(`/event/${event.slug}.ics`)}>
+          {isFree ? "Free event" : event.price ? `Tickets · ${event.price}` : "Get details"}
+        </a>
+        <a class="hero-btn hero-btn--ghost" href={href(`/event/${event.slug}.ics`)}>Add to Calendar</a>
+        <SaveShare
+          type="event"
+          slug={event.slug}
+          name={event.name}
+          href={href(`/event/${event.slug}`)}
+          saveLabel="Save"
+          client:load
+        />
+        {town && (
+          <a class="hero-link" href={href(`/town/${town.slug}`)}>Get Directions</a>
+        )}
+      </div>
+      <dl class="facts">
+        <div>
+          <dt>Date &amp; time</dt>
+          <dd>{event.when}{event.time ? ` · ${event.time}` : ""}</dd>
+        </div>
+        <div>
+          <dt>Venue</dt>
+          <dd>{event.venue ?? town?.name ?? "30A"}</dd>
+        </div>
+        <div>
+          <dt>Host</dt>
+          <dd>{hostName}</dd>
+        </div>
+      </dl>
+    </InteriorHero>
 
     <div class="container layout">
       
@@ -182,120 +170,6 @@ const jsonLd = {
   .event-page {
     background: var(--brand-sand);
     color: var(--brand-ink);
-  }
-  .hero {
-    background: var(--brand-deep);
-    color: white;
-    padding: var(--size-6) 0 var(--size-7);
-  }
-  .hero__inner {
-    display: grid;
-    gap: var(--size-4);
-  }
-  .badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .badge {
-    padding: 0.25rem 0.65rem;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(255, 255, 255, 0.35);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-  }
-  .badge--teal {
-    background: rgba(0, 137, 123, 0.25);
-    border-color: rgba(133, 246, 229, 0.45);
-    color: var(--mint);
-  }
-  h1 {
-    margin: 0;
-    font-size: clamp(2rem, 5vw, 2.75rem);
-    color: white;
-    letter-spacing: -0.02em;
-  }
-  .lede {
-    margin: 0;
-    max-width: 46rem;
-    color: var(--brand-line);
-    font-size: var(--font-size-2);
-    line-height: 1.55;
-  }
-  .facts {
-    display: grid;
-    gap: var(--size-3);
-    margin: 0;
-  }
-  .facts div {
-    display: grid;
-    gap: 0.2rem;
-  }
-  .facts dt {
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--brand-ink-on-navy);
-  }
-  .save-nudge {
-    margin: 0.35rem 0 0;
-    font-size: var(--font-size-0);
-    color: var(--mint);
-  }
-  .facts dd {
-    margin: 0;
-    font-size: var(--font-size-2);
-    color: white;
-  }
-  .verified {
-    margin-left: 0.4rem;
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-7);
-    color: var(--mint);
-    background: rgba(0, 137, 123, 0.25);
-    border-radius: 0.25rem;
-    padding: 0.1rem 0.35rem;
-  }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-  }
-  .btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 2.5rem;
-    padding: 0.55rem 1rem;
-    border-radius: var(--radius-2);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-    border: 1px solid transparent;
-    cursor: pointer;
-    font: inherit;
-  }
-  .btn--teal {
-    background: var(--brand-teal);
-    color: white;
-  }
-  .btn--teal:hover {
-    background: var(--brand-teal-hover);
-    text-decoration: none;
-  }
-  .btn--ghost {
-    background: transparent;
-    border-color: rgba(255, 255, 255, 0.35);
-    color: white;
-  }
-  .btn--ghost:hover {
-    border-color: white;
-    text-decoration: none;
-  }
-  .btn--link {
-    background: transparent;
-    color: var(--mint);
-    margin-left: auto;
   }
   .layout {
     display: grid;
@@ -607,11 +481,6 @@ const jsonLd = {
   .related span:last-child {
     font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
-  }
-  @media (min-width: 800px) {
-    .facts {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-    }
   }
   @media (min-width: 1024px) {
     .layout {

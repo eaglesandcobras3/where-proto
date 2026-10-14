@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
 import FilterBar from "../../components/islands/FilterBar.svelte";
@@ -61,6 +62,7 @@ const mapHref = withViewMap("/search", `?category=${leaf?.slug ?? group.slug}`);
   crumbs={[{ label: "Towns", path: "/towns" }, { label: heading }]}
 >
   <div class="category-page">
+    <InteriorHero title={`${heading} on 30A`} lede={`Find ${heading.toLowerCase()} in every town along Scenic Highway 30A.`} />
     <div class="container layout">
       <div class="filters-col">
         <ListingFilters
@@ -78,7 +80,6 @@ const mapHref = withViewMap("/search", `?category=${leaf?.slug ?? group.slug}`);
       </div>
 
       <div class="main">
-        <h1>{heading} on 30A</h1>
         <FilterBar
           businesses={listings.map(toFilterBusiness)}
           towns={towns}
@@ -112,10 +113,6 @@ const mapHref = withViewMap("/search", `?category=${leaf?.slug ?? group.slug}`);
   }
   .main {
     min-width: 0;
-  }
-  h1 {
-    margin: 0 0 var(--size-4);
-    font-size: var(--font-size-5);
   }
   .rail {
     display: none;
