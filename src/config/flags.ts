@@ -7,6 +7,8 @@ export const flags = {
   guides: true,
   communityFeed: true,
   businessDashboard: true,
+  /** Merchant dashboard chrome. Default OFF. Preview with ?dashboard=1 */
+  businessDashboardV1: false,
   userProfile: true,
   addBusiness: true,
 } as const;

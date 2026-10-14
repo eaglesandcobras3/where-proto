@@ -26,4 +26,4 @@ https://eaglesandcobras3.github.io/where-proto/
 
 ## Routes
 
-See `ROUTE-SCAFFOLD.md`. `/ia` lists every live route. Updates appear on the homepage, town, and business pages.
+See `ROUTE-SCAFFOLD.md`. `/ia` lists every live route. Updates are modules on town, area, and business pages — there is no public /updates rollup.

@@ -1,135 +1,114 @@
 ---
 import AccountLayout from "../../layouts/AccountLayout.astro";
+import SavedList from "../../components/islands/SavedList.svelte";
 import {
-  businessBySlug,
-  businessesForTown,
+  areas,
+  businesses,
   currentUserSlug,
-  eventBySlug,
+  events,
   favorites,
-  guideBySlug,
+  guides,
   leafBySlug,
+  stays,
   townBySlug,
+  towns,
 } from "../../data/catalog";
 import { cardImageSrc } from "../../lib/card-image";
 import { href } from "../../lib/href";
+import type { SavedEntityType } from "../../lib/saved";
 
-const mine = favorites.filter((item) => item.userSlug === currentUserSlug);
-const typeFilter = Astro.url.searchParams.get("type") ?? "all";
-const filtered =
-  typeFilter === "all" ? mine : mine.filter((item) => item.type === typeFilter);
+const seed = favorites
+  .filter((item) => item.userSlug === currentUserSlug)
+  .map((item) => ({ type: item.type as SavedEntityType, slug: item.slug }));
 
-const cards = filtered.map((item) => {
-  if (item.type === "business") {
-    const biz = businessBySlug(item.slug);
-    const town = biz ? townBySlug(biz.townSlug) : undefined;
-    const leaf = biz ? leafBySlug(biz.leafSlug) : undefined;
-    return {
-      type: "Business" as const,
-      title: biz?.name ?? item.slug,
-      meta: [town?.name, leaf?.name ?? "Dining"].filter(Boolean).join(" · "),
-      summary: biz?.summary ?? "",
-      href: href(`/business/${item.slug}`),
-      cta: "View Business",
-      detail: `${biz?.priceBand ?? "$$"} · ${biz?.address?.split(",")[0] ?? town?.name ?? "30A"}`,
-      letter: (biz?.name ?? "B").charAt(0),
-    };
-  }
-  if (item.type === "event") {
-    const event = eventBySlug(item.slug);
-    const town = event?.townSlug ? townBySlug(event.townSlug) : undefined;
-    return {
-      type: "Event" as const,
-      title: event?.name ?? item.slug,
-      meta: [town?.name, event?.category ?? "Live Music"].filter(Boolean).join(" · "),
-      summary: event?.summary ?? "",
-      href: href(`/event/${item.slug}`),
-      cta: "Event Details",
-      detail: `${event?.when ?? ""}${event?.time ? ` · ${event.time}` : ""}${event?.price ? ` · ${event.price}` : ""}`,
-      letter: (event?.name ?? "E").charAt(0),
-    };
-  }
-  if (item.type === "guide") {
-    const guide = guideBySlug(item.slug);
-    return {
-      type: "Guide" as const,
-      title: guide?.title ?? item.slug,
-      meta: "Editorial · 12 Min Read",
-      summary: guide?.summary ?? "",
-      href: href(`/guide/${item.slug}`),
-      cta: "Read Guide",
-      detail: "Updated Autumn 2025 · Local Editorial Desk",
-      letter: (guide?.title ?? "G").charAt(0),
-    };
-  }
-  const town = townBySlug(item.slug);
-  return {
-    type: "Town" as const,
-    title: town?.name ?? item.slug,
-    meta: "East End 30A · Neo-Traditional",
-    summary: town?.summary ?? "",
-    href: href(`/town/${item.slug}`),
+const cards = [
+  ...businesses
+    .filter((biz) => !biz.entityKind || biz.entityKind === "business")
+    .map((biz) => {
+      const town = townBySlug(biz.townSlug);
+      const leaf = leafBySlug(biz.leafSlug);
+      return {
+        type: "business" as const,
+        slug: biz.slug,
+        title: biz.name,
+        meta: [town?.name, leaf?.name].filter(Boolean).join(" · "),
+        summary: biz.summary,
+        href: href(`/business/${biz.slug}`),
+        cta: "View Business",
+        letter: biz.name.charAt(0),
+        image: cardImageSrc(biz.name.charAt(0), "4/3"),
+      };
+    }),
+  ...stays.map((stay) => ({
+    type: "stay" as const,
+    slug: stay.slug,
+    title: stay.name,
+    meta: townBySlug(stay.townSlug)?.name ?? "30A",
+    summary: stay.summary,
+    href: href(`/stay/${stay.slug}`),
+    cta: "View stay",
+    letter: stay.name.charAt(0),
+    image: cardImageSrc(stay.name.charAt(0), "4/3"),
+  })),
+  ...events.map((event) => ({
+    type: "event" as const,
+    slug: event.slug,
+    title: event.name,
+    meta: [event.townSlug ? townBySlug(event.townSlug)?.name : null, event.category]
+      .filter(Boolean)
+      .join(" · "),
+    summary: event.summary,
+    href: href(`/event/${event.slug}`),
+    cta: "Event Details",
+    letter: event.name.charAt(0),
+    image: cardImageSrc(event.name.charAt(0), "4/3"),
+  })),
+  ...guides.map((guide) => ({
+    type: "guide" as const,
+    slug: guide.slug,
+    title: guide.title,
+    meta: "Editorial",
+    summary: guide.summary,
+    href: href(`/guide/${guide.slug}`),
+    cta: "Read Guide",
+    letter: guide.title.charAt(0),
+    image: cardImageSrc(guide.title.charAt(0), "4/3"),
+  })),
+  ...towns.map((town) => ({
+    type: "town" as const,
+    slug: town.slug,
+    title: town.name,
+    meta: "Scenic 30A",
+    summary: town.summary,
+    href: href(`/town/${town.slug}`),
     cta: "Explore Town",
-    detail: `${businessesForTown(item.slug).length} Local Businesses · Beach access nearby`,
-    letter: (town?.name ?? "T").charAt(0),
-  };
-});
-
-const filters = [
-  { slug: "all", label: `All (${mine.length})` },
-  { slug: "town", label: "Towns" },
-  { slug: "business", label: "Food" },
-  { slug: "event", label: "Events" },
-  { slug: "guide", label: "Guides" },
+    letter: town.name.charAt(0),
+    image: cardImageSrc(town.name.charAt(0), "4/3"),
+  })),
+  ...areas.map((area) => ({
+    type: "area" as const,
+    slug: area.slug,
+    title: area.name,
+    meta: townBySlug(area.townSlug)?.name ?? "30A",
+    summary: area.summary,
+    href: href(`/area/${area.slug}`),
+    cta: "Explore area",
+    letter: area.name.charAt(0),
+    image: cardImageSrc(area.name.charAt(0), "4/3"),
+  })),
 ];
 ---
 
-<AccountLayout title="Saved Items" active="favorites">
+<AccountLayout title="Saved" active="favorites">
   <section class="panel">
     <div class="panel__head">
       <div>
-        <h2>Saved Coastal Bookmarks</h2>
-        <p>Places, curated seasonal guides, and happenings pinned for your next 30A outing.</p>
+        <h2>Saved</h2>
+        <p>Collections for your 30A trip — businesses, towns, stays, events, and guides.</p>
       </div>
     </div>
 
-    <div class="filters" role="list">
-      {
-        filters.map((item) => (
-          <a
-            role="listitem"
-            class:list={["chip", { active: typeFilter === item.slug }]}
-            href={href(item.slug === "all" ? "/profile/favorites" : `/profile/favorites?type=${item.slug}`)}
-          >
-            {item.label}
-          </a>
-        ))
-      }
-    </div>
-
-    <div class="cards">
-      {
-        cards.map((card) => (
-          <article class="card">
-            <div class="media">
-              <img src={cardImageSrc(card.letter, "4/3")} alt="" width="400" height="300" />
-              <span class="type">{card.type}</span>
-            </div>
-            <div class="body">
-              <p class="meta">{card.meta}</p>
-              <h3>
-                <a href={card.href}>{card.title}</a>
-              </h3>
-              <p class="summary">{card.summary}</p>
-              <p class="detail">{card.detail}</p>
-              <a class="cta" href={card.href}>
-                {card.cta} →
-              </a>
-            </div>
-          </article>
-        ))
-      }
-      {cards.length === 0 && <p class="empty">No saved items in this filter yet.</p>}
-    </div>
+    <SavedList seed={seed} cards={cards} client:load />
   </section>
 </AccountLayout>
 
@@ -137,7 +116,7 @@ const filters = [
   .panel {
     background: white;
     border: 1px solid var(--brand-line);
-    border-radius: var(--radius-3);
+    border-radius: var(--radius-card);
     box-shadow: var(--shadow-card);
     padding: var(--size-5);
   }
@@ -146,117 +125,8 @@ const filters = [
     font-size: var(--font-size-4);
   }
   .panel__head p {
-    margin: 0;
+    margin: 0 0 var(--size-4);
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
-  }
-  .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-    margin: var(--size-4) 0;
-  }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    min-height: 2rem;
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-pill);
-    border: 1px solid var(--brand-line);
-    background: var(--brand-sand);
-    color: var(--brand-ink-soft);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-6);
-  }
-  .chip:hover {
-    text-decoration: none;
-    border-color: var(--brand-teal);
-    color: var(--brand-teal);
-  }
-  .chip.active {
-    background: var(--brand-teal);
-    border-color: var(--brand-teal);
-    color: white;
-  }
-  .cards {
-    display: grid;
-    gap: var(--size-3);
-  }
-  .card {
-    display: grid;
-    gap: var(--size-3);
-    grid-template-columns: 1fr;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-3);
-    overflow: hidden;
-    background: var(--brand-sand);
-  }
-  .media {
-    position: relative;
-    aspect-ratio: 16 / 10;
-    background: var(--brand-teal-soft);
-  }
-  .media img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-  }
-  .type {
-    position: absolute;
-    top: 0.65rem;
-    left: 0.65rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: var(--radius-pill);
-    background: rgba(12, 35, 46, 0.88);
-    color: white;
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .body {
-    padding: 0 var(--size-4) var(--size-4);
-  }
-  .meta {
-    margin: 0 0 0.25rem;
-    font-size: var(--font-size-0);
-    letter-spacing: 0.06em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
-  }
-  h3 {
-    margin: 0 0 0.35rem;
-    font-size: var(--font-size-3);
-  }
-  h3 a {
-    color: inherit;
-  }
-  .summary,
-  .detail {
-    margin: 0 0 0.45rem;
-    font-size: var(--font-size-1);
-    color: var(--brand-ink-soft);
-  }
-  .cta {
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
-  }
-  .empty {
-    color: var(--brand-ink-soft);
-  }
-  @media (min-width: 720px) {
-    .card {
-      grid-template-columns: 11rem minmax(0, 1fr);
-      align-items: stretch;
-    }
-    .media {
-      aspect-ratio: auto;
-      min-height: 100%;
-    }
-    .body {
-      padding: var(--size-4);
-    }
   }
 </style>

@@ -59,7 +59,7 @@
 
 <aside class="side">
   <section class="panel">
-    <h2>Communities &amp; Towns</h2>
+    <p class="eyebrow">Communities &amp; Towns</p>
     <ul>
       <li>
         <button class:active={!town} type="button" onclick={() => publish("", topic)}>
@@ -81,7 +81,7 @@
   </section>
 
   <section class="panel">
-    <h2>Popular Topics</h2>
+    <p class="eyebrow">Popular Topics</p>
     <div class="topics">
       {#each topics as item (item.slug)}
         <button
@@ -115,12 +115,8 @@
     box-shadow: var(--shadow-card);
     padding: var(--size-4);
   }
-  h2 {
-    margin: 0 0 var(--size-3);
-    font-size: var(--font-size-0);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
+  .eyebrow {
+    margin-bottom: var(--size-3);
   }
   ul {
     list-style: none;
@@ -145,7 +141,7 @@
     border-radius: 0.4rem;
   }
   button:hover {
-    background: #f4f7f8;
+    background: var(--brand-sand);
   }
   button.active {
     color: var(--ask-navy, var(--brand-deep));
@@ -158,7 +154,7 @@
     width: 0.45rem;
     height: 0.45rem;
     border-radius: 50%;
-    background: #d5dde3;
+    background: var(--brand-line);
     flex-shrink: 0;
   }
   .count {
@@ -175,7 +171,7 @@
   .topic {
     width: auto;
     border: 1px solid var(--ask-line, var(--brand-line));
-    background: #f4f8f9;
+    background: var(--brand-sand);
     border-radius: 999px;
     padding: 0.35rem 0.75rem;
     font-size: var(--font-size-0);
@@ -188,7 +184,7 @@
   }
   .callout {
     background: var(--brand-sun-soft, #fff7d6);
-    border-color: #f0e2a0;
+    border-color: var(--brand-line);
   }
   .callout__label {
     margin: 0 0 0.35rem;
@@ -196,7 +192,7 @@
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #8a6d12;
+    color: var(--brand-coral);
   }
   .callout p:last-child {
     margin: 0;

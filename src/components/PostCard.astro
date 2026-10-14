@@ -1,6 +1,7 @@
 ---
 import { href } from "../lib/href";
 import { businessBySlug, userBySlug } from "../data/catalog";
+import { formatDate, userHandle } from "../lib/labels";
 import type { Post } from "../data/types";
 
 interface Props {
@@ -8,18 +9,17 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const author =
+const authorUser = post.authorUserSlug ? userBySlug(post.authorUserSlug) : undefined;
+const authorBusiness =
   post.postedAs === "business" && post.authorBusinessSlug
-    ? businessBySlug(post.authorBusinessSlug)?.name
-    : post.authorUserSlug
-      ? userBySlug(post.authorUserSlug)?.name
-      : "A visitor";
-const authorHref =
-  post.postedAs === "business" && post.authorBusinessSlug
-    ? href(`/business/${post.authorBusinessSlug}`)
-    : post.authorUserSlug
-      ? href(`/u/${post.authorUserSlug}`)
-      : undefined;
+    ? businessBySlug(post.authorBusinessSlug)
+    : undefined;
+const author = authorBusiness?.name ?? (authorUser ? userHandle(authorUser.slug) : "A visitor");
+const authorHref = authorBusiness
+  ? href(`/business/${authorBusiness.slug}`)
+  : authorUser
+    ? href(`/u/${authorUser.slug}`)
+    : undefined;
 const onHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(`/business/${post.on.slug}`);
 ---
 
@@ -28,7 +28,7 @@ const onHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(`/
     {
       authorHref ? <a href={authorHref}>{author}</a> : <span>{author}</span>
     }
-    &middot; {post.createdAt} &middot;
+    &middot; {formatDate(post.createdAt)} &middot;
     <a href={onHref}>{post.on.type}</a>
   </p>
   <p>{post.body}</p>

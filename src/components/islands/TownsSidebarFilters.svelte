@@ -50,7 +50,7 @@
 
 <aside class="side">
   <section class="panel">
-    <h2>Town Vibe</h2>
+    <p class="eyebrow">Town Vibe</p>
     <div class="checks">
       {#each vibes as item (item.slug)}
         <button
@@ -66,7 +66,7 @@
   </section>
 
   <section class="panel">
-    <h2>Beach Access Types</h2>
+    <p class="eyebrow">Beach Access Types</p>
     <div class="checks">
       {#each beachTypes as item (item.slug)}
         <button
@@ -94,13 +94,8 @@
     box-shadow: var(--shadow-card);
     padding: var(--size-4);
   }
-  h2 {
-    margin: 0 0 var(--size-3);
-    font-family: var(--font-display);
-    font-size: var(--font-size-0);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
+  .eyebrow {
+    margin-bottom: var(--size-3);
   }
   .checks {
     display: grid;
@@ -120,7 +115,7 @@
     cursor: pointer;
   }
   .check:hover {
-    background: #eef2f6;
+    background: var(--brand-sand);
   }
   .check.active {
     background: var(--brand-teal-soft);

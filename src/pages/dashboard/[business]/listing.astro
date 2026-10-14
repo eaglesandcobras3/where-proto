@@ -4,6 +4,7 @@ import ComposerCard from "../../../components/islands/ComposerCard.svelte";
 import { townBySlug } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { REVIEW_QUEUE_SENTENCE, VIEW_PUBLIC_LABEL } from "../../../lib/dashboard-v1";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -24,7 +25,7 @@ const town = townBySlug(business.townSlug);
       <h1>Business profile</h1>
       <p>Edit what visitors see on your public listing. Name and category always require review.</p>
     </div>
-    <a class="btn" href={href(`/business/${business.slug}`)}>View public profile</a>
+    <a class="btn" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
   </header>
 
   <div class="grid">
@@ -40,7 +41,7 @@ const town = townBySlug(business.townSlug);
       </dl>
       <ComposerCard
         title="Propose profile changes"
-        body="Edits queue for review before they publish on the public listing."
+        body={REVIEW_QUEUE_SENTENCE}
         action="Propose changes"
         kind="settings"
         client:visible
@@ -78,8 +79,8 @@ const town = townBySlug(business.townSlug);
     align-items: center;
     min-height: 2.4rem;
     padding: 0.45rem 0.95rem;
-    border-radius: var(--radius-pill);
-    background: #f1f5f9;
+    border-radius: var(--radius-button);
+    background: var(--brand-sand-dark);
     color: var(--brand-deep);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);

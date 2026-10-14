@@ -26,6 +26,7 @@
       townSlug: string;
       summary: string;
       ownerUserSlug?: string;
+      ownershipStatus?: "pending_approval" | "pending_verification" | "verified" | "rejected";
       entityKind?: "business" | "stay" | "town" | "area";
       isStay?: boolean;
     }[];
@@ -74,7 +75,7 @@
   }
 
   function iconBg(row: Ownership) {
-    if (row.status === "verified") return row.kind === "stay" ? "var(--brand-teal-soft)" : "#dcfce7";
+    if (row.status === "verified") return row.kind === "stay" ? "var(--brand-teal-soft)" : "var(--brand-teal-soft)";
     if (row.status === "pending_verification") return "var(--brand-sun-soft)";
     return "var(--brand-sand-dark)";
   }
@@ -192,16 +193,13 @@
             <div class="biz-main">
               <div class="biz-title">
                 <strong>{row.listingName}</strong>
-                <span class="badge" class:badge--ok={row.status === "verified"} class:badge--pending={row.status !== "verified"}>
-                  {row.status === "verified" && row.kind === "town"
-                    ? "Town desk"
-                    : row.status === "verified" && row.kind === "area"
-                      ? "Area desk"
-                      : row.status === "verified" && row.kind === "stay"
-                        ? "Live in Stays"
-                        : row.status === "verified"
-                          ? "Verified owner"
-                          : statusLabel(row.status)}
+                <span
+                  class="badge"
+                  class:badge--ok={row.status === "verified"}
+                  class:badge--pending={row.status === "pending_approval" || row.status === "pending_verification"}
+                  class:badge--alert={row.status === "rejected"}
+                >
+                  {statusLabel(row.status)}
                 </span>
               </div>
               <p>{statusCopy(row)}</p>
@@ -266,7 +264,7 @@
           </li>
         {/each}
       </ul>
-      <a class="widget__link" href={dashboardRoot}>Manage business →</a>
+      <a class="widget__link" href={dashboardRoot}>Manage business</a>
     {/if}
   </section>
 {/if}
@@ -327,7 +325,7 @@
     justify-content: center;
     min-height: 2.75rem;
     padding: 0.65rem 1.2rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-button);
     border: 1px solid transparent;
     font: inherit;
     font-size: var(--font-size-1);
@@ -515,12 +513,16 @@
   }
   .badge--pending {
     background: var(--brand-sun-soft);
-    color: #78350f;
-    border-color: #fde68a;
+    color: var(--brand-coral);
+    border-color: var(--brand-line);
+  }
+  .badge--alert {
+    background: var(--brand-teal-soft);
+    color: var(--brand-coral);
   }
   .badge--ok {
-    background: #dcfce7;
-    color: #166534;
+    background: var(--brand-teal-soft);
+    color: var(--brand-coral);
     border-color: #bbf7d0;
   }
 

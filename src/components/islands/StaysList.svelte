@@ -222,7 +222,7 @@
   }
   .card:hover {
     box-shadow: var(--shadow-card-hover);
-    border-color: #cbd5e1;
+    border-color: var(--brand-line);
   }
   .media {
     position: relative;
@@ -300,8 +300,8 @@
     gap: 0.65rem;
     padding: 0.65rem 0.85rem;
     border-radius: var(--radius-2);
-    background: #f0f9ff;
-    border: 1px solid #dbeafe;
+    background: var(--brand-sand);
+    border: 1px solid var(--brand-line);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
     color: var(--brand-ink);

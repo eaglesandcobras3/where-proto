@@ -152,7 +152,7 @@
     border: 1px solid var(--ask-line, var(--brand-line));
     border-radius: 0.55rem;
     padding: 0 0.75rem;
-    background: #f7fafb;
+    background: var(--brand-sand);
     font: inherit;
     font-size: var(--font-size-1);
     color: var(--brand-ink);

@@ -58,6 +58,8 @@ export interface Business {
    */
   entityKind?: BusinessEntityKind;
   ownerUserSlug?: Slug;
+  /** Seed ownership row status. Defaults to verified when ownerUserSlug is set. */
+  ownershipStatus?: "pending_approval" | "pending_verification" | "verified" | "rejected";
 }
 
 export interface Stay {
@@ -102,7 +104,9 @@ export interface Update {
   createdAt: string;
   through: string;
   type: "new_item" | "limited_offer" | "business_news" | "hours_change";
+  /** Public updates belong to exactly one entity. Untied updates never render. */
   townSlug?: Slug;
+  areaSlug?: Slug;
   businessSlug?: Slug;
 }
 

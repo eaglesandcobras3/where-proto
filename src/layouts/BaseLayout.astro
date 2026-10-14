@@ -7,11 +7,15 @@ import EventsFilterBar from "../components/islands/EventsFilterBar.svelte";
 import AuthModal from "../components/islands/AuthModal.svelte";
 import ProtoPersonaSwitch from "../components/islands/ProtoPersonaSwitch.svelte";
 import { allLeaves, categories, towns } from "../data/catalog";
+import DashboardFlagBootstrap from "../components/DashboardFlagBootstrap.astro";
 import { absHref, href } from "../lib/href";
+import { isEnabled } from "../config/flags";
+import { envDashboardV1Enabled } from "../lib/dashboard-v1";
 import "../styles/tokens.css";
 import "../styles/global.css";
 import "../styles/grids.css";
 import "../styles/unified-layout.css";
+import "../styles/dashboard-v1.css";
 import "@awesome.me/webawesome/dist/styles/webawesome.css";
 
 interface Props {
@@ -53,6 +57,10 @@ interface Props {
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   /** Skip site header/footer (merchant portal shell) */
   bare?: boolean;
+  /** Enable business_dashboard_v1 preview bootstrap (merchant surfaces). */
+  dashboardPreview?: boolean;
+  /** Account chrome — hide Sign in; this surface assumes a signed-in member. */
+  account?: boolean;
 }
 
 const {
@@ -89,7 +97,10 @@ const {
   askQuery = "",
   jsonLd,
   bare = false,
+  dashboardPreview = false,
+  account = false,
 } = Astro.props;
+const compileDashboardV1 = dashboardPreview && (isEnabled("businessDashboardV1") || envDashboardV1Enabled());
 
 const stayGuestOptions = [
   { slug: "2", name: "Sleeps 2+" },
@@ -148,9 +159,9 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
         document.documentElement.dataset.persona = "guest";
       }
     </script>
+    {dashboardPreview && <DashboardFlagBootstrap compileOn={compileDashboardV1} />}
   </head>
-  <body class:list={[bare && "bare-shell"]}>
-    
+  <body class:list={[bare && "bare-shell", account && "account-shell"]}>
     {!bare && <Header active={active} />}
     {
       !bare && showBrowse && (

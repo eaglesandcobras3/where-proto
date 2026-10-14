@@ -8,7 +8,9 @@
     "build": "astro check && astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "verify:unified": "node scripts/verify-unified-layout.mjs"
+    "verify:unified": "node scripts/verify-unified-layout.mjs",
+    "verify:updates": "node scripts/verify-updates-modules.mjs",
+    "verify:dashboard": "node scripts/verify-dashboard-ui.mjs"
   },
   "dependencies": {
     "@astrojs/svelte": "^7.2.2",

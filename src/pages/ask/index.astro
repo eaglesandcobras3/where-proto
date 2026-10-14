@@ -9,7 +9,7 @@ import ListingRail from "../../components/ListingRail.astro";
 import TopContributors from "../../components/TopContributors.astro";
 import { townCountsFor } from "../../lib/unified-layout";
 import { commentsFor, questions, towns, townBySlug, userBySlug } from "../../data/catalog";
-import { relativeTime } from "../../lib/labels";
+import { formatDate, roleLabel, userHandle } from "../../lib/labels";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
@@ -38,10 +38,11 @@ const rows = questions.map((question) => {
     slug: question.slug,
     title: question.title,
     body: question.body,
-    author: author?.name ?? "a visitor",
-    role: author?.role === "local" ? "Local" : author?.role === "business-owner" ? "Owner" : "Visitor",
+    author: author ? userHandle(author.slug) : "a visitor",
+    handle: author ? userHandle(author.slug) : "",
+    role: author ? roleLabel(author.role) : "Visitor",
     createdAt: question.createdAt,
-    relative: relativeTime(question.createdAt),
+    relative: formatDate(question.createdAt),
     answers: commentsFor("question", question.slug).length,
     town: townRow?.name,
     townSlug: question.townSlug,
@@ -77,7 +78,7 @@ const mapMarkers = markersFromNames(
   rows.map((item) => ({
     name: item.title,
     href: href(`/ask/${item.slug}`),
-    detail: `${item.town ?? "30A"} · ${item.answers} answers`,
+    detail: `${item.town ?? "30A"} · ${item.answers === 1 ? "1 answer" : `${item.answers} answers`}`,
   })),
 );
 ---
@@ -149,7 +150,6 @@ const mapMarkers = markersFromNames(
           </div>
 
           <aside class="rail">
-            
             <div>
               <ListingRail mapTitle="Questions map" mapHref={mapHref} contributeKind="ask" current="ask">
                 <TopContributors
@@ -204,7 +204,7 @@ const mapMarkers = markersFromNames(
   .widget__label {
     margin: 0 0 var(--size-3);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);

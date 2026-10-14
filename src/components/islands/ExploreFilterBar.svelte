@@ -271,7 +271,7 @@
   .segment[data-open="true"] {
     background: var(--brand-sand);
     border-radius: var(--radius-4);
-    box-shadow: 0 0 0 2px #3b6fe8;
+    box-shadow: 0 0 0 2px var(--brand-teal);
   }
   .field {
     flex: 1;

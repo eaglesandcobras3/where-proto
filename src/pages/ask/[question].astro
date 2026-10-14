@@ -2,14 +2,14 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntityText from "../../components/EntityText.astro";
 import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
+import ReactionBar from "../../components/ReactionBar.astro";
 import {
   commentsFor,
   questions,
-  reactionsFor,
   townBySlug,
   userBySlug,
 } from "../../data/catalog";
-import { relativeTime } from "../../lib/labels";
+import { countLabel, formatDate, userHandle } from "../../lib/labels";
 import type { Question } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -26,7 +26,6 @@ const { item: question } = Astro.props;
 const author = userBySlug(question.authorUserSlug);
 const town = question.townSlug ? townBySlug(question.townSlug) : undefined;
 const replies = commentsFor("question", question.slug);
-const questionUp = reactionsFor("question", question.slug).find((item) => item.label === "up")?.count ?? 0;
 const accepted = replies[0];
 const jsonLd = {
   "@context": "https://schema.org",
@@ -58,8 +57,6 @@ const jsonLd = {
   title={question.title}
   description={question.body}
   active="ask"
-  showAsk
-  askTown={question.townSlug ?? ""}
   jsonLd={jsonLd}
 >
   <div class="thread">
@@ -68,8 +65,15 @@ const jsonLd = {
     </p>
     <article class="card">
       <div class="meta">
-        <span class="avatar" aria-hidden="true">{author?.name.charAt(0) ?? "?"}</span>
-        <span>{relativeTime(question.createdAt)}</span>
+        <span class="avatar" aria-hidden="true">{author?.slug.charAt(0) ?? "?"}</span>
+        <span>
+          {author ? (
+            <a href={href(`/u/${author.slug}`)}>{userHandle(author.slug)}</a>
+          ) : (
+            "A visitor"
+          )}
+        </span>
+        <span>· {formatDate(question.createdAt)}</span>
         {town && <span class="town">· {town.name}</span>}
       </div>
       <h1>{question.title}</h1>
@@ -81,28 +85,33 @@ const jsonLd = {
         )
       }
       <div class="actions">
-        <button type="button">👍 Like{questionUp ? ` ${questionUp}` : ""}</button>
+        <ReactionBar />
       </div>
     </article>
 
-    <h2>{replies.length} {replies.length === 1 ? "reply" : "replies"}</h2>
+    <h2>{countLabel(replies.length, "answer")}</h2>
 
     {
       replies.map((item) => {
         const replyAuthor = userBySlug(item.authorUserSlug);
-        const up = reactionsFor("answer", item.slug).find((reaction) => reaction.label === "up")?.count ?? 0;
         return (
           <article class="card reply">
             <div class="meta">
-              <span class="avatar" aria-hidden="true">{replyAuthor?.name.charAt(0) ?? "?"}</span>
-              <span>{relativeTime(question.createdAt)}</span>
+              <span class="avatar" aria-hidden="true">{replyAuthor?.slug.charAt(0) ?? "?"}</span>
+              <span>
+                {replyAuthor ? (
+                  <a href={href(`/u/${replyAuthor.slug}`)}>{userHandle(replyAuthor.slug)}</a>
+                ) : (
+                  "A visitor"
+                )}
+              </span>
             </div>
             <p class="body">
               <EntityText text={item.body} />
             </p>
             <div class="actions">
-              <button type="button">👍 Like{up ? ` ${up}` : ""}</button>
-              <button type="button" class="reply-btn">Reply</button>
+              <ReactionBar />
+              <a class="reply-btn" href="#reply">Reply</a>
             </div>
           </article>
         );
@@ -187,8 +196,10 @@ const jsonLd = {
     cursor: pointer;
   }
   .reply-btn {
-    color: var(--brand-deep) !important;
+    color: var(--brand-deep);
     font-weight: var(--font-weight-6);
+    font-size: var(--font-size-1);
+    align-self: center;
   }
 </style>
 

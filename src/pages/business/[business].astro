@@ -6,17 +6,23 @@ import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
 import HappeningHere from "../../components/HappeningHere.astro";
 import ExploreLinks from "../../components/ExploreLinks.astro";
+import UpdatesModule from "../../components/UpdatesModule.astro";
+import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
 import {
   areaBySlug,
   businesses,
   events,
+  faqsForBusiness,
   leafBySlug,
   photosFor,
   tagBySlug,
   townBySlug,
   guides,
+  updateSharePath,
+  updatesForBusiness,
 } from "../../data/catalog";
 import type { Business } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -52,28 +58,9 @@ const chipTags = business.tagSlugs
   .concat(leaf?.name ? [leaf.name] : [])
   .slice(0, 6);
 
-const faq = [
-  {
-    q: "Is there outdoor seating?",
-    a: business.tagSlugs.includes("walkable")
-      ? "Yes — patio or courtyard seating is part of the local vibe here."
-      : "Ask the host on arrival; many 30A spots rotate patio tables seasonally.",
-  },
-  {
-    q: "Any dietary or dairy-free options?",
-    a: "Most corridor cafes and kitchens can guide dairy-free and gluten-aware picks — confirm at the counter.",
-  },
-  {
-    q: "Where should I park or bike?",
-    a: town
-      ? `Use posted ${town.name} lots, or roll up on the Timpoochee Trail when bike racks are available.`
-      : "Use posted town lots or the Timpoochee Trail bike racks nearby.",
-  },
-  {
-    q: "How close is the beach?",
-    a: "Most 30A outposts sit a short walk or golf-cart hop from a public walkover — check the map pin for the nearest access.",
-  },
-];
+const faq = faqsForBusiness(business);
+const claimed = Boolean(business.ownerUserSlug);
+const businessUpdates = updatesForBusiness(business.slug);
 ---
 
 <BaseLayout title={business.name} description={business.summary} active="businesses">
@@ -103,7 +90,7 @@ const faq = [
           {town && <span class="badge">{town.name} 30A Merchant</span>}
           {area && <span class="badge">{area.name}</span>}
           {business.openNow && <span class="badge badge--teal">Open now</span>}
-          <span class="badge badge--teal">Verified 30A Merchant</span>
+          {claimed && <span class="badge badge--teal">Verified owner</span>}
         </div>
 
         <div class="hero__row">
@@ -115,8 +102,23 @@ const faq = [
             </p>
           </div>
           <div class="actions">
-            <button class="btn btn--ghost" type="button">Save</button>
-            <button class="btn btn--ghost" type="button">Share</button>
+            <SaveShare type="business" slug={business.slug} name={business.name} href={href(`/business/${business.slug}`)} client:load />
+            {
+              business.phone && (
+                <a class="btn btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
+                  Call {business.phone}
+                </a>
+              )
+            }
+            {
+              business.website ? (
+                <a class="btn btn--teal" href={business.website} target="_blank" rel="noopener noreferrer">
+                  Visit Official Website →
+                </a>
+              ) : !claimed ? (
+                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing →</a>
+              ) : null
+            }
           </div>
           
         </div>
@@ -145,6 +147,13 @@ const faq = [
           <p>{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
           <p class="muted">{business.hours ?? "Hours vary"}</p>
         </section>
+        <UpdatesModule
+          entityKind="business"
+          entityName={business.name}
+          updates={businessUpdates}
+          ctaHref={updateSharePath("business", business.slug)}
+        />
+        <PostedUpdates businessSlug={business.slug} client:load />
         <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
         <CommunityQA
           question={`What should first-timers know before visiting ${business.name}?`}
@@ -188,6 +197,15 @@ const faq = [
               </a>
             )}
           </section>
+          {
+            !claimed && (
+              <section class="widget claim">
+                <p class="widget__label">Business Owner or GM?</p>
+                <p>Claim this listing to post updates, events, and verified hours.</p>
+                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
+              </section>
+            )
+          }
           <ExploreLinks current="businesses" townSlug={town?.slug} />
         </div>
       </aside>
@@ -218,7 +236,7 @@ const faq = [
   }
   .back,
   .crumbs a {
-    color: #cbd5e1;
+    color: var(--brand-line);
     font-size: var(--font-size-1);
   }
   .crumbs {
@@ -227,7 +245,7 @@ const faq = [
     gap: 0.35rem;
     align-items: center;
     font-size: var(--font-size-0);
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
   }
   .crumbs .current {
     color: white;
@@ -247,12 +265,12 @@ const faq = [
     background: rgba(255, 255, 255, 0.06);
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
-    color: #e2e8f0;
+    color: var(--brand-line);
   }
   .badge--teal {
     background: rgba(0, 137, 123, 0.25);
     border-color: rgba(133, 246, 229, 0.35);
-    color: #85f6e5;
+    color: var(--mint);
   }
   .hero__row {
     display: flex;
@@ -268,7 +286,7 @@ const faq = [
   }
   .place {
     margin: 0;
-    color: #cbd5e1;
+    color: var(--brand-line);
     font-size: var(--font-size-2);
   }
   .actions {
@@ -294,7 +312,7 @@ const faq = [
     color: white;
   }
   .btn--teal:hover {
-    background: #00796b;
+    background: var(--brand-teal-hover);
   }
   .btn--ghost {
     border: 1px solid rgba(255, 255, 255, 0.28);
@@ -322,7 +340,7 @@ const faq = [
     background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.12);
     font-size: var(--font-size-0);
-    color: #e2e8f0;
+    color: var(--brand-line);
   }
   .layout {
     display: grid;
@@ -395,32 +413,6 @@ const faq = [
     font-size: var(--font-size-1);
     text-transform: capitalize;
   }
-  .updates {
-    display: grid;
-    gap: var(--size-3);
-  }
-  .update {
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-2);
-    padding: var(--size-3);
-    background: var(--brand-sand);
-  }
-  .update__tag {
-    margin: 0 0 0.35rem;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-  }
-  .update h3 {
-    margin: 0 0 0.35rem;
-    font-size: var(--font-size-2);
-  }
-  .update p {
-    margin: 0;
-    font-size: var(--font-size-1);
-  }
   .composer {
     display: grid;
     gap: var(--size-3);
@@ -474,7 +466,7 @@ const faq = [
     margin: 0 0 var(--size-3);
     font-family: var(--font-display);
     font-size: var(--font-size-0);
-    font-weight: var(--font-weight-8);
+    font-weight: var(--font-weight-7);
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--brand-ink-soft);
@@ -492,7 +484,7 @@ const faq = [
     padding: 0.2rem 0.5rem;
     border-radius: var(--radius-pill);
     background: rgba(12, 35, 46, 0.85);
-    color: #85f6e5;
+    color: var(--mint);
     font-size: 0.625rem;
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
@@ -531,12 +523,12 @@ const faq = [
     color: white;
   }
   .claim .widget__label {
-    color: #94a3b8;
+    color: var(--brand-ink-on-navy);
   }
   .claim p {
     margin: 0 0 var(--size-3);
     font-size: var(--font-size-1);
-    color: #cbd5e1;
+    color: var(--brand-line);
   }
   .similar {
     padding: 0 0 var(--size-10);

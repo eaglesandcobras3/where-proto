@@ -3,6 +3,7 @@ import MerchantLayout from "../../../../layouts/MerchantLayout.astro";
 import ComposerCard from "../../../../components/islands/ComposerCard.svelte";
 import type { Business } from "../../../../data/types";
 import { href } from "../../../../lib/href";
+import { REVIEW_QUEUE_SENTENCE } from "../../../../lib/dashboard-v1";
 import { ownedBusinessPaths } from "../../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -27,8 +28,8 @@ const { business } = Astro.props;
   <section class="card">
     <ComposerCard
       title="New event"
-      body="Prototype only — nothing is published until review."
-      action="Submit event"
+      body={REVIEW_QUEUE_SENTENCE}
+      action="Post event"
       kind="event"
       client:visible
     />

@@ -2,19 +2,26 @@
   interface Biz {
     slug: string;
     name: string;
+    status?: "live" | "in_review" | "needs_attention";
   }
 
   let {
     businesses = [],
     selectedSlug = "",
     live = true,
+    statusLabel = "",
     base = "/",
   }: {
     businesses: Biz[];
     selectedSlug: string;
     live?: boolean;
+    statusLabel?: string;
     base?: string;
   } = $props();
+
+  const statusCopy = $derived(
+    statusLabel || (live ? "Live" : "In review"),
+  );
 
   let open = $state(false);
   let root = $state<HTMLElement>();
@@ -81,7 +88,7 @@
       </span>
       <span class="status">
         <span class:list={["dot", live && "dot--live"]}></span>
-        {live ? "Profile is live" : "Pending review"}
+        {statusCopy}
       </span>
     </span>
   </button>
@@ -118,13 +125,13 @@
     padding: 0.35rem 0.65rem;
     border: 0;
     border-radius: var(--radius-3);
-    background: #f1f5f9;
+    background: var(--brand-sand-dark);
     cursor: pointer;
     text-align: left;
     font: inherit;
   }
   .trigger:hover {
-    background: #e8eef4;
+    background: var(--brand-sand);
   }
   .avatar {
     width: 1.75rem;
@@ -163,7 +170,7 @@
     width: 0.375rem;
     height: 0.375rem;
     border-radius: 50%;
-    background: #94a3b8;
+    background: var(--brand-ink-on-navy);
   }
   .dot--live {
     background: var(--brand-teal);
@@ -210,10 +217,10 @@
     white-space: nowrap;
   }
   .menu button:hover {
-    background: #f1f5f9;
+    background: var(--brand-sand-dark);
   }
   .menu button.active {
-    background: #e8f5f3;
+    background: var(--brand-teal-soft);
     color: var(--brand-deep);
     font-weight: var(--font-weight-7);
   }
@@ -227,6 +234,6 @@
     font-weight: var(--font-weight-7);
   }
   .menu .add:hover {
-    background: #f1f5f9;
+    background: var(--brand-sand-dark);
   }
 </style>
