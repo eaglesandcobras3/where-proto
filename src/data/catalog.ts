@@ -1056,7 +1056,7 @@ export const posts: Post[] = [
     authorUserSlug: "beachlocal",
     postedAs: "user",
     on: { type: "town", slug: "rosemary-beach" },
-    body: "Posted as a user on the Rosemary Beach town page. Fake feed item.",
+    body: "Barrett Square at sunset. Locals on the green, kids on the paths, and the last light on the cottages. This is the Rosemary I came back for.",
     createdAt: "2026-10-06",
   },
   {
@@ -1072,15 +1072,63 @@ export const posts: Post[] = [
     authorUserSlug: "first_timer",
     postedAs: "user",
     on: { type: "business", slug: "edwards-fine-food-and-wine" },
-    body: "User mention on a business page. Fake feed item for the mentions screen.",
+    body: "Sat in the courtyard at dusk and it felt like a dinner party someone else planned. Get there a little early — the good tables go first.",
     createdAt: "2026-10-04",
+  },
+  {
+    slug: "edwards-date-night",
+    authorUserSlug: "beachlocal",
+    postedAs: "user",
+    on: { type: "business", slug: "edwards-fine-food-and-wine" },
+    body: "Came back for the courtyard, stayed for the wine list. Not a review — just the easiest date-night walk from Barrett Square.",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "latte-before-the-beach",
+    authorUserSlug: "first_timer",
+    postedAs: "user",
+    on: { type: "business", slug: "beachy-bean-coffee" },
+    body: "Grabbed a latte at Beachy Bean before the beach. Patio was already full by 8:30. Worth the wait if you want something besides hotel coffee.",
+    createdAt: "2026-10-05",
+  },
+  {
+    slug: "cowgirl-after-the-beach",
+    authorUserSlug: "beachlocal",
+    postedAs: "user",
+    on: { type: "business", slug: "cowgirl-kitchen" },
+    body: "Sandy feet, cold drinks, and a booth that still had room after the beach rush. Cowgirl Kitchen is the reset after a long morning in the gulf.",
+    createdAt: "2026-10-02",
+  },
+  {
+    slug: "pearl-porch-evening",
+    authorUserSlug: "first_timer",
+    postedAs: "user",
+    on: { type: "stay", slug: "the-pearl-hotel" },
+    body: "Porch at The Pearl at blue hour. Not a review — just the quietest five minutes of the trip before dinner on the square.",
+    createdAt: "2026-10-06",
+  },
+  {
+    slug: "watercolor-lawn-sunset",
+    authorUserSlug: "beachlocal",
+    postedAs: "user",
+    on: { type: "stay", slug: "watercolor-inn" },
+    body: "Watched the light go pink on the WaterColor Inn lawn. Bring a sweater. The gulf breeze picks up fast once the sun drops.",
+    createdAt: "2026-10-05",
+  },
+  {
+    slug: "cottage-bikes-morning",
+    authorUserSlug: "first_timer",
+    postedAs: "user",
+    on: { type: "stay", slug: "seagrove-cottage" },
+    body: "Bikes from the cottage to the trail before anyone else was up. Seagrove Cottage is a home base, not a hotel — pack like you mean it.",
+    createdAt: "2026-10-03",
   },
   {
     slug: "seaside-wednesday",
     authorUserSlug: "beachlocal",
     postedAs: "user",
     on: { type: "town", slug: "seaside" },
-    body: "Posted as a user on the Seaside town page. Fake feed item.",
+    body: "Wednesday concert night on the Seaside green. Bring a blanket and claim a spot early if you want to see the stage.",
     createdAt: "2026-10-01",
   },
 ];
@@ -1145,6 +1193,56 @@ export const photos: Photo[] = [
     slug: "barrett-area",
     caption: "Square edge shops",
     attachedTo: { type: "area", slug: "barrett-square" },
+  },
+  {
+    slug: "loved-courtyard-lights",
+    caption: "Courtyard string lights",
+    attachedTo: { type: "post", slug: "loved-the-courtyard" },
+  },
+  {
+    slug: "loved-courtyard-table",
+    caption: "Table in the courtyard",
+    attachedTo: { type: "post", slug: "loved-the-courtyard" },
+  },
+  {
+    slug: "edwards-night-glass",
+    caption: "Wine on the patio",
+    attachedTo: { type: "post", slug: "edwards-date-night" },
+  },
+  {
+    slug: "beachy-bean-to-go",
+    caption: "Latte for the walk",
+    attachedTo: { type: "post", slug: "latte-before-the-beach" },
+  },
+  {
+    slug: "cowgirl-booth-snap",
+    caption: "Booth after the beach",
+    attachedTo: { type: "post", slug: "cowgirl-after-the-beach" },
+  },
+  {
+    slug: "pearl-porch-snap",
+    caption: "Porch at blue hour",
+    attachedTo: { type: "post", slug: "pearl-porch-evening" },
+  },
+  {
+    slug: "watercolor-lawn-snap",
+    caption: "Inn lawn at dusk",
+    attachedTo: { type: "post", slug: "watercolor-lawn-sunset" },
+  },
+  {
+    slug: "cottage-bikes-snap",
+    caption: "Bikes by the cottage",
+    attachedTo: { type: "post", slug: "cottage-bikes-morning" },
+  },
+  {
+    slug: "sunset-square-snap",
+    caption: "Last light on the square",
+    attachedTo: { type: "post", slug: "sunset-on-the-square" },
+  },
+  {
+    slug: "seaside-green-snap",
+    caption: "Blanket on the green",
+    attachedTo: { type: "post", slug: "seaside-wednesday" },
   },
 ];
 
@@ -1257,6 +1355,9 @@ export const reactions: Reaction[] = [
   { slug: "r5", label: "heart", count: 1, on: { type: "answer", slug: "parking-reply-1" } },
   { slug: "r6", label: "up", count: 6, on: { type: "guide", slug: "first-timers-guide" } },
   { slug: "r7", label: "heart", count: 3, on: { type: "post", slug: "sunset-on-the-square" } },
+  { slug: "r8", label: "heart", count: 5, on: { type: "post", slug: "loved-the-courtyard" } },
+  { slug: "r9", label: "up", count: 2, on: { type: "post", slug: "loved-the-courtyard" } },
+  { slug: "r10", label: "heart", count: 4, on: { type: "post", slug: "pearl-porch-evening" } },
 ];
 
 export const tags: Tag[] = [
@@ -1451,8 +1552,47 @@ export function businessesForLeaf(leafSlug: string) {
   return searchableBusinesses.filter((item) => item.leafSlug === leafSlug);
 }
 
-export function postsFor(type: "town" | "business", slug: string) {
+export function postsFor(type: Post["on"]["type"], slug: string) {
   return posts.filter((item) => item.on.type === type && item.on.slug === slug);
+}
+
+function uniqueBySlug<T extends { slug: string }>(list: T[]) {
+  const seen = new Set<string>();
+  return list.filter((item) => {
+    if (seen.has(item.slug)) return false;
+    seen.add(item.slug);
+    return true;
+  });
+}
+
+export function visitorPostsFor(type: Post["on"]["type"], slug: string) {
+  return postsFor(type, slug)
+    .filter((item) => item.postedAs === "user")
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function visitorPostsAboutBusiness(slug: string) {
+  const linkedStay = stayBySlug(slug) ?? stays.find((item) => item.businessSlug === slug);
+  return uniqueBySlug([
+    ...visitorPostsFor("business", slug),
+    ...(linkedStay ? visitorPostsFor("stay", linkedStay.slug) : []),
+  ]).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function visitorPostsAboutStay(stay: Stay) {
+  return uniqueBySlug([
+    ...visitorPostsFor("stay", stay.slug),
+    ...(stay.businessSlug ? visitorPostsFor("business", stay.businessSlug) : []),
+  ]).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function visitorPostsAboutTown(slug: string) {
+  return visitorPostsFor("town", slug);
+}
+
+export function communityPhotosForPosts(list: Post[]) {
+  const slugs = new Set(list.map((item) => item.slug));
+  return photos.filter((item) => item.attachedTo.type === "post" && slugs.has(item.attachedTo.slug));
 }
 
 export function photosFor(
@@ -1564,9 +1704,7 @@ export function faqsForBusiness(business: Business) {
 export function mentionsForBusiness(business: Pick<Business, "slug" | "name">) {
   const name = business.name.toLowerCase();
   const first = business.name.split(/\s+/)[0]?.toLowerCase() ?? "";
-  const postHits = posts.filter(
-    (item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user",
-  );
+  const postHits = visitorPostsAboutBusiness(business.slug);
   const questionHits = questions.filter((item) => {
     const hay = `${item.title} ${item.body}`.toLowerCase();
     return hay.includes(name) || (first.length > 3 && hay.includes(first));

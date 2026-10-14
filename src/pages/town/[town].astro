@@ -5,6 +5,7 @@ import Corridor from "../../components/Corridor.astro";
 import MapToggle from "../../components/MapToggle.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import EntityVideos from "../../components/EntityVideos.astro";
+import EntityFeed from "../../components/EntityFeed.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
 import HappeningHere from "../../components/HappeningHere.astro";
@@ -13,7 +14,18 @@ import CategoriesInTown from "../../components/CategoriesInTown.astro";
 import ExploreLinks from "../../components/ExploreLinks.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
 import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
-import { events, guides, photosFor, stays, towns, updateSharePath, updatesForTown, videosFor } from "../../data/catalog";
+import {
+  communityPhotosForPosts,
+  events,
+  guides,
+  photosFor,
+  stays,
+  towns,
+  updateSharePath,
+  updatesForTown,
+  videosFor,
+  visitorPostsAboutTown,
+} from "../../data/catalog";
 import type { Town } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
@@ -31,6 +43,8 @@ interface Props {
 const { item: town } = Astro.props;
 const view = townView(town);
 const photos = photosFor("town", town.slug);
+const feedPosts = visitorPostsAboutTown(town.slug);
+const communityPhotos = communityPhotosForPosts(feedPosts);
 const videos = videosFor("town", town.slug);
 const townGuides = guides.filter((item) => item.townSlug === town.slug);
 const relatedGuides = (townGuides.length ? townGuides : guides).slice(0, 3);
@@ -90,7 +104,12 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
             ))}
           </div>
         </section>
-        <EntityGallery photos={photos} fallbackName={town.name} />
+        <EntityGallery
+          photos={photos}
+          communityPhotos={communityPhotos}
+          fallbackName={town.name}
+          officialLabel="Town photos"
+        />
         <EntityVideos videos={videos} />
         <CategoriesInTown townSlug={town.slug} townName={town.name} />
         <section class="panel">
@@ -115,10 +134,7 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
         <PostedUpdates townSlug={town.slug} client:load />
         <HappeningHere events={townEvents} placeName={town.name} townSlug={town.slug} />
         <TownStays stays={townStays} townName={town.name} townSlug={town.slug} />
-        <CommunityQA
-          question={`What's the best public beach access near ${town.name}?`}
-          answer="Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private."
-        />
+        <EntityFeed posts={feedPosts} placeName={town.name} />
         <RelatedGuides guides={relatedGuides} />
         <section class="panel">
           <h2>Similar nearby</h2>
@@ -130,6 +146,10 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
             ))}
           </ul>
         </section>
+        <CommunityQA
+          question={`What's the best public beach access near ${town.name}?`}
+          answer="Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private."
+        />
       </div>
 
       <aside class="rail">

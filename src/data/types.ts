@@ -124,7 +124,7 @@ export interface Post {
   authorUserSlug?: Slug;
   authorBusinessSlug?: Slug;
   postedAs: "user" | "business";
-  on: { type: "town" | "business"; slug: Slug };
+  on: { type: "town" | "business" | "stay"; slug: Slug };
   body: string;
   createdAt: string;
 }

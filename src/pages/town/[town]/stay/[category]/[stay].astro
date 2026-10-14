@@ -3,6 +3,7 @@ import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import InteriorHero from "../../../../../components/InteriorHero.astro";
 import EntityGallery from "../../../../../components/EntityGallery.astro";
 import EntityVideos from "../../../../../components/EntityVideos.astro";
+import EntityFeed from "../../../../../components/EntityFeed.astro";
 import CommunityQA from "../../../../../components/CommunityQA.astro";
 import RelatedGuides from "../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../components/HappeningHere.astro";
@@ -15,8 +16,10 @@ import {
   events,
   faqsForStay,
   guides,
+  communityPhotosForPosts,
   photosFor,
   videosFor,
+  visitorPostsAboutStay,
   stays,
   townBySlug,
   updateSharePath,
@@ -53,6 +56,8 @@ const nearbyEvents =
     : events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
 const isInn = /hotel|inn/i.test(stay.name);
 const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
+const feedPosts = visitorPostsAboutStay(stay);
+const communityPhotos = communityPhotosForPosts(feedPosts);
 const stayVideos = videosFor("stay", stay.slug);
 const relatedGuides = guides
   .filter((item) => item.townSlug === stay.townSlug)
@@ -122,7 +127,12 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
           <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
           <p>{stay.summary}</p>
         </section>
-        <EntityGallery photos={stayPhotos} fallbackName={stay.name} />
+        <EntityGallery
+          photos={stayPhotos}
+          communityPhotos={communityPhotos}
+          fallbackName={stay.name}
+          officialLabel="Stay photos"
+        />
         <EntityVideos videos={stayVideos} />
         <section class="panel">
           <h2>Amenities</h2>
@@ -150,10 +160,7 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
         }
         {listing && <PostedUpdates businessSlug={listing.slug} client:load />}
         <HappeningHere events={nearbyEvents} placeName={stay.name} townSlug={stay.townSlug} />
-        <CommunityQA
-          question={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
-          answer={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
-        />
+        <EntityFeed posts={feedPosts} placeName={stay.name} />
         <section class="panel faq">
           <h2>Good to know</h2>
           {faq.map((item) => (
@@ -172,6 +179,10 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
             ))}
           </div>
         </section>
+        <CommunityQA
+          question={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
+          answer={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
+        />
       </div>
 
       <aside class="rail">

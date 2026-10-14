@@ -1,36 +1,30 @@
 ---
 import AccountLayout from "../../layouts/AccountLayout.astro";
 import {
-  businessBySlug,
   commentsFor,
   currentUserSlug,
   posts,
-  townBySlug,
 } from "../../data/catalog";
 import { href } from "../../lib/href";
-import { businessPathBySlug } from "../../lib/listing";
+import { postPlace } from "../../lib/listing";
 import { countLabel, formatDate } from "../../lib/labels";
+
+const pageLabel = {
+  town: "Town Page",
+  business: "Business Page",
+  stay: "Stay Page",
+} as const;
 
 const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
 
 const rows = mine.map((post) => {
-  const place =
-    post.on.type === "town"
-      ? townBySlug(post.on.slug)
-      : businessBySlug(post.on.slug);
-  const placeName =
-    place && "name" in place
-      ? place.name
-      : post.on.slug;
-  const placeHref =
-    post.on.type === "town"
-      ? href(`/town/${post.on.slug}`)
-      : href(businessPathBySlug(post.on.slug));
+  const place = postPlace(post);
   return {
     ...post,
-    placeName,
-    placeHref,
-    streamLabel: `Posted on ${placeName}`,
+    placeName: place.name,
+    placeHref: href(place.href),
+    streamLabel: `Posted on ${place.name}`,
+    pageLabel: pageLabel[post.on.type],
     comments: commentsFor("post", post.slug).length,
   };
 });
@@ -41,7 +35,7 @@ const rows = mine.map((post) => {
     <div class="panel__head">
       <div>
         <h2>Posts</h2>
-        <p>Notes you posted on town and business pages.</p>
+        <p>Notes you posted on town, stay, and business pages.</p>
       </div>
     </div>
 
@@ -52,7 +46,7 @@ const rows = mine.map((post) => {
             <div class="card__top">
               <p class="stream">{post.streamLabel}</p>
               <a class="town-link" href={post.placeHref}>
-                {post.on.type === "town" ? "Town Page" : "Business Page"}
+                {post.pageLabel}
               </a>
             </div>
             <p class="when">{formatDate(post.createdAt)}</p>

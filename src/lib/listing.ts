@@ -8,7 +8,7 @@ import {
   townBySlug,
 } from "../data/catalog";
 import type { Crumb } from "./crumbs";
-import type { Business, Stay } from "../data/types";
+import type { Business, Post, Stay } from "../data/types";
 
 export interface FilterBusiness {
   slug: string;
@@ -114,6 +114,31 @@ export function stayTownPath(townSlug: string) {
 
 export function stayCategoryPath(townSlug: string, categorySlug: string) {
   return `/town/${townSlug}/stay/${categorySlug}`;
+}
+
+export function postPlace(post: Pick<Post, "on">) {
+  if (post.on.type === "town") {
+    const town = townBySlug(post.on.slug);
+    return {
+      name: town?.name ?? post.on.slug,
+      href: `/town/${post.on.slug}`,
+      kindLabel: "town" as const,
+    };
+  }
+  if (post.on.type === "stay") {
+    const stay = stayBySlug(post.on.slug);
+    return {
+      name: stay?.name ?? post.on.slug,
+      href: stayPathBySlug(post.on.slug),
+      kindLabel: "stay" as const,
+    };
+  }
+  const business = businessBySlug(post.on.slug);
+  return {
+    name: business?.name ?? post.on.slug,
+    href: businessPathBySlug(post.on.slug),
+    kindLabel: "business" as const,
+  };
 }
 
 export function stayCrumbs(item: Pick<Stay, "name" | "townSlug" | "categorySlug">): Crumb[] {

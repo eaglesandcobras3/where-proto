@@ -189,12 +189,8 @@ const sections = [
 
         
         <div>
-          <EntityGallery photos={guidePhotos} fallbackName={guide.title} />
+          <EntityGallery photos={guidePhotos} fallbackName={guide.title} officialLabel="Town photos" />
           <HappeningHere events={townEvents} placeName={town?.name ?? "30A"} townSlug={guide.townSlug} />
-          <CommunityQA
-            question={`What should first-timers take from “${guide.title}”?`}
-            answer="Start with a town, not a hotel dump. Confirm beach access, carts, and dinner waits before you lock the day."
-          />
           <RelatedGuides guides={related} />
           <section class="section">
             <h2>Similar nearby</h2>
@@ -206,6 +202,10 @@ const sections = [
               ))}
             </ul>
           </section>
+          <CommunityQA
+            question={`What should first-timers take from “${guide.title}”?`}
+            answer="Start with a town, not a hotel dump. Confirm beach access, carts, and dinner waits before you lock the day."
+          />
         </div>
       </article>
 

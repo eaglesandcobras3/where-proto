@@ -5,15 +5,16 @@ import ReactionBar from "../../components/ReactionBar.astro";
 import {
   businessBySlug,
   commentsFor,
+  photosFor,
   posts,
   reactionsFor,
-  townBySlug,
   userBySlug,
 } from "../../data/catalog";
 import type { Post } from "../../data/types";
 import { href } from "../../lib/href";
+import { cardImageSrc } from "../../lib/card-image";
 import { formatDate, userHandle } from "../../lib/labels";
-import { businessPath, businessPathBySlug } from "../../lib/listing";
+import { businessPath, postPlace } from "../../lib/listing";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -27,8 +28,8 @@ interface Props {
 const { item: post } = Astro.props;
 const user = post.authorUserSlug ? userBySlug(post.authorUserSlug) : undefined;
 const business = post.authorBusinessSlug ? businessBySlug(post.authorBusinessSlug) : undefined;
-const target = post.on.type === "town" ? townBySlug(post.on.slug) : businessBySlug(post.on.slug);
-const targetHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(businessPathBySlug(post.on.slug));
+const place = postPlace(post);
+const shots = photosFor("post", post.slug);
 const postComments = commentsFor("post", post.slug);
 const postReactions = reactionsFor("post", post.slug);
 ---
@@ -60,15 +61,31 @@ const postReactions = reactionsFor("post", post.slug);
           </>
         )
       }
-      {
-        target && (
-          <>
-            {" on "}
-            <a href={targetHref}>{target.name}</a>
-          </>
-        )
-      }
+      <>
+        {" on "}
+        <a href={href(place.href)}>{place.name}</a>
+      </>
     </p>
+    {
+      shots.length > 0 && (
+        <div class="shots">
+          {shots.map((photo) => (
+            <figure>
+              <img
+                src={cardImageSrc(photo.caption.charAt(0), "4/3")}
+                alt={photo.caption}
+                width="400"
+                height="300"
+              />
+              <figcaption>
+                <span class="badge">Community</span>
+                {photo.caption}
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+      )
+    }
     <ReactionBar reactions={postReactions} />
     {
       postComments.map((item) => (
@@ -89,5 +106,42 @@ const postReactions = reactionsFor("post", post.slug);
   .comment {
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+  }
+  .shots {
+    display: flex;
+    gap: 0.65rem;
+    overflow-x: auto;
+    margin: var(--size-4) 0;
+  }
+  figure {
+    margin: 0;
+    flex: 0 0 10rem;
+  }
+  img {
+    display: block;
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-2);
+    background: var(--brand-sand-dark);
+  }
+  figcaption {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .badge {
+    padding: 0.1rem 0.4rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-teal-soft);
+    color: var(--brand-deep);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-size: 0.5625rem;
   }
 </style>

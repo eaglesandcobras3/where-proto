@@ -2,7 +2,7 @@
   import { cardImageSrc } from "../../lib/card-image";
 
   export type MediaItem =
-    | { kind: "photo"; label: string }
+    | { kind: "photo"; label: string; badge?: string }
     | { kind: "video"; label: string; embed: string; href?: string };
 
   let {
@@ -68,6 +68,9 @@
         >
           {#if item.kind === "photo"}
             <img src={cardImageSrc(item.label.charAt(0), "4/3")} alt="" width="400" height="300" />
+            {#if item.badge}
+              <span class="badge">{item.badge}</span>
+            {/if}
           {:else}
             <span class="poster img-placeholder" aria-hidden="true">{item.label.charAt(0)}</span>
             <span class="play" aria-hidden="true">
@@ -118,11 +121,16 @@
         {/if}
       </div>
       <p class="caption">
-        {#if current.kind === "video" && current.href}
-          <a href={current.href} target="_blank" rel="noopener noreferrer">{current.label}</a>
-        {:else}
-          {current.label}
-        {/if}
+        <span class="caption-text">
+          {#if current.kind === "photo" && current.badge}
+            <span class="caption-badge">{current.badge}</span>
+          {/if}
+          {#if current.kind === "video" && current.href}
+            <a href={current.href} target="_blank" rel="noopener noreferrer">{current.label}</a>
+          {:else}
+            {current.label}
+          {/if}
+        </span>
         {#if items.length > 1}
           <span class="count">{index + 1} / {items.length}</span>
         {/if}
@@ -171,6 +179,19 @@
     inset: 0;
     display: grid;
     place-items: center;
+  }
+  .badge {
+    position: absolute;
+    top: 0.45rem;
+    left: 0.45rem;
+    padding: 0.15rem 0.45rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.82);
+    color: white;
+    font-size: 0.5625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
   figcaption {
     margin-top: var(--size-2);
@@ -237,8 +258,25 @@
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
   }
+  .caption-text {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem;
+    min-width: 0;
+  }
   .caption a {
     color: white;
+  }
+  .caption-badge {
+    flex-shrink: 0;
+    padding: 0.1rem 0.45rem;
+    border-radius: var(--radius-pill);
+    background: rgba(255, 255, 255, 0.18);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
   }
   .count {
     color: rgba(255, 255, 255, 0.7);

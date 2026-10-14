@@ -118,17 +118,13 @@ const jsonLd = {
           <h2>About the gathering</h2>
           <p>{event.summary}</p>
         </section>
-        <EntityGallery photos={photos} fallbackName={event.name} />
+        <EntityGallery photos={photos} fallbackName={event.name} officialLabel="Event photos" />
         <section class="panel">
           <h2>Date, venue &amp; host</h2>
           <p>{event.when}{event.time ? ` · ${event.time}` : ""}</p>
           <p>{event.venue ?? town?.name ?? "30A"}</p>
           <p>{hostName}</p>
         </section>
-        <CommunityQA
-          question="Do I need to bring my own mat for outdoor sessions?"
-          answer="Bring a mat or towel when you can. Hosts sometimes have a few extras, but they go fast near sunset."
-        />
         <RelatedGuides guides={relatedGuides} />
         <section class="panel">
           <h2>Similar nearby</h2>
@@ -143,6 +139,10 @@ const jsonLd = {
             ))}
           </ul>
         </section>
+        <CommunityQA
+          question="Do I need to bring my own mat for outdoor sessions?"
+          answer="Bring a mat or towel when you can. Hosts sometimes have a few extras, but they go fast near sunset."
+        />
       </div>
 
       <aside class="rail">

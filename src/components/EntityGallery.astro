@@ -1,28 +1,38 @@
 ---
-import PhotoGrid from "./PhotoGrid.astro";
+import GalleryToggle from "./islands/GalleryToggle.svelte";
 import type { Photo } from "../data/types";
 
 interface Props {
   photos: Photo[];
+  communityPhotos?: Photo[];
   fallbackName: string;
+  officialLabel?: string;
 }
 
-const { photos, fallbackName } = Astro.props;
-const shown =
-  photos.length > 0
-    ? photos
-    : [
-        {
-          slug: `${fallbackName}-gallery`,
-          caption: fallbackName,
-          attachedTo: { type: "town" as const, slug: "gallery" },
-        },
-      ];
+const {
+  photos,
+  communityPhotos = [],
+  fallbackName,
+  officialLabel = "Business photos",
+} = Astro.props;
+
+const official = photos.map((photo) => ({ kind: "photo" as const, label: photo.caption }));
+const community = communityPhotos.map((photo) => ({
+  kind: "photo" as const,
+  label: photo.caption,
+  badge: "Community",
+}));
 ---
 
 <section class="panel entity-gallery">
   <h2>Gallery</h2>
-  <PhotoGrid photos={shown} scroll />
+  <GalleryToggle
+    {official}
+    {community}
+    {officialLabel}
+    fallbackLabel={fallbackName}
+    client:visible
+  />
 </section>
 
 <style>

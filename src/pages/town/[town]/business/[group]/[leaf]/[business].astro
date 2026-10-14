@@ -4,6 +4,7 @@ import InteriorHero from "../../../../../../components/InteriorHero.astro";
 import BusinessCard from "../../../../../../components/BusinessCard.astro";
 import EntityGallery from "../../../../../../components/EntityGallery.astro";
 import EntityVideos from "../../../../../../components/EntityVideos.astro";
+import EntityFeed from "../../../../../../components/EntityFeed.astro";
 import CommunityQA from "../../../../../../components/CommunityQA.astro";
 import RelatedGuides from "../../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../../components/HappeningHere.astro";
@@ -15,8 +16,10 @@ import {
   events,
   faqsForBusiness,
   leafBySlug,
+  communityPhotosForPosts,
   photosFor,
   videosFor,
+  visitorPostsAboutBusiness,
   tagBySlug,
   townBySlug,
   guides,
@@ -49,6 +52,8 @@ const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
 const businessPhotos = photosFor("business", business.slug);
+const feedPosts = visitorPostsAboutBusiness(business.slug);
+const communityPhotos = communityPhotosForPosts(feedPosts);
 const businessVideos = videosFor("business", business.slug);
 const similar = businesses
   .filter(
@@ -132,7 +137,7 @@ const businessUpdates = updatesForBusiness(business.slug);
           <h2>About {business.name}</h2>
           <p>{business.summary}</p>
         </section>
-        <EntityGallery photos={businessPhotos} fallbackName={business.name} />
+        <EntityGallery photos={businessPhotos} communityPhotos={communityPhotos} fallbackName={business.name} />
         <EntityVideos videos={businessVideos} />
         <section class="panel">
           <h2>Hours &amp; location</h2>
@@ -147,10 +152,7 @@ const businessUpdates = updatesForBusiness(business.slug);
         />
         <PostedUpdates businessSlug={business.slug} client:load />
         <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
-        <CommunityQA
-          question={`What should first-timers know before visiting ${business.name}?`}
-          answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
-        />
+        <EntityFeed posts={feedPosts} placeName={business.name} />
         <section class="panel faq">
           <h2>Good to know</h2>
           {faq.map((item) => (
@@ -169,6 +171,10 @@ const businessUpdates = updatesForBusiness(business.slug);
             ))}
           </div>
         </section>
+        <CommunityQA
+          question={`What should first-timers know before visiting ${business.name}?`}
+          answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
+        />
       </div>
 
       <aside class="rail">
