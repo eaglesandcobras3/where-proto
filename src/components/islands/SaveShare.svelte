@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { openAuth } from "../../lib/auth-return";
   import { personaSignedIn, PERSONA_EVENT, readPersona } from "../../lib/proto-persona";
   import {
     DEFAULT_COLLECTION,
@@ -19,7 +18,6 @@
     href = "",
     saveLabel = "Save",
     savedHint = "Saved to {collection}",
-    prompt = "Sign in to keep your saved places",
   }: {
     type: SavedEntityType;
     slug: string;
@@ -27,7 +25,6 @@
     href?: string;
     saveLabel?: string;
     savedHint?: string;
-    prompt?: string;
   } = $props();
 
   let signedIn = $state(false);
@@ -65,13 +62,10 @@
   }
 
   function onSave() {
+    if (!signedIn) return;
     if (!saved) {
       persist(collection);
-      picker = signedIn;
-      if (!signedIn) {
-        openAuth({ mode: "signup", returnTo: window.location.pathname });
-        showToast(prompt);
-      }
+      picker = true;
       return;
     }
     unsaveItem(type, slug);
@@ -125,18 +119,20 @@
 </script>
 
 <div class="pair">
-  <button class="icon-btn" class:saved type="button" aria-pressed={saved} onclick={onSave}>
-    <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
-      <path
-        d="M7 4.5h10a1 1 0 0 1 1 1V20l-6-3.4L6 20V5.5a1 1 0 0 1 1-1Z"
-        fill={saved ? "currentColor" : "none"}
-        stroke="currentColor"
-        stroke-width="1.75"
-        stroke-linejoin="round"
-      ></path>
-    </svg>
-    <span>{saved ? "Saved" : saveLabel}</span>
-  </button>
+  {#if signedIn}
+    <button class="icon-btn" class:saved type="button" aria-pressed={saved} onclick={onSave}>
+      <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          d="M7 4.5h10a1 1 0 0 1 1 1V20l-6-3.4L6 20V5.5a1 1 0 0 1 1-1Z"
+          fill={saved ? "currentColor" : "none"}
+          stroke="currentColor"
+          stroke-width="1.75"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
+      <span>{saved ? "Saved" : saveLabel}</span>
+    </button>
+  {/if}
   <button class="icon-btn" type="button" onclick={onShare}>
     <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
       <circle cx="6" cy="12" r="2.1" fill="none" stroke="currentColor" stroke-width="1.75"></circle>
@@ -160,9 +156,6 @@
   {/if}
   {#if toast}
     <p class="toast" role="status">{toast}</p>
-  {/if}
-  {#if !signedIn && !saved}
-    <p class="invite">Planning a 30A trip? Save this place.</p>
   {/if}
 </div>
 
@@ -266,15 +259,5 @@
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
     white-space: nowrap;
-  }
-  .invite {
-    flex-basis: 100%;
-    margin: 0;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-soft);
-  }
-  .invite a {
-    color: var(--brand-teal);
-    font-weight: var(--font-weight-6);
   }
 </style>

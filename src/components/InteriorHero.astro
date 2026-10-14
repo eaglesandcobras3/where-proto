@@ -132,6 +132,10 @@ const { title, lede, kicker, crumbs = [] } = Astro.props;
     flex-wrap: wrap;
     gap: 0.45rem;
   }
+  .interior-hero :global(.badges:empty),
+  .interior-hero :global(.chips:empty) {
+    display: none;
+  }
   .interior-hero :global(.badge),
   .interior-hero :global(.chip) {
     display: inline-flex;

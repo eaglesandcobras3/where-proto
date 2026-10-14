@@ -10,7 +10,6 @@ import ExploreLinks from "../../../../../components/ExploreLinks.astro";
 import UpdatesModule from "../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../components/islands/PostedUpdates.svelte";
 import {
-  areaBySlug,
   businesses,
   events,
   faqsForBusiness,
@@ -45,7 +44,6 @@ interface Props {
 
 const { item: business } = Astro.props;
 const town = townBySlug(business.townSlug);
-const area = business.areaSlug ? areaBySlug(business.areaSlug) : undefined;
 const leaf = leafBySlug(business.leafSlug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
 const businessPhotos = photosFor("business", business.slug);
@@ -80,17 +78,21 @@ const businessUpdates = updatesForBusiness(business.slug);
   <div class="biz-page">
     <InteriorHero
       title={business.name}
-      lede={`${business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}${area ? ` · ${area.name}` : ""}`}
+      lede={business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}
       crumbs={businessCrumbs(business)}
     >
       <div slot="badges" class="badges">
-        {town && <span class="badge">{town.name} 30A Merchant</span>}
-        {area && <span class="badge">{area.name}</span>}
-        {business.openNow && <span class="badge badge--teal">Open now</span>}
         {claimed && <span class="badge badge--teal">Verified owner</span>}
       </div>
       <div slot="actions">
         <SaveShare type="business" slug={business.slug} name={business.name} href={href(businessPath(business))} client:load />
+        {
+          town && (
+            <a class="hero-btn hero-btn--ghost" href={href(`/search?town=${town.slug}&view=map`)}>
+              Map view
+            </a>
+          )
+        }
         {
           business.phone && (
             <a class="hero-btn hero-btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
@@ -168,7 +170,7 @@ const businessUpdates = updatesForBusiness(business.slug);
       <aside class="rail">
         
         <div>
-          <section class="widget">
+          <section class="widget" id="map">
             <p class="widget__label">Location</p>
             <div class="map img-placeholder" aria-hidden="true">
               <span class="map__tag">{town?.name ?? "30A"}</span>
