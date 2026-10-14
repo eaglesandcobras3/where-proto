@@ -7,6 +7,9 @@ import TwoPaneMap from "../../components/TwoPaneMap.astro";
 import EventsHeroSearch from "../../components/islands/EventsHeroSearch.svelte";
 import EventsSidebarFilters from "../../components/islands/EventsSidebarFilters.svelte";
 import EventFilters from "../../components/islands/EventFilters.svelte";
+import ListingFilters from "../../components/islands/ListingFilters.svelte";
+import ListingRail from "../../components/ListingRail.astro";
+import { townCountsFor } from "../../lib/unified-layout";
 import { businessBySlug, events, towns, townBySlug } from "../../data/catalog";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
@@ -58,6 +61,11 @@ const townCounts = towns
     count: events.filter((event) => event.townSlug === item.slug).length,
   }))
   .filter((item) => item.count > 0);
+const allTownCounts = townCountsFor(towns, events, (event) => event.townSlug);
+const categoryCounts = categoryOptions.map((item) => ({
+  ...item,
+  count: events.filter((event) => (event.category ?? "").toLowerCase() === item.slug.toLowerCase()).length,
+}));
 
 const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
 
@@ -87,14 +95,16 @@ const mapMarkers = markersFromNames(
       title="30A Events & Community Calendar"
       lede="Live music, markets, wellness, and neighborhood gatherings across the corridor."
     >
-      <EventsHeroSearch
-        towns={exploreTowns}
-        initialTown={town}
-        initialFrom={from}
-        initialTo={to}
-        initialQuery={q}
-        client:load
-      />
+      <div data-when="legacy">
+        <EventsHeroSearch
+          towns={exploreTowns}
+          initialTown={town}
+          initialFrom={from}
+          initialTo={to}
+          initialQuery={q}
+          client:load
+        />
+      </div>
     </InteriorHero>
 
     {
@@ -117,14 +127,41 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout">
-          <EventsSidebarFilters
-            towns={townCounts}
-            categories={categoryOptions}
-            initialTown={town}
-            initialCategory={category}
-            total={events.length}
-            client:load
-          />
+          <div class="filters-col">
+            <div data-when="legacy">
+              <EventsSidebarFilters
+                towns={townCounts}
+                categories={categoryOptions}
+                initialTown={town}
+                initialCategory={category}
+                total={events.length}
+                client:load
+              />
+            </div>
+            <div data-when="unified">
+              <ListingFilters
+                surface="events"
+                eventName="w30a:events-filters"
+                extraSearch="from"
+                initialFrom={from}
+                initialQuery={q}
+                towns={allTownCounts}
+                initialTown={town}
+                townTotal={events.length}
+                primaryLabel="Category"
+                primaryKey="category"
+                primaryType="chips"
+                primaryOptions={categoryCounts}
+                initialPrimary={category}
+                note={{
+                  label: "Local ordinance",
+                  title: "Bonfire permits required",
+                  body: "Evening beach bonfires need a Walton County permit and a licensed container. Leave no trace at dune accesses.",
+                }}
+                client:load
+              />
+            </div>
+          </div>
 
           <EventFilters
             events={rows}
@@ -136,20 +173,36 @@ const mapMarkers = markersFromNames(
           />
 
           <aside class="rail">
-            <MapToggle title="30A Events Map" href={mapHref} />
-            <ContributeCard kind="event" />
-
-            <section class="widget">
-              <p class="widget__label">Trending Venues</p>
-              <ul class="venues">
-                {venueCounts.map((item) => (
-                  <li>
-                    <span>{item.name}</span>
-                    <span>{item.count}</span>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            <div data-when="legacy">
+              <MapToggle title="30A Events Map" href={mapHref} />
+              <ContributeCard kind="event" />
+              <section class="widget">
+                <p class="widget__label">Trending Venues</p>
+                <ul class="venues">
+                  {venueCounts.map((item) => (
+                    <li>
+                      <span>{item.name}</span>
+                      <span>{item.count}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </div>
+            <div data-when="unified">
+              <ListingRail mapTitle="Events map" mapHref={mapHref} contributeKind="event" current="events">
+                <section class="widget" slot="discovery">
+                  <p class="widget__label">Trending venues</p>
+                  <ul class="venues">
+                    {venueCounts.map((item) => (
+                      <li>
+                        <span>{item.name}</span>
+                        <span>{item.count}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              </ListingRail>
+            </div>
           </aside>
         </div>
       )

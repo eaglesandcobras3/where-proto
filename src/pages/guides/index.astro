@@ -7,6 +7,10 @@ import TwoPaneMap from "../../components/TwoPaneMap.astro";
 import GuidesHeroSearch from "../../components/islands/GuidesHeroSearch.svelte";
 import GuidesSidebarFilters from "../../components/islands/GuidesSidebarFilters.svelte";
 import GuidesList from "../../components/islands/GuidesList.svelte";
+import ListingFilters from "../../components/islands/ListingFilters.svelte";
+import ListingRail from "../../components/ListingRail.astro";
+import TopContributors from "../../components/TopContributors.astro";
+import { townCountsFor } from "../../lib/unified-layout";
 import { guides, towns, townBySlug } from "../../data/catalog";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
@@ -62,6 +66,8 @@ const guideItems = guides.map((guide, index) => {
     source: author.source,
     minutes: 5 + ((guide.title.length + index * 3) % 8),
     popularity: guide.slug === "first-timers-guide" ? 98 : 72 - index * 7,
+    views: guide.slug === "first-timers-guide" ? 1240 : 720 - index * 70,
+    publishedAt: ["2026-10-10", "2026-10-06", "2026-09-28", "2026-09-12", "2026-08-30"][index] ?? "2026-08-01",
     featured: guide.slug === "first-timers-guide",
   };
 });
@@ -73,6 +79,27 @@ const townCounts = towns
     count: guides.filter((guide) => guide.townSlug === item.slug).length,
   }))
   .filter((item) => item.count > 0);
+const allTownCounts = townCountsFor(towns, guides, (guide) => guide.townSlug);
+const topicWords: Record<string, string[]> = {
+  "first-timers": ["first", "timer", "arrive", "tabs"],
+  "getting-around": ["bike", "cart", "walk", "car", "lsv"],
+  dining: ["dining", "food", "eat"],
+  family: ["family", "kids"],
+  history: ["called", "history", "name"],
+  "town-compare": ["different", "vs", "compare", "feels"],
+};
+const topicCounts = topicOptions.map((item) => ({
+  ...item,
+  count: guideItems.filter((guide) => {
+    const words = topicWords[item.slug] ?? [item.slug];
+    const hay = `${guide.title} ${guide.summary} ${guide.topic ?? ""}`.toLowerCase();
+    return words.some((word) => hay.includes(word));
+  }).length,
+}));
+const sourceCounts = [
+  { slug: "whereto", name: "WhereTo", count: guideItems.filter((item) => item.source === "whereto").length },
+  { slug: "community", name: "Community", count: guideItems.filter((item) => item.source === "community").length },
+];
 
 const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
 const mapMarkers = markersFromNames(
@@ -94,13 +121,15 @@ const mapMarkers = markersFromNames(
       title="Travel Guides"
       lede="Curated itineraries, neighborhood guides, beach regulations, and local tips compiled by resident insiders across the Emerald Coast."
     >
-      <GuidesHeroSearch
-        towns={exploreTowns}
-        initialTown={town}
-        initialTopic={topic}
-        initialQuery={q}
-        client:load
-      />
+      <div data-when="legacy">
+        <GuidesHeroSearch
+          towns={exploreTowns}
+          initialTown={town}
+          initialTopic={topic}
+          initialQuery={q}
+          client:load
+        />
+      </div>
     </InteriorHero>
 
     {
@@ -122,26 +151,49 @@ const mapMarkers = markersFromNames(
           />
         </TwoPaneMap>
       ) : (
-        <div class="container layout">
-          <GuidesSidebarFilters
-            towns={townCounts}
-            topics={topicOptions}
-            initialTown={town}
-            initialTopic={topic}
-            total={guides.length}
-            client:load
-          />
+        <div class="container layout layout--content-forward">
+          <div class="filters-col" data-when="legacy">
+            <GuidesSidebarFilters
+              towns={townCounts}
+              topics={topicOptions}
+              initialTown={town}
+              initialTopic={topic}
+              total={guides.length}
+              client:load
+            />
+          </div>
 
-          <GuidesList
-            guides={guideItems}
-            initialTown={town}
-            initialCategory={topic}
-            initialQuery={q}
-            base={base}
-            client:load
-          />
+          <div class="main">
+            <div data-when="unified">
+              <ListingFilters
+                surface="guides"
+                placement="inline"
+                eventName="w30a:guides-filters"
+                initialQuery={q}
+                towns={allTownCounts}
+                initialTown={town}
+                townTotal={guides.length}
+                primaryLabel="Topic"
+                primaryKey="topic"
+                primaryType="chips"
+                primaryOptions={topicCounts}
+                initialPrimary={topic}
+                secondaries={[{ key: "source", label: "Source", options: sourceCounts }]}
+                client:load
+              />
+            </div>
+            <GuidesList
+              guides={guideItems}
+              initialTown={town}
+              initialCategory={topic}
+              initialQuery={q}
+              base={base}
+              client:load
+            />
+          </div>
 
           <aside class="rail">
+            <div data-when="legacy">
             <MapToggle title="30A Guides Map" href={mapHref} />
             <ContributeCard kind="guide" />
 
@@ -187,6 +239,24 @@ const mapMarkers = markersFromNames(
           <p class="cta__copy">Flags, LSV rules, and top beach accesses on one printable page.</p>
           <a class="cta__btn" href={href("/guide/first-timers-guide")}>Download PDF →</a>
         </section>
+            </div>
+            <div data-when="unified">
+              <ListingRail mapTitle="Guides map" mapHref={mapHref} contributeKind="guide" current="guides">
+                <TopContributors
+                  slot="discovery"
+                  people={[
+                    { initials: "CD", name: "Capt. Dave", detail: "Seagrove" },
+                    { initials: "BT", name: "Brian Turner", detail: "Rosemary" },
+                    { initials: "ER", name: "Elena Rostova", detail: "Alys" },
+                  ]}
+                  topics={[
+                    { label: "#FirstTimers" },
+                    { label: "#GolfCartRules" },
+                    { label: "#BeachAccess" },
+                  ]}
+                />
+              </ListingRail>
+            </div>
           </aside>
         </div>
       )
@@ -204,6 +274,11 @@ const mapMarkers = markersFromNames(
     gap: var(--size-5);
     padding-block: var(--size-6) var(--size-10);
     align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: var(--size-4);
+    min-width: 0;
   }
   .rail {
     display: none;

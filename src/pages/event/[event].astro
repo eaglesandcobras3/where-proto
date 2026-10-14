@@ -1,7 +1,11 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
-import { businessBySlug, events, photosFor, townBySlug } from "../../data/catalog";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
+import { businessBySlug, events, guides, photosFor, townBySlug } from "../../data/catalog";
 import type { EventItem } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -19,6 +23,11 @@ const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
 const business = event.businessSlug ? businessBySlug(event.businessSlug) : undefined;
 const photos = photosFor("event", event.slug);
 const related = events.filter((item) => item.slug !== event.slug).slice(0, 3);
+const relatedGuides = guides
+  .filter((item) => !event.townSlug || item.townSlug === event.townSlug)
+  .concat(guides)
+  .filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index)
+  .slice(0, 3);
 const isFree = (event.price ?? "").toLowerCase().includes("free");
 const hostName = business?.name ?? (town ? `${town.name} Events` : "Community host");
 const jsonLd = {
@@ -95,6 +104,7 @@ const jsonLd = {
             {isFree ? "Save RSVP (Free)" : event.price ? `Tickets · ${event.price}` : "Get details"}
           </a>
           <a class="btn btn--ghost" href={href(`/event/${event.slug}.ics`)}>Add to Calendar</a>
+          <button class="btn btn--ghost" type="button" data-when="unified">Save</button>
           <button class="btn btn--ghost" type="button">Share Event</button>
           {town && (
             <a class="btn btn--link" href={href(`/town/${town.slug}`)}>Get Directions</a>
@@ -104,7 +114,7 @@ const jsonLd = {
     </section>
 
     <div class="container layout">
-      <div class="main">
+      <div class="main" data-when="legacy">
         <div class="hero-media img-placeholder" aria-hidden="true">
           <span class="hero-media__tag">Weekly community tradition</span>
           <div class="hero-media__caption">
@@ -185,7 +195,40 @@ const jsonLd = {
         </section>
       </div>
 
+      <div class="main" data-when="unified">
+        <section class="panel">
+          <h2>About the gathering</h2>
+          <p>{event.summary}</p>
+        </section>
+        <EntityGallery photos={photos} fallbackName={event.name} />
+        <section class="panel">
+          <h2>Date, venue &amp; host</h2>
+          <p>{event.when}{event.time ? ` · ${event.time}` : ""}</p>
+          <p>{event.venue ?? town?.name ?? "30A"}</p>
+          <p>{hostName}</p>
+        </section>
+        <CommunityQA
+          question="Do I need to bring my own mat for outdoor sessions?"
+          answer="Bring a mat or towel when you can. Hosts sometimes have a few extras, but they go fast near sunset."
+        />
+        <RelatedGuides guides={relatedGuides} />
+        <section class="panel">
+          <h2>Similar nearby</h2>
+          <ul class="related">
+            {related.map((item) => (
+              <li>
+                <a href={href(`/event/${item.slug}`)}>
+                  <span>{item.when}</span>
+                  <strong>{item.name}</strong>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
       <aside class="rail">
+        <div data-when="legacy">
         <section class="widget status">
           <span class="status__badge">{isFree ? "Free weekly series" : event.category ?? "Community event"}</span>
           <p class="status__copy">{event.when}</p>
@@ -238,6 +281,25 @@ const jsonLd = {
             </section>
           )
         }
+        </div>
+        <div data-when="unified">
+          <section class="widget">
+            <p class="widget__label">Location</p>
+            <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
+          </section>
+          <section class="widget">
+            <p class="widget__label">Contact host</p>
+            <strong>{hostName}</strong>
+            {
+              business ? (
+                <a class="ghost" href={href(`/business/${business.slug}`)}>Contact host</a>
+              ) : (
+                <a class="ghost" href={href("/ask")}>Contact host</a>
+              )
+            }
+          </section>
+          <ExploreLinks current="events" townSlug={event.townSlug} />
+        </div>
       </aside>
     </div>
   </div>

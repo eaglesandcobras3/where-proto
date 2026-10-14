@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ListingToolbar from "./ListingToolbar.svelte";
+
   interface Row {
     slug: string;
     name: string;
@@ -31,17 +33,28 @@
   let town = $state(initialTown);
   let category = $state(initialCategory);
   let query = $state(initialQuery);
+  let from = $state("");
   let view = $state<"all" | "weekend" | "free" | "family">("all");
+  let chip = $state("");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
     return `${root}${route}`;
   }
 
+  const eventChips = [
+    { slug: "Music", name: "Live Music" },
+    { slug: "Wellness", name: "Wellness & Yoga" },
+    { slug: "Market", name: "Farmers Markets" },
+    { slug: "Family", name: "Family Friendly" },
+  ];
+
   let results = $derived(
     events.filter((item) => {
       if (town && item.town !== town) return false;
-      if (category && (item.category ?? "").toLowerCase() !== category.toLowerCase()) return false;
+      const activeCategory = chip || category;
+      if (activeCategory && (item.category ?? "").toLowerCase() !== activeCategory.toLowerCase()) return false;
+      if (from && item.when && item.when < from) return false;
       if (query.trim()) {
         const hay = `${item.name} ${item.venue ?? ""} ${item.townName ?? ""} ${item.category ?? ""} ${item.when}`.toLowerCase();
         if (!hay.includes(query.trim().toLowerCase())) return false;
@@ -68,6 +81,7 @@
       town = detail.town;
       query = detail.query;
       if (detail.category !== undefined) category = detail.category;
+      if (detail.from !== undefined) from = detail.from;
     };
     window.addEventListener("w30a:events-filters", onFilters);
     return () => window.removeEventListener("w30a:events-filters", onFilters);
@@ -75,7 +89,7 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar">
+  <div class="toolbar" data-when="legacy">
     <div class="sort" aria-label="Filter events">
       <button class:active={view === "all"} type="button" onclick={() => (view = "all")}>All Events</button>
       <button class:active={view === "weekend"} type="button" onclick={() => (view = "weekend")}>This Weekend</button>
@@ -83,6 +97,18 @@
       <button class:active={view === "family"} type="button" onclick={() => (view = "family")}>Family Picks</button>
     </div>
     <span class="count" aria-live="polite">{results.length} events · Sort: Date</span>
+  </div>
+  <div data-when="unified">
+    <ListingToolbar
+      surface="events"
+      count={results.length}
+      chips={eventChips}
+      activeChip={chip || category}
+      onChip={(slug) => {
+        chip = slug;
+        category = slug;
+      }}
+    />
   </div>
 
   {#each buckets as bucket}

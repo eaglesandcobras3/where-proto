@@ -1,0 +1,105 @@
+---
+interface Person {
+  initials: string;
+  name: string;
+  detail: string;
+}
+
+interface Topic {
+  label: string;
+}
+
+interface Props {
+  people: Person[];
+  topics?: Topic[];
+}
+
+const { people, topics = [] } = Astro.props;
+---
+
+<section class="widget">
+  <p class="widget__label">Top contributors</p>
+  <ul class="people">
+    {
+      people.map((person) => (
+        <li>
+          <span class="avatar" aria-hidden="true">
+            {person.initials}
+          </span>
+          <div>
+            <strong>{person.name}</strong>
+            <span>{person.detail}</span>
+          </div>
+        </li>
+      ))
+    }
+  </ul>
+  {
+    topics.length > 0 && (
+      <ul class="topics">
+        {topics.map((topic) => (
+          <li>{topic.label}</li>
+        ))}
+      </ul>
+    )
+  }
+</section>
+
+<style>
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .people,
+  .topics {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .people {
+    margin-bottom: var(--size-3);
+  }
+  .people li {
+    display: flex;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  .avatar {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    background: var(--brand-teal-soft);
+    color: var(--brand-deep);
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+  }
+  .people div {
+    display: grid;
+    gap: 0.1rem;
+  }
+  .people strong {
+    font-size: var(--font-size-1);
+    color: var(--brand-teal);
+  }
+  .people span,
+  .topics {
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
+  }
+</style>

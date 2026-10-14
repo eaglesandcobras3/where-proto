@@ -1,0 +1,40 @@
+---
+import PhotoGrid from "./PhotoGrid.astro";
+import type { Photo } from "../data/types";
+
+interface Props {
+  photos: Photo[];
+  fallbackName: string;
+}
+
+const { photos, fallbackName } = Astro.props;
+const shown =
+  photos.length > 0
+    ? photos
+    : [
+        {
+          slug: `${fallbackName}-gallery`,
+          caption: fallbackName,
+          attachedTo: { type: "town" as const, slug: "gallery" },
+        },
+      ];
+---
+
+<section class="panel entity-gallery">
+  <h2>Gallery</h2>
+  <PhotoGrid photos={shown} />
+</section>
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  h2 {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-3);
+  }
+</style>

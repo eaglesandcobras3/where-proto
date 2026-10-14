@@ -8,6 +8,7 @@ interface Props {
   ctaLabel?: string;
   badge?: string;
   resultHint?: string;
+  showRatings?: boolean;
 }
 
 const {
@@ -16,6 +17,7 @@ const {
   ctaLabel = "Open Split Map View",
   badge = "Search this area",
   resultHint = "List + map",
+  showRatings = true,
 } = Astro.props;
 ---
 
@@ -23,8 +25,8 @@ const {
   <p class="map-toggle__label">{title}</p>
   <div class="map-toggle__panel" aria-hidden="true">
     <span class="map-toggle__badge">{badge}</span>
-    <span class="pin" style="top:42%;left:38%">Cafe · 4.8</span>
-    <span class="pin" style="top:55%;left:58%">Bike · 4.9</span>
+    <span class="pin" style="top:42%;left:38%">{showRatings ? "Cafe · 4.8" : "Cafe"}</span>
+    <span class="pin" style="top:55%;left:58%">{showRatings ? "Bike · 4.9" : "Bike"}</span>
     <span class="pin pin--active" style="top:48%;left:48%">Coffee</span>
     <span class="map-toggle__hint">{resultHint}</span>
   </div>

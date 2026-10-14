@@ -9,8 +9,14 @@ import TownCommunitySections from "../../components/TownCommunitySections.astro"
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import GuideCard from "../../components/GuideCard.astro";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import HappeningHere from "../../components/HappeningHere.astro";
+import TownStays from "../../components/TownStays.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
 import { isEnabled } from "../../config/flags";
-import { businessesForTown, guides, photosFor, towns } from "../../data/catalog";
+import { businessesForTown, events, guides, photosFor, stays, towns } from "../../data/catalog";
 import type { Town } from "../../data/types";
 import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
@@ -29,7 +35,13 @@ const view = townView(town);
 const photos = photosFor("town", town.slug);
 const localBusinesses = businessesForTown(town.slug);
 const townGuides = guides.filter((item) => item.townSlug === town.slug);
+const relatedGuides = (townGuides.length ? townGuides : guides).slice(0, 3);
 const townIndex = towns.findIndex((item) => item.slug === town.slug);
+const townEvents = events.filter((item) => item.townSlug === town.slug);
+const townStays = stays.filter((item) => item.townSlug === town.slug);
+const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
+  (item): item is (typeof towns)[number] => Boolean(item),
+);
 ---
 
 <BaseLayout
@@ -80,7 +92,7 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
     <Corridor currentSlug={town.slug} />
 
     <div class="container layout">
-      <div class="main">
+      <div class="main" data-when="legacy">
         <section class="panel">
           <div class="panel__head">
             <div>
@@ -149,7 +161,56 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
         </section>
       </div>
 
+      <div class="main" data-when="unified">
+        <section class="panel">
+          <p class="eyebrow">About</p>
+          <h2>{town.name} overview</h2>
+          <p>{town.summary}</p>
+          <div class="glance">
+            {view.glance.map((fact) => (
+              <div>
+                <p class="label">{fact.label}</p>
+                <p class="value">{fact.value}</p>
+                <p class="detail">{fact.detail}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+        <EntityGallery photos={photos} fallbackName={town.name} />
+        <section class="panel">
+          <h2>Town facts</h2>
+          <div class="glance">
+            <div>
+              <p class="label">Walkability</p>
+              <p class="value">{town.walkability}</p>
+            </div>
+            <div>
+              <p class="label">Beach access</p>
+              <p class="value">{town.beachAccess}</p>
+            </div>
+          </div>
+        </section>
+        <HappeningHere events={townEvents} placeName={town.name} townSlug={town.slug} />
+        <TownStays stays={townStays} townName={town.name} townSlug={town.slug} />
+        <CommunityQA
+          question={`What's the best public beach access near ${town.name}?`}
+          answer="Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private."
+        />
+        <RelatedGuides guides={relatedGuides} />
+        <section class="panel">
+          <h2>Similar nearby</h2>
+          <ul class="links">
+            {nearbyTowns.map((item) => (
+              <li>
+                <a href={href(`/town/${item.slug}`)}>{item.name}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      </div>
+
       <aside class="rail">
+        <div data-when="legacy">
         <MapToggle title={`${town.name} Map`} href={`/search?town=${town.slug}&view=map`} />
         <ContributeCard kind="business" />
 
@@ -167,9 +228,7 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
           <p class="widget__label">Neighboring towns</p>
           <ul class="links">
             {
-              [towns[townIndex - 1], towns[townIndex + 1]]
-                .filter(Boolean)
-                .map((item) => (
+              nearbyTowns.map((item) => (
                   <li>
                     <a href={href(`/town/${item.slug}`)}>{item.name}</a>
                   </li>
@@ -177,6 +236,16 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
             }
           </ul>
         </section>
+        </div>
+        <div data-when="unified">
+          <MapToggle title={`${town.name} map`} href={`/search?town=${town.slug}&view=map`} showRatings={false} />
+          <section class="widget">
+            <p class="widget__label">Get directions</p>
+            <p class="copy">Open the corridor map for {town.name} walkovers, parking, and neighboring towns.</p>
+            <a class="map-btn" href="#map">Open map</a>
+          </section>
+          <ExploreLinks current="towns" townSlug={town.slug} />
+        </div>
       </aside>
     </div>
   </div>
@@ -312,6 +381,11 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
     display: grid;
     gap: var(--size-4);
     min-width: 0;
+  }
+  .copy {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
   }
   .panel,
   .widget {

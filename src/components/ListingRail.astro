@@ -1,0 +1,31 @@
+---
+import MapToggle from "./MapToggle.astro";
+import ContributeCard from "./ContributeCard.astro";
+import ExploreLinks from "./ExploreLinks.astro";
+import type { ContributeKind } from "./ContributeCard.astro";
+import type { ExploreKey } from "../lib/unified-layout";
+
+interface Props {
+  mapTitle: string;
+  mapHref: string;
+  contributeKind: ContributeKind;
+  current: ExploreKey;
+  townSlug?: string;
+}
+
+const { mapTitle, mapHref, contributeKind, current, townSlug } = Astro.props;
+---
+
+<aside class="listing-rail">
+  <MapToggle title={mapTitle} href={mapHref} showRatings={false} />
+  <ContributeCard kind={contributeKind} />
+  <slot name="discovery" />
+  <ExploreLinks current={current} townSlug={townSlug} />
+</aside>
+
+<style>
+  .listing-rail {
+    display: grid;
+    gap: var(--size-4);
+  }
+</style>

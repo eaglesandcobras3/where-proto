@@ -1,4 +1,7 @@
 <script lang="ts">
+  import ListingToolbar from "./ListingToolbar.svelte";
+  import { parsePriceValue } from "../../lib/unified-layout";
+
   interface StayItem {
     slug: string;
     name: string;
@@ -11,6 +14,7 @@
     vibe: string;
     fromPrice: string;
     roomsLabel: string;
+    priceValue?: number;
   }
 
   let {
@@ -35,31 +39,60 @@
   let amenity = $state("");
   let query = $state(initialQuery);
   let view = $state<"all" | "beachfront" | "lsv" | "inn">("all");
+  let sort = $state<"recommended" | "price-asc" | "price-desc" | "sleeps">("recommended");
+  let chip = $state("");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
     return `${root}${route}`;
   }
 
+  const stayChips = [
+    { slug: "inn", name: "Luxury Boutique Inns" },
+    { slug: "cottage", name: "Beachfront Cottages & Houses" },
+    { slug: "lsv", name: "Street-Legal Golf Cart (LSV)" },
+    { slug: "pets", name: "Pet-Friendly Seaside Haven" },
+  ];
+
+  function amenityMatch(item: StayItem, value: string) {
+    if (value === "lsv") return item.sleeps >= 6;
+    if (value === "pool") return /inn|pearl|watercolor/i.test(item.name);
+    if (value === "boardwalk") return item.kind !== "inn";
+    if (value === "pets") return item.kind === "cottage" || item.sleeps >= 6;
+    return true;
+  }
+
   let results = $derived(
-    stays.filter((item) => {
-      if (town && item.town !== town) return false;
-      if (guests) {
-        const min = Number(guests);
-        if (!Number.isNaN(min) && item.sleeps < min) return false;
-      }
-      if (kind && item.kind !== kind) return false;
-      if (view === "inn" && item.kind !== "inn") return false;
-      if (view === "beachfront" && item.kind === "inn") return false;
-      if (view === "lsv" && item.sleeps < 6) return false;
-      if (amenity === "lsv" && item.sleeps < 6) return false;
-      if (amenity === "pool" && !/inn|pearl|watercolor/i.test(item.name)) return false;
-      if (query.trim()) {
-        const hay = `${item.name} ${item.summary} ${item.townName} ${item.badge}`.toLowerCase();
-        if (!hay.includes(query.trim().toLowerCase())) return false;
-      }
-      return true;
-    }),
+    stays
+      .filter((item) => {
+        if (town && item.town !== town) return false;
+        if (guests) {
+          const min = Number(guests);
+          if (!Number.isNaN(min) && item.sleeps < min) return false;
+        }
+        if (kind && item.kind !== kind) return false;
+        if (view === "inn" && item.kind !== "inn") return false;
+        if (view === "beachfront" && item.kind === "inn") return false;
+        if (view === "lsv" && item.sleeps < 6) return false;
+        if (chip === "inn" && item.kind !== "inn") return false;
+        if (chip === "cottage" && item.kind !== "cottage") return false;
+        if (chip === "lsv" && !amenityMatch(item, "lsv")) return false;
+        if (chip === "pets" && !amenityMatch(item, "pets")) return false;
+        if (amenity && !amenityMatch(item, amenity)) return false;
+        if (query.trim()) {
+          const hay = `${item.name} ${item.summary} ${item.townName} ${item.badge}`.toLowerCase();
+          if (!hay.includes(query.trim().toLowerCase())) return false;
+        }
+        return true;
+      })
+      .toSorted((a, b) => {
+        const aPrice = a.priceValue ?? parsePriceValue(a.fromPrice);
+        const bPrice = b.priceValue ?? parsePriceValue(b.fromPrice);
+        if (sort === "price-asc") return aPrice - bPrice;
+        if (sort === "price-desc") return bPrice - aPrice;
+        if (sort === "sleeps") return b.sleeps - a.sleeps;
+        return 0;
+      }),
   );
 
   $effect(() => {
@@ -80,7 +113,7 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar">
+  <div class="toolbar" data-when="legacy">
     <div class="sort" aria-label="Filter stays">
       <button class:active={view === "all"} type="button" onclick={() => (view = "all")}>All Stays</button>
       <button class:active={view === "beachfront"} type="button" onclick={() => (view = "beachfront")}>Beachfront</button>
@@ -88,6 +121,25 @@
       <button class:active={view === "inn"} type="button" onclick={() => (view = "inn")}>Boutique Inns</button>
     </div>
     <span class="count" aria-live="polite">{results.length} stays · Sort: Recommended</span>
+  </div>
+  <div data-when="unified">
+    <ListingToolbar
+      surface="stays"
+      count={results.length}
+      sortValue={sort}
+      chips={stayChips}
+      activeChip={chip}
+      onSort={(value) => (sort = value as typeof sort)}
+      onChip={(slug) => {
+        chip = slug;
+        if (slug === "inn" || slug === "cottage") kind = slug;
+        else if (slug === "lsv" || slug === "pets") amenity = slug;
+        else {
+          kind = "";
+          amenity = "";
+        }
+      }}
+    />
   </div>
 
   <div class="list">
@@ -112,7 +164,7 @@
             <span>{item.townName} walkable core</span>
           </div>
           <div class="footer">
-            <span class="rating">4.{8 + (item.sleeps % 2)} · local favorites</span>
+            <span class="rating" data-when="legacy">4.{8 + (item.sleeps % 2)} · local favorites</span>
             <a class="explore" href={path(`/stay/${item.slug}`)}>Explore Stay →</a>
           </div>
         </div>
