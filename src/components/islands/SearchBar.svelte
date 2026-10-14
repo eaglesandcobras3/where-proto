@@ -208,8 +208,8 @@
     color: var(--brand-teal);
   }
   .pills button.active {
-    background: var(--brand-deep);
-    border-color: var(--brand-deep);
+    background: var(--brand-teal);
+    border-color: var(--brand-teal);
     color: white;
     font-weight: var(--font-weight-7);
   }
@@ -225,8 +225,8 @@
     align-items: center;
     gap: 0.65rem;
     padding: 0.65rem 1rem;
-    border: 1.5px solid #c5cdd4;
-    border-radius: 999px;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-button);
     color: var(--brand-ink-soft);
   }
   .field input {

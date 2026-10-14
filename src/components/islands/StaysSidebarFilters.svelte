@@ -68,7 +68,7 @@
 <aside class="side">
   <section class="panel">
     <div class="panel__head">
-      <h2>Communities</h2>
+      <p class="eyebrow">Communities</p>
       {#if town || kind || amenity}
         <button class="reset" type="button" onclick={() => publish("", "", "")}>Reset</button>
       {/if}
@@ -92,7 +92,7 @@
   </section>
 
   <section class="panel">
-    <h2>Lodging Type</h2>
+    <p class="eyebrow">Lodging Type</p>
     <div class="checks">
       {#each lodgingTypes as item (item.slug)}
         <button
@@ -108,7 +108,7 @@
   </section>
 
   <section class="panel">
-    <h2>Amenities &amp; Perks</h2>
+    <p class="eyebrow">Amenities &amp; Perks</p>
     <div class="checks">
       {#each amenities as item (item.slug)}
         <button
@@ -151,16 +151,8 @@
     gap: 0.5rem;
     margin-bottom: var(--size-3);
   }
-  .panel__head h2 {
+  .panel__head .eyebrow {
     margin: 0;
-  }
-  h2 {
-    margin: 0 0 var(--size-3);
-    font-family: var(--font-display);
-    font-size: var(--font-size-0);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
   }
   .reset {
     border: 0;
@@ -197,7 +189,7 @@
     border-radius: var(--radius-2);
   }
   button:hover {
-    background: #f8fafc;
+    background: var(--brand-sand);
   }
   button.active {
     background: var(--brand-teal);
@@ -231,7 +223,7 @@
   }
   .callout {
     background: var(--brand-sun-soft);
-    border-color: #fde68a;
+    border-color: var(--brand-line);
     border-left: 4px solid var(--brand-sun);
   }
   .callout__label {
@@ -245,7 +237,7 @@
   .callout p:last-child {
     margin: 0;
     font-size: var(--font-size-1);
-    color: #92400e;
+    color: var(--brand-coral);
     line-height: 1.5;
   }
 </style>

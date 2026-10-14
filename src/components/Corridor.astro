@@ -93,7 +93,7 @@ function formatMiles(delta: number) {
 
 <style>
   .corridor {
-    background: #f3f5f7;
+    background: var(--brand-sand);
     border-bottom: 1px solid var(--brand-line);
     padding: var(--size-5) 0 var(--size-6);
   }
@@ -131,7 +131,7 @@ function formatMiles(delta: number) {
     right: 1rem;
     top: calc(1.35em + 0.55rem + var(--dot) / 2);
     height: 1px;
-    background: #c9d3da;
+    background: var(--brand-line);
     pointer-events: none;
   }
   .item {
@@ -166,7 +166,7 @@ function formatMiles(delta: number) {
     height: var(--dot);
     border-radius: 50%;
     border: 3px solid white;
-    box-shadow: 0 0 0 1px #c9d3da;
+    box-shadow: 0 0 0 1px var(--brand-line);
     font-size: var(--font-size-3);
     transition:
       transform 160ms ease,

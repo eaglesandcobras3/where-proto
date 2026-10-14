@@ -94,7 +94,7 @@
     min-height: 2.4rem;
     padding: 0.45rem 0.95rem;
     border: 0;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-button);
     background: var(--brand-deep);
     color: white;
     font-size: var(--font-size-0);

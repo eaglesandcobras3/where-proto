@@ -157,7 +157,7 @@
     align-self: stretch;
   }
   .submit:hover {
-    background: #00796b;
+    background: var(--brand-teal-hover);
   }
   .visually-hidden {
     position: absolute;

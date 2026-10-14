@@ -271,7 +271,7 @@
     padding: var(--size-3);
   }
   .search-card:hover {
-    border-color: #b8c4ce;
+    border-color: var(--brand-line);
   }
   .search-card:hover .explore {
     text-decoration: underline;

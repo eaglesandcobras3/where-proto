@@ -233,10 +233,10 @@
   }
 
   function thumbColor(slug: string) {
-    const colors = ["#0c232e", "#00897b", "#3d5a80", "var(--brand-coral)", "#00695c"];
+    const colors = ["var(--brand-deep)", "var(--brand-teal)", "var(--brand-teal)", "var(--brand-coral)", "var(--brand-coral)"];
     let hash = 0;
     for (let i = 0; i < slug.length; i++) hash = (hash + slug.charCodeAt(i) * (i + 1)) % colors.length;
-    return colors[hash] ?? "#0c232e";
+    return colors[hash] ?? "var(--brand-deep)";
   }
 
   $effect(() => {
@@ -698,7 +698,7 @@
     justify-content: center;
     min-height: 2.75rem;
     padding: 0.65rem 1.2rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-button);
     border: 1px solid transparent;
     font: inherit;
     font-size: var(--font-size-1);
@@ -750,8 +750,8 @@
     height: 3.5rem;
     margin: 0 auto 0.85rem;
     border-radius: 50%;
-    background: #dcfce7;
-    color: #166534;
+    background: var(--brand-teal-soft);
+    color: var(--brand-coral);
     display: grid;
     place-items: center;
     font-size: 1.5rem;
@@ -779,13 +779,13 @@
     padding: 0.3rem;
     background: var(--brand-sand-dark);
     border: 1px solid var(--brand-line);
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-button);
   }
   .tabs button {
     border: 0;
     background: transparent;
     padding: 0.65rem 1rem;
-    border-radius: var(--radius-pill);
+    border-radius: var(--radius-button);
     font: inherit;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
@@ -851,7 +851,7 @@
     width: 100%;
     min-height: 2.75rem;
     padding: 0.7rem 0.85rem;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
     background: white;
     font: inherit;
@@ -937,7 +937,7 @@
     display: grid;
     place-items: center;
     padding: 1rem;
-    background: linear-gradient(135deg, #4db6ac, var(--brand-deep));
+    background: linear-gradient(135deg, var(--mint), var(--brand-deep));
     color: white;
     font-family: var(--font-display);
     font-weight: var(--font-weight-7);
@@ -961,8 +961,8 @@
     width: 100%;
     min-height: 2.85rem;
     padding: 0.7rem 1.1rem;
-    border: 1px solid #cbd5e1;
-    border-radius: var(--radius-pill);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-button);
     font: inherit;
     margin-bottom: 0.85rem;
   }
@@ -1022,14 +1022,14 @@
     background: var(--brand-sand-dark);
   }
   .badge--ok {
-    background: #dcfce7;
-    color: #166534;
+    background: var(--brand-teal-soft);
+    color: var(--brand-coral);
     border-color: #bbf7d0;
   }
   .badge--town {
     background: var(--brand-selected-soft);
     color: var(--brand-selected);
-    border-color: #c5d4e4;
+    border-color: var(--brand-line);
   }
   .listings__empty {
     padding: 1rem;
@@ -1050,7 +1050,7 @@
     padding: 0.75rem 0.9rem;
     border-radius: var(--radius-2);
     background: var(--brand-sun-soft);
-    border: 1px solid #fde68a;
+    border: 1px solid var(--brand-line);
     color: var(--brand-coral);
     font-size: var(--font-size-1);
   }
@@ -1105,9 +1105,9 @@
     margin-bottom: 0.65rem;
     padding: 0.3rem 0.7rem;
     border-radius: var(--radius-pill);
-    background: #fff1e6;
+    background: var(--brand-teal-soft);
     color: var(--brand-coral);
-    border: 1px solid #fed7aa;
+    border: 1px solid var(--brand-line);
     font-size: 0.625rem;
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;

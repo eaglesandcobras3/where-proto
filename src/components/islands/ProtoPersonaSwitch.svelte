@@ -103,14 +103,14 @@
     white-space: nowrap;
   }
   .fab:hover {
-    background: #071820;
+    background: var(--brand-deep-hover);
   }
   .fab__kicker {
     font-size: 0.625rem;
     font-weight: var(--font-weight-7);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: #85f6e5;
+    color: var(--mint);
     line-height: 1.2;
   }
   .fab__value {
@@ -202,7 +202,7 @@
     color: var(--brand-ink);
   }
   .option:hover {
-    border-color: #cbd5e1;
+    border-color: var(--brand-line);
     background: white;
   }
   .option.active {

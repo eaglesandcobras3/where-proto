@@ -61,7 +61,7 @@
 
 <aside class="side">
   <section class="panel">
-    <h2>Towns</h2>
+    <p class="eyebrow">Towns</p>
     <ul>
       <li>
         <button class:active={!town} type="button" onclick={() => publish("", category)}>
@@ -81,7 +81,7 @@
   </section>
 
   <section class="panel">
-    <h2>Categories</h2>
+    <p class="eyebrow">Categories</p>
     <div class="topics">
       {#each categories as item (item.slug)}
         <button
@@ -118,13 +118,8 @@
     box-shadow: var(--shadow-card);
     padding: var(--size-4);
   }
-  h2 {
-    margin: 0 0 var(--size-3);
-    font-family: var(--font-display);
-    font-size: var(--font-size-0);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--brand-ink-soft);
+  .eyebrow {
+    margin-bottom: var(--size-3);
   }
   ul {
     list-style: none;
@@ -151,7 +146,7 @@
     border-radius: var(--radius-2);
   }
   button:hover {
-    background: #f8fafc;
+    background: var(--brand-sand);
   }
   button.active {
     background: var(--brand-deep);
@@ -190,7 +185,7 @@
   }
   .callout {
     background: var(--brand-sun-soft);
-    border-color: #fde68a;
+    border-color: var(--brand-line);
     border-left: 4px solid var(--brand-sun);
   }
   .callout__label {
@@ -211,7 +206,7 @@
   .callout p:last-child {
     margin: 0;
     font-size: var(--font-size-1);
-    color: #92400e;
+    color: var(--brand-coral);
     line-height: 1.5;
   }
 </style>

@@ -227,7 +227,7 @@
   }
   .card:hover {
     box-shadow: var(--shadow-card-hover);
-    border-color: #cbd5e1;
+    border-color: var(--brand-line);
   }
   .tags {
     display: flex;

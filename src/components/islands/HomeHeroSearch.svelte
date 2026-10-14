@@ -144,8 +144,8 @@
     color: var(--brand-teal);
   }
   .pills button.active {
-    background: var(--brand-deep);
-    border-color: var(--brand-deep);
+    background: var(--brand-teal);
+    border-color: var(--brand-teal);
     color: white;
     font-weight: var(--font-weight-7);
   }
@@ -154,7 +154,7 @@
     gap: 0.5rem;
     padding: 0.5rem;
     background: white;
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--brand-line);
     border-radius: var(--radius-4);
     box-shadow: var(--shadow-card-hover);
   }
@@ -209,7 +209,7 @@
     white-space: nowrap;
   }
   .submit:hover {
-    background: #163545;
+    background: var(--brand-deep);
   }
   .visually-hidden {
     position: absolute;

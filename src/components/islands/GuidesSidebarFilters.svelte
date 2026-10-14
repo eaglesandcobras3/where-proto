@@ -60,7 +60,7 @@
 <aside class="side">
   <section class="panel">
     <div class="panel__head">
-      <h2>Communities &amp; Towns</h2>
+      <p class="eyebrow">Communities &amp; Towns</p>
       {#if town || topic}
         <button class="reset" type="button" onclick={() => publish("", "")}>Reset</button>
       {/if}
@@ -84,7 +84,7 @@
   </section>
 
   <section class="panel">
-    <h2>Popular Topics</h2>
+    <p class="eyebrow">Popular Topics</p>
     <div class="topics">
       {#each topics as item (item.slug)}
         <button
@@ -121,17 +121,13 @@
     padding-bottom: var(--size-3);
     border-bottom: 1px solid var(--brand-sand-dark);
   }
-  .panel__head h2 {
+  .panel__head .eyebrow {
     margin: 0;
   }
-  h2 {
+  .eyebrow {
     margin: 0 0 var(--size-3);
     padding-bottom: var(--size-3);
     border-bottom: 1px solid var(--brand-sand-dark);
-    font-family: var(--font-display);
-    font-size: var(--font-size-0);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
     color: var(--brand-ink-soft);
   }
   .reset {
@@ -169,7 +165,7 @@
     border-radius: var(--radius-2);
   }
   button:hover {
-    background: #f8fafc;
+    background: var(--brand-sand);
   }
   button.active {
     background: var(--brand-teal);

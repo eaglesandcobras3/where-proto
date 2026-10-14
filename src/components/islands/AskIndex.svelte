@@ -228,7 +228,7 @@
     padding: 0.2rem 0.65rem;
   }
   .tag--topic {
-    background: #eef2f4;
+    background: var(--brand-sand);
   }
   h3 {
     margin: 0 0 var(--size-2);
