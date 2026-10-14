@@ -162,7 +162,6 @@ const businessUpdates = updatesForBusiness(business.slug);
             </details>
           ))}
         </section>
-        <RelatedGuides guides={relatedGuides} />
         <section class="panel">
           <h2>Similar nearby</h2>
           <div class="listing-grid">
@@ -171,6 +170,7 @@ const businessUpdates = updatesForBusiness(business.slug);
             ))}
           </div>
         </section>
+        <RelatedGuides guides={relatedGuides} />
         <CommunityQA
           question={`What should first-timers know before visiting ${business.name}?`}
           answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
