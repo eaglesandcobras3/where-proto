@@ -10,6 +10,7 @@ import {
   areaBySlug,
   businesses,
   events,
+  faqsForBusiness,
   leafBySlug,
   photosFor,
   postsFor,
@@ -60,28 +61,8 @@ const highlights = [
   { label: business.priceBand ?? "Local", detail: area?.name ?? "Scenic 30A" },
 ];
 
-const faq = [
-  {
-    q: "Is there outdoor seating?",
-    a: business.tagSlugs.includes("walkable")
-      ? "Yes — patio or courtyard seating is part of the local vibe here."
-      : "Ask the host on arrival; many 30A spots rotate patio tables seasonally.",
-  },
-  {
-    q: "Any dietary or dairy-free options?",
-    a: "Most corridor cafes and kitchens can guide dairy-free and gluten-aware picks — confirm at the counter.",
-  },
-  {
-    q: "Where should I park or bike?",
-    a: town
-      ? `Use posted ${town.name} lots, or roll up on the Timpoochee Trail when bike racks are available.`
-      : "Use posted town lots or the Timpoochee Trail bike racks nearby.",
-  },
-  {
-    q: "How close is the beach?",
-    a: "Most 30A outposts sit a short walk or golf-cart hop from a public walkover — check the map pin for the nearest access.",
-  },
-];
+const faq = faqsForBusiness(business);
+const claimed = Boolean(business.ownerUserSlug);
 ---
 
 <BaseLayout title={business.name} description={business.summary} active="businesses">
@@ -111,7 +92,7 @@ const faq = [
           {town && <span class="badge">{town.name} 30A Merchant</span>}
           {area && <span class="badge">{area.name}</span>}
           {business.openNow && <span class="badge badge--teal">Open now</span>}
-          <span class="badge badge--teal">Verified 30A Merchant</span>
+          {claimed && <span class="badge badge--teal">Verified owner</span>}
         </div>
 
         <div class="hero__row">
@@ -135,9 +116,9 @@ const faq = [
                 <a class="btn btn--teal" href={business.website} target="_blank" rel="noopener noreferrer">
                   Visit Official Website →
                 </a>
-              ) : (
+              ) : !claimed ? (
                 <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing →</a>
-              )
+              ) : null}
             }
           </div>
         </div>
@@ -302,11 +283,15 @@ const faq = [
           </ul>
         </section>
 
-        <section class="widget claim">
-          <p class="widget__label">Business Owner or GM?</p>
-          <p>Claim this listing to post updates, events, and verified hours.</p>
-          <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
-        </section>
+        {
+          !claimed && (
+            <section class="widget claim">
+              <p class="widget__label">Business Owner or GM?</p>
+              <p>Claim this listing to post updates, events, and verified hours.</p>
+              <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
+            </section>
+          )
+        }
       </aside>
     </div>
 

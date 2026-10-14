@@ -445,6 +445,7 @@ const directoryBusinesses: Business[] = [
     phone: "(850) 555-0104",
     hours: "Daily 8:00 AM – 6:00 PM",
     ownerUserSlug: "local_owner",
+    ownershipStatus: "pending_approval",
   },
   {
     slug: "alys-shoppe",
@@ -1423,4 +1424,83 @@ export function listingMeta(item: Business) {
   const tags = item.tagSlugs.map((slug) => tagBySlug(slug)?.name ?? slug).join(", ");
   const open = item.openNow ? "open now" : "closed";
   return `${item.leafSlug} · ${town} · ${open}${tags ? ` · ${tags}` : ""}`;
+}
+
+export function faqsForBusiness(business: Business) {
+  const town = townBySlug(business.townSlug);
+  return [
+    {
+      q: "Is there outdoor seating?",
+      a: business.tagSlugs.includes("walkable")
+        ? "Yes — patio or courtyard seating is part of the local vibe here."
+        : "Ask the host on arrival; many 30A spots rotate patio tables seasonally.",
+    },
+    {
+      q: "Any dietary or dairy-free options?",
+      a: "Most corridor cafes and kitchens can guide dairy-free and gluten-aware picks — confirm at the counter.",
+    },
+    {
+      q: "Where should I park or bike?",
+      a: town
+        ? `Use posted ${town.name} lots, or roll up on the Timpoochee Trail when bike racks are available.`
+        : "Use posted town lots or the Timpoochee Trail bike racks nearby.",
+    },
+    {
+      q: "How close is the beach?",
+      a: "Most 30A outposts sit a short walk or golf-cart hop from a public walkover — check the map pin for the nearest access.",
+    },
+  ];
+}
+
+export function mentionsForBusiness(business: Pick<Business, "slug" | "name">) {
+  const name = business.name.toLowerCase();
+  const first = business.name.split(/\s+/)[0]?.toLowerCase() ?? "";
+  const postHits = posts.filter(
+    (item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user",
+  );
+  const questionHits = questions.filter((item) => {
+    const hay = `${item.title} ${item.body}`.toLowerCase();
+    return hay.includes(name) || (first.length > 3 && hay.includes(first));
+  });
+  return [
+    ...postHits.map((item) => ({
+      kind: "Community post" as const,
+      excerpt: item.body,
+      time: item.createdAt,
+      username: userBySlug(item.authorUserSlug ?? "")?.name ?? "a visitor",
+      href: `/posts/${item.slug}`,
+    })),
+    ...questionHits.map((item) => ({
+      kind: "Ask thread" as const,
+      excerpt: item.title,
+      time: item.createdAt,
+      username: userBySlug(item.authorUserSlug)?.name ?? "a visitor",
+      href: `/ask/${item.slug}`,
+    })),
+  ];
+}
+
+export function guideMentionsForBusiness(business: Pick<Business, "name" | "townSlug">) {
+  const name = business.name.toLowerCase();
+  const first = business.name.split(/\s+/)[0]?.toLowerCase() ?? "";
+  return guides.filter((guide) => {
+    if (guide.townSlug && guide.townSlug === business.townSlug) return true;
+    const hay = `${guide.title} ${guide.summary} ${guide.body}`.toLowerCase();
+    return hay.includes(name) || (first.length > 3 && hay.includes(first));
+  });
+}
+
+export function profileStrength(business: Business) {
+  const checks = [
+    { label: "Contact details", done: Boolean(business.phone || business.website) },
+    { label: "Hours", done: Boolean(business.hours) },
+    { label: "Address", done: Boolean(business.address) },
+    { label: "Photos", done: photosFor("business", business.slug).length > 0 },
+    { label: "Summary", done: Boolean(business.summary) },
+  ];
+  const done = checks.filter((item) => item.done).length;
+  return {
+    checks,
+    percent: Math.round((done / checks.length) * 100),
+  };
 }

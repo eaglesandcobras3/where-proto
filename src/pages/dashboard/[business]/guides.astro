@@ -1,6 +1,6 @@
 ---
 import MerchantLayout from "../../../layouts/MerchantLayout.astro";
-import { guides } from "../../../data/catalog";
+import { guideMentionsForBusiness } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
@@ -14,12 +14,11 @@ interface Props {
 }
 
 const { business } = Astro.props;
-const mentions = guides.slice(0, 4).map((guide, index) => ({
+const mentions = guideMentionsForBusiness(business).map((guide) => ({
   guide,
-  note:
-    index === 0
-      ? `Featured as a stop near ${business.name}.`
-      : "Mentioned in corridor itinerary coverage.",
+  note: guide.townSlug
+    ? `Listed in the ${guide.title} town guide.`
+    : `Listed in ${guide.title}.`,
 }));
 ---
 
@@ -27,7 +26,7 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
   <header class="head">
     <div>
       <h1>Guide mentions</h1>
-      <p>Editorial guides and lists where {business.name} appears for travelers planning 30A.</p>
+      <p>Published guides that name {business.name}.</p>
     </div>
   </header>
 
@@ -36,7 +35,7 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
       mentions.map(({ guide, note }) => (
         <article class="card">
           <div>
-            <p class="eyebrow">Editorial</p>
+            <p class="eyebrow">Guide</p>
             <h2>{guide.title}</h2>
             <p>{note}</p>
           </div>
@@ -44,6 +43,7 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
         </article>
       ))
     }
+    {mentions.length === 0 && <p class="empty">No published guides mention this listing yet.</p>}
   </div>
 </MerchantLayout>
 
@@ -98,5 +98,8 @@ const mentions = guides.slice(0, 4).map((guide, index) => ({
     color: var(--brand-teal);
     font-weight: var(--font-weight-7);
     white-space: nowrap;
+  }
+  .empty {
+    color: var(--brand-ink-soft);
   }
 </style>

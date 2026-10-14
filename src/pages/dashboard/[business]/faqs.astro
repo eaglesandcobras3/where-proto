@@ -1,7 +1,9 @@
 ---
 import MerchantLayout from "../../../layouts/MerchantLayout.astro";
 import ComposerCard from "../../../components/islands/ComposerCard.svelte";
+import { faqsForBusiness } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
+import { REVIEW_QUEUE_SENTENCE } from "../../../lib/dashboard-v1";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -14,20 +16,7 @@ interface Props {
 
 const { business } = Astro.props;
 
-const faqs = [
-  {
-    q: "Do you take reservations?",
-    a: "Walk-ins welcome most days. For parties of 6+, call ahead during peak season.",
-  },
-  {
-    q: "Is there parking nearby?",
-    a: "Limited lot spots plus town shared parking a short walk away. Bikes preferred on 30A.",
-  },
-  {
-    q: "Are dogs allowed?",
-    a: "Leashed dogs welcome on the patio. Indoor seating is people-only.",
-  },
-];
+const faqs = faqsForBusiness(business);
 ---
 
 <MerchantLayout title={`FAQs & knowledge · ${business.name}`} business={business} active="faqs">
@@ -58,9 +47,9 @@ const faqs = [
       <h2>Add knowledge</h2>
       <ComposerCard
         title="New FAQ"
-        body="Prototype only — submissions queue for review before publishing."
-        action="Submit FAQ"
-        kind="settings"
+        body={REVIEW_QUEUE_SENTENCE}
+        action="Add FAQ"
+        kind="faq"
         client:visible
       />
     </section>

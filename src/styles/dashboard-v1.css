@@ -1,0 +1,7 @@
+html[data-dashboard-v1="off"] [data-dash="v1"],
+html:not([data-dashboard-v1]) [data-dash="v1"] {
+  display: none !important;
+}
+html[data-dashboard-v1="on"] [data-dash="legacy"] {
+  display: none !important;
+}

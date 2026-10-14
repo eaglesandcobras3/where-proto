@@ -26,6 +26,7 @@
       townSlug: string;
       summary: string;
       ownerUserSlug?: string;
+      ownershipStatus?: "pending_approval" | "pending_verification" | "verified" | "rejected";
       entityKind?: "business" | "stay" | "town" | "area";
       isStay?: boolean;
     }[];
@@ -192,16 +193,13 @@
             <div class="biz-main">
               <div class="biz-title">
                 <strong>{row.listingName}</strong>
-                <span class="badge" class:badge--ok={row.status === "verified"} class:badge--pending={row.status !== "verified"}>
-                  {row.status === "verified" && row.kind === "town"
-                    ? "Town desk"
-                    : row.status === "verified" && row.kind === "area"
-                      ? "Area desk"
-                      : row.status === "verified" && row.kind === "stay"
-                        ? "Live in Stays"
-                        : row.status === "verified"
-                          ? "Verified owner"
-                          : statusLabel(row.status)}
+                <span
+                  class="badge"
+                  class:badge--ok={row.status === "verified"}
+                  class:badge--pending={row.status === "pending_approval" || row.status === "pending_verification"}
+                  class:badge--alert={row.status === "rejected"}
+                >
+                  {statusLabel(row.status)}
                 </span>
               </div>
               <p>{statusCopy(row)}</p>
@@ -517,6 +515,10 @@
     background: var(--brand-sun-soft);
     color: #78350f;
     border-color: #fde68a;
+  }
+  .badge--alert {
+    background: #fee2e2;
+    color: #991b1b;
   }
   .badge--ok {
     background: #dcfce7;

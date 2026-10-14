@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
+import MerchantHubLayout from "../layouts/MerchantHubLayout.astro";
 import BusinessesPanel from "../components/islands/BusinessesPanel.svelte";
 import ShareUpdateForm from "../components/islands/ShareUpdateForm.svelte";
 import { areas, businesses, towns } from "../data/catalog";
@@ -11,6 +11,7 @@ const seedBusinesses = businesses.map((biz) => ({
   townSlug: biz.townSlug,
   summary: biz.summary,
   ownerUserSlug: biz.ownerUserSlug,
+  ownershipStatus: biz.ownershipStatus,
   entityKind: biz.entityKind ?? (biz.isStay ? ("stay" as const) : ("business" as const)),
   isStay: biz.isStay,
 }));
@@ -19,27 +20,18 @@ const townNames = Object.fromEntries(towns.map((town) => [town.slug, town.name])
 const areaNames = Object.fromEntries(areas.map((area) => [area.slug, area.name]));
 ---
 
-<BaseLayout
+<MerchantHubLayout
   title="Manage business"
   description="Your businesses on WhereTo30A — add, claim, or open a dashboard."
-  active="dashboard"
 >
-  <div class="container section dash">
-    <ShareUpdateForm townNames={townNames} areaNames={areaNames} client:load />
-    <BusinessesPanel
-      seedBusinesses={seedBusinesses}
-      townNames={townNames}
-      merchantsHref={href("/merchants")}
-      addHref={href("/add-business")}
-      dashboardRoot={href("/dashboard").replace(/\/$/, "")}
-      variant="page"
-      client:load
-    />
-  </div>
-</BaseLayout>
-
-<style>
-  .dash {
-    max-width: 70rem;
-  }
-</style>
+  <ShareUpdateForm townNames={townNames} areaNames={areaNames} client:load />
+  <BusinessesPanel
+    seedBusinesses={seedBusinesses}
+    townNames={townNames}
+    merchantsHref={href("/merchants")}
+    addHref={href("/add-business")}
+    dashboardRoot={href("/dashboard").replace(/\/$/, "")}
+    variant="page"
+    client:load
+  />
+</MerchantHubLayout>

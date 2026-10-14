@@ -2,19 +2,26 @@
   interface Biz {
     slug: string;
     name: string;
+    status?: "live" | "in_review" | "needs_attention";
   }
 
   let {
     businesses = [],
     selectedSlug = "",
     live = true,
+    statusLabel = "",
     base = "/",
   }: {
     businesses: Biz[];
     selectedSlug: string;
     live?: boolean;
+    statusLabel?: string;
     base?: string;
   } = $props();
+
+  const statusCopy = $derived(
+    statusLabel || (live ? "Live" : "In review"),
+  );
 
   let open = $state(false);
   let root = $state<HTMLElement>();
@@ -81,7 +88,7 @@
       </span>
       <span class="status">
         <span class:list={["dot", live && "dot--live"]}></span>
-        {live ? "Profile is live" : "Pending review"}
+        {statusCopy}
       </span>
     </span>
   </button>

@@ -1,10 +1,22 @@
 ---
 import MerchantLayout from "../../../layouts/MerchantLayout.astro";
 import ComposerCard from "../../../components/islands/ComposerCard.svelte";
-import { businessesOwnedBy, currentUser, postsFor, questions } from "../../../data/catalog";
+import {
+  currentUser,
+  guideMentionsForBusiness,
+  mentionsForBusiness,
+  postsFor,
+  profileStrength,
+} from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
+import {
+  listingPublicStatusFromBusiness,
+  listingPublicStatusLabel,
+  REVIEW_QUEUE_SENTENCE,
+  VIEW_PUBLIC_LABEL,
+} from "../../../lib/dashboard-v1";
 
 export function getStaticPaths() {
   return ownedBusinessPaths();
@@ -17,19 +29,26 @@ interface Props {
 const { business } = Astro.props;
 const owner = currentUser();
 const firstName = (owner?.name ?? "there").split(" ")[0];
-const feedCount = postsFor("business", business.slug).length;
-const askHits = questions.filter((item) =>
-  item.body.toLowerCase().includes(business.name.split(" ")[0]?.toLowerCase() ?? ""),
-).length;
+const mentionCount = mentionsForBusiness(business).length;
+const guideCount = guideMentionsForBusiness(business).length;
+const feedCount = postsFor("business", business.slug).filter((item) => item.postedAs === "business").length;
+const strength = profileStrength(business);
+const listingStatus = listingPublicStatusFromBusiness(business);
 
 const metrics = [
-  { label: "Community mentions", value: String(Math.max(askHits, 3)), meta: "3 need a response", tone: "warn" },
-  { label: "Guide features", value: "6", meta: "2 added recently", tone: "info" },
-  { label: "Profile actions", value: "83", meta: "Calls, clicks, directions", tone: "up" },
+  {
+    label: "Mentions",
+    value: String(mentionCount),
+    meta: mentionCount === 1 ? "1 waiting for a reply" : `${mentionCount} waiting for a reply`,
+    tone: mentionCount > 0 ? "warn" : "info",
+  },
+  {
+    label: "Guide mentions",
+    value: String(guideCount),
+    meta: guideCount === 1 ? "1 guide lists you" : `${guideCount} guides list you`,
+    tone: "info",
+  },
 ];
-
-const owned = businessesOwnedBy("local_owner");
-void owned;
 ---
 
 <MerchantLayout title={`Manage ${business.name}`} business={business} active="overview">
@@ -37,15 +56,18 @@ void owned;
     <div>
       <div class="welcome__row">
         <h1>Good morning, {firstName}.</h1>
-        <span class="live">Profile is live</span>
+        <span class:list={["live", listingStatus !== "live" && "live--wait"]}>
+          {listingPublicStatusLabel(listingStatus)}
+        </span>
       </div>
       <p>
-        Here’s what’s happening around <strong>{business.name}</strong> along Highway 30A today.
+        What’s open on <strong>{business.name}</strong>. Mentions replies go live immediately; posts
+        and listing edits wait in review.
       </p>
     </div>
     <div class="welcome__actions">
-      <a class="btn btn--ghost" href={href(`/business/${business.slug}`)}>Share profile link</a>
-      <a class="btn btn--deep" href={href(`/dashboard/${business.slug}/feed`)}>Create post</a>
+      <a class="btn btn--ghost" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
+      <a class="btn btn--deep" href={href(`/dashboard/${business.slug}/feed`)}>Post update</a>
     </div>
   </header>
 
@@ -66,9 +88,9 @@ void owned;
       <section class="card">
         <h2>Share something new</h2>
         <ComposerCard
-          title="What’s new at your business?"
-          body="Photo, update, or event — submissions go to the review queue before they go live."
-          action="Publish"
+          title="Post an update"
+          body={REVIEW_QUEUE_SENTENCE}
+          action="Post update"
           kind="update"
           client:visible
         />
@@ -77,40 +99,44 @@ void owned;
       <section class="card feature">
         <div class="feature__media img-placeholder" aria-hidden="true"></div>
         <div>
-          <p class="eyebrow">Active feature</p>
-          <h3>Keep your gallery fresh for weekend travelers</h3>
-          <p>
-            Your listing is surfacing in corridor guides. Update photos and hours so arriving visitors
-            get the right picture.
-          </p>
-          <a href={href(`/dashboard/${business.slug}/photos`)}>Manage photo gallery →</a>
+          <h3>Photos on your listing</h3>
+          <p>Add or replace photos so the public page matches what’s actually there.</p>
+          <a href={href(`/dashboard/${business.slug}/photos`)}>Open photos →</a>
         </div>
       </section>
 
       <section class="card">
         <div class="card__head">
           <h2>Recent activity</h2>
-          <a href={href(`/dashboard/${business.slug}/mentions`)}>See all →</a>
+          <a href={href(`/dashboard/${business.slug}/mentions`)}>Open mentions →</a>
         </div>
         <ul class="activity">
           <li>
             <div>
-              <strong>New community question</strong>
-              <p>A visitor asked about parking near your listing.</p>
+              <strong>Mentions inbox</strong>
+              <p>
+                {mentionCount === 0
+                  ? "No mentions waiting."
+                  : `${mentionCount} mention${mentionCount === 1 ? "" : "s"} on your listing or Ask.`}
+              </p>
             </div>
             <a class="btn btn--ghost" href={href(`/dashboard/${business.slug}/mentions`)}>Reply now</a>
           </li>
           <li>
             <div>
-              <strong>Guide feature</strong>
-              <p>You were mentioned in a local weekend guide.</p>
+              <strong>Guide mentions</strong>
+              <p>
+                {guideCount === 0
+                  ? "You are not in a published guide yet."
+                  : `${guideCount} published guide${guideCount === 1 ? "" : "s"} mention this listing.`}
+              </p>
             </div>
-            <a class="btn btn--ghost" href={href(`/dashboard/${business.slug}/guides`)}>View guide</a>
+            <a class="btn btn--ghost" href={href(`/dashboard/${business.slug}/guides`)}>View guides</a>
           </li>
           <li>
             <div>
-              <strong>Post performance</strong>
-              <p>{feedCount || 2} recent posts are reaching corridor browsers.</p>
+              <strong>Posts &amp; events</strong>
+              <p>{feedCount} published business post{feedCount === 1 ? "" : "s"}.</p>
             </div>
             <a class="btn btn--ghost" href={href(`/dashboard/${business.slug}/feed`)}>View posts</a>
           </li>
@@ -121,22 +147,23 @@ void owned;
     <aside class="side-col">
       <section class="card">
         <h2>Profile strength</h2>
-        <p class="score">85%</p>
-        <p class="muted">Almost optimized</p>
+        <p class="score">{strength.percent}%</p>
+        <p class="muted">{strength.percent === 100 ? "Listing fields are filled." : "Fill the remaining fields."}</p>
         <ul class="checklist">
-          <li class="done">Contact details</li>
-          <li class="done">Hours</li>
-          <li class="done">Photos</li>
-          <li>
-            Seasonal highlight
-            <a href={href(`/dashboard/${business.slug}/listing`)}>+ Add</a>
-          </li>
+          {
+            strength.checks.map((item) => (
+              <li class:list={[{ done: item.done }]}>
+                {item.label}
+                {!item.done && <a href={href(`/dashboard/${business.slug}/listing`)}>+ Add</a>}
+              </li>
+            ))
+          }
         </ul>
       </section>
       <section class="card">
-        <h2>View mode</h2>
-        <p class="muted">Leave management and open the public listing visitors see.</p>
-        <a class="btn btn--deep" href={href("/")}>View public site</a>
+        <h2>{VIEW_PUBLIC_LABEL}</h2>
+        <p class="muted">Open the listing visitors see.</p>
+        <a class="btn btn--deep" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
       </section>
     </aside>
   </div>
@@ -173,6 +200,10 @@ void owned;
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
     text-transform: uppercase;
+  }
+  .live--wait {
+    background: #fef3c7;
+    color: #92400e;
   }
   .welcome p {
     margin: 0.4rem 0 0;
