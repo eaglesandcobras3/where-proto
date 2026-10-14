@@ -80,6 +80,11 @@ for (const [name, rel] of Object.entries(pages)) {
     assert(name, 10, /Related guides/.test(text), "related guides missing");
     assert(name, "crumbs", /aria-label="Breadcrumb"/.test(raw), "breadcrumbs missing");
   }
+  if (name === "stay") {
+    assert(name, "updates", /Latest updates/.test(text) && /Beach chairs set by 9/.test(text), "stay updates missing");
+    assert(name, "events", /Happening here/.test(text) && /Gulf-front sundown/.test(text), "stay events missing");
+    assert(name, "faq", /Good to know/.test(text) && /golf carts/.test(text), "stay faqs missing");
+  }
   if (name === "town") {
     assert(name, 11, /Stays in Seaside/.test(text), "town stays missing");
     assert(name, "cats", /Browse Seaside/.test(text) && /Food & Drink/.test(text), "town business categories missing");

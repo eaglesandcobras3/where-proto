@@ -5,7 +5,7 @@ import { liveUpdates } from "../data/catalog";
 import type { Update } from "../data/types";
 
 interface Props {
-  entityKind: "business" | "town" | "area";
+  entityKind: "business" | "stay" | "town" | "area";
   entityName: string;
   updates: Update[];
   ctaHref: string;
@@ -13,13 +13,15 @@ interface Props {
 
 const { entityKind, entityName, updates, ctaHref } = Astro.props;
 const shown = liveUpdates(updates).slice(0, 3);
-const title = entityKind === "business" ? "Latest updates" : `Updates in ${entityName}`;
+const title = entityKind === "town" || entityKind === "area" ? `Updates in ${entityName}` : "Latest updates";
 const ctaLabel =
-  entityKind === "business"
-    ? "Own this business? Share an update"
-    : entityKind === "town"
-      ? "Share a town update"
-      : "Share an area update";
+  entityKind === "stay"
+    ? "Own this stay? Share an update"
+    : entityKind === "business"
+      ? "Own this business? Share an update"
+      : entityKind === "town"
+        ? "Share a town update"
+        : "Share an area update";
 ---
 
 {

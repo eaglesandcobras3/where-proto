@@ -843,6 +843,19 @@ export const events: EventItem[] = [
     bucket: "weekend",
   },
   {
+    slug: "watercolor-inn-sundown",
+    name: "Gulf-front sundown at the inn",
+    townSlug: "watercolor",
+    businessSlug: "watercolor-inn",
+    when: "Tonight, 6:00 PM",
+    time: "6:00 PM – 7:00 PM",
+    summary: "Hosted hour on the inn lawn. Fake stay event.",
+    venue: "WaterColor Inn lawn",
+    category: "Wellness",
+    price: "Free",
+    bucket: "now",
+  },
+  {
     slug: "harvest-wine-food",
     name: "Harvest Wine & Food Festival",
     townSlug: "watercolor",
@@ -945,6 +958,16 @@ export const updates: Update[] = [
     type: "hours_change",
     townSlug: "rosemary-beach",
     businessSlug: "the-pearl-hotel",
+  },
+  {
+    slug: "watercolor-inn-beach-setups",
+    title: "Beach chairs set by 9",
+    body: "Gulf setups go out each morning for inn guests. Fake stay update.",
+    createdAt: "2026-10-07",
+    through: "2026-10-20",
+    type: "new_item",
+    townSlug: "watercolor",
+    businessSlug: "watercolor-inn",
   },
   {
     slug: "beachy-bean-cold-brew",
@@ -1424,6 +1447,38 @@ export function listingMeta(item: Business) {
   const tags = item.tagSlugs.map((slug) => tagBySlug(slug)?.name ?? slug).join(", ");
   const open = item.openNow ? "open now" : "closed";
   return `${item.leafSlug} · ${town} · ${open}${tags ? ` · ${tags}` : ""}`;
+}
+
+export function faqsForStay(stay: Stay) {
+  const town = townBySlug(stay.townSlug);
+  const listing = stay.businessSlug ? businessBySlug(stay.businessSlug) : undefined;
+  const inn = /hotel|inn/i.test(stay.name);
+  return [
+    {
+      q: "Are golf carts allowed for getting to the beach from this stay?",
+      a: town
+        ? `Cart rules differ by town center. Ask the host for the latest ${town.name} LSV guidance and where overnight parking is allowed.`
+        : "Cart rules differ by town center. Ask your host for the latest LSV guidance and where overnight parking is allowed.",
+    },
+    {
+      q: "Where should I park?",
+      a: listing?.address
+        ? `Use posted guest parking at ${listing.address}. Overflow uses nearby ${town?.name ?? "30A"} lots.`
+        : town
+          ? `Use posted ${town.name} lots or the property’s guest spaces. Confirm with the host before arrival.`
+          : "Use posted town lots or the property’s guest spaces. Confirm with the host before arrival.",
+    },
+    {
+      q: "How close is the beach?",
+      a: inn
+        ? "This inn sits on or near the gulf — check the map pin for the nearest public walkover versus guest-only paths."
+        : `Most ${town?.name ?? "30A"} stays sit a short walk or golf-cart hop from a public walkover.`,
+    },
+    {
+      q: `Does ${stay.name} sleep a full family?`,
+      a: `This stay sleeps ${stay.sleeps}. Ask the host about beds, cribs, and extra linens before you lock dates.`,
+    },
+  ];
 }
 
 export function faqsForBusiness(business: Business) {

@@ -7,7 +7,19 @@ import RelatedGuides from "../../components/RelatedGuides.astro";
 import HappeningHere from "../../components/HappeningHere.astro";
 import ExploreLinks from "../../components/ExploreLinks.astro";
 import StayCard from "../../components/StayCard.astro";
-import { events, guides, photosFor, stays, townBySlug } from "../../data/catalog";
+import UpdatesModule from "../../components/UpdatesModule.astro";
+import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
+import {
+  businessBySlug,
+  events,
+  faqsForStay,
+  guides,
+  photosFor,
+  stays,
+  townBySlug,
+  updateSharePath,
+  updatesForBusiness,
+} from "../../data/catalog";
 import type { Stay } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
@@ -23,11 +35,23 @@ interface Props {
 
 const { item: stay } = Astro.props;
 const town = townBySlug(stay.townSlug);
+const listing = stay.businessSlug ? businessBySlug(stay.businessSlug) : undefined;
 const related = stays.filter((item) => item.slug !== stay.slug).slice(0, 3);
-const nearbyEvents = events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
+const listingEvents = listing ? events.filter((item) => item.businessSlug === listing.slug) : [];
+const nearbyEvents =
+  listingEvents.length > 0
+    ? listingEvents
+    : events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
 const isInn = /hotel|inn/i.test(stay.name);
 const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
-const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).concat(guides).filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index).slice(0, 3);
+const relatedGuides = guides
+  .filter((item) => item.townSlug === stay.townSlug)
+  .concat(guides)
+  .filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index)
+  .slice(0, 3);
+const faq = faqsForStay(stay);
+const claimed = Boolean(listing?.ownerUserSlug);
+const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
 ---
 
 <BaseLayout
@@ -48,6 +72,13 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     >
       <div slot="actions">
         <SaveShare type="stay" slug={stay.slug} name={stay.name} href={href(`/stay/${stay.slug}`)} client:load />
+        {
+          listing?.phone && (
+            <a class="hero-btn hero-btn--ghost" href={`tel:${listing.phone.replace(/[^\d+]/g, "")}`}>
+              Call {listing.phone}
+            </a>
+          )
+        }
         {
           stay.businessSlug ? (
             <a class="hero-btn" href={href(`/business/${stay.businessSlug}`)}>
@@ -81,6 +112,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
 
       <div class="main">
         <section class="panel">
+          <p class="eyebrow">About</p>
           <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
           <p>{stay.summary}</p>
         </section>
@@ -94,11 +126,36 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
             <div><strong>Sleeps {stay.sleeps}</strong><span>{town?.name ?? "30A"}</span></div>
           </div>
         </section>
-        <HappeningHere events={nearbyEvents} placeName={town?.name ?? "30A"} townSlug={stay.townSlug} />
+        <section class="panel">
+          <h2>Hours &amp; location</h2>
+          <p>{listing?.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          <p class="muted">{listing?.hours ?? "Hours vary"}</p>
+        </section>
+        {
+          listing && (
+            <UpdatesModule
+              entityKind="stay"
+              entityName={stay.name}
+              updates={stayUpdates}
+              ctaHref={updateSharePath("business", listing.slug)}
+            />
+          )
+        }
+        {listing && <PostedUpdates businessSlug={listing.slug} client:load />}
+        <HappeningHere events={nearbyEvents} placeName={stay.name} townSlug={stay.townSlug} />
         <CommunityQA
-          question="Are golf carts allowed for getting to the beach from this stay?"
-          answer="Cart rules differ by town center. Ask your host for the latest LSV guidance and where overnight parking is allowed."
+          question={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
+          answer={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
         />
+        <section class="panel faq">
+          <h2>Good to know</h2>
+          {faq.map((item) => (
+            <details>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </section>
         <RelatedGuides guides={relatedGuides} />
         <section class="panel">
           <h2>Similar nearby</h2>
@@ -116,6 +173,7 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
           <section class="widget">
             <p class="widget__label">Location</p>
             <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
+            <p class="addr">{listing?.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
           </section>
           <section class="widget book">
             <p class="widget__label">Book this stay</p>
@@ -128,6 +186,25 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
               )
             }
           </section>
+          {
+            town && (
+              <section class="widget">
+                <p class="widget__label">Get directions</p>
+                <a class="btn btn--deep" href={href(`/town/${town.slug}`)}>
+                  Get directions
+                </a>
+              </section>
+            )
+          }
+          {
+            listing && !claimed && (
+              <section class="widget claim">
+                <p class="widget__label">Property owner or GM?</p>
+                <p>Claim this stay to post updates, events, and verified hours.</p>
+                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
+              </section>
+            )
+          }
           <ExploreLinks current="stays" townSlug={stay.townSlug} />
         </div>
       </aside>
@@ -219,6 +296,78 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
   }
   .panel p + p {
     margin-top: var(--size-3);
+  }
+  .eyebrow {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .muted {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .faq details {
+    border-top: 1px solid var(--brand-line);
+    padding: var(--size-3) 0;
+  }
+  .faq details:first-of-type {
+    border-top: 0;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-6);
+  }
+  .faq p {
+    margin: 0.5rem 0 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .addr {
+    margin: 0;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .btn:hover {
+    text-decoration: none;
+  }
+  .btn--teal {
+    background: var(--brand-teal);
+    color: white;
+  }
+  .btn--teal:hover {
+    background: var(--brand-teal-hover);
+  }
+  .btn--deep {
+    width: 100%;
+    background: var(--brand-deep);
+    color: white;
+    margin-top: var(--size-3);
+  }
+  .claim {
+    background: var(--brand-deep);
+    border-color: var(--brand-deep);
+    color: white;
+  }
+  .claim .widget__label {
+    color: var(--brand-ink-on-navy);
+  }
+  .claim p {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-line);
   }
   .panel__head {
     display: flex;
