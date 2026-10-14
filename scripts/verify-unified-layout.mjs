@@ -1,55 +1,5 @@
-import { readFileSync, readdirSync, statSync } from "node:fs";
+import { readFileSync } from "node:fs";
 import { join } from "node:path";
-
-function stripWhen(html, value) {
-  const needle = `data-when="${value}"`;
-  let out = "";
-  let i = 0;
-  while (i < html.length) {
-    const hit = html.indexOf(needle, i);
-    if (hit === -1) {
-      out += html.slice(i);
-      break;
-    }
-    const start = html.lastIndexOf("<", hit);
-    const tagMatch = html.slice(start).match(/^<([a-zA-Z0-9-]+)/);
-    if (!tagMatch) {
-      out += html.slice(i, hit + needle.length);
-      i = hit + needle.length;
-      continue;
-    }
-    const tag = tagMatch[1];
-    out += html.slice(i, start);
-    let depth = 1;
-    let pos = html.indexOf(">", start) + 1;
-    while (pos < html.length && depth > 0) {
-      const nextOpen = html.indexOf(`<${tag}`, pos);
-      const nextClose = html.indexOf(`</${tag}>`, pos);
-      if (nextClose === -1) {
-        pos = html.length;
-        break;
-      }
-      if (nextOpen !== -1 && nextOpen < nextClose) {
-        const after = html[nextOpen + tag.length + 1];
-        if (after === " " || after === ">" || after === "\n" || after === "/") {
-          if (html[nextOpen + 1 + tag.length] === "/" || html.slice(nextOpen, html.indexOf(">", nextOpen) + 1).endsWith("/>")) {
-            pos = html.indexOf(">", nextOpen) + 1;
-            continue;
-          }
-          depth += 1;
-          pos = html.indexOf(">", nextOpen) + 1;
-          continue;
-        }
-        pos = nextOpen + 1;
-        continue;
-      }
-      depth -= 1;
-      pos = nextClose + tag.length + 3;
-    }
-    i = pos;
-  }
-  return out;
-}
 
 function textOf(html) {
   return html
@@ -85,8 +35,9 @@ const ratingHits = ["Top Rated", "% helpful", "local rating", "Thumbs up"];
 
 for (const [name, rel] of Object.entries(pages)) {
   const raw = readFileSync(join(root, rel), "utf8");
-  const unified = stripWhen(raw, "legacy");
-  const text = textOf(unified);
+  const text = textOf(raw);
+
+  assert(name, "flag", !raw.includes("data-when=") && !raw.includes("unified_listing_detail_layout"), "flag leftover");
 
   if (["towns", "search", "stays", "events", "guides", "ask"].includes(name)) {
     assert(name, 3, forbidden.every((term) => !text.includes(term)), `found ${forbidden.filter((t) => text.includes(t)).join(", ")}`);
@@ -96,7 +47,7 @@ for (const [name, rel] of Object.entries(pages)) {
 
   if (name === "search") {
     assert(name, 4, /Category/.test(text) && /Amenities/.test(text) && /Town/.test(text), "facet labels missing");
-    assert(name, 8, !/Stay\s*<span class="count">/.test(unified), "Stay category still present in filters");
+    assert(name, 8, !/Stay\s*<span class="count">/.test(raw), "Stay category still present in filters");
     assert(name, 1, /Search businesses/.test(text), "search placeholder missing");
   }
   if (name === "stays") {
@@ -139,4 +90,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`Checked ${Object.keys(pages).length} pages after pruning legacy trees: all outcome checks passed.`);
+console.log(`Checked ${Object.keys(pages).length} pages: shared listing/detail layout is the only layout.`);

@@ -89,16 +89,8 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar" data-when="legacy">
-    <div class="sort" aria-label="Filter events">
-      <button class:active={view === "all"} type="button" onclick={() => (view = "all")}>All Events</button>
-      <button class:active={view === "weekend"} type="button" onclick={() => (view = "weekend")}>This Weekend</button>
-      <button class:active={view === "free"} type="button" onclick={() => (view = "free")}>Free Admission</button>
-      <button class:active={view === "family"} type="button" onclick={() => (view = "family")}>Family Picks</button>
-    </div>
-    <span class="count" aria-live="polite">{results.length} events · Sort: Date</span>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar
       surface="events"
       count={results.length}

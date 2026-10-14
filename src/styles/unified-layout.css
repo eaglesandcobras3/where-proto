@@ -1,24 +1,14 @@
-/* Visibility for the unified listing/detail skeleton. Default OFF. */
-html[data-unified-layout="off"] [data-when="unified"],
-html:not([data-unified-layout]) [data-when="unified"] {
-  display: none !important;
-}
-
-html[data-unified-layout="on"] [data-when="legacy"] {
-  display: none !important;
-}
-
-html[data-unified-layout="on"] .layout.layout--content-forward {
+.layout.layout--content-forward {
   grid-template-columns: minmax(0, 1fr);
 }
 
 @media (min-width: 960px) {
-  html[data-unified-layout="on"] .layout.layout--content-forward {
+  .layout.layout--content-forward {
     grid-template-columns: minmax(0, 1fr) 16rem;
   }
 }
 
-html[data-unified-layout="on"] .layout.layout--content-forward > .filters-col {
+.layout.layout--content-forward > .filters-col {
   display: none !important;
 }
 

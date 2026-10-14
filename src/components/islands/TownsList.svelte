@@ -73,11 +73,8 @@
 </script>
 
 <section class="feed">
-  <div class="head" data-when="legacy">
-    <h2>Scenic Highway Communities</h2>
-    <span aria-live="polite">{results.length} towns</span>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar surface="towns" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 

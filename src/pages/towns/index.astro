@@ -2,11 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
 import Corridor from "../../components/Corridor.astro";
-import MapToggle from "../../components/MapToggle.astro";
-import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import TownsHeroSearch from "../../components/islands/TownsHeroSearch.svelte";
-import TownsSidebarFilters from "../../components/islands/TownsSidebarFilters.svelte";
 import TownsList from "../../components/islands/TownsList.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
@@ -118,11 +114,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Towns & Neighborhoods"
       lede="Discover the distinctive architectural character, beach access rules, and vibrant town centers stretching across Scenic Highway 30A."
-    >
-      <div data-when="legacy">
-        <TownsHeroSearch initialQuery={q} initialRegion={region} client:load />
-      </div>
-    </InteriorHero>
+    />
 
     <Corridor />
 
@@ -147,10 +139,8 @@ const mapMarkers = markersFromNames(
       ) : (
         <div class="container layout">
           <div class="filters-col">
-            <div data-when="legacy">
-              <TownsSidebarFilters vibes={vibes} beachTypes={beachTypes} initialVibe={vibe} client:load />
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingFilters
                 surface="towns"
                 eventName="w30a:towns-filters"
@@ -178,15 +168,8 @@ const mapMarkers = markersFromNames(
           />
 
           <aside class="rail">
-            <div data-when="legacy">
-              <MapToggle title="30A Towns Map" href={mapHref} />
-              <ContributeCard kind="business" />
-              <section class="widget">
-                <p class="widget__label">Other stories</p>
-                <a class="story" href={href("/guide/first-timers-guide")}>First Timer’s Guide to 30A →</a>
-              </section>
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingRail mapTitle="Towns map" mapHref={mapHref} contributeKind="business" current="towns">
                 <LocalsPick
                   slot="discovery"
