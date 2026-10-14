@@ -19,19 +19,15 @@ const names: Record<Reaction["label"], string> = {
   wow: "Surprised",
 };
 
-const shown: { label: Reaction["label"]; count: number }[] = [
-  { label: "up", count: reactions.find((item) => item.label === "up")?.count ?? 0 },
-  { label: "heart", count: reactions.find((item) => item.label === "heart")?.count ?? 0 },
-  { label: "wow", count: reactions.find((item) => item.label === "wow")?.count ?? 0 },
-];
+const shown: Reaction["label"][] = ["up", "heart", "wow"];
+void reactions;
 ---
 
 <div class="reactions" role="group" aria-label="Reactions">
   {
-    shown.map((item) => (
-      <button type="button" class="btn" aria-label={`${names[item.label]}, ${item.count}`}>
-        <span aria-hidden="true">{icons[item.label]}</span>
-        <span>{item.count}</span>
+    shown.map((label) => (
+      <button type="button" class="btn" aria-label={names[label]}>
+        <span aria-hidden="true">{icons[label]}</span>
       </button>
     ))
   }
@@ -49,7 +45,7 @@ const shown: { label: Reaction["label"]; count: number }[] = [
     gap: var(--size-1);
     border: 1px solid var(--brand-line);
     background: white;
-    border-radius: var(--radius-4);
+    border-radius: var(--radius-pill);
     padding: 2px var(--size-2);
     font: inherit;
     font-size: var(--font-size-0);

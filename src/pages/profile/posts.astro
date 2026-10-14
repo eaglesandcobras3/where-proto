@@ -2,12 +2,13 @@
 import AccountLayout from "../../layouts/AccountLayout.astro";
 import {
   businessBySlug,
+  commentsFor,
   currentUserSlug,
   posts,
-  reactionsFor,
   townBySlug,
 } from "../../data/catalog";
 import { href } from "../../lib/href";
+import { countLabel, formatDate } from "../../lib/labels";
 
 const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
 
@@ -24,27 +25,22 @@ const rows = mine.map((post) => {
     post.on.type === "town"
       ? href(`/town/${post.on.slug}`)
       : href(`/business/${post.on.slug}`);
-  const likes = reactionsFor("post", post.slug).reduce((sum, item) => sum + item.count, 0);
   return {
     ...post,
     placeName,
     placeHref,
-    streamLabel:
-      post.on.type === "town"
-        ? `Posted to ${placeName} Community Stream`
-        : `Posted on ${placeName}`,
-    likes: likes || (post.slug === "sunset-on-the-square" ? 18 : 11),
-    comments: post.slug === "sunset-on-the-square" ? 4 : 1,
+    streamLabel: `Posted on ${placeName}`,
+    comments: commentsFor("post", post.slug).length,
   };
 });
 ---
 
-<AccountLayout title="My Posts" active="posts">
+<AccountLayout title="Posts" active="posts">
   <section class="panel">
     <div class="panel__head">
       <div>
-        <h2>Town Board Contributions</h2>
-        <p>Your public observations, sunset alerts, and recommendations shared with fellow travelers.</p>
+        <h2>Posts</h2>
+        <p>Notes you posted on town and business pages.</p>
       </div>
     </div>
 
@@ -58,11 +54,11 @@ const rows = mine.map((post) => {
                 {post.on.type === "town" ? "Town Page" : "Business Page"}
               </a>
             </div>
-            <p class="when">{post.createdAt}</p>
+            <p class="when">{formatDate(post.createdAt)}</p>
             <p class="body">{post.body}</p>
             <div class="card__foot">
-              <span>{post.likes} Likes · {post.comments} Comments</span>
-              <a href={href(`/posts/${post.slug}`)}>View Town Post →</a>
+              <span>{countLabel(post.comments, "comment")}</span>
+              <a href={href(`/posts/${post.slug}`)}>View post →</a>
             </div>
           </article>
         ))

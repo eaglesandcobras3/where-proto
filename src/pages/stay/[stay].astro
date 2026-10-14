@@ -2,6 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { events, stays, townBySlug } from "../../data/catalog";
 import type { Stay } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -53,8 +54,7 @@ const isInn = /hotel|inn/i.test(stay.name);
             </p>
           </div>
           <div class="title-actions">
-            <button type="button">Save</button>
-            <button type="button">Share</button>
+            <SaveShare type="stay" slug={stay.slug} name={stay.name} href={href(`/stay/${stay.slug}`)} client:load />
             {
               stay.businessSlug ? (
                 <a class="book" href={href(`/business/${stay.businessSlug}`)}>
@@ -428,7 +428,7 @@ const isInn = /hotel|inn/i.test(stay.name);
     font-weight: var(--font-weight-8);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .alert p:last-child {
     margin: 0;

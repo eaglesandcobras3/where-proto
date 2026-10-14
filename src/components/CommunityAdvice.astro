@@ -1,5 +1,6 @@
 ---
 import { href } from "../lib/href";
+import { formatDate } from "../lib/labels";
 
 interface Row {
   question: { slug: string; title: string; createdAt: string };
@@ -39,7 +40,7 @@ const prompts = [
           <article class="thread">
             <div class="thread__meta">
               <span>
-                {(town?.name ?? "30A").toUpperCase()} · Asked {question.createdAt}
+                {(town?.name ?? "30A").toUpperCase()} · Asked {formatDate(question.createdAt)}
               </span>
               <span class="replies">{replies} {replies === 1 ? "reply" : "replies"}</span>
             </div>

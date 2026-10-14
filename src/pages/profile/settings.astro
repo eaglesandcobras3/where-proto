@@ -2,37 +2,44 @@
 import AccountLayout from "../../layouts/AccountLayout.astro";
 import { currentUser, towns } from "../../data/catalog";
 import { href } from "../../lib/href";
+import { userHandle } from "../../lib/labels";
 
 const user = currentUser();
 const neighborhoodOptions = towns.slice(0, 8);
 ---
 
-<AccountLayout title="Account Settings" active="settings">
+<AccountLayout title="Settings" active="settings">
   <section class="panel">
     <div class="panel__head">
       <div>
-        <h2>Account Preferences</h2>
-        <p>Manage your insider credentials, notification digest, and public contributor profile.</p>
+        <h2>Settings</h2>
+        <p>Name, handle, email, and notification preferences.</p>
       </div>
       <a class="dash" href={href("/dashboard")}>Business dashboard →</a>
     </div>
 
     <form class="form" onsubmit="return false;">
       <label>
-        <span>Display Name / Handle</span>
-        <small>Visible on community questions and comments.</small>
+        <span>Display name</span>
+        <small>Account only. Community questions, answers, comments, and posts show your handle.</small>
         <input type="text" value={user?.name ?? ""} />
       </label>
 
       <label>
-        <span>Account Email Address</span>
-        <small>Used for login authentication and advisory emails.</small>
+        <span>Handle</span>
+        <small>Visible on questions, answers, comments, and posts as {user ? userHandle(user.slug) : "your handle"}.</small>
+        <input type="text" value={user ? userHandle(user.slug) : ""} readonly />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <small>Used to sign in and for account mail.</small>
         <input type="email" value="beachlocal@example.com" />
       </label>
 
       <label>
-        <span>Insider Bio</span>
-        <small>Help fellow visitors know which 30A areas you know best.</small>
+        <span>Bio</span>
+        <small>Shown on your public profile.</small>
         <textarea rows="4">{user?.bio ?? ""}</textarea>
       </label>
 

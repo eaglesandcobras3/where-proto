@@ -53,13 +53,15 @@
   /* Text */
   --brand-ink: #0f172a;
   --brand-ink-soft: #64748b;
-  /* Warm Amber */
+  /* Warm Amber — warnings / needs attention */
   --brand-sun: #f59e0b;
   --brand-sun-soft: #fef3c7;
-  --brand-coral: #b85c2e;
+  --brand-coral: #92400e;
   --brand-line: #e2e8f0;
   --brand-map: #c9d9c4;
   --brand-map-water: #a8c8d8;
+  /* Teal on navy only */
+  --mint: #85f6e5;
 
   --font-body: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
   --font-display: "Plus Jakarta Sans", Inter, system-ui, sans-serif;
@@ -68,5 +70,7 @@
   --header-nav-h: 64px;
   --conditions-h: 2.35rem;
   --header-h: calc(var(--header-nav-h) + var(--conditions-h));
-  --radius-card: var(--radius-2);
+  --radius-button: var(--radius-2);
+  --radius-card: var(--radius-3);
+  --brand-teal-hover: #00796b;
 }

@@ -264,7 +264,7 @@
           </li>
         {/each}
       </ul>
-      <a class="widget__link" href={dashboardRoot}>Manage business →</a>
+      <a class="widget__link" href={dashboardRoot}>Manage business</a>
     {/if}
   </section>
 {/if}
@@ -513,7 +513,7 @@
   }
   .badge--pending {
     background: var(--brand-sun-soft);
-    color: #78350f;
+    color: var(--brand-coral);
     border-color: #fde68a;
   }
   .badge--alert {

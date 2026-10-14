@@ -38,6 +38,7 @@ const links = [
       <a class="add-business" data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
       <a class="add-business" data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
       <button class="sign-in" data-proto="sign-in" type="button" id="header-sign-in">Sign in</button>
+      <button class="sign-in" data-proto="sign-out" type="button" id="header-sign-out">Sign out</button>
       <SearchBar base={base} client:load />
       <a class="icon-btn" data-proto="profile" href={href("/profile")} aria-label="Profile">
         <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
@@ -70,6 +71,7 @@ const links = [
     <nav class="mobile-nav">
       {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
       <button type="button" data-proto="sign-in" class="mobile-sign-in" id="mobile-sign-in">Sign in</button>
+      <button type="button" data-proto="sign-out" class="mobile-sign-in" id="mobile-sign-out">Sign out</button>
       <a data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
       <a data-proto="manage-business" href={href("/add-business")}>Add another business</a>
       <a data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
@@ -106,6 +108,16 @@ const links = [
 
   document.getElementById("header-sign-in")?.addEventListener("click", openAuth);
   document.getElementById("mobile-sign-in")?.addEventListener("click", openAuth);
+
+  function signOut() {
+    window.localStorage.setItem("w30a:persona", "guest");
+    document.documentElement.dataset.persona = "guest";
+    window.dispatchEvent(new CustomEvent("w30a:persona", { detail: { persona: "guest" } }));
+    if (drawer instanceof HTMLDialogElement && drawer.open) drawer.close();
+  }
+
+  document.getElementById("header-sign-out")?.addEventListener("click", signOut);
+  document.getElementById("mobile-sign-out")?.addEventListener("click", signOut);
 </script>
 
 <style>
@@ -215,15 +227,19 @@ const links = [
   :global(html[data-persona="guest"]) [data-proto="town-desk"] {
     display: none !important;
   }
-  :global(html[data-persona="visitor"]) [data-proto="sign-in"],
+  :global(html:not([data-persona="guest"])) [data-proto="sign-in"],
+  :global(body.account-shell) [data-proto="sign-in"] {
+    display: none !important;
+  }
+  :global(html[data-persona="guest"]) [data-proto="sign-out"] {
+    display: none !important;
+  }
   :global(html[data-persona="visitor"]) [data-proto="town-desk"] {
     display: none !important;
   }
-  :global(html[data-persona="employer"]) [data-proto="sign-in"],
   :global(html[data-persona="employer"]) [data-proto="town-desk"] {
     display: none !important;
   }
-  :global(html[data-persona="town-manager"]) [data-proto="sign-in"],
   :global(html[data-persona="town-manager"]) [data-proto="manage-business"] {
     display: none !important;
   }

@@ -233,7 +233,7 @@
   }
 
   function thumbColor(slug: string) {
-    const colors = ["#0c232e", "#00897b", "#3d5a80", "#b85c2e", "#00695c"];
+    const colors = ["#0c232e", "#00897b", "#3d5a80", "var(--brand-coral)", "#00695c"];
     let hash = 0;
     for (let i = 0; i < slug.length; i++) hash = (hash + slug.charCodeAt(i) * (i + 1)) % colors.length;
     return colors[hash] ?? "#0c232e";
@@ -1051,7 +1051,7 @@
     border-radius: var(--radius-2);
     background: var(--brand-sun-soft);
     border: 1px solid #fde68a;
-    color: #78350f;
+    color: var(--brand-coral);
     font-size: var(--font-size-1);
   }
   .verify {

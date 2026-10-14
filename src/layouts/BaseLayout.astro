@@ -58,6 +58,8 @@ interface Props {
   bare?: boolean;
   /** Enable business_dashboard_v1 preview bootstrap (merchant surfaces). */
   dashboardPreview?: boolean;
+  /** Account chrome — hide Sign in; this surface assumes a signed-in member. */
+  account?: boolean;
 }
 
 const {
@@ -95,6 +97,7 @@ const {
   jsonLd,
   bare = false,
   dashboardPreview = false,
+  account = false,
 } = Astro.props;
 const compileDashboardV1 = dashboardPreview && (isEnabled("businessDashboardV1") || envDashboardV1Enabled());
 
@@ -157,7 +160,7 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
     </script>
     {dashboardPreview && <DashboardFlagBootstrap compileOn={compileDashboardV1} />}
   </head>
-  <body class:list={[bare && "bare-shell"]}>
+  <body class:list={[bare && "bare-shell", account && "account-shell"]}>
     {!bare && <Header active={active} />}
     {
       !bare && showBrowse && (

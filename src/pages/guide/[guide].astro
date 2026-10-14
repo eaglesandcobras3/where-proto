@@ -2,8 +2,10 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntityText from "../../components/EntityText.astro";
 import ReactionBar from "../../components/ReactionBar.astro";
-import { commentsFor, guides, reactionsFor, townBySlug } from "../../data/catalog";
+import GuideSaveSpots from "../../components/islands/GuideSaveSpots.svelte";
+import { businessesForTown, commentsFor, guides, reactionsFor, townBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -22,6 +24,10 @@ const reactions = reactionsFor("guide", guide.slug);
 const related = guides.filter((item) => item.slug !== guide.slug).slice(0, 3);
 const minutes = 5 + (guide.title.length % 8);
 const isFeatured = guide.slug === "first-timers-guide";
+const guideSpots = (town ? businessesForTown(town.slug) : []).slice(0, 6).map((biz) => ({
+  slug: biz.slug,
+  name: biz.name,
+}));
 
 const sections = [
   { id: "overview", label: "Town overview" },
@@ -69,8 +75,7 @@ const sections = [
             </div>
           </div>
           <div class="actions">
-            <button type="button">Save</button>
-            <button type="button">Share</button>
+            <SaveShare type="guide" slug={guide.slug} name={guide.title} href={href(`/guide/${guide.slug}`)} client:load />
           </div>
         </div>
 
@@ -151,6 +156,7 @@ const sections = [
           </ul>
         </section>
 
+        <GuideSaveSpots spots={guideSpots} client:visible />
         <ReactionBar reactions={reactions} />
 
         {
@@ -489,7 +495,7 @@ const sections = [
     font-weight: var(--font-weight-8);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .alert p:last-child {
     margin: 0;

@@ -10,6 +10,7 @@ import {
 } from "../../data/catalog";
 import type { Post } from "../../data/types";
 import { href } from "../../lib/href";
+import { formatDate, userHandle } from "../../lib/labels";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -39,12 +40,12 @@ const postReactions = reactionsFor("post", post.slug);
     <h1>Post</h1>
     <p>{post.body}</p>
     <p class="meta">
-      Posted as {post.postedAs} on {post.createdAt}
+      Posted {formatDate(post.createdAt)}
       {
         user && (
           <>
             {" by "}
-            <a href={href(`/u/${user.slug}`)}>{user.name}</a>
+            <a href={href(`/u/${user.slug}`)}>{userHandle(user.slug)}</a>
           </>
         )
       }
@@ -65,11 +66,11 @@ const postReactions = reactionsFor("post", post.slug);
         )
       }
     </p>
-    {postReactions.length > 0 && <p class="meta">{postReactions.map((item) => `${item.label} ${item.count}`).join(" · ")}</p>}
+    {postReactions.length > 0 && <p class="meta">React</p>}
     {
       postComments.map((item) => (
         <p class="comment">
-          {item.body} · {userBySlug(item.authorUserSlug)?.name}
+          {item.body} · {userBySlug(item.authorUserSlug) ? userHandle(item.authorUserSlug) : "a visitor"}
         </p>
       ))
     }

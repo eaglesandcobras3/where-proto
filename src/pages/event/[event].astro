@@ -3,6 +3,7 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import { businessBySlug, events, photosFor, townBySlug } from "../../data/catalog";
 import type { EventItem } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -75,7 +76,10 @@ const jsonLd = {
         <dl class="facts">
           <div>
             <dt>Date &amp; time</dt>
-            <dd>{event.when}{event.time ? ` · ${event.time}` : ""}</dd>
+            <dd>
+              {event.when}{event.time ? ` · ${event.time}` : ""}
+              <p class="save-nudge">Interested? Save it to your trip.</p>
+            </dd>
           </div>
           <div>
             <dt>Venue</dt>
@@ -95,7 +99,14 @@ const jsonLd = {
             {isFree ? "Save RSVP (Free)" : event.price ? `Tickets · ${event.price}` : "Get details"}
           </a>
           <a class="btn btn--ghost" href={href(`/event/${event.slug}.ics`)}>Add to Calendar</a>
-          <button class="btn btn--ghost" type="button">Share Event</button>
+          <SaveShare
+            type="event"
+            slug={event.slug}
+            name={event.name}
+            href={href(`/event/${event.slug}`)}
+            saveLabel="Save"
+            client:load
+          />
           {town && (
             <a class="btn btn--link" href={href(`/town/${town.slug}`)}>Get Directions</a>
           )}
@@ -321,6 +332,11 @@ const jsonLd = {
     text-transform: uppercase;
     color: #94a3b8;
   }
+  .save-nudge {
+    margin: 0.35rem 0 0;
+    font-size: var(--font-size-0);
+    color: var(--mint);
+  }
   .facts dd {
     margin: 0;
     font-size: var(--font-size-2);
@@ -506,7 +522,7 @@ const jsonLd = {
     font-weight: var(--font-weight-8);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .alert p:last-child {
     margin: 0;

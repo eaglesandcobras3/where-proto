@@ -8,15 +8,17 @@
     title: string;
     body: string;
     action: string;
-    kind?: "update" | "event" | "photo" | "settings" | "faq";
+    kind?: "update" | "event" | "photo" | "settings" | "faq" | "offer";
   } = $props();
 
   let submitted = $state(false);
   let rightsConfirmed = $state(false);
+  let offerThrough = $state("");
 
   function onSubmit(event: Event) {
     event.preventDefault();
     if (kind === "photo" && !rightsConfirmed) return;
+    if (kind === "offer" && !offerThrough) return;
     submitted = true;
   }
 </script>
@@ -25,7 +27,14 @@
   <h3>{title}</h3>
   <p>{body}</p>
   <form onsubmit={onSubmit}>
-    {#if kind === "update"}
+    {#if kind === "offer"}
+      <wa-input placeholder="Offer title"></wa-input>
+      <wa-textarea placeholder="Terms" rows="2"></wa-textarea>
+      <label class="date-field">
+        <span>End date</span>
+        <input type="date" required bind:value={offerThrough} />
+      </label>
+    {:else if kind === "update"}
       <wa-textarea placeholder="What is happening?" rows="2"></wa-textarea>
     {:else if kind === "event"}
       <wa-input placeholder="Event title"></wa-input>
@@ -46,7 +55,7 @@
       <wa-input label="Phone" value="(850) 555-0101"></wa-input>
       <wa-textarea label="Description" rows="3"></wa-textarea>
     {/if}
-    <wa-button variant="brand" type="submit" disabled={kind === "photo" && !rightsConfirmed}>
+    <wa-button variant="brand" type="submit" disabled={(kind === "photo" && !rightsConfirmed) || (kind === "offer" && !offerThrough)}>
       {action}
     </wa-button>
   </form>
@@ -77,6 +86,24 @@
   form {
     display: grid;
     gap: var(--size-3);
+  }
+  .date-field {
+    display: grid;
+    gap: 0.35rem;
+  }
+  .date-field span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .date-field input {
+    min-height: 2.75rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-button);
+    padding: 0.55rem 0.75rem;
+    font: inherit;
   }
   .rights {
     display: flex;

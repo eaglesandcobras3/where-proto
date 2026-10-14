@@ -86,12 +86,43 @@ const metrics = [
   <div class="layout">
     <div class="main-col">
       <section class="card">
+        <h2>This week at {business.name}</h2>
+        <ul class="checklist">
+          <li class:list={[{ done: strength.checks.find((item) => item.label === "Photos")?.done }]}>
+            Gallery fresh?
+            {!strength.checks.find((item) => item.label === "Photos")?.done && (
+              <a href={href(`/dashboard/${business.slug}/photos`)}>+ Add</a>
+            )}
+          </li>
+          <li class:list={[{ done: Boolean(business.hours) }]}>
+            Hours current for the season?
+            {!business.hours && <a href={href(`/dashboard/${business.slug}/listing`)}>+ Add</a>}
+          </li>
+          <li class:list={[{ done: mentionCount === 0 }]}>
+            Mentions unanswered?
+            {mentionCount > 0 && <a href={href(`/dashboard/${business.slug}/mentions`)}>Reply</a>}
+          </li>
+          <li class:list={[{ done: strength.percent === 100 }]}>
+            Profile complete?
+            {strength.percent < 100 && <a href={href(`/dashboard/${business.slug}/listing`)}>+ Add</a>}
+          </li>
+        </ul>
+      </section>
+
+      <section class="card">
         <h2>Share something new</h2>
         <ComposerCard
           title="Post an update"
           body={REVIEW_QUEUE_SENTENCE}
           action="Post update"
           kind="update"
+          client:visible
+        />
+        <ComposerCard
+          title="Post an offer"
+          body={REVIEW_QUEUE_SENTENCE}
+          action="Post offer"
+          kind="offer"
           client:visible
         />
       </section>

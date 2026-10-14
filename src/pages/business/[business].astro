@@ -21,6 +21,7 @@ import {
   updatesForBusiness,
 } from "../../data/catalog";
 import type { Business } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -104,6 +105,7 @@ const claimed = Boolean(business.ownerUserSlug);
             </p>
           </div>
           <div class="actions">
+            <SaveShare type="business" slug={business.slug} name={business.name} href={href(`/business/${business.slug}`)} client:load />
             {
               business.phone && (
                 <a class="btn btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>

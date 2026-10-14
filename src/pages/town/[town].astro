@@ -20,6 +20,7 @@ import {
   updatesForTown,
 } from "../../data/catalog";
 import type { Town } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
@@ -66,8 +67,8 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
             <p class="lede">{town.summary}</p>
           </div>
           <div class="hero__actions">
-            <button type="button">Save</button>
-            <button type="button">Share</button>
+            <SaveShare type="town" slug={town.slug} name={town.name} href={href(`/town/${town.slug}`)} client:load />
+            <p class="save-nudge">Save {town.name} to your trip</p>
             <a class="map-btn" href="#map">Corridor map</a>
           </div>
         </div>
@@ -279,6 +280,13 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+    align-items: center;
+  }
+  .save-nudge {
+    margin: 0;
+    width: 100%;
+    font-size: var(--font-size-0);
+    color: var(--mint);
   }
   .hero__actions button,
   .map-btn {
@@ -541,7 +549,7 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
     font-weight: var(--font-weight-8);
     letter-spacing: 0.06em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .alert ul {
     margin: 0;

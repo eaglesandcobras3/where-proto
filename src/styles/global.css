@@ -30,6 +30,11 @@ h4 {
   letter-spacing: -0.01em;
 }
 
+h1 {
+  font-weight: var(--font-weight-8);
+  font-size: clamp(2rem, 4vw, 3rem);
+}
+
 p {
   margin: 0 0 var(--size-3);
 }
@@ -74,10 +79,71 @@ textarea {
 .eyebrow {
   font-size: var(--font-size-0);
   font-weight: var(--font-weight-7);
-  letter-spacing: 0.18em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--brand-ink-soft);
   margin-bottom: var(--size-2);
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.55rem 1.1rem;
+  border: 0;
+  border-radius: var(--radius-button);
+  font: inherit;
+  font-size: var(--font-size-1);
+  font-weight: var(--font-weight-7);
+  cursor: pointer;
+  text-decoration: none;
+  background: var(--brand-teal);
+  color: white;
+}
+.btn:hover {
+  background: var(--brand-teal-hover);
+  text-decoration: none;
+}
+.btn--deep {
+  background: var(--brand-deep);
+  color: white;
+}
+.btn--deep:hover {
+  background: #071820;
+}
+.btn--secondary {
+  background: var(--brand-sand-dark);
+  color: var(--brand-deep);
+}
+.btn--secondary:hover {
+  background: #e2e8f0;
+}
+.btn--ghost {
+  background: transparent;
+  color: var(--brand-ink);
+  border: 1px solid var(--brand-ink);
+}
+.btn--ghost:hover {
+  background: var(--brand-sand-dark);
+}
+.btn--ghost-on-dark {
+  background: transparent;
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.btn--ghost-on-dark:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+.btn--text {
+  background: transparent;
+  color: var(--brand-teal);
+  padding-inline: 0;
+  min-height: 0;
+}
+.btn--text:hover {
+  background: transparent;
+  text-decoration: underline;
 }
 
 .img-placeholder {

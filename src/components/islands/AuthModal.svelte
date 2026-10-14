@@ -469,6 +469,6 @@
     cursor: not-allowed;
   }
   .continue:not(:disabled):hover {
-    background: #007a6e;
+    background: var(--brand-teal-hover);
   }
 </style>

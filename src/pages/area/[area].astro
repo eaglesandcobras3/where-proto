@@ -18,6 +18,7 @@ import {
   updatesForArea,
 } from "../../data/catalog";
 import type { Area } from "../../data/types";
+import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
@@ -77,6 +78,7 @@ const kindLabel = areaKindLabel(area.kind);
             </p>
           </div>
           <div class="hero__actions">
+            <SaveShare type="area" slug={area.slug} name={area.name} href={href(`/area/${area.slug}`)} client:load />
             <a class="ghost" href={href(`/town/${town.slug}`)}>View full town</a>
             <a class="map-btn" href={href(`/town/${town.slug}#map`)}>Town map</a>
           </div>

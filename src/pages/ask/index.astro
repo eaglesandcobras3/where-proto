@@ -9,7 +9,7 @@ import AskComposer from "../../components/islands/AskComposer.svelte";
 import AskIndex from "../../components/islands/AskIndex.svelte";
 import AskSidebarFilters from "../../components/islands/AskSidebarFilters.svelte";
 import { commentsFor, questions, towns, townBySlug, userBySlug } from "../../data/catalog";
-import { relativeTime } from "../../lib/labels";
+import { formatDate, roleLabel, userHandle } from "../../lib/labels";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
@@ -38,10 +38,11 @@ const rows = questions.map((question) => {
     slug: question.slug,
     title: question.title,
     body: question.body,
-    author: author?.name ?? "a visitor",
-    role: author?.role === "local" ? "Local" : author?.role === "business-owner" ? "Owner" : "Visitor",
+    author: author ? userHandle(author.slug) : "a visitor",
+    handle: author ? userHandle(author.slug) : "",
+    role: author ? roleLabel(author.role) : "Visitor",
     createdAt: question.createdAt,
-    relative: relativeTime(question.createdAt),
+    relative: formatDate(question.createdAt),
     answers: commentsFor("question", question.slug).length,
     town: townRow?.name,
     townSlug: question.townSlug,
@@ -61,7 +62,7 @@ const mapMarkers = markersFromNames(
   rows.map((item) => ({
     name: item.title,
     href: href(`/ask/${item.slug}`),
-    detail: `${item.town ?? "30A"} · ${item.answers} answers`,
+    detail: `${item.town ?? "30A"} · ${item.answers === 1 ? "1 answer" : `${item.answers} answers`}`,
   })),
 );
 ---
@@ -137,14 +138,14 @@ const mapMarkers = markersFromNames(
               <span class="guides__avatar" aria-hidden="true">B</span>
               <div>
                 <strong>beachlocal</strong>
-                <span>99% helpful · Seaside</span>
+                <span>Seaside</span>
               </div>
             </li>
             <li>
               <span class="guides__avatar" aria-hidden="true">L</span>
               <div>
                 <strong>local_owner</strong>
-                <span>97% helpful · Rosemary</span>
+                <span>Rosemary</span>
               </div>
             </li>
             <li>

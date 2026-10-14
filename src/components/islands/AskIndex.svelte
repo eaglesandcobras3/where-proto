@@ -4,6 +4,7 @@
     title: string;
     body?: string;
     author: string;
+    handle?: string;
     createdAt: string;
     relative: string;
     answers: number;
@@ -102,11 +103,11 @@
       <article class="card">
         <div class="card__top">
           <div class="who">
-            <span class="avatar" aria-hidden="true">{item.author.charAt(0)}</span>
+            <span class="avatar" aria-hidden="true">{(item.handle || item.author).replace(/^@/, "").charAt(0)}</span>
             <div>
-              <p class="name">{item.author}</p>
+              <p class="name">{item.handle || item.author}</p>
               <p class="meta">
-                {item.role ?? "Local"} · {item.relative}
+                {item.handle || item.author} · {item.role ?? "Local"} · {item.relative}
               </p>
             </div>
           </div>

@@ -240,7 +240,7 @@
     font-weight: var(--font-weight-8);
     letter-spacing: 0.08em;
     text-transform: uppercase;
-    color: #78350f;
+    color: var(--brand-coral);
   }
   .callout p:last-child {
     margin: 0;
