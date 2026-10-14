@@ -43,12 +43,16 @@ for (const [name, rel] of Object.entries(pages)) {
     assert(name, 3, forbidden.every((term) => !text.includes(term)), `found ${forbidden.filter((t) => text.includes(t)).join(", ")}`);
     assert(name, 7, /\d+ (towns|businesses|stays|events|guides|questions)\b/.test(text) || name === "ask", `missing results header in: ${text.slice(0, 200)}`);
     assert(name, 10, /Explore/.test(text) && /Towns/.test(text) && /Businesses/.test(text), "explore links missing");
+    assert(name, "crumbs", /aria-label="Breadcrumb"/.test(raw), "breadcrumbs missing");
+    assert(name, "toggle", /filter-toggle/.test(raw), "mobile filter toggle missing");
   }
 
   if (name === "search") {
-    assert(name, 4, /Category/.test(text) && /Amenities/.test(text) && /Town/.test(text), "facet labels missing");
+    assert(name, 4, /Category/.test(text) && /Tags/.test(text) && /Town/.test(text) && /Subcategory/.test(text), "facet labels missing");
     assert(name, 8, !/Stay\s*<span class="count">/.test(raw), "Stay category still present in filters");
     assert(name, 1, /Search businesses/.test(text), "search placeholder missing");
+    assert(name, "toggle", /filter-toggle/.test(raw), "mobile filter toggle missing");
+    assert(name, "crumbs", /aria-label="Breadcrumb"/.test(raw), "breadcrumbs missing");
   }
   if (name === "stays") {
     assert(name, 4, /Lodging type/.test(text) && /Amenities/.test(text), "stays facets missing");
@@ -72,6 +76,7 @@ for (const [name, rel] of Object.entries(pages)) {
     assert(name, 10, /Gallery/.test(text), "gallery missing");
     assert(name, 10, /Ask the Locals/.test(text), "community Q&A missing");
     assert(name, 10, /Related guides/.test(text), "related guides missing");
+    assert(name, "crumbs", /aria-label="Breadcrumb"/.test(raw), "breadcrumbs missing");
   }
   if (name === "town") {
     assert(name, 11, /Stays in Seaside/.test(text), "town stays missing");

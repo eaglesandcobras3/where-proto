@@ -87,6 +87,7 @@ const mapMarkers = markersFromNames(
   title="Ask locals about 30A"
   description="Local Q and A about visiting or living on 30A."
   active="ask"
+  crumbs={[{ label: "Ask" }]}
 >
   <div class="ask-page">
     <InteriorHero
@@ -113,31 +114,28 @@ const mapMarkers = markersFromNames(
           />
         </TwoPaneMap>
       ) : (
-        <div class="container layout layout--content-forward">
-          
+        <div class="container layout">
+          <div class="filters-col">
+            <ListingFilters
+              surface="ask"
+              eventName="w30a:ask-filters"
+              initialQuery={q}
+              towns={allTownCounts}
+              initialTown={town}
+              townTotal={questions.length}
+              primaryLabel="Topic"
+              primaryKey="topic"
+              primaryOptions={topicCounts}
+              initialPrimary={topic}
+              note={{
+                label: "Leave no trace",
+                body: "Pack out what you pack in, stay on marked paths, and respect dune fencing along 30A.",
+              }}
+              client:load
+            />
+          </div>
 
           <div class="main">
-            <div>
-              <ListingFilters
-                surface="ask"
-                placement="inline"
-                eventName="w30a:ask-filters"
-                initialQuery={q}
-                towns={allTownCounts}
-                initialTown={town}
-                townTotal={questions.length}
-                primaryLabel="Topic"
-                primaryKey="topic"
-                primaryType="chips"
-                primaryOptions={topicCounts}
-                initialPrimary={topic}
-                note={{
-                  label: "Leave no trace",
-                  body: "Pack out what you pack in, stay on marked paths, and respect dune fencing along 30A.",
-                }}
-                client:load
-              />
-            </div>
             <AskComposer towns={exploreTowns} topics={topicOptions} client:visible />
             <AskIndex
               questions={rows}
@@ -257,17 +255,12 @@ const mapMarkers = markersFromNames(
     list-style: disc;
     padding-left: 1.1rem;
   }
-  @media (min-width: 960px) {
+  @media (min-width: 1024px) {
     .layout {
-      grid-template-columns: 15rem minmax(0, 1fr) 16rem;
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
     }
     .rail {
       display: grid;
-    }
-  }
-  @media (max-width: 959px) {
-    .layout :global(.side) {
-      order: -1;
     }
   }
 </style>

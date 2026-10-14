@@ -76,3 +76,19 @@ export function townCountsFor<T>(
     count: items.filter((item) => townOf(item) === town.slug).length,
   }));
 }
+
+export function categoryGroupsFor<T>(
+  groups: { slug: string; name: string; leaves: { slug: string; name: string }[] }[],
+  items: T[],
+  leafOf: (item: T) => string | undefined,
+) {
+  return groups.map((group) => ({
+    slug: group.slug,
+    name: group.name,
+    leaves: group.leaves.map((leaf) => ({
+      slug: leaf.slug,
+      name: leaf.name,
+      count: items.filter((item) => leafOf(item) === leaf.slug).length,
+    })),
+  }));
+}

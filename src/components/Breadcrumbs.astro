@@ -1,0 +1,72 @@
+---
+import type { Crumb } from "../lib/crumbs";
+import { href } from "../lib/href";
+
+interface Props {
+  items: Crumb[];
+}
+
+const { items } = Astro.props;
+const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }, ...items];
+---
+
+<nav class="crumbs" aria-label="Breadcrumb">
+  <ol>
+    {
+      trail.map((item, index) => {
+        const last = index === trail.length - 1;
+        return (
+          <li>
+            {last || !item.path ? (
+              <span class="current" aria-current={last ? "page" : undefined}>
+                {item.label}
+              </span>
+            ) : (
+              <a href={href(item.path)}>{item.label}</a>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<style>
+  .crumbs {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.35rem 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  li {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-width: 0;
+  }
+  li + li::before {
+    content: "/";
+    color: var(--brand-line);
+  }
+  a {
+    color: var(--brand-ink-soft);
+  }
+  a:hover {
+    color: var(--brand-teal);
+  }
+  .current {
+    color: var(--brand-ink);
+    font-weight: var(--font-weight-7);
+    max-width: 18rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

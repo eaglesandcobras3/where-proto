@@ -29,24 +29,19 @@ const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
 const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).concat(guides).filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index).slice(0, 3);
 ---
 
-<BaseLayout title={stay.name} description={stay.summary} active="stays">
+<BaseLayout
+  title={stay.name}
+  description={stay.summary}
+  active="stays"
+  crumbs={[
+    { label: "Stays", path: "/stays" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: stay.name },
+  ]}
+>
   <div class="stay-page">
     <section class="top">
       <div class="container">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/stays")}>Stays</a>
-          {town && (
-            <>
-              <span>/</span>
-              <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-            </>
-          )}
-          <span>/</span>
-          <span class="current">{stay.name}</span>
-        </nav>
-
         <div class="title-row">
           <div>
             <h1>{stay.name}</h1>
@@ -149,22 +144,6 @@ const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).c
     background: white;
     border-bottom: 1px solid var(--brand-line);
     padding: var(--size-5) 0 var(--size-6);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    margin-bottom: var(--size-4);
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-soft);
-  }
-  .crumbs a {
-    color: var(--brand-ink-soft);
-  }
-  .crumbs .current {
-    color: var(--brand-teal);
-    font-weight: var(--font-weight-7);
   }
   .title-row {
     display: flex;

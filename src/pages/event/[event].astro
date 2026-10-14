@@ -54,24 +54,20 @@ const jsonLd = {
 };
 ---
 
-<BaseLayout title={event.name} description={event.summary} active="events" jsonLd={jsonLd}>
+<BaseLayout
+  title={event.name}
+  description={event.summary}
+  active="events"
+  jsonLd={jsonLd}
+  crumbs={[
+    { label: "Events", path: "/events" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: event.name },
+  ]}
+>
   <div class="event-page">
     <section class="hero">
       <div class="container hero__inner">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/events")}>Events</a>
-          {town && (
-            <>
-              <span>/</span>
-              <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-            </>
-          )}
-          <span>/</span>
-          <span class="current">{event.name}</span>
-        </nav>
-
         <div class="badges">
           {event.category && <span class="badge badge--teal">{event.category}</span>}
           {isFree && <span class="badge">Free Admission</span>}
@@ -195,24 +191,6 @@ const jsonLd = {
   .hero__inner {
     display: grid;
     gap: var(--size-4);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a {
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a:hover {
-    color: var(--mint);
-  }
-  .crumbs .current {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
   }
   .badges {
     display: flex;

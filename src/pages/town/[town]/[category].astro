@@ -60,6 +60,9 @@ const filterCategories = [
   { slug: group.slug, name: group.name },
   ...group.leaves.map((item) => ({ slug: item.slug, name: item.name })),
 ];
+const filterGroups = categories
+  .filter((item) => item.slug !== "community")
+  .map(({ slug, name, leaves }) => ({ slug, name, leaves }));
 const moreCategories = categories.filter((item) => item.slug !== group.slug);
 const relatedGuides = guides.filter(
   (item) => item.categorySlug === group.slug || item.townSlug === town.slug,
@@ -126,6 +129,7 @@ const searchHref = href(`/search?town=${town.slug}&category=${leaf?.slug ?? grou
       businesses={displayListings.map(toFilterBusiness)}
       towns={towns}
       categories={filterCategories}
+      categoryGroups={filterGroups}
       tags={tags}
       initialTown={town.slug}
       initialCategory={leaf?.slug ?? group.slug}

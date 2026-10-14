@@ -4,7 +4,6 @@ import PostCard from "../../components/PostCard.astro";
 import QuestionCard from "../../components/QuestionCard.astro";
 import { posts, questions, users } from "../../data/catalog";
 import type { User } from "../../data/types";
-import { href } from "../../lib/href";
 import { formatDate, roleLabel, userHandle } from "../../lib/labels";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -28,9 +27,6 @@ const userQuestions = questions.filter((item) => item.authorUserSlug === user.sl
   crumbs={[{ label: "Profile", path: "/profile" }, { label: userHandle(user.slug) }]}
 >
   <div class="container section">
-    <p class="back">
-      <a href={href("/profile")}>← Back to Profile</a>
-    </p>
     <section class="head">
       <div class="avatar img-placeholder" aria-hidden="true">{user.slug.charAt(0)}</div>
       <div>
@@ -56,13 +52,6 @@ const userQuestions = questions.filter((item) => item.authorUserSlug === user.sl
 </PlaceLayout>
 
 <style>
-  .back {
-    margin: 0 0 var(--size-4);
-  }
-  .back a {
-    color: var(--brand-ink-soft);
-    font-weight: var(--font-weight-6);
-  }
   .head {
     display: flex;
     gap: var(--size-5);

@@ -63,29 +63,19 @@ const claimed = Boolean(business.ownerUserSlug);
 const businessUpdates = updatesForBusiness(business.slug);
 ---
 
-<BaseLayout title={business.name} description={business.summary} active="businesses">
+<BaseLayout
+  title={business.name}
+  description={business.summary}
+  active="businesses"
+  crumbs={[
+    { label: "Businesses", path: "/search" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: business.name },
+  ]}
+>
   <div class="biz-page">
     <section class="hero">
       <div class="container hero__inner">
-        <div class="hero__top">
-          <a class="back" href={href("/search")}>← Back to Businesses</a>
-          <nav class="crumbs" aria-label="Breadcrumb">
-            <a href={href("/")}>Home</a>
-            <span>/</span>
-            <a href={href("/search")}>Businesses</a>
-            {
-              town && (
-                <>
-                  <span>/</span>
-                  <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-                </>
-              )
-            }
-            <span>/</span>
-            <span class="current">{business.name}</span>
-          </nav>
-        </div>
-
         <div class="badges">
           {town && <span class="badge">{town.name} 30A Merchant</span>}
           {area && <span class="badge">{area.name}</span>}
@@ -226,29 +216,6 @@ const businessUpdates = updatesForBusiness(business.slug);
   .hero__inner {
     display: grid;
     gap: var(--size-4);
-  }
-  .hero__top {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-3);
-    align-items: center;
-  }
-  .back,
-  .crumbs a {
-    color: var(--brand-line);
-    font-size: var(--font-size-1);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs .current {
-    color: white;
   }
   .badges {
     display: flex;

@@ -85,6 +85,7 @@ const mapMarkers = markersFromNames(
   title="30A Events & Community Calendar"
   description="Upcoming concerts, markets, wellness, and community gatherings along Scenic Highway 30A."
   active="events"
+  crumbs={[{ label: "Events" }]}
 >
   <div class="events-page">
     <InteriorHero
@@ -126,7 +127,6 @@ const mapMarkers = markersFromNames(
                 townTotal={events.length}
                 primaryLabel="Category"
                 primaryKey="category"
-                primaryType="chips"
                 primaryOptions={categoryCounts}
                 initialPrimary={category}
                 note={{

@@ -58,11 +58,13 @@ const jsonLd = {
   description={question.body}
   active="ask"
   jsonLd={jsonLd}
+  crumbs={[
+    { label: "Ask", path: "/ask" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: question.title },
+  ]}
 >
   <div class="thread">
-    <p class="back">
-      <a href={href("/ask")}>← Back to Ask</a>
-    </p>
     <article class="card">
       <div class="meta">
         <span class="avatar" aria-hidden="true">{author?.slug.charAt(0) ?? "?"}</span>
@@ -129,13 +131,6 @@ const jsonLd = {
     padding: var(--size-6) var(--size-4) var(--size-10);
     display: grid;
     gap: var(--size-4);
-  }
-  .back {
-    margin: 0;
-  }
-  .back a {
-    color: var(--brand-deep);
-    font-weight: var(--font-weight-6);
   }
   .card {
     background: white;

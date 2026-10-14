@@ -50,20 +50,15 @@ const kindLabel = areaKindLabel(area.kind);
   title={`${area.name} in ${town.name}`}
   description={area.summary}
   active="towns"
+  crumbs={[
+    { label: "Towns", path: "/towns" },
+    { label: town.name, path: `/town/${town.slug}` },
+    { label: area.name },
+  ]}
 >
   <div class="area-page">
     <section class="hero">
       <div class="container hero__inner">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/towns")}>Towns</a>
-          <span>/</span>
-          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-          <span>/</span>
-          <span class="current">{area.name}</span>
-        </nav>
-
         <div class="hero__title">
           <div>
             <div class="eyebrow-row">
@@ -256,24 +251,6 @@ const kindLabel = areaKindLabel(area.kind);
   .hero__inner {
     display: grid;
     gap: var(--size-5);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a {
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a:hover {
-    color: var(--mint);
-  }
-  .crumbs .current {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
   }
   .hero__title {
     display: flex;

@@ -42,18 +42,11 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
   title={`${town.name}: stay, eat, and beach on 30A`}
   description={town.summary}
   active="towns"
+  crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
   <div class="town-page">
     <section class="hero">
       <div class="container hero__inner">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/towns")}>Towns</a>
-          <span>/</span>
-          <span class="current">{town.name}</span>
-        </nav>
-
         <div class="hero__title">
           <div>
             <div class="eyebrow-row">
@@ -172,24 +165,6 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
   .hero__inner {
     display: grid;
     gap: var(--size-5);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a {
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a:hover {
-    color: var(--mint);
-  }
-  .crumbs .current {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
   }
   .hero__title {
     display: flex;

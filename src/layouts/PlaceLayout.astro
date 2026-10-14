@@ -1,19 +1,12 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import { href } from "../lib/href";
-
-interface Crumb {
-  label: string;
-  path?: string;
-}
+import type { Crumb } from "../lib/crumbs";
 
 interface Props {
   title: string;
   description?: string;
   active?: string;
   crumbs: Crumb[];
-  /** Explicit back control — defaults to the nearest crumb with a path */
-  back?: { label: string; path: string };
   /** Detail pages default off; list/town hubs pass true when needed */
   showBrowse?: boolean;
   browseTown?: string;
@@ -29,7 +22,6 @@ const {
   description,
   active,
   crumbs,
-  back,
   showBrowse = false,
   browseTown,
   browseCategory,
@@ -38,15 +30,13 @@ const {
   canonicalPath,
   jsonLd,
 } = Astro.props;
-
-const parent = [...crumbs].reverse().find((crumb) => crumb.path);
-const backLink = back ?? (parent?.path ? { label: parent.label, path: parent.path } : undefined);
 ---
 
 <BaseLayout
   title={title}
   description={description}
   active={active}
+  crumbs={crumbs}
   showBrowse={showBrowse}
   browseTown={browseTown}
   browseCategory={browseCategory}
@@ -55,27 +45,5 @@ const backLink = back ?? (parent?.path ? { label: parent.label, path: parent.pat
   canonicalPath={canonicalPath}
   jsonLd={jsonLd}
 >
-  <div class="container place-chrome">
-    {
-      backLink && (
-        <p class="back">
-          <a href={href(backLink.path)}>← Back to {backLink.label}</a>
-        </p>
-      )
-    }
-  </div>
   <slot />
 </BaseLayout>
-
-<style>
-  .place-chrome {
-    padding-top: var(--size-4);
-  }
-  .back {
-    margin: 0;
-  }
-  .back a {
-    font-weight: var(--font-weight-6);
-    color: var(--brand-deep);
-  }
-</style>

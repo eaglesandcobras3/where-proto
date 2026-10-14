@@ -48,6 +48,9 @@ const filterCategories = [
   { slug: group.slug, name: group.name },
   ...group.leaves.map((item) => ({ slug: item.slug, name: item.name })),
 ];
+const filterGroups = categories
+  .filter((item) => item.slug !== "community")
+  .map(({ slug, name, leaves }) => ({ slug, name, leaves }));
 const base = import.meta.env.BASE_URL;
 const searchHref = href(`/search?category=${leaf?.slug ?? group.slug}`);
 ---
@@ -100,6 +103,7 @@ const searchHref = href(`/search?category=${leaf?.slug ?? group.slug}`);
       businesses={displayListings.map(toFilterBusiness)}
       towns={towns}
       categories={filterCategories}
+      categoryGroups={filterGroups}
       tags={tags}
       initialCategory={leaf?.slug ?? group.slug}
       base={base}

@@ -45,21 +45,17 @@ const sections = [
 ];
 ---
 
-<BaseLayout title={guide.title} description={guide.summary} active="guides">
+<BaseLayout
+  title={guide.title}
+  description={guide.summary}
+  active="guides"
+  crumbs={[
+    { label: "Guides", path: "/guides" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: guide.title },
+  ]}
+>
   <div class="guide-page">
-    <section class="crumb-bar">
-      <div class="container crumb-bar__inner">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/guides")}>Guides</a>
-          <span>/</span>
-          <span class="current">{guide.title}</span>
-        </nav>
-        <span class="insider">30A Insider Guide</span>
-      </div>
-    </section>
-
     <div class="container layout">
       <article class="article">
         <div class="badges">
@@ -233,52 +229,6 @@ const sections = [
   .guide-page {
     background: var(--brand-sand);
     color: var(--brand-ink);
-  }
-  .crumb-bar {
-    background: var(--brand-deep);
-    color: white;
-    padding: var(--size-4) 0;
-  }
-  .crumb-bar__inner {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-3);
-    align-items: center;
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a {
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a:hover {
-    color: var(--mint);
-  }
-  .crumbs .current {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
-    max-width: 18rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .insider {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(0, 137, 123, 0.4);
-    background: rgba(0, 137, 123, 0.2);
-    color: var(--mint);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
   }
   .layout {
     display: grid;
