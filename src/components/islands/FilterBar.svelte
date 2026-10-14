@@ -123,11 +123,12 @@
   }
 
   function categoryName(item: Biz) {
-    return (
+    const raw =
       categories.find((entry) => entry.slug === item.leaf)?.name ??
       categories.find((entry) => entry.slug === item.category)?.name ??
-      item.leaf
-    );
+      item.leaf;
+    const parts = raw.split(" / ");
+    return parts[parts.length - 1] ?? raw;
   }
 
   function clear() {
@@ -306,7 +307,7 @@
 
   <div class="listing-grid-split" class:search-grid={externalChrome}>
     {#each results as item}
-      <a class="listing-card" class:search-card={externalChrome} href={path(`/business/${item.slug}`)}>
+      <a class="listing-card" href={path(`/business/${item.slug}`)}>
         <div class="listing-tile">
           <img
             src={cardImageSrc(item.name.charAt(0), "2/3")}
@@ -318,17 +319,10 @@
         </div>
         <div class="body">
           <h3>{item.name}</h3>
-          {#if externalChrome}
-            <p class="meta">{townName(item.town)}</p>
-            <p class="desc">{item.description}</p>
-            <span class="explore">Explore →</span>
-          {:else}
-            <p class="meta">{townName(item.town)} &middot; {categoryName(item)}</p>
-            <p class="desc">{item.description}</p>
-            {#if item.openNow}
-              <span class="open">Open now</span>
-            {/if}
-          {/if}
+          <p class="meta">{townName(item.town)}</p>
+          <p class="cat">{categoryName(item)} in {townName(item.town)}</p>
+          <p class="desc">{item.description}</p>
+          <span class="explore">Explore →</span>
         </div>
       </a>
     {:else}
@@ -378,28 +372,6 @@
   }
   .search-grid {
     gap: var(--size-3);
-  }
-  .search-card {
-    text-decoration: none;
-    color: inherit;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-3);
-    box-shadow: var(--shadow-card);
-    padding: var(--size-3);
-  }
-  .search-card:hover {
-    border-color: var(--brand-line);
-  }
-  .search-card:hover .explore {
-    text-decoration: underline;
-  }
-  .explore {
-    display: inline-block;
-    margin-top: var(--size-2);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
   }
   .filter-panel {
     background: white;
@@ -548,20 +520,24 @@
     color: var(--brand-ink-soft);
     margin-bottom: var(--size-1);
   }
+  .cat {
+    font-size: var(--font-size-1);
+    color: var(--brand-coral);
+    font-weight: var(--font-weight-6);
+    margin-bottom: var(--size-2);
+  }
   .desc {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .open {
+  .explore {
     display: inline-block;
-    font-size: var(--font-size-0);
+    margin-top: var(--size-2);
+    font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
-    background: var(--brand-teal-soft);
-    border-radius: var(--radius-4);
-    padding: 2px var(--size-2);
+    color: var(--brand-deep);
   }
   .empty {
     color: var(--brand-ink-soft);

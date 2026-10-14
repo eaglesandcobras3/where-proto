@@ -19,6 +19,7 @@ const pages = {
   guides: "guides/index.html",
   ask: "ask/index.html",
   town: "town/seaside/index.html",
+  townCategory: "town/seaside/restaurants/index.html",
   business: "business/beachy-bean-coffee/index.html",
   stay: "stay/watercolor-inn/index.html",
   event: "event/alys-sunset-yoga/index.html",
@@ -80,7 +81,15 @@ for (const [name, rel] of Object.entries(pages)) {
   }
   if (name === "town") {
     assert(name, 11, /Stays in Seaside/.test(text), "town stays missing");
+    assert(name, "cats", /Browse Seaside/.test(text) && /Food & Drink/.test(text), "town business categories missing");
   }
+  if (name === "townCategory") {
+    assert(name, "crumbs", /aria-label="Breadcrumb"/.test(raw), "breadcrumbs missing");
+    assert(name, "heading", /Restaurants in Seaside/.test(text), "subpage heading missing");
+    assert(name, "cards", /Bud & Alley's/.test(text) && /Explore/.test(text), "business cards missing");
+  }
+
+  assert(name, "noback", !/← Back/.test(text), "back link leftover");
 
   for (const hit of ratingHits) {
     assert(name, 13, !text.includes(hit), `rating leftover: ${hit}`);
