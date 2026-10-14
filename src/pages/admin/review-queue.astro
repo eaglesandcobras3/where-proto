@@ -1,14 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { reviewQueue } from "../../data/catalog";
-import { href } from "../../lib/href";
 ---
 
-<BaseLayout title="Review queue">
+<BaseLayout
+  title="Review queue"
+  crumbs={[{ label: "Admin", path: "/admin" }, { label: "Review queue" }]}
+>
   <div class="container section">
-    <p><a href={href("/admin")}>Admin</a></p>
-    <Breadcrumbs onDark={false} />
     <h1>Review queue</h1>
     <div class="table-wrap">
     <table>

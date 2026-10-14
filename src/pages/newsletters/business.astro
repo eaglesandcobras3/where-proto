@@ -4,7 +4,7 @@ import PageHeader from "../../components/PageHeader.astro";
 import NewsletterForm from "../../components/islands/NewsletterForm.svelte";
 ---
 
-<BaseLayout title="Business newsletter">
+<BaseLayout title="Business newsletter" crumbs={[{ label: "Business newsletter" }]}>
   <div class="container section">
     <PageHeader title="Business newsletter" lede="Owner notes on listing updates and events. Prototype subscribe only." />
     <NewsletterForm audience="business" client:visible />

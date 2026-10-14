@@ -1,11 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
 ---
 
-<BaseLayout title="Create account">
+<BaseLayout title="Create account" crumbs={[{ label: "Sign up" }]}>
   <div class="container section">
-    <Breadcrumbs onDark={false} />
     <p>Create an account to save favorites, ask questions, and manage a business.</p>
   </div>
 </BaseLayout>

@@ -1,12 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { href } from "../../lib/href";
 ---
 
-<BaseLayout title="Legal">
+<BaseLayout title="Legal" crumbs={[{ label: "Legal" }]}>
   <div class="container section article">
-    <Breadcrumbs onDark={false} />
     <h1>Legal</h1>
     <ul>
       <li><a href={href("/legal/terms")}>Terms</a></li>
