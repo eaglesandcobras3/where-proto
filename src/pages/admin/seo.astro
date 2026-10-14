@@ -1,14 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import { seoOverrides } from "../../data/catalog";
-import { href } from "../../lib/href";
 ---
 
-<BaseLayout title="SEO overrides">
+<BaseLayout
+  title="SEO overrides"
+  crumbs={[{ label: "Admin", path: "/admin" }, { label: "SEO overrides" }]}
+>
   <div class="container section">
-    <p><a href={href("/admin")}>Admin</a></p>
-    <Breadcrumbs onDark={false} />
     <h1>SEO overrides</h1>
     <div class="table-wrap">
     <table>

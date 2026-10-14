@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import Breadcrumbs from "../../components/Breadcrumbs.astro";
 import {
   areas,
   businesses,
@@ -14,7 +13,6 @@ import {
   towns,
   updates,
 } from "../../data/catalog";
-import { href } from "../../lib/href";
 
 const rows = [
   ["Towns", towns.length],
@@ -31,10 +29,8 @@ const rows = [
 ];
 ---
 
-<BaseLayout title="Entities">
+<BaseLayout title="Entities" crumbs={[{ label: "Admin", path: "/admin" }, { label: "Entities" }]}>
   <div class="container section">
-    <p><a href={href("/admin")}>Admin</a></p>
-    <Breadcrumbs onDark={false} />
     <h1>Entities</h1>
     <p>Catalog counts from the mock data. Most do not have admin CRUD yet.</p>
     <ul class="list">

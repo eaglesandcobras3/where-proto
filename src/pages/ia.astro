@@ -1,6 +1,5 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Breadcrumbs from "../components/Breadcrumbs.astro";
 import { href } from "../lib/href";
 
 const routes = [
@@ -57,9 +56,8 @@ const routes = [
 ];
 ---
 
-<BaseLayout title="Route scaffold">
+<BaseLayout title="Route scaffold" crumbs={[{ label: "Routes" }]}>
   <div class="container section">
-    <Breadcrumbs onDark={false} />
     <h1>Route scaffold</h1>
     <p>No /businesses hub. /search is the finder. Town × category pages are the indexable leaves.</p>
     <ol>

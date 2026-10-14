@@ -1,11 +1,13 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import Breadcrumbs from "../components/Breadcrumbs.astro";
 ---
 
-<BaseLayout title="About WhereTo30A" description="A local family guide to 30A and Florida's Emerald Coast.">
+<BaseLayout
+  title="About WhereTo30A"
+  description="A local family guide to 30A and Florida's Emerald Coast."
+  crumbs={[{ label: "About" }]}
+>
   <div class="container section article">
-    <Breadcrumbs onDark={false} />
     <h1>About WhereTo30A</h1>
     <p class="lede">
       WhereTo30A sits between Google and Facebook: a structured directory with the soul of a local community.
