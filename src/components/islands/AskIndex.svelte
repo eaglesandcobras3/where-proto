@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ListingToolbar from "./ListingToolbar.svelte";
+
   interface Row {
     slug: string;
     title: string;
@@ -30,7 +32,7 @@
   let town = $state(initialTown);
   let topic = $state(initialTopic);
   let query = $state(initialQuery);
-  let sort = $state<"trending" | "latest" | "unanswered" | "top">("trending");
+  let sort = $state<"trending" | "latest" | "unanswered">("trending");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -71,7 +73,7 @@
         return true;
       })
       .toSorted((a, b) => {
-        if (sort === "top" || sort === "trending") return b.answers - a.answers || b.createdAt.localeCompare(a.createdAt);
+        if (sort === "trending") return b.answers - a.answers || b.createdAt.localeCompare(a.createdAt);
         return b.createdAt.localeCompare(a.createdAt);
       }),
   );
@@ -90,12 +92,9 @@
 </script>
 
 <section class="feed">
-  <div class="sort" aria-label="Sort questions">
-    <span class="sort__label">Sort:</span>
-    <button class:active={sort === "trending"} type="button" onclick={() => (sort = "trending")}>Trending</button>
-    <button class:active={sort === "latest"} type="button" onclick={() => (sort = "latest")}>Latest</button>
-    <button class:active={sort === "unanswered"} type="button" onclick={() => (sort = "unanswered")}>Unanswered</button>
-    <button class:active={sort === "top"} type="button" onclick={() => (sort = "top")}>Top Rated</button>
+  
+  <div>
+    <ListingToolbar surface="ask" count={rows.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 
   <div class="list">

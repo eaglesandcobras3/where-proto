@@ -2,8 +2,13 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntityText from "../../components/EntityText.astro";
 import ReactionBar from "../../components/ReactionBar.astro";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import HappeningHere from "../../components/HappeningHere.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
 import GuideSaveSpots from "../../components/islands/GuideSaveSpots.svelte";
-import { businessesForTown, commentsFor, guides, reactionsFor, townBySlug } from "../../data/catalog";
+import { businessesForTown, commentsFor, events, guides, photosFor, reactionsFor, townBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
@@ -23,6 +28,8 @@ const town = guide.townSlug ? townBySlug(guide.townSlug) : undefined;
 const comments = commentsFor("guide", guide.slug);
 const reactions = reactionsFor("guide", guide.slug);
 const related = guides.filter((item) => item.slug !== guide.slug).slice(0, 3);
+const guidePhotos = photosFor("town", guide.townSlug ?? "");
+const townEvents = guide.townSlug ? events.filter((item) => item.townSlug === guide.townSlug) : [];
 const minutes = 5 + (guide.title.length % 8);
 const isFeatured = guide.slug === "first-timers-guide";
 const guideSpots = (town ? businessesForTown(town.slug) : []).slice(0, 6).map((biz) => ({
@@ -181,57 +188,42 @@ const sections = [
           )
         }
 
-        <div class="ask-cta">
-          <div>
-            <p class="ask-cta__title">Have a specific question about your trip?</p>
-            <p>Ask Capt. Dave and the locals in the community hub.</p>
-          </div>
-          <a class="ask-cta__btn" href={href("/ask")}>+ Ask the Locals</a>
+        
+        <div>
+          <EntityGallery photos={guidePhotos} fallbackName={guide.title} />
+          <HappeningHere events={townEvents} placeName={town?.name ?? "30A"} townSlug={guide.townSlug} />
+          <CommunityQA
+            question={`What should first-timers take from “${guide.title}”?`}
+            answer="Start with a town, not a hotel dump. Confirm beach access, carts, and dinner waits before you lock the day."
+          />
+          <RelatedGuides guides={related} />
+          <section class="section">
+            <h2>Similar nearby</h2>
+            <ul class="related">
+              {related.map((item) => (
+                <li>
+                  <a href={href(`/guide/${item.slug}`)}>{item.title}</a>
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
       </article>
 
       <aside class="rail">
-        <section class="widget">
-          <p class="widget__label">Guide Directory</p>
-          <ol class="toc">
-            {sections.map((item) => (
-              <li><a href={`#${item.id}`}>{item.label}</a></li>
-            ))}
-          </ol>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">About the author</p>
-          <div class="author">
-            <span class="avatar" aria-hidden="true">{isFeatured ? "CD" : "ED"}</span>
-            <div>
-              <strong>{isFeatured ? "Capt. Dave" : "Local Editor"}</strong>
-              <span>South Walton contributor</span>
-            </div>
-          </div>
-          <a class="ghost" href={href("/ask")}>Ask a travel question</a>
-        </section>
-
-        <section class="widget cta">
-          <p class="widget__label">Pocket PDF</p>
-          <p class="cta__copy">Flags, LSV rules, and top accesses on one page.</p>
-          <a class="cta__btn" href={href("/guides")}>Download free sheet</a>
-        </section>
-
-        {
-          related.length > 0 && (
-            <section class="widget">
-              <p class="widget__label">Recommended next</p>
-              <ul class="related">
-                {related.map((item) => (
-                  <li>
-                    <a href={href(`/guide/${item.slug}`)}>{item.title}</a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
+        
+        <div>
+          <section class="widget">
+            <p class="widget__label">Location</p>
+            <p>{town?.name ?? "Scenic 30A"}</p>
+          </section>
+          <section class="widget cta">
+            <p class="widget__label">Download sheet</p>
+            <p class="cta__copy">Flags, LSV rules, and top accesses on one page.</p>
+            <a class="cta__btn" href={href("/guides")}>Download sheet</a>
+          </section>
+          <ExploreLinks current="guides" townSlug={guide.townSlug} />
+        </div>
       </aside>
     </div>
   </div>

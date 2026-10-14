@@ -1,0 +1,54 @@
+---
+import { href } from "../lib/href";
+
+interface Props {
+  question: string;
+  answer: string;
+}
+
+const { question, answer } = Astro.props;
+---
+
+<section class="panel community-qa">
+  <div class="panel__head">
+    <h2>Ask the Locals</h2>
+    <a href={href("/ask")}>Ask a question</a>
+  </div>
+  <article class="qa">
+    <p class="qa__q">{question}</p>
+    <p class="qa__a">
+      <strong>Local tip:</strong>
+      {answer}
+    </p>
+  </article>
+</section>
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-3);
+  }
+  .qa__q {
+    margin: 0 0 0.45rem;
+    font-weight: var(--font-weight-7);
+  }
+  .qa__a {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+</style>

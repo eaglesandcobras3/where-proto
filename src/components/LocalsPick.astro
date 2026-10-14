@@ -1,0 +1,53 @@
+---
+import { href } from "../lib/href";
+
+interface Props {
+  name: string;
+  quote: string;
+  byline: string;
+  href: string;
+}
+
+const { name, quote, byline, href: path } = Astro.props;
+---
+
+<section class="widget pick">
+  <p class="widget__label">Locals' pick</p>
+  <p class="quote">“{quote}”</p>
+  <p class="by">{byline}</p>
+  <a href={href(path)}>Explore {name} →</a>
+</section>
+
+<style>
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .quote {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    line-height: 1.55;
+  }
+  .by {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  a {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+</style>

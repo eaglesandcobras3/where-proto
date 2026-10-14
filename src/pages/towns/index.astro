@@ -2,12 +2,11 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
 import Corridor from "../../components/Corridor.astro";
-import MapToggle from "../../components/MapToggle.astro";
-import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import TownsHeroSearch from "../../components/islands/TownsHeroSearch.svelte";
-import TownsSidebarFilters from "../../components/islands/TownsSidebarFilters.svelte";
 import TownsList from "../../components/islands/TownsList.svelte";
+import ListingFilters from "../../components/islands/ListingFilters.svelte";
+import ListingRail from "../../components/ListingRail.astro";
+import LocalsPick from "../../components/LocalsPick.astro";
 import { businessesForTown, towns } from "../../data/catalog";
 import { townView } from "../../lib/town-view";
 import { href } from "../../lib/href";
@@ -82,6 +81,20 @@ const beachTypes = [
   { slug: "mixed", name: "Mixed public & private" },
 ];
 
+const regionCounts = [
+  { slug: "west", name: "West 30A", count: townItems.filter((item) => item.region === "west").length },
+  { slug: "central", name: "Central 30A", count: townItems.filter((item) => item.region === "central").length },
+  { slug: "east", name: "East 30A", count: townItems.filter((item) => item.region === "east").length },
+];
+const vibeCounts = vibes.map((item) => ({
+  ...item,
+  count: townItems.filter((town) => town.vibeSlug === item.slug).length,
+}));
+const beachCounts = beachTypes.map((item) => ({
+  ...item,
+  count: townItems.filter((town) => town.beachSlug === item.slug).length,
+}));
+
 const mapMarkers = markersFromNames(
   townItems.map((item) => ({
     name: item.name,
@@ -101,9 +114,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Towns & Neighborhoods"
       lede="Discover the distinctive architectural character, beach access rules, and vibrant town centers stretching across Scenic Highway 30A."
-    >
-      <TownsHeroSearch initialQuery={q} initialRegion={region} client:load />
-    </InteriorHero>
+    />
 
     <Corridor />
 
@@ -127,7 +138,25 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout">
-          <TownsSidebarFilters vibes={vibes} beachTypes={beachTypes} initialVibe={vibe} client:load />
+          <div class="filters-col">
+            
+            <div>
+              <ListingFilters
+                surface="towns"
+                eventName="w30a:towns-filters"
+                initialQuery={q}
+                primaryLabel="Region"
+                primaryKey="region"
+                primaryOptions={regionCounts}
+                initialPrimary={region}
+                secondaries={[
+                  { key: "vibe", label: "Vibe", options: vibeCounts },
+                  { key: "beach", label: "Beach access", options: beachCounts },
+                ]}
+                client:load
+              />
+            </div>
+          </div>
 
           <TownsList
             towns={townItems}
@@ -139,13 +168,18 @@ const mapMarkers = markersFromNames(
           />
 
           <aside class="rail">
-            <MapToggle title="30A Towns Map" href={mapHref} />
-            <ContributeCard kind="business" />
-
-            <section class="widget">
-              <p class="widget__label">Other stories</p>
-              <a class="story" href={href("/guide/first-timers-guide")}>First Timer’s Guide to 30A →</a>
-            </section>
+            
+            <div>
+              <ListingRail mapTitle="Towns map" mapHref={mapHref} contributeKind="business" current="towns">
+                <LocalsPick
+                  slot="discovery"
+                  name="Seaside"
+                  quote="Start on the square, then walk a town in each direction before you lock a stay."
+                  byline="Capt. Dave · Seagrove Resident"
+                  href="/town/seaside"
+                />
+              </ListingRail>
+            </div>
           </aside>
         </div>
       )

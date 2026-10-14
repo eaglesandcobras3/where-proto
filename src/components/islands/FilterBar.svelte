@@ -1,5 +1,6 @@
 <script lang="ts">
   import { cardImageSrc, listingSizes } from "../../lib/card-image";
+  import ListingToolbar from "./ListingToolbar.svelte";
 
   interface Biz {
     slug: string;
@@ -53,6 +54,7 @@
   let tag = $state(initialTag);
   let openNow = $state(initialOpenNow);
   let query = $state(initialQuery);
+  let sort = $state<"recommended" | "az">("recommended");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -60,17 +62,19 @@
   }
 
   let results = $derived(
-    businesses.filter((item) => {
-      if (town && item.town !== town) return false;
-      if (category && item.category !== category && item.leaf !== category) return false;
-      if (tag && !item.tags.includes(tag)) return false;
-      if (openNow && !item.openNow) return false;
-      if (query.trim()) {
-        const hay = `${item.name} ${item.description} ${item.town} ${item.leaf}`.toLowerCase();
-        if (!hay.includes(query.trim().toLowerCase())) return false;
-      }
-      return true;
-    }),
+    businesses
+      .filter((item) => {
+        if (town && item.town !== town) return false;
+        if (category && item.category !== category && item.leaf !== category) return false;
+        if (tag && !item.tags.includes(tag)) return false;
+        if (openNow && !item.openNow) return false;
+        if (query.trim()) {
+          const hay = `${item.name} ${item.description} ${item.town} ${item.leaf}`.toLowerCase();
+          if (!hay.includes(query.trim().toLowerCase())) return false;
+        }
+        return true;
+      })
+      .toSorted((a, b) => (sort === "az" ? a.name.localeCompare(b.name) : 0)),
   );
 
   function townName(slug: string) {
@@ -169,13 +173,9 @@
   {/if}
 
   {#if externalChrome}
-    <div class="results-head">
-      <p class="count" aria-live="polite">
-        {results.length} {results.length === 1 ? "Result" : "Results"}
-      </p>
-      <p class="sort">
-        Sort by: <span>Recommended Insider</span>
-      </p>
+    
+    <div>
+      <ListingToolbar surface="search" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
     </div>
   {:else}
     <p class="count" aria-live="polite">

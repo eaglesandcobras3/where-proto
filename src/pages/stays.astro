@@ -1,12 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import InteriorHero from "../components/InteriorHero.astro";
-import MapToggle from "../components/MapToggle.astro";
-import ContributeCard from "../components/ContributeCard.astro";
 import TwoPaneMap from "../components/TwoPaneMap.astro";
-import StaysHeroSearch from "../components/islands/StaysHeroSearch.svelte";
-import StaysSidebarFilters from "../components/islands/StaysSidebarFilters.svelte";
 import StaysList from "../components/islands/StaysList.svelte";
+import ListingFilters from "../components/islands/ListingFilters.svelte";
+import ListingRail from "../components/ListingRail.astro";
+import { parsePriceValue, townCountsFor } from "../lib/unified-layout";
 import { isEnabled } from "../config/flags";
 import { stays, towns } from "../data/catalog";
 import { href } from "../lib/href";
@@ -81,6 +80,7 @@ const stayItems = stays.map((stay) => {
     summary: stay.summary,
     sleeps: stay.sleeps,
     ...meta,
+    priceValue: parsePriceValue(meta.fromPrice),
   };
 });
 
@@ -91,6 +91,21 @@ const townCounts = towns
     count: stays.filter((stay) => stay.townSlug === item.slug).length,
   }))
   .filter((item) => item.count > 0);
+const allTownCounts = townCountsFor(towns, stays, (stay) => stay.townSlug);
+const lodgingCounts = lodgingTypes.map((item) => ({
+  ...item,
+  count: stayItems.filter((stay) => stay.kind === item.slug).length,
+}));
+const amenityCounts = amenities.map((item) => ({
+  ...item,
+  count: stayItems.filter((stay) => {
+    if (item.slug === "lsv") return stay.sleeps >= 6;
+    if (item.slug === "pool") return /inn|pearl|watercolor/i.test(stay.name);
+    if (item.slug === "boardwalk") return stay.kind !== "inn";
+    if (item.slug === "pets") return stay.kind === "cottage" || stay.sleeps >= 6;
+    return false;
+  }).length,
+}));
 
 const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
 const mapMarkers = markersFromNames(
@@ -111,16 +126,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Stays & Vacation Rentals"
       lede="Boutique inns, walkable cottages, and direct-book homes inspected for the corridor — filtered by town, guests, and how you want to move around."
-    >
-      <StaysHeroSearch
-        towns={exploreTowns}
-        guestOptions={guestOptions}
-        initialTown={town}
-        initialGuests={guests}
-        initialQuery={q}
-        client:load
-      />
-    </InteriorHero>
+    />
 
     {
       mapView ? (
@@ -147,15 +153,32 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout">
-          <StaysSidebarFilters
-            towns={townCounts}
-            lodgingTypes={lodgingTypes}
-            amenities={amenities}
-            initialTown={town}
-            initialKind={kind}
-            total={stays.length}
-            client:load
-          />
+          <div class="filters-col">
+            
+            <div>
+              <ListingFilters
+                surface="stays"
+                eventName="w30a:stays-filters"
+                extraSearch="guests"
+                guestOptions={guestOptions}
+                initialGuests={guests}
+                initialQuery={q}
+                towns={allTownCounts}
+                initialTown={town}
+                townTotal={stays.length}
+                primaryLabel="Lodging type"
+                primaryKey="kind"
+                primaryOptions={lodgingCounts}
+                initialPrimary={kind}
+                secondaries={[{ key: "amenity", label: "Amenities", options: amenityCounts }]}
+                note={{
+                  label: "Walton County rules",
+                  body: "Short-term rental parking and LSV ordinances are enforced. Beach gear must be cleared nightly under Leave No Trace.",
+                }}
+                client:load
+              />
+            </div>
+          </div>
 
           {isEnabled("stays") ? (
             <StaysList
@@ -172,16 +195,18 @@ const mapMarkers = markersFromNames(
           )}
 
           <aside class="rail">
-            <MapToggle title="30A Stays Map" href={mapHref} />
-            <ContributeCard kind="stay" />
-
-            <section class="widget">
-              <p class="widget__label">Direct Concierge</p>
-              <p class="copy">
-                Book verified properties with clear town rules, walkability, and host notes — not
-                anonymous inventory dumps.
-              </p>
-            </section>
+            
+            <div>
+              <ListingRail mapTitle="Stays map" mapHref={mapHref} contributeKind="stay" current="stays">
+                <section class="widget" slot="discovery">
+                  <p class="widget__label">Concierge</p>
+                  <p class="copy">
+                    Book verified properties with clear town rules, walkability, and host notes — not
+                    anonymous inventory dumps.
+                  </p>
+                </section>
+              </ListingRail>
+            </div>
           </aside>
         </div>
       )

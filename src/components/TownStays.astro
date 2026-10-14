@@ -1,0 +1,57 @@
+---
+import StayCard from "./StayCard.astro";
+import { href } from "../lib/href";
+import type { Stay } from "../data/types";
+
+interface Props {
+  stays: Stay[];
+  townName: string;
+  townSlug: string;
+}
+
+const { stays, townName, townSlug } = Astro.props;
+---
+
+<section class="panel town-stays">
+  <div class="panel__head">
+    <h2>Stays in {townName}</h2>
+    <a href={href(`/stays?town=${townSlug}`)}>All stays</a>
+  </div>
+  {
+    stays.length > 0 ? (
+      <div class="listing-grid">
+        {stays.map((stay) => (
+          <StayCard stay={stay} />
+        ))}
+      </div>
+    ) : (
+      <p class="empty">No stays listed for {townName} yet.</p>
+    )
+  }
+</section>
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-3);
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+</style>

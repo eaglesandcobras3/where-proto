@@ -1,6 +1,12 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { events, stays, townBySlug } from "../../data/catalog";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import HappeningHere from "../../components/HappeningHere.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
+import StayCard from "../../components/StayCard.astro";
+import { events, guides, photosFor, stays, townBySlug } from "../../data/catalog";
 import type { Stay } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
@@ -19,6 +25,8 @@ const town = townBySlug(stay.townSlug);
 const related = stays.filter((item) => item.slug !== stay.slug).slice(0, 3);
 const nearbyEvents = events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
 const isInn = /hotel|inn/i.test(stay.name);
+const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
+const relatedGuides = guides.filter((item) => item.townSlug === stay.townSlug).concat(guides).filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index).slice(0, 3);
 ---
 
 <BaseLayout title={stay.name} description={stay.summary} active="stays">
@@ -43,14 +51,14 @@ const isInn = /hotel|inn/i.test(stay.name);
           <div>
             <h1>{stay.name}</h1>
             <p class="meta">
-              4.8 local rating
+              
               {town && (
                 <>
-                  {" · "}
                   <a href={href(`/town/${town.slug}`)}>{town.name}</a>
+                  {" · "}
                 </>
               )}
-              {" · "}Sleeps {stay.sleeps}
+              Sleeps {stay.sleeps}
             </p>
           </div>
           <div class="title-actions">
@@ -69,155 +77,64 @@ const isInn = /hotel|inn/i.test(stay.name);
           </div>
         </div>
 
-        <div class="gallery">
-          <div class="gallery__main img-placeholder" aria-hidden="true">{stay.name.charAt(0)}</div>
-          <div class="gallery__grid">
-            <div class="img-placeholder" aria-hidden="true">1</div>
-            <div class="img-placeholder" aria-hidden="true">2</div>
-            <div class="img-placeholder" aria-hidden="true">3</div>
-            <div class="img-placeholder" aria-hidden="true">4</div>
-          </div>
-        </div>
+        
       </div>
     </section>
 
     <div class="container layout">
+      
+
       <div class="main">
-        <section class="quick">
-          <div>
-            <p class="label">{isInn ? "Rooms" : "Home"}</p>
-            <p>{isInn ? "Suites & rooms" : `Sleeps ${stay.sleeps}`}</p>
-          </div>
-          <div>
-            <p class="label">Walkability</p>
-            <p>Highly walkable</p>
-          </div>
-          <div>
-            <p class="label">Vibe</p>
-            <p>{isInn ? "Adults & romantic" : "Families & groups"}</p>
-          </div>
-          <div>
-            <p class="label">Orientation</p>
-            <p>Pedestrian town core</p>
-          </div>
-        </section>
-
-        <section class="panel cert">
-          <p class="cert__label">WhereTo30A Guild Lodging Certified</p>
-          <p>Inspected for walkability, guest clarity, and honest corridor fit — not anonymous marketplace filler.</p>
-        </section>
-
         <section class="panel">
           <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
           <p>{stay.summary}</p>
-          <p>
-            Use this stay as a home base for beach days, dinners in the square, and short hops along Scenic 30A. Confirm
-            parking, carts, and quiet-hour rules for {town?.name ?? "the town"} before you arrive.
-          </p>
         </section>
-
+        <EntityGallery photos={stayPhotos} fallbackName={stay.name} />
         <section class="panel">
-          <h2>Curated perks &amp; amenities</h2>
+          <h2>Amenities</h2>
           <div class="perks">
             <div><strong>Beach setups</strong><span>Chairs &amp; umbrellas guidance</span></div>
             <div><strong>Bikes / carts</strong><span>Ask host about LSV rules</span></div>
             <div><strong>Town access</strong><span>Walkable to dining &amp; shops</span></div>
-            <div><strong>Local insider</strong><span>Concierge-style tips nearby</span></div>
-            <div><strong>Quiet hours</strong><span>Respect neighborhood rhythm</span></div>
-            <div><strong>Direct book</strong><span>Clear host communication</span></div>
+            <div><strong>Sleeps {stay.sleeps}</strong><span>{town?.name ?? "30A"}</span></div>
           </div>
         </section>
-
-        <section class="alert">
-          <p class="alert__label">Local tips &amp; regulations</p>
-          <p>
-            Beach wristbands, pedestrian cores, and evening quiet hours vary by town. Clear beach gear nightly and park only
-            where posted.
-          </p>
-        </section>
-
+        <HappeningHere events={nearbyEvents} placeName={town?.name ?? "30A"} townSlug={stay.townSlug} />
+        <CommunityQA
+          question="Are golf carts allowed for getting to the beach from this stay?"
+          answer="Cart rules differ by town center. Ask your host for the latest LSV guidance and where overnight parking is allowed."
+        />
+        <RelatedGuides guides={relatedGuides} />
         <section class="panel">
-          <h2>Neighborhood &amp; walking distances</h2>
-          <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
-          <div class="walks">
-            <span>Beach access nearby</span>
-            <span>Town square stroll</span>
-            <span>Dining within minutes</span>
-            <span>Trail / bike path hop</span>
+          <h2>Similar nearby</h2>
+          <div class="listing-grid">
+            {related.map((item) => (
+              <StayCard stay={item} />
+            ))}
           </div>
-        </section>
-
-        {
-          nearbyEvents.length > 0 && (
-            <section class="panel">
-              <div class="panel__head">
-                <h2>Happening around {town?.name ?? "30A"}</h2>
-                <a href={href("/events")}>View all events</a>
-              </div>
-              <ul class="events">
-                {nearbyEvents.map((item) => (
-                  <li>
-                    <a href={href(`/event/${item.slug}`)}>
-                      <span>{item.when}</span>
-                      <strong>{item.name}</strong>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
-
-        <section class="panel ask">
-          <div class="panel__head">
-            <h2>Ask the Locals</h2>
-            <a href={href("/ask")}>Ask a new question</a>
-          </div>
-          <article class="qa">
-            <p class="qa__q">Are golf carts allowed for getting to the beach from this stay?</p>
-            <p class="qa__a">
-              <strong>Local tip:</strong> Cart rules differ by town center. Ask your host for the latest LSV guidance and
-              where overnight parking is allowed.
-            </p>
-          </article>
         </section>
       </div>
 
       <aside class="rail">
-        <section class="widget book">
-          <p class="widget__label">Book this stay</p>
-          <p class="book__meta">{town?.name ?? "30A"} · Sleeps {stay.sleeps}</p>
-          {
-            stay.businessSlug ? (
-              <a class="book__btn" href={href(`/business/${stay.businessSlug}`)}>
-                Book on official website
-              </a>
-            ) : (
-              <a class="book__btn" href={href("/ask")}>
-                Ask about this stay
-              </a>
-            )
-          }
-          <a class="ghost" href={href(`/town/${stay.townSlug}/vacation-rentals`)}>More rentals in town</a>
-        </section>
-
-        {
-          related.length > 0 && (
-            <section class="widget">
-              <p class="widget__label">Similar 30A stays</p>
-              <ul class="related">
-                {related.map((item) => (
-                  <li>
-                    <a href={href(`/stay/${item.slug}`)}>
-                      <strong>{item.name}</strong>
-                      <span>Sleeps {item.sleeps} · Explore stay</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
+        
+        <div>
+          <section class="widget">
+            <p class="widget__label">Location</p>
+            <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
+          </section>
+          <section class="widget book">
+            <p class="widget__label">Book this stay</p>
+            <p class="book__meta">{town?.name ?? "30A"} · Sleeps {stay.sleeps}</p>
+            {
+              stay.businessSlug ? (
+                <a class="book__btn" href={href(`/business/${stay.businessSlug}`)}>Book this stay</a>
+              ) : (
+                <a class="book__btn" href={href("/ask")}>Ask about this stay</a>
+              )
+            }
+          </section>
+          <ExploreLinks current="stays" townSlug={stay.townSlug} />
+        </div>
       </aside>
     </div>
   </div>

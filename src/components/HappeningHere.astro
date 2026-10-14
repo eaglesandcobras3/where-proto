@@ -1,0 +1,77 @@
+---
+import { href } from "../lib/href";
+import type { EventItem } from "../data/types";
+
+interface Props {
+  events: EventItem[];
+  placeName: string;
+  townSlug?: string;
+}
+
+const { events, placeName, townSlug } = Astro.props;
+---
+
+{
+  events.length > 0 && (
+    <section class="panel happening-here">
+      <div class="panel__head">
+        <h2>Happening here</h2>
+        <a href={href(townSlug ? `/events?town=${townSlug}` : "/events")}>All events</a>
+      </div>
+      <ul>
+        {events.map((event) => (
+          <li>
+            <a href={href(`/event/${event.slug}`)}>
+              <span>{event.when}</span>
+              <strong>{event.name}</strong>
+              <em>{event.venue ?? placeName}</em>
+            </a>
+          </li>
+        ))}
+      </ul>
+    </section>
+  )
+}
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-3);
+  }
+  ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.65rem;
+  }
+  a {
+    display: grid;
+    gap: 0.15rem;
+    color: inherit;
+  }
+  span,
+  em {
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+    font-style: normal;
+  }
+  strong {
+    font-size: var(--font-size-1);
+  }
+</style>

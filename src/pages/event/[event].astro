@@ -1,7 +1,10 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PhotoGrid from "../../components/PhotoGrid.astro";
-import { businessBySlug, events, photosFor, townBySlug } from "../../data/catalog";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
+import { businessBySlug, events, guides, photosFor, townBySlug } from "../../data/catalog";
 import type { EventItem } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
@@ -20,6 +23,11 @@ const town = event.townSlug ? townBySlug(event.townSlug) : undefined;
 const business = event.businessSlug ? businessBySlug(event.businessSlug) : undefined;
 const photos = photosFor("event", event.slug);
 const related = events.filter((item) => item.slug !== event.slug).slice(0, 3);
+const relatedGuides = guides
+  .filter((item) => !event.townSlug || item.townSlug === event.townSlug)
+  .concat(guides)
+  .filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index)
+  .slice(0, 3);
 const isFree = (event.price ?? "").toLowerCase().includes("free");
 const hostName = business?.name ?? (town ? `${town.name} Events` : "Community host");
 const jsonLd = {
@@ -115,140 +123,60 @@ const jsonLd = {
     </section>
 
     <div class="container layout">
+      
+
       <div class="main">
-        <div class="hero-media img-placeholder" aria-hidden="true">
-          <span class="hero-media__tag">Weekly community tradition</span>
-          <div class="hero-media__caption">
-            <span>Live Gulf weather</span>
-            <p>{event.venue ?? "Scenic 30A"} · {town?.name ?? "South Walton"}</p>
-          </div>
-        </div>
-
-        <section class="panel glance">
-          <h2>At a glance</h2>
-          <div class="glance__grid">
-            <div>
-              <p class="label">Cost</p>
-              <p>{event.price ?? "See host"}</p>
-            </div>
-            <div>
-              <p class="label">Bring</p>
-              <p>{event.category === "Wellness" ? "Mat & water" : "Comfortable shoes"}</p>
-            </div>
-            <div>
-              <p class="label">Parking</p>
-              <p>{town?.name ?? "Nearby lots"}</p>
-            </div>
-            <div>
-              <p class="label">Weather</p>
-              <p>Rain plan active</p>
-            </div>
-          </div>
-        </section>
-
         <section class="panel">
           <h2>About the gathering</h2>
           <p>{event.summary}</p>
-          <p>
-            Arrive a few minutes early, follow host guidance for seating and carts, and check today’s beach flag if you’re
-            pairing the event with Gulf time.
-          </p>
-          {
-            event.category === "Wellness" && (
-              <ol class="timeline">
-                <li><span>5:15 PM</span> Arrival & lawn settle-in</li>
-                <li><span>5:30 PM</span> Sunset flow begins</li>
-                <li><span>6:20 PM</span> Golden-hour close</li>
-              </ol>
-            )
-          }
         </section>
-
-        <section class="alert">
-          <p class="alert__label">Local ordinance</p>
-          <p>
-            Low-speed vehicles follow posted town rules. Park only in marked stalls and keep dune accesses clear after dusk.
-          </p>
+        <EntityGallery photos={photos} fallbackName={event.name} />
+        <section class="panel">
+          <h2>Date, venue &amp; host</h2>
+          <p>{event.when}{event.time ? ` · ${event.time}` : ""}</p>
+          <p>{event.venue ?? town?.name ?? "30A"}</p>
+          <p>{hostName}</p>
         </section>
-
-        {
-          photos.length > 0 && (
-            <section class="panel">
-              <h2>Photos</h2>
-              <PhotoGrid photos={photos} />
-            </section>
-          )
-        }
-
-        <section class="panel ask">
-          <div class="ask__head">
-            <h2>Questions from the 30A community</h2>
-            <a href={href("/ask")}>Ask a question</a>
-          </div>
-          <article class="qa">
-            <span class="qa__tag">Equipment</span>
-            <p class="qa__q">Do I need to bring my own mat for outdoor sessions?</p>
-            <p class="qa__a">
-              <strong>Local tip:</strong> Bring a mat or towel when you can. Hosts sometimes have a few extras, but they go fast near sunset.
-            </p>
-          </article>
-          <a class="ask__cta" href={href("/ask")}>+ Ask the 30A community</a>
+        <CommunityQA
+          question="Do I need to bring my own mat for outdoor sessions?"
+          answer="Bring a mat or towel when you can. Hosts sometimes have a few extras, but they go fast near sunset."
+        />
+        <RelatedGuides guides={relatedGuides} />
+        <section class="panel">
+          <h2>Similar nearby</h2>
+          <ul class="related">
+            {related.map((item) => (
+              <li>
+                <a href={href(`/event/${item.slug}`)}>
+                  <span>{item.when}</span>
+                  <strong>{item.name}</strong>
+                </a>
+              </li>
+            ))}
+          </ul>
         </section>
       </div>
 
       <aside class="rail">
-        <section class="widget status">
-          <span class="status__badge">{isFree ? "Free weekly series" : event.category ?? "Community event"}</span>
-          <p class="status__copy">{event.when}</p>
-          <a class="status__btn" href={href(`/event/${event.slug}.ics`)}>Get event reminder</a>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Host</p>
-          <div class="host">
-            <span class="avatar" aria-hidden="true">{hostName.charAt(0)}</span>
-            <div>
-              <strong>{hostName}</strong>
-              <span>Verified community partner</span>
-            </div>
-          </div>
-          {
-            business ? (
-              <a class="ghost" href={href(`/business/${business.slug}`)}>
-                View host listing
-              </a>
-            ) : (
-              <a class="ghost" href={href("/ask")}>
-                Contact organizer
-              </a>
-            )
-          }
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Map</p>
-          <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
-          {town && <a href={href(`/town/${town.slug}`)}>Open town page →</a>}
-        </section>
-
-        {
-          related.length > 0 && (
-            <section class="widget">
-              <p class="widget__label">More 30A gatherings</p>
-              <ul class="related">
-                {related.map((item) => (
-                  <li>
-                    <a href={href(`/event/${item.slug}`)}>
-                      <span class="related__when">{item.when}</span>
-                      <strong>{item.name}</strong>
-                      <span>{item.venue ?? "30A"}</span>
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          )
-        }
+        
+        <div>
+          <section class="widget">
+            <p class="widget__label">Location</p>
+            <div class="mini-map img-placeholder" aria-hidden="true">{town?.name ?? "30A"}</div>
+          </section>
+          <section class="widget">
+            <p class="widget__label">Contact host</p>
+            <strong>{hostName}</strong>
+            {
+              business ? (
+                <a class="ghost" href={href(`/business/${business.slug}`)}>Contact host</a>
+              ) : (
+                <a class="ghost" href={href("/ask")}>Contact host</a>
+              )
+            }
+          </section>
+          <ExploreLinks current="events" townSlug={event.townSlug} />
+        </div>
       </aside>
     </div>
   </div>

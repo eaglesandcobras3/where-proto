@@ -1,12 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import PhotoGrid from "../../components/PhotoGrid.astro";
-import EventCard from "../../components/EventCard.astro";
-import PostCard from "../../components/PostCard.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import HappeningHere from "../../components/HappeningHere.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
 import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
-import { isEnabled } from "../../config/flags";
 import {
   areaBySlug,
   businesses,
@@ -14,10 +15,9 @@ import {
   faqsForBusiness,
   leafBySlug,
   photosFor,
-  postsFor,
-  stayBySlug,
   tagBySlug,
   townBySlug,
+  guides,
   updateSharePath,
   updatesForBusiness,
 } from "../../data/catalog";
@@ -38,11 +38,8 @@ const { item: business } = Astro.props;
 const town = townBySlug(business.townSlug);
 const area = business.areaSlug ? areaBySlug(business.areaSlug) : undefined;
 const leaf = leafBySlug(business.leafSlug);
-const stay = stayBySlug(business.slug);
 const businessEvents = events.filter((item) => item.businessSlug === business.slug);
-const businessPosts = postsFor("business", business.slug);
 const businessPhotos = photosFor("business", business.slug);
-const businessUpdates = updatesForBusiness(business.slug);
 const similar = businesses
   .filter(
     (item) =>
@@ -50,21 +47,20 @@ const similar = businesses
       (item.townSlug === business.townSlug || item.leafSlug === business.leafSlug),
   )
   .slice(0, 3);
+const relatedGuides = guides
+  .filter((item) => item.townSlug === business.townSlug || item.categorySlug === business.categorySlug)
+  .concat(guides)
+  .filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index)
+  .slice(0, 3);
 
 const chipTags = business.tagSlugs
   .map((slug) => tagBySlug(slug)?.name ?? slug)
   .concat(leaf?.name ? [leaf.name] : [])
   .slice(0, 6);
 
-const highlights = [
-  { label: leaf?.name ?? "Local Spot", detail: business.categorySlug.replace(/-/g, " ") },
-  { label: business.openNow ? "Open now" : "See hours", detail: business.hours ?? "Hours vary" },
-  { label: "Town core", detail: town?.name ?? "30A" },
-  { label: business.priceBand ?? "Local", detail: area?.name ?? "Scenic 30A" },
-];
-
 const faq = faqsForBusiness(business);
 const claimed = Boolean(business.ownerUserSlug);
+const businessUpdates = updatesForBusiness(business.slug);
 ---
 
 <BaseLayout title={business.name} description={business.summary} active="businesses">
@@ -121,9 +117,10 @@ const claimed = Boolean(business.ownerUserSlug);
                 </a>
               ) : !claimed ? (
                 <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing →</a>
-              ) : null}
+              ) : null
             }
           </div>
+          
         </div>
 
         <div class="chips">
@@ -136,96 +133,34 @@ const claimed = Boolean(business.ownerUserSlug);
     </section>
 
     <div class="container layout">
+      
+
       <div class="main">
         <section class="panel">
-          <p class="eyebrow">Insider Profile · Curated by 30A Editorial</p>
+          <p class="eyebrow">About</p>
           <h2>About {business.name}</h2>
           <p>{business.summary}</p>
-          <p>
-            A locally rooted stop on Scenic 30A
-            {town && <> in {town.name}</>}
-            {leaf && <> for {leaf.name.toLowerCase()}</>}. Arrive early for peak hours, check today’s beach flag if you’re
-            pairing the visit with Gulf time, and follow host guidance for carts and seating.
-          </p>
-          <div class="highlights">
-            {highlights.map((item) => (
-              <div>
-                <p class="label">{item.label}</p>
-                <p>{item.detail}</p>
-              </div>
-            ))}
-          </div>
         </section>
-
+        <EntityGallery photos={businessPhotos} fallbackName={business.name} />
         <section class="panel">
-          <div class="panel__head">
-            <h2>Official Photo Gallery</h2>
-            <span class="muted">{businessPhotos.length || 4} photos</span>
-          </div>
-          <p class="muted">Authentic atmosphere from the corridor outpost.</p>
-          <PhotoGrid
-            photos={businessPhotos}
-            empty={`Photos for ${business.name} will appear here.`}
-          />
+          <h2>Hours &amp; location</h2>
+          <p>{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          <p class="muted">{business.hours ?? "Hours vary"}</p>
         </section>
-
-        {
-          isEnabled("updates") && (
-            <UpdatesModule
-              entityKind="business"
-              entityName={business.name}
-              updates={businessUpdates}
-              ctaHref={updateSharePath("business", business.slug)}
-            />
-            <PostedUpdates businessSlug={business.slug} client:load />
-          )
-        }
-
-        {
-          businessEvents.length > 0 && (
-            <section class="panel">
-              <div class="panel__head">
-                <h2>Events at {business.name}</h2>
-                {town && <a href={href(`/events?town=${town.slug}`)}>See all in {town.name} →</a>}
-              </div>
-              <div class="listing-grid">
-                {businessEvents.map((event) => (
-                  <EventCard event={event} />
-                ))}
-              </div>
-            </section>
-          )
-        }
-
-        {
-          isEnabled("communityFeed") && (
-            <section class="panel">
-              <h2>Community Feedback &amp; Tips</h2>
-              <div class="composer">
-                <p class="muted">Share a tip, photo vibe, or local favorite for visitors.</p>
-                <div class="composer__tags">
-                  <span>Coffee Review</span>
-                  <span>Photo Vibe</span>
-                  <span>Meeting Tip</span>
-                  <span>Local Favorite</span>
-                </div>
-                <a class="btn btn--teal" href={href("/dashboard")}>Post to Feed</a>
-              </div>
-              {businessPosts.length === 0 ? (
-                <p class="muted">Visitor posts about {business.name} will appear here.</p>
-              ) : (
-                <div class="stack">
-                  {businessPosts.map((post) => (
-                    <PostCard post={post} />
-                  ))}
-                </div>
-              )}
-            </section>
-          )
-        }
-
+        <UpdatesModule
+          entityKind="business"
+          entityName={business.name}
+          updates={businessUpdates}
+          ctaHref={updateSharePath("business", business.slug)}
+        />
+        <PostedUpdates businessSlug={business.slug} client:load />
+        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
+        <CommunityQA
+          question={`What should first-timers know before visiting ${business.name}?`}
+          answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
+        />
         <section class="panel faq">
-          <h2>Curated Knowledge Bank</h2>
+          <h2>Good to know</h2>
           {faq.map((item) => (
             <details>
               <summary>{item.q}</summary>
@@ -233,86 +168,48 @@ const claimed = Boolean(business.ownerUserSlug);
             </details>
           ))}
         </section>
+        <RelatedGuides guides={relatedGuides} />
+        <section class="panel">
+          <h2>Similar nearby</h2>
+          <div class="listing-grid">
+            {similar.map((item) => (
+              <BusinessCard business={item} />
+            ))}
+          </div>
+        </section>
       </div>
 
       <aside class="rail">
-        <section class="widget">
-          <p class="widget__label">Location &amp; Access</p>
-          <div class="map img-placeholder" aria-hidden="true">
-            <span class="map__tag">{town?.name ?? "30A"}</span>
-          </div>
-          <p class="addr">{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
-          {business.hours && <p class="muted">Hours · {business.hours}</p>}
-          {area && <p class="muted">Neighborhood · {area.name}</p>}
-          {
-            town && (
+        
+        <div>
+          <section class="widget">
+            <p class="widget__label">Location</p>
+            <div class="map img-placeholder" aria-hidden="true">
+              <span class="map__tag">{town?.name ?? "30A"}</span>
+            </div>
+            <p class="addr">{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          </section>
+          <section class="widget">
+            <p class="widget__label">Get directions</p>
+            {town && (
               <a class="btn btn--deep" href={href(`/town/${town.slug}`)}>
-                Get Turn-By-Turn Directions
+                Get directions
               </a>
+            )}
+          </section>
+          {
+            !claimed && (
+              <section class="widget claim">
+                <p class="widget__label">Business Owner or GM?</p>
+                <p>Claim this listing to post updates, events, and verified hours.</p>
+                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
+              </section>
             )
           }
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Direct Contact</p>
-          <ul class="contact">
-            {business.phone && (
-              <li>
-                <span>Phone</span>
-                <a href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>{business.phone}</a>
-              </li>
-            )}
-            {business.website && (
-              <li>
-                <span>Website</span>
-                <a href={business.website} target="_blank" rel="noopener noreferrer">
-                  Visit official site →
-                </a>
-              </li>
-            )}
-            {business.address && (
-              <li>
-                <span>Address</span>
-                <a href={`https://maps.google.com/?q=${encodeURIComponent(business.address)}`}>
-                  Open in Maps
-                </a>
-              </li>
-            )}
-            {stay && (
-              <li>
-                <span>Stay</span>
-                <a href={href(`/stay/${stay.slug}`)}>{stay.name}</a>
-              </li>
-            )}
-          </ul>
-        </section>
-
-        {
-          !claimed && (
-            <section class="widget claim">
-              <p class="widget__label">Business Owner or GM?</p>
-              <p>Claim this listing to post updates, events, and verified hours.</p>
-              <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
-            </section>
-          )
-        }
+          <ExploreLinks current="businesses" townSlug={town?.slug} />
+        </div>
       </aside>
     </div>
-
-    {
-      similar.length > 0 && (
-        <section class="similar">
-          <div class="container">
-            <h2>Similar Nearby Places</h2>
-            <div class="listing-grid">
-              {similar.map((item) => (
-                <BusinessCard business={item} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )
-    }
   </div>
 </BaseLayout>
 
