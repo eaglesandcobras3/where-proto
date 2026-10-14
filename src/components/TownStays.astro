@@ -2,6 +2,7 @@
 import StayCard from "./StayCard.astro";
 import { href } from "../lib/href";
 import type { Stay } from "../data/types";
+import { stayTownPath } from "../lib/listing";
 
 interface Props {
   stays: Stay[];
@@ -15,7 +16,7 @@ const { stays, townName, townSlug } = Astro.props;
 <section class="panel town-stays">
   <div class="panel__head">
     <h2>Stays in {townName}</h2>
-    <a href={href(`/stays?town=${townSlug}`)}>All stays</a>
+    <a href={href(stayTownPath(townSlug))}>All stays</a>
   </div>
   {
     stays.length > 0 ? (

@@ -102,6 +102,13 @@
     return `${root}${route}`;
   }
 
+  function listingHref(item: Biz) {
+    if (item.town && item.category && item.leaf) {
+      return path(`/town/${item.town}/business/${item.category}/${item.leaf}/${item.slug}`);
+    }
+    return path(`/business/${item.slug}`);
+  }
+
   let results = $derived(
     businesses
       .filter((item) => {
@@ -307,7 +314,7 @@
 
   <div class="listing-grid-split" class:search-grid={externalChrome}>
     {#each results as item}
-      <a class="listing-card" href={path(`/business/${item.slug}`)}>
+      <a class="listing-card" href={listingHref(item)}>
         <div class="listing-tile">
           <img
             src={cardImageSrc(item.name.charAt(0), "2/3")}

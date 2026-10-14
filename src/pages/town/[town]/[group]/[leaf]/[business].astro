@@ -1,0 +1,27 @@
+---
+import { businesses } from "../../../../../data/catalog";
+import { href } from "../../../../../lib/href";
+import { businessPath } from "../../../../../lib/listing";
+import type { Business } from "../../../../../data/types";
+
+export function getStaticPaths() {
+  return businesses
+    .filter((item) => item.categorySlug !== "stay")
+    .map((item) => ({
+      params: {
+        town: item.townSlug,
+        group: item.categorySlug,
+        leaf: item.leafSlug,
+        business: item.slug,
+      },
+      props: { item },
+    }));
+}
+
+interface Props {
+  item: Business;
+}
+
+const { item: business } = Astro.props;
+return Astro.redirect(href(businessPath(business)), 301);
+---

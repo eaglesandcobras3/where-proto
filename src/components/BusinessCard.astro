@@ -2,6 +2,7 @@
 import { href } from "../lib/href";
 import { leafBySlug, townBySlug } from "../data/catalog";
 import type { Business } from "../data/types";
+import { businessPath } from "../lib/listing";
 import ListingTile from "./ListingTile.astro";
 
 interface Props {
@@ -14,7 +15,7 @@ const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
 ---
 
-<a class:list={["listing-card", { wide }]} href={href(`/business/${business.slug}`)}>
+<a class:list={["listing-card", { wide }]} href={href(businessPath(business))}>
   <ListingTile label={business.name.charAt(0)} alt="" wide={wide} />
   <div class="body">
     <h3>{business.name}</h3>

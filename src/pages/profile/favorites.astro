@@ -15,6 +15,7 @@ import {
 } from "../../data/catalog";
 import { cardImageSrc } from "../../lib/card-image";
 import { href } from "../../lib/href";
+import { businessPath, stayPath } from "../../lib/listing";
 import type { SavedEntityType } from "../../lib/saved";
 
 const seed = favorites
@@ -33,7 +34,7 @@ const cards = [
         title: biz.name,
         meta: [town?.name, leaf?.name].filter(Boolean).join(" · "),
         summary: biz.summary,
-        href: href(`/business/${biz.slug}`),
+        href: href(businessPath(biz)),
         cta: "View Business",
         letter: biz.name.charAt(0),
         image: cardImageSrc(biz.name.charAt(0), "4/3"),
@@ -45,7 +46,7 @@ const cards = [
     title: stay.name,
     meta: townBySlug(stay.townSlug)?.name ?? "30A",
     summary: stay.summary,
-    href: href(`/stay/${stay.slug}`),
+    href: href(stayPath(stay)),
     cta: "View stay",
     letter: stay.name.charAt(0),
     image: cardImageSrc(stay.name.charAt(0), "4/3"),

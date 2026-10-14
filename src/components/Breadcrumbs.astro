@@ -4,13 +4,14 @@ import { href } from "../lib/href";
 
 interface Props {
   items: Crumb[];
+  tone?: "page" | "hero";
 }
 
-const { items } = Astro.props;
+const { items, tone = "page" } = Astro.props;
 const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }, ...items];
 ---
 
-<nav class="crumbs" aria-label="Breadcrumb">
+<nav class:list={["crumbs", tone === "hero" && "crumbs--hero"]} aria-label="Breadcrumb">
   <ol>
     {
       trail.map((item, index) => {
@@ -68,5 +69,20 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .crumbs--hero {
+    color: var(--brand-ink-on-navy);
+  }
+  .crumbs--hero a {
+    color: var(--brand-ink-on-navy);
+  }
+  .crumbs--hero a:hover {
+    color: var(--mint);
+  }
+  .crumbs--hero li + li::before {
+    color: rgba(255, 255, 255, 0.35);
+  }
+  .crumbs--hero .current {
+    color: white;
   }
 </style>

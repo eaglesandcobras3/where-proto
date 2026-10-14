@@ -9,6 +9,7 @@ import { parsePriceValue, townCountsFor } from "../lib/unified-layout";
 import { isEnabled } from "../config/flags";
 import { stays, towns } from "../data/catalog";
 import { href } from "../lib/href";
+import { stayPath } from "../lib/listing";
 import { markersFromNames, withoutViewMap, withViewMap } from "../lib/map-markers";
 
 const params = Astro.url.searchParams;
@@ -79,6 +80,7 @@ const stayItems = stays.map((stay) => {
     townName: towns.find((item) => item.slug === stay.townSlug)?.name ?? stay.townSlug,
     summary: stay.summary,
     sleeps: stay.sleeps,
+    href: stayPath(stay),
     ...meta,
     priceValue: parsePriceValue(meta.fromPrice),
   };
@@ -111,7 +113,7 @@ const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
 const mapMarkers = markersFromNames(
   stayItems.map((stay) => ({
     name: stay.name,
-    href: href(`/stay/${stay.slug}`),
+    href: href(stayPath(stay)),
     detail: `${stay.townName} · ${stay.fromPrice}`,
   })),
 );
@@ -121,12 +123,12 @@ const mapMarkers = markersFromNames(
   title="30A Stays & Vacation Rentals"
   description="Curated boutique inns, cottages, and vacation rentals along Scenic Highway 30A."
   active="stays"
-  crumbs={[{ label: "Stays" }]}
 >
   <div class="stays-page">
     <InteriorHero
       title="30A Stays & Vacation Rentals"
       lede="Boutique inns, walkable cottages, and direct-book homes inspected for the corridor — filtered by town, guests, and how you want to move around."
+      crumbs={[{ label: "Stays" }]}
     />
 
     {

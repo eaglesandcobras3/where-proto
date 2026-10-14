@@ -8,6 +8,7 @@ import {
   townBySlug,
 } from "../../data/catalog";
 import { href } from "../../lib/href";
+import { businessPathBySlug } from "../../lib/listing";
 import { countLabel, formatDate } from "../../lib/labels";
 
 const mine = posts.filter((item) => item.authorUserSlug === currentUserSlug);
@@ -24,7 +25,7 @@ const rows = mine.map((post) => {
   const placeHref =
     post.on.type === "town"
       ? href(`/town/${post.on.slug}`)
-      : href(`/business/${post.on.slug}`);
+      : href(businessPathBySlug(post.on.slug));
   return {
     ...post,
     placeName,

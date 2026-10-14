@@ -1,0 +1,104 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import InteriorHero from "../../../../components/InteriorHero.astro";
+import StayCard from "../../../../components/StayCard.astro";
+import { stayCategories, staysForTown, towns } from "../../../../data/catalog";
+import type { Town } from "../../../../data/types";
+import { href } from "../../../../lib/href";
+import { stayCategoryPath } from "../../../../lib/listing";
+import { slugPaths } from "../../../../lib/static-paths";
+
+export function getStaticPaths() {
+  return slugPaths(towns, "town");
+}
+
+interface Props {
+  item: Town;
+}
+
+const { item: town } = Astro.props;
+const townStays = staysForTown(town.slug);
+const groups = stayCategories
+  .map((category) => ({
+    ...category,
+    items: townStays.filter((stay) => stay.categorySlug === category.slug),
+  }))
+  .filter((category) => category.items.length > 0);
+---
+
+<BaseLayout
+  title={`Stays in ${town.name}`}
+  description={`Hotels and vacation rentals in ${town.name}, Florida.`}
+  active="stays"
+>
+  <div class="stay-hub">
+    <InteriorHero
+      title={`Stays in ${town.name}`}
+      lede={`Hotels and vacation rentals in ${town.name} along Scenic Highway 30A.`}
+      crumbs={[
+        { label: "Towns", path: "/towns" },
+        { label: town.name, path: `/town/${town.slug}` },
+        { label: "Stays" },
+      ]}
+    />
+    <div class="container section">
+      {
+        groups.length > 0 ? (
+          groups.map((group) => (
+            <section class="group">
+              <div class="group__head">
+                <h2>{group.name}</h2>
+                <a href={href(stayCategoryPath(town.slug, group.slug))}>All {group.name.toLowerCase()}</a>
+              </div>
+              <div class="listing-grid">
+                {group.items.map((stay) => (
+                  <StayCard stay={stay} />
+                ))}
+              </div>
+            </section>
+          ))
+        ) : (
+          <p class="empty">
+            No stays listed for {town.name} yet.{" "}
+            <a href={href("/stays")}>Browse all 30A stays</a>
+          </p>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .stay-hub {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .section {
+    display: grid;
+    gap: var(--size-6);
+    padding-block: var(--size-6) var(--size-10);
+  }
+  .group {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .group__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+  }
+  h2 {
+    margin: 0;
+    font-size: var(--font-size-4);
+  }
+  .group__head a {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-6);
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+</style>

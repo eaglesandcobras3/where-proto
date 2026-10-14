@@ -10,6 +10,7 @@ import {
 } from "../../../data/catalog";
 import type { Business } from "../../../data/types";
 import { href } from "../../../lib/href";
+import { businessPath } from "../../../lib/listing";
 import { ownedBusinessPaths } from "../../../lib/static-paths";
 import {
   listingPublicStatusFromBusiness,
@@ -66,7 +67,7 @@ const metrics = [
       </p>
     </div>
     <div class="welcome__actions">
-      <a class="btn btn--ghost" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
+      <a class="btn btn--ghost" href={href(businessPath(business))}>{VIEW_PUBLIC_LABEL}</a>
       <a class="btn btn--deep" href={href(`/dashboard/${business.slug}/feed`)}>Post update</a>
     </div>
   </header>
@@ -196,7 +197,7 @@ const metrics = [
       <section class="card">
         <h2>{VIEW_PUBLIC_LABEL}</h2>
         <p class="muted">Open the listing visitors see.</p>
-        <a class="btn btn--deep" href={href(`/business/${business.slug}`)}>{VIEW_PUBLIC_LABEL}</a>
+        <a class="btn btn--deep" href={href(businessPath(business))}>{VIEW_PUBLIC_LABEL}</a>
       </section>
     </aside>
   </div>

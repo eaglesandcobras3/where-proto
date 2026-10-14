@@ -1,0 +1,75 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import InteriorHero from "../../../../components/InteriorHero.astro";
+import StayCard from "../../../../components/StayCard.astro";
+import { stayCategories, staysForTown, towns } from "../../../../data/catalog";
+import type { Town } from "../../../../data/types";
+import { href } from "../../../../lib/href";
+import { stayTownPath } from "../../../../lib/listing";
+
+export function getStaticPaths() {
+  return towns.flatMap((town) =>
+    stayCategories.map((category) => ({
+      params: { town: town.slug, category: category.slug },
+      props: { town, category },
+    })),
+  );
+}
+
+interface Props {
+  town: Town;
+  category: (typeof stayCategories)[number];
+}
+
+const { town, category } = Astro.props;
+const items = staysForTown(town.slug).filter((stay) => stay.categorySlug === category.slug);
+---
+
+<BaseLayout
+  title={`${category.name} in ${town.name}`}
+  description={`Find ${category.name.toLowerCase()} in ${town.name}, Florida.`}
+  active="stays"
+>
+  <div class="stay-cat">
+    <InteriorHero
+      title={`${category.name} in ${town.name}`}
+      lede={`${category.name} in ${town.name} along Scenic Highway 30A.`}
+      crumbs={[
+        { label: "Towns", path: "/towns" },
+        { label: town.name, path: `/town/${town.slug}` },
+        { label: "Stays", path: stayTownPath(town.slug) },
+        { label: category.name },
+      ]}
+    />
+    <div class="container section">
+      {
+        items.length > 0 ? (
+          <div class="listing-grid">
+            {items.map((stay) => (
+              <StayCard stay={stay} />
+            ))}
+          </div>
+        ) : (
+          <p class="empty">
+            No {category.name.toLowerCase()} listed in {town.name} yet.{" "}
+            <a href={href("/stays")}>Browse all 30A stays</a>
+          </p>
+        )
+      }
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .stay-cat {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .section {
+    padding-block: var(--size-6) var(--size-10);
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
+  }
+</style>

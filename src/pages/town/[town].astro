@@ -44,10 +44,14 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
   title={`${town.name}: stay, eat, and beach on 30A`}
   description={town.summary}
   active="towns"
-  crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
 >
   <div class="town-page">
-    <InteriorHero title={town.name} kicker="Scenic 30A community" lede={town.summary}>
+    <InteriorHero
+      title={town.name}
+      kicker="Scenic 30A community"
+      lede={town.summary}
+      crumbs={[{ label: "Towns", path: "/towns" }, { label: town.name }]}
+    >
       <div slot="actions">
         <SaveShare type="town" slug={town.slug} name={town.name} href={href(`/town/${town.slug}`)} client:load />
         <a class="hero-btn hero-btn--ghost" href="#map">Corridor map</a>

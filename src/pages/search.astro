@@ -15,7 +15,7 @@ import {
   towns,
   townBySlug,
 } from "../data/catalog";
-import { toFilterBusiness } from "../lib/listing";
+import { businessPath, toFilterBusiness } from "../lib/listing";
 import { href } from "../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../lib/map-markers";
 
@@ -27,7 +27,7 @@ const q = params.get("q") ?? "";
 const openNow = params.get("open") === "1";
 const mapView = params.get("view") === "map";
 const comboCanonical = Boolean(town && category && !tag && !openNow && !q);
-const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
+const canonicalPath = comboCanonical ? `/town/${town}/business/${category}` : "/search";
 /** Place desks live under Community — omit from consumer search filters. */
 const searchCategories = categories.filter((item) => item.slug !== "community");
 const unifiedCategories = searchCategories.filter((item) => item.slug !== "stay");
@@ -60,7 +60,7 @@ const pick =
 const mapMarkers = markersFromNames(
   searchableBusinesses.map((biz) => ({
     name: biz.name,
-    href: href(`/business/${biz.slug}`),
+    href: href(businessPath(biz)),
     detail: `${townBySlug(biz.townSlug)?.name ?? "30A"} · Open Now`,
   })),
 );
@@ -70,7 +70,6 @@ const mapMarkers = markersFromNames(
   title="30A Local Businesses & Curated Outposts"
   description="Discover coffee, dining, boutiques, and local outposts across Scenic Highway 30A — verified by residents and editorial."
   active="businesses"
-  crumbs={[{ label: "Businesses" }]}
   noindex
   canonicalPath={canonicalPath}
 >
@@ -78,6 +77,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Local Businesses & Curated Outposts"
       lede="Discover coffee, dining, boutiques, and neighborhood favorites verified by residents and the WhereTo30A editorial desk."
+      crumbs={[{ label: "Businesses" }]}
     />
 
     {
@@ -85,8 +85,8 @@ const mapMarkers = markersFromNames(
         <div class="container notice">
           <p>
             Indexable page for this combo:
-            <a href={href(`/town/${town}/${category}`)}>
-              /town/{town}/{category}
+            <a href={href(`/town/${town}/business/${category}`)}>
+              /town/{town}/business/{category}
             </a>
           </p>
         </div>
@@ -166,7 +166,7 @@ const mapMarkers = markersFromNames(
                   name={pick?.name ?? "30A"}
                   quote={`${pick?.name ?? "This courtyard stop"} is the courtyard stop before the square wakes up — cold brew, pastry case, and a bike rack on the Timpoochee.`}
                   byline="Caroline L. · WaterColor Resident & Guide"
-                  href={pick ? `/business/${pick.slug}` : "/search"}
+                  href={pick ? businessPath(pick) : "/search"}
                 />
               </ListingRail>
             </div>

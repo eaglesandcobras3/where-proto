@@ -9,6 +9,7 @@ import { businessBySlug, events, guides, photosFor, townBySlug } from "../../dat
 import type { EventItem } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
+import { businessPath } from "../../lib/listing";
 import { slugPaths } from "../../lib/static-paths";
 
 export function getStaticPaths() {
@@ -60,14 +61,17 @@ const jsonLd = {
   description={event.summary}
   active="events"
   jsonLd={jsonLd}
-  crumbs={[
-    { label: "Events", path: "/events" },
-    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
-    { label: event.name },
-  ]}
 >
   <div class="event-page">
-    <InteriorHero title={event.name} lede={event.summary}>
+    <InteriorHero
+      title={event.name}
+      lede={event.summary}
+      crumbs={[
+        { label: "Events", path: "/events" },
+        ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+        { label: event.name },
+      ]}
+    >
       <div slot="badges" class="badges">
         {event.category && <span class="badge badge--teal">{event.category}</span>}
         {isFree && <span class="badge">Free Admission</span>}
@@ -153,7 +157,7 @@ const jsonLd = {
             <strong>{hostName}</strong>
             {
               business ? (
-                <a class="ghost" href={href(`/business/${business.slug}`)}>Contact host</a>
+                <a class="ghost" href={href(businessPath(business))}>Contact host</a>
               ) : (
                 <a class="ghost" href={href("/ask")}>Contact host</a>
               )

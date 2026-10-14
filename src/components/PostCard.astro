@@ -2,6 +2,7 @@
 import { href } from "../lib/href";
 import { businessBySlug, userBySlug } from "../data/catalog";
 import { formatDate, userHandle } from "../lib/labels";
+import { businessPath, businessPathBySlug } from "../lib/listing";
 import type { Post } from "../data/types";
 
 interface Props {
@@ -16,11 +17,11 @@ const authorBusiness =
     : undefined;
 const author = authorBusiness?.name ?? (authorUser ? userHandle(authorUser.slug) : "A visitor");
 const authorHref = authorBusiness
-  ? href(`/business/${authorBusiness.slug}`)
+  ? href(businessPath(authorBusiness))
   : authorUser
     ? href(`/u/${authorUser.slug}`)
     : undefined;
-const onHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(`/business/${post.on.slug}`);
+const onHref = post.on.type === "town" ? href(`/town/${post.on.slug}`) : href(businessPathBySlug(post.on.slug));
 ---
 
 <article class="card">

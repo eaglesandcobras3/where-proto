@@ -37,7 +37,7 @@ const groups = categories
       <div class="groups">
         {groups.map((group) => (
           <article class="group">
-            <a class="group__head" href={href(`/town/${townSlug}/${group.slug}`)}>
+            <a class="group__head" href={href(`/town/${townSlug}/business/${group.slug}`)}>
               <h3>{group.name}</h3>
               <span class="count">{group.count}</span>
             </a>
@@ -45,7 +45,7 @@ const groups = categories
               <ul>
                 {group.leaves.map((leaf) => (
                   <li>
-                    <a href={href(`/town/${townSlug}/${leaf.slug}`)}>
+                    <a href={href(`/town/${townSlug}/business/${leaf.slug}`)}>
                       {leaf.name}
                       <span class="count">{leaf.count}</span>
                     </a>

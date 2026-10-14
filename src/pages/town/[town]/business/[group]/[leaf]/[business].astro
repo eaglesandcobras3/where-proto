@@ -1,0 +1,438 @@
+---
+import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
+import InteriorHero from "../../../../../../components/InteriorHero.astro";
+import BusinessCard from "../../../../../../components/BusinessCard.astro";
+import EntityGallery from "../../../../../../components/EntityGallery.astro";
+import CommunityQA from "../../../../../../components/CommunityQA.astro";
+import RelatedGuides from "../../../../../../components/RelatedGuides.astro";
+import HappeningHere from "../../../../../../components/HappeningHere.astro";
+import ExploreLinks from "../../../../../../components/ExploreLinks.astro";
+import UpdatesModule from "../../../../../../components/UpdatesModule.astro";
+import PostedUpdates from "../../../../../../components/islands/PostedUpdates.svelte";
+import {
+  businesses,
+  events,
+  faqsForBusiness,
+  leafBySlug,
+  photosFor,
+  tagBySlug,
+  townBySlug,
+  guides,
+  updateSharePath,
+  updatesForBusiness,
+} from "../../../../../../data/catalog";
+import type { Business } from "../../../../../../data/types";
+import SaveShare from "../../../../../../components/islands/SaveShare.svelte";
+import { href } from "../../../../../../lib/href";
+import { businessCrumbs, businessPath } from "../../../../../../lib/listing";
+
+export function getStaticPaths() {
+  return businesses.map((item) => ({
+    params: {
+      town: item.townSlug,
+      group: item.categorySlug,
+      leaf: item.leafSlug,
+      business: item.slug,
+    },
+    props: { item },
+  }));
+}
+
+interface Props {
+  item: Business;
+}
+
+const { item: business } = Astro.props;
+const town = townBySlug(business.townSlug);
+const leaf = leafBySlug(business.leafSlug);
+const businessEvents = events.filter((item) => item.businessSlug === business.slug);
+const businessPhotos = photosFor("business", business.slug);
+const similar = businesses
+  .filter(
+    (item) =>
+      item.slug !== business.slug &&
+      (item.townSlug === business.townSlug || item.leafSlug === business.leafSlug),
+  )
+  .slice(0, 3);
+const relatedGuides = guides
+  .filter((item) => item.townSlug === business.townSlug || item.categorySlug === business.categorySlug)
+  .concat(guides)
+  .filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index)
+  .slice(0, 3);
+
+const chipTags = business.tagSlugs
+  .map((slug) => tagBySlug(slug)?.name ?? slug)
+  .concat(leaf?.name ? [leaf.name] : [])
+  .slice(0, 6);
+
+const faq = faqsForBusiness(business);
+const claimed = Boolean(business.ownerUserSlug);
+const businessUpdates = updatesForBusiness(business.slug);
+---
+
+<BaseLayout
+  title={business.name}
+  description={business.summary}
+  active="businesses"
+>
+  <div class="biz-page">
+    <InteriorHero
+      title={business.name}
+      lede={business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}
+      crumbs={businessCrumbs(business)}
+    >
+      <div slot="badges" class="badges">
+        {claimed && <span class="badge badge--teal">Verified owner</span>}
+      </div>
+      <div slot="actions">
+        <SaveShare type="business" slug={business.slug} name={business.name} href={href(businessPath(business))} client:load />
+        {
+          town && (
+            <a class="hero-btn hero-btn--ghost" href={href(`/search?town=${town.slug}&view=map`)}>
+              Map view
+            </a>
+          )
+        }
+        {
+          business.phone && (
+            <a class="hero-btn hero-btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
+              Call {business.phone}
+            </a>
+          )
+        }
+        {
+          business.website ? (
+            <a class="hero-btn" href={business.website} target="_blank" rel="noopener noreferrer">
+              Visit Official Website →
+            </a>
+          ) : !claimed ? (
+            <a class="hero-btn" href={href("/dashboard")}>
+              Claim this listing →
+            </a>
+          ) : null
+        }
+      </div>
+      <div class="chips">
+        {chipTags.map((label) => (
+          <span class="chip">{label}</span>
+        ))}
+        {business.priceBand && <span class="chip">{business.priceBand}</span>}
+      </div>
+    </InteriorHero>
+
+    <div class="container layout">
+      
+
+      <div class="main">
+        <section class="panel">
+          <p class="eyebrow">About</p>
+          <h2>About {business.name}</h2>
+          <p>{business.summary}</p>
+        </section>
+        <EntityGallery photos={businessPhotos} fallbackName={business.name} />
+        <section class="panel">
+          <h2>Hours &amp; location</h2>
+          <p>{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          <p class="muted">{business.hours ?? "Hours vary"}</p>
+        </section>
+        <UpdatesModule
+          entityKind="business"
+          entityName={business.name}
+          updates={businessUpdates}
+          ctaHref={updateSharePath("business", business.slug)}
+        />
+        <PostedUpdates businessSlug={business.slug} client:load />
+        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
+        <CommunityQA
+          question={`What should first-timers know before visiting ${business.name}?`}
+          answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
+        />
+        <section class="panel faq">
+          <h2>Good to know</h2>
+          {faq.map((item) => (
+            <details>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </section>
+        <RelatedGuides guides={relatedGuides} />
+        <section class="panel">
+          <h2>Similar nearby</h2>
+          <div class="listing-grid">
+            {similar.map((item) => (
+              <BusinessCard business={item} />
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <aside class="rail">
+        
+        <div>
+          <section class="widget" id="map">
+            <p class="widget__label">Location</p>
+            <div class="map img-placeholder" aria-hidden="true">
+              <span class="map__tag">{town?.name ?? "30A"}</span>
+            </div>
+            <p class="addr">{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          </section>
+          <section class="widget">
+            <p class="widget__label">Get directions</p>
+            {town && (
+              <a class="btn btn--deep" href={href(`/town/${town.slug}`)}>
+                Get directions
+              </a>
+            )}
+          </section>
+          {
+            !claimed && (
+              <section class="widget claim">
+                <p class="widget__label">Business Owner or GM?</p>
+                <p>Claim this listing to post updates, events, and verified hours.</p>
+                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
+              </section>
+            )
+          }
+          <ExploreLinks current="businesses" townSlug={town?.slug} />
+        </div>
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .biz-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-2);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+  }
+  .btn:hover {
+    text-decoration: none;
+  }
+  .btn--teal {
+    background: var(--brand-teal);
+    color: white;
+  }
+  .btn--teal:hover {
+    background: var(--brand-teal-hover);
+  }
+  .btn--deep {
+    width: 100%;
+    background: var(--brand-deep);
+    color: white;
+    margin-top: var(--size-3);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-8);
+    align-items: start;
+  }
+  .main {
+    display: grid;
+    gap: var(--size-4);
+    min-width: 0;
+  }
+  .panel,
+  .widget {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  .panel__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.75rem;
+    align-items: baseline;
+    margin-bottom: var(--size-3);
+  }
+  .panel__head h2,
+  .panel > h2 {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-4);
+  }
+  .panel__head h2 {
+    margin-bottom: 0;
+  }
+  .panel__head a {
+    color: var(--brand-teal);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .eyebrow {
+    margin: 0 0 0.35rem;
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .muted {
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--size-3);
+    margin-top: var(--size-4);
+  }
+  .highlights .label {
+    margin: 0 0 0.2rem;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .highlights p:last-child {
+    margin: 0;
+    font-size: var(--font-size-1);
+    text-transform: capitalize;
+  }
+  .composer {
+    display: grid;
+    gap: var(--size-3);
+    margin-bottom: var(--size-4);
+    padding: var(--size-4);
+    border-radius: var(--radius-2);
+    background: var(--brand-sand);
+    border: 1px dashed var(--brand-line);
+  }
+  .composer__tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .composer__tags span {
+    font-size: var(--font-size-0);
+    padding: 0.25rem 0.6rem;
+    border-radius: var(--radius-pill);
+    background: white;
+    border: 1px solid var(--brand-line);
+    color: var(--brand-ink-soft);
+  }
+  .composer .btn {
+    justify-self: start;
+  }
+  .stack {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .faq details {
+    border-top: 1px solid var(--brand-line);
+    padding: var(--size-3) 0;
+  }
+  .faq details:first-of-type {
+    border-top: 0;
+  }
+  .faq summary {
+    cursor: pointer;
+    font-weight: var(--font-weight-6);
+  }
+  .faq p {
+    margin: 0.5rem 0 0;
+    color: var(--brand-ink-soft);
+    font-size: var(--font-size-1);
+  }
+  .rail {
+    display: grid;
+    gap: var(--size-4);
+  }
+  .widget__label {
+    margin: 0 0 var(--size-3);
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .map {
+    position: relative;
+    aspect-ratio: 4 / 3;
+    border-radius: var(--radius-2);
+    margin-bottom: var(--size-3);
+  }
+  .map__tag {
+    position: absolute;
+    top: 0.65rem;
+    left: 0.65rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.85);
+    color: var(--mint);
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .addr {
+    margin: 0 0 0.35rem;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-6);
+  }
+  .contact {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.75rem;
+  }
+  .contact li {
+    display: grid;
+    gap: 0.15rem;
+    font-size: var(--font-size-1);
+  }
+  .contact span {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
+  }
+  .contact a {
+    color: var(--brand-teal);
+  }
+  .claim {
+    background: var(--brand-deep);
+    border-color: var(--brand-deep);
+    color: white;
+  }
+  .claim .widget__label {
+    color: var(--brand-ink-on-navy);
+  }
+  .claim p {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-1);
+    color: var(--brand-line);
+  }
+  .similar {
+    padding: 0 0 var(--size-10);
+  }
+  .similar h2 {
+    margin: 0 0 var(--size-4);
+    font-size: var(--font-size-4);
+  }
+  @media (min-width: 960px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) 18rem;
+    }
+    .highlights {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>
