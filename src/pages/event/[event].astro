@@ -96,7 +96,7 @@ const jsonLd = {
 
         <div class="actions">
           <a class="btn btn--teal" href={event.ticketUrl ?? href(`/event/${event.slug}.ics`)}>
-            {isFree ? "Save RSVP (Free)" : event.price ? `Tickets · ${event.price}` : "Get details"}
+            {isFree ? "Free event" : event.price ? `Tickets · ${event.price}` : "Get details"}
           </a>
           <a class="btn btn--ghost" href={href(`/event/${event.slug}.ics`)}>Add to Calendar</a>
           <SaveShare

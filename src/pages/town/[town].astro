@@ -7,6 +7,7 @@ import CategoriesInTown from "../../components/CategoriesInTown.astro";
 import AreasInTown from "../../components/AreasInTown.astro";
 import TownCommunitySections from "../../components/TownCommunitySections.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
+import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
 import PhotoGrid from "../../components/PhotoGrid.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import GuideCard from "../../components/GuideCard.astro";
@@ -145,6 +146,7 @@ const townIndex = towns.findIndex((item) => item.slug === town.slug);
               updates={updatesForTown(town.slug)}
               ctaHref={updateSharePath("town", town.slug)}
             />
+            <PostedUpdates townSlug={town.slug} client:load />
           )
         }
 

@@ -2,13 +2,14 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import EntityText from "../../components/EntityText.astro";
 import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
+import ReactionBar from "../../components/ReactionBar.astro";
 import {
   commentsFor,
   questions,
   townBySlug,
   userBySlug,
 } from "../../data/catalog";
-import { formatDate, userHandle } from "../../lib/labels";
+import { countLabel, formatDate, userHandle } from "../../lib/labels";
 import type { Question } from "../../data/types";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
@@ -84,11 +85,11 @@ const jsonLd = {
         )
       }
       <div class="actions">
-        <button type="button">👍 Like</button>
+        <ReactionBar />
       </div>
     </article>
 
-    <h2>{replies.length} {replies.length === 1 ? "reply" : "replies"}</h2>
+    <h2>{countLabel(replies.length, "answer")}</h2>
 
     {
       replies.map((item) => {
@@ -109,8 +110,8 @@ const jsonLd = {
               <EntityText text={item.body} />
             </p>
             <div class="actions">
-              <button type="button">👍 Like</button>
-              <button type="button" class="reply-btn">Reply</button>
+              <ReactionBar />
+              <a class="reply-btn" href="#reply">Reply</a>
             </div>
           </article>
         );
@@ -195,8 +196,10 @@ const jsonLd = {
     cursor: pointer;
   }
   .reply-btn {
-    color: var(--brand-deep) !important;
+    color: var(--brand-deep);
     font-weight: var(--font-weight-6);
+    font-size: var(--font-size-1);
+    align-self: center;
   }
 </style>
 

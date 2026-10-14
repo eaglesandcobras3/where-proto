@@ -1,23 +1,52 @@
 <script lang="ts">
+  import { openAuth } from "../../lib/auth-return";
   import { PERSONA_EVENT, personaSignedIn, readPersona } from "../../lib/proto-persona";
+
+  const DRAFT_KEY = "w30a:reply-draft";
+
+  let {
+    prompt = "Write a reply…",
+    placeholder = "Share a local tip.",
+  }: {
+    prompt?: string;
+    placeholder?: string;
+  } = $props();
 
   let signedIn = $state(false);
   let body = $state("");
   let mode = $state<"idle" | "compose" | "gate">("idle");
   let submitted = $state(false);
 
-  function openAuth(next: "login" | "signup") {
-    window.dispatchEvent(new CustomEvent("w30a:auth", { detail: { mode: next } }));
+  function stashDraft() {
+    if (typeof window === "undefined" || !body.trim()) return;
+    sessionStorage.setItem(DRAFT_KEY, body);
+  }
+
+  function restoreDraft() {
+    if (typeof window === "undefined") return;
+    const draft = sessionStorage.getItem(DRAFT_KEY);
+    if (!draft) return;
+    body = draft;
+    sessionStorage.removeItem(DRAFT_KEY);
+    mode = "compose";
   }
 
   function onPrompt() {
-    mode = signedIn ? "compose" : "gate";
+    if (signedIn) {
+      mode = "compose";
+      return;
+    }
+    mode = "gate";
+    stashDraft();
+    openAuth({ mode: "signup", returnTo: window.location.pathname });
   }
 
   function onSubmit(event: Event) {
     event.preventDefault();
     if (!signedIn) {
+      stashDraft();
       mode = "gate";
+      openAuth({ mode: "signup", returnTo: window.location.pathname });
       return;
     }
     submitted = true;
@@ -26,7 +55,10 @@
   $effect(() => {
     const sync = () => {
       signedIn = personaSignedIn(readPersona());
-      if (signedIn && mode === "gate") mode = "compose";
+      if (signedIn && mode === "gate") {
+        restoreDraft();
+        mode = "compose";
+      }
     };
     sync();
     window.addEventListener(PERSONA_EVENT, sync);
@@ -34,19 +66,19 @@
   });
 </script>
 
-<section class="composer">
+<section class="composer" id="reply">
   {#if mode === "idle"}
     <button class="prompt" type="button" onclick={onPrompt}>
       <span class="avatar" aria-hidden="true">+</span>
-      <span class="prompt__text">Write a reply…</span>
+      <span class="prompt__text">{prompt}</span>
     </button>
   {:else if mode === "gate"}
     <div class="gate">
       <p class="gate__title">Log in to reply</p>
       <p class="gate__copy">Create an account or sign in to share a tip. Reading stays open to everyone.</p>
       <div class="actions">
-        <button class="btn btn--solid" type="button" onclick={() => openAuth("login")}>Log in</button>
-        <button class="btn btn--quiet" type="button" onclick={() => openAuth("signup")}>Create account</button>
+        <button class="btn btn--solid" type="button" onclick={() => openAuth({ mode: "login", returnTo: window.location.pathname })}>Log in</button>
+        <button class="btn btn--quiet" type="button" onclick={() => openAuth({ mode: "signup", returnTo: window.location.pathname })}>Create account</button>
         <button class="text-btn" type="button" onclick={() => (mode = "idle")}>Not now</button>
       </div>
     </div>
@@ -57,7 +89,7 @@
         id="ask-reply"
         name="body"
         rows="3"
-        placeholder="Share a local tip."
+        {placeholder}
         bind:value={body}
       ></textarea>
       <div class="actions">
@@ -154,7 +186,7 @@
     justify-content: center;
     min-height: 40px;
     padding: 0.55rem 1rem;
-    border-radius: 999px;
+    border-radius: var(--radius-button);
     font: inherit;
     font-weight: var(--font-weight-7);
     font-size: var(--font-size-1);

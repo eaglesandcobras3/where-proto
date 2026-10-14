@@ -6,6 +6,7 @@
 import { isEnabled } from "../config/flags";
 import { events } from "../data/catalog";
 import type { Town } from "../data/types";
+import AskReplyComposer from "./islands/AskReplyComposer.svelte";
 import { href } from "../lib/href";
 
 interface Props {
@@ -63,7 +64,7 @@ const placeLabel = areaName ? `${areaName} · ${town.name}` : town.name;
           <span>Lost &amp; found</span>
           <span>Local secret</span>
         </div>
-        <a class="composer__btn" href={href("/ask")}>Post to Ask the Locals</a>
+        <AskReplyComposer prompt="Write a reply…" client:visible />
       </div>
     </section>
   )

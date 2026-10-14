@@ -1,24 +1,45 @@
 <script lang="ts">
+  import { PROTO_TODAY } from "../../lib/labels";
+  import { writePosted } from "../../lib/posted";
+
   let {
     title,
     body,
     action,
     kind = "update",
+    businessSlug = "",
+    townSlug = "",
   }: {
     title: string;
     body: string;
     action: string;
     kind?: "update" | "event" | "photo" | "settings" | "faq" | "offer";
+    businessSlug?: string;
+    townSlug?: string;
   } = $props();
 
   let submitted = $state(false);
   let rightsConfirmed = $state(false);
   let offerThrough = $state("");
+  let offerTitle = $state("");
+  let offerTerms = $state("");
 
   function onSubmit(event: Event) {
     event.preventDefault();
     if (kind === "photo" && !rightsConfirmed) return;
-    if (kind === "offer" && !offerThrough) return;
+    if (kind === "offer") {
+      if (!offerThrough || !offerTitle.trim()) return;
+      writePosted({
+        slug: `offer-${businessSlug || "listing"}-${Date.now()}`,
+        title: offerTitle.trim(),
+        body: offerTerms.trim() || offerTitle.trim(),
+        createdAt: PROTO_TODAY,
+        through: offerThrough,
+        type: "limited_offer",
+        businessSlug: businessSlug || undefined,
+        townSlug: townSlug || undefined,
+      });
+    }
     submitted = true;
   }
 </script>
@@ -28,8 +49,8 @@
   <p>{body}</p>
   <form onsubmit={onSubmit}>
     {#if kind === "offer"}
-      <wa-input placeholder="Offer title"></wa-input>
-      <wa-textarea placeholder="Terms" rows="2"></wa-textarea>
+      <input bind:value={offerTitle} placeholder="Offer title" required />
+      <textarea bind:value={offerTerms} placeholder="Terms" rows="2"></textarea>
       <label class="date-field">
         <span>End date</span>
         <input type="date" required bind:value={offerThrough} />
@@ -55,7 +76,7 @@
       <wa-input label="Phone" value="(850) 555-0101"></wa-input>
       <wa-textarea label="Description" rows="3"></wa-textarea>
     {/if}
-    <wa-button variant="brand" type="submit" disabled={(kind === "photo" && !rightsConfirmed) || (kind === "offer" && !offerThrough)}>
+    <wa-button variant="brand" type="submit" disabled={(kind === "photo" && !rightsConfirmed) || (kind === "offer" && (!offerThrough || !offerTitle.trim()))}>
       {action}
     </wa-button>
   </form>
@@ -98,12 +119,19 @@
     text-transform: uppercase;
     color: var(--brand-ink-soft);
   }
-  .date-field input {
+  .date-field input,
+  input,
+  textarea {
     min-height: 2.75rem;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-button);
     padding: 0.55rem 0.75rem;
     font: inherit;
+    width: 100%;
+  }
+  textarea {
+    min-height: 5rem;
+    resize: vertical;
   }
   .rights {
     display: flex;

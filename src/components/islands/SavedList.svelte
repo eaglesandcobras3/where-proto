@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { href as siteHref } from "../../lib/href";
   import { PERSONA_EVENT, personaSignedIn, readPersona } from "../../lib/proto-persona";
   import {
     DEFAULT_COLLECTION,
@@ -77,7 +78,8 @@
 
 {#if tripPrompt && personaSignedIn(readPersona())}
   <p class="trip">
-    Planning a trip? You have {items.length} saved places. View your trip.
+    Planning a trip? You have {items.length} saved places.
+    <a href={siteHref("/profile/favorites")}>View your trip.</a>
   </p>
 {/if}
 
@@ -134,6 +136,10 @@
     background: var(--brand-teal-soft);
     color: var(--brand-deep);
     font-weight: var(--font-weight-6);
+  }
+  .trip a {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-7);
   }
   .collections,
   .filters {

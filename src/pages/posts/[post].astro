@@ -1,5 +1,7 @@
 ---
 import PlaceLayout from "../../layouts/PlaceLayout.astro";
+import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
+import ReactionBar from "../../components/ReactionBar.astro";
 import {
   businessBySlug,
   commentsFor,
@@ -66,7 +68,7 @@ const postReactions = reactionsFor("post", post.slug);
         )
       }
     </p>
-    {postReactions.length > 0 && <p class="meta">React</p>}
+    <ReactionBar reactions={postReactions} />
     {
       postComments.map((item) => (
         <p class="comment">
@@ -74,6 +76,7 @@ const postReactions = reactionsFor("post", post.slug);
         </p>
       ))
     }
+    <AskReplyComposer client:visible />
   </article>
 </PlaceLayout>
 

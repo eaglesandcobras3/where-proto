@@ -5,6 +5,7 @@ import EventCard from "../../components/EventCard.astro";
 import PostCard from "../../components/PostCard.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
+import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
 import { isEnabled } from "../../config/flags";
 import {
   areaBySlug,
@@ -176,6 +177,7 @@ const claimed = Boolean(business.ownerUserSlug);
               updates={businessUpdates}
               ctaHref={updateSharePath("business", business.slug)}
             />
+            <PostedUpdates businessSlug={business.slug} client:load />
           )
         }
 

@@ -6,6 +6,7 @@ import GuideSaveSpots from "../../components/islands/GuideSaveSpots.svelte";
 import { businessesForTown, commentsFor, guides, reactionsFor, townBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
+import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
 import { href } from "../../lib/href";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -166,6 +167,16 @@ const sections = [
               {comments.map((item) => (
                 <p class="comment">{item.body}</p>
               ))}
+              <AskReplyComposer client:visible />
+            </section>
+          )
+        }
+
+        {
+          comments.length === 0 && (
+            <section class="section">
+              <h2>Comments</h2>
+              <AskReplyComposer client:visible />
             </section>
           )
         }

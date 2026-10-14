@@ -5,6 +5,7 @@
     DEFAULT_COLLECTION,
     collectionsFrom,
     isSaved,
+    readSaved,
     saveItem,
     savedItem,
     unsaveItem,
@@ -36,12 +37,14 @@
   let picker = $state(false);
   let newName = $state("");
   let toast = $state("");
+  let savedCount = $state(0);
 
   function refresh() {
     signedIn = personaSignedIn(readPersona());
     saved = isSaved(type, slug);
     collection = savedItem(type, slug)?.collection ?? DEFAULT_COLLECTION;
     collections = collectionsFrom();
+    savedCount = readSaved().length;
   }
 
   function showToast(message: string) {
@@ -54,6 +57,10 @@
   function persist(nextCollection: string) {
     saveItem(type, slug, nextCollection);
     refresh();
+    if (savedCount >= 3 && signedIn) {
+      showToast(`Planning a trip? You have ${savedCount} saved places. View your trip.`);
+      return;
+    }
     showToast(savedHint.replace("{collection}", nextCollection));
   }
 
@@ -153,6 +160,9 @@
   {/if}
   {#if toast}
     <p class="toast" role="status">{toast}</p>
+  {/if}
+  {#if !signedIn && !saved}
+    <p class="invite">Planning a 30A trip? Save this place.</p>
   {/if}
 </div>
 
@@ -256,5 +266,15 @@
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-6);
     white-space: nowrap;
+  }
+  .invite {
+    flex-basis: 100%;
+    margin: 0;
+    font-size: var(--font-size-0);
+    color: var(--brand-ink-soft);
+  }
+  .invite a {
+    color: var(--brand-teal);
+    font-weight: var(--font-weight-6);
   }
 </style>
