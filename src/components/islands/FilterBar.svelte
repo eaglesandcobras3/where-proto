@@ -18,10 +18,17 @@
     name: string;
   }
 
+  interface CategoryGroup {
+    slug: string;
+    name: string;
+    leaves: Named[];
+  }
+
   let {
     businesses = [],
     towns = [],
     categories = [],
+    categoryGroups = [],
     tags = [],
     initialTown = "",
     initialCategory = "",
@@ -37,6 +44,7 @@
     businesses: Biz[];
     towns: Named[];
     categories: Named[];
+    categoryGroups?: CategoryGroup[];
     tags: Named[];
     initialTown?: string;
     initialCategory?: string;
@@ -49,12 +57,45 @@
     externalChrome?: boolean;
   } = $props();
 
+  function resolveGroup(value: string) {
+    for (const group of categoryGroups) {
+      if (group.slug === value) return { parent: group.slug, leaf: "" };
+      if (group.leaves.some((leaf) => leaf.slug === value)) return { parent: group.slug, leaf: value };
+    }
+    return { parent: "", leaf: "" };
+  }
+
+  const resolved = resolveGroup(initialCategory);
+
   let town = $state(initialTown);
-  let category = $state(initialCategory);
+  let parent = $state(resolved.parent);
+  let leaf = $state(resolved.leaf);
+  let category = $state(categoryGroups.length ? resolved.leaf || resolved.parent : initialCategory);
   let tag = $state(initialTag);
   let openNow = $state(initialOpenNow);
   let query = $state(initialQuery);
   let sort = $state<"recommended" | "az">("recommended");
+  let tagQuery = $state("");
+  let tagOpen = $state(false);
+  let tagField = $state<HTMLElement>();
+
+  let selectedGroup = $derived(categoryGroups.find((item) => item.slug === parent));
+  let leaves = $derived(selectedGroup?.leaves ?? []);
+  let selectedTag = $derived(tags.find((item) => item.slug === tag));
+  let tagMatches = $derived.by(() => {
+    const needle = tagQuery.trim().toLowerCase();
+    const available = tags.filter((item) => item.slug !== tag);
+    if (!needle) return available.slice(0, 8);
+    return available
+      .filter(
+        (item) => item.name.toLowerCase().includes(needle) || item.slug.toLowerCase().includes(needle),
+      )
+      .slice(0, 8);
+  });
+
+  function syncCategory(nextParent = parent, nextLeaf = leaf) {
+    category = nextLeaf || nextParent;
+  }
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -82,19 +123,40 @@
   }
 
   function categoryName(item: Biz) {
-    return (
+    const raw =
       categories.find((entry) => entry.slug === item.leaf)?.name ??
       categories.find((entry) => entry.slug === item.category)?.name ??
-      item.leaf
-    );
+      item.leaf;
+    const parts = raw.split(" / ");
+    return parts[parts.length - 1] ?? raw;
   }
 
   function clear() {
     town = "";
+    parent = "";
+    leaf = "";
     category = "";
     tag = "";
+    tagQuery = "";
     openNow = false;
     query = "";
+  }
+
+  function onParentChange(event: Event) {
+    parent = (event.currentTarget as HTMLSelectElement).value;
+    leaf = "";
+    syncCategory(parent, "");
+  }
+
+  function onLeafChange(event: Event) {
+    leaf = (event.currentTarget as HTMLSelectElement).value;
+    syncCategory(parent, leaf);
+  }
+
+  function pickTag(slug: string) {
+    tag = slug;
+    tagQuery = "";
+    tagOpen = false;
   }
 
   let activeCount = $derived(
@@ -111,6 +173,11 @@
         ).detail;
         town = detail.town;
         category = detail.category;
+        if (categoryGroups.length) {
+          const next = resolveGroup(detail.category);
+          parent = next.parent;
+          leaf = next.leaf;
+        }
         query = detail.query;
         if (detail.tag !== undefined) tag = detail.tag;
       };
@@ -124,6 +191,16 @@
     sync();
     media.addEventListener("change", sync);
     return () => media.removeEventListener("change", sync);
+  });
+
+  $effect(() => {
+    if (!tagOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && tagField?.contains(event.target)) return;
+      tagOpen = false;
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
   });
 </script>
 
@@ -145,24 +222,66 @@
           {/each}
         </select>
       </label>
-      <label>
-        Category
-        <select bind:value={category}>
-          <option value="">All categories</option>
-          {#each categories as item}
-            <option value={item.slug}>{item.name}</option>
-          {/each}
-        </select>
-      </label>
-      <label>
-        Tag
-        <select bind:value={tag}>
-          <option value="">Any tag</option>
-          {#each tags as item}
-            <option value={item.slug}>{item.name}</option>
-          {/each}
-        </select>
-      </label>
+      {#if categoryGroups.length}
+        <label>
+          Category
+          <select value={parent} onchange={onParentChange}>
+            <option value="">All categories</option>
+            {#each categoryGroups as item (item.slug)}
+              <option value={item.slug}>{item.name}</option>
+            {/each}
+          </select>
+        </label>
+        <label>
+          Subcategory
+          <select value={leaf} disabled={!parent} onchange={onLeafChange}>
+            {#if parent}
+              <option value="">All in {selectedGroup?.name}</option>
+              {#each leaves as item (item.slug)}
+                <option value={item.slug}>{item.name}</option>
+              {/each}
+            {:else}
+              <option value="">Choose a category first</option>
+            {/if}
+          </select>
+        </label>
+      {:else}
+        <label>
+          Category
+          <select bind:value={category}>
+            <option value="">All categories</option>
+            {#each categories as item}
+              <option value={item.slug}>{item.name}</option>
+            {/each}
+          </select>
+        </label>
+      {/if}
+      <div class="typeahead" bind:this={tagField}>
+        <span class="tag-label">Tags</span>
+        {#if selectedTag}
+          <button class="picked" type="button" onclick={() => pickTag("")}>
+            {selectedTag.name}
+            <span aria-hidden="true">×</span>
+          </button>
+        {/if}
+        <input
+          type="search"
+          placeholder="Search tags"
+          bind:value={tagQuery}
+          onfocus={() => (tagOpen = true)}
+          oninput={() => (tagOpen = true)}
+          autocomplete="off"
+        />
+        {#if tagOpen && tagMatches.length}
+          <ul class="suggest" role="listbox">
+            {#each tagMatches as item (item.slug)}
+              <li>
+                <button type="button" onclick={() => pickTag(item.slug)}>{item.name}</button>
+              </li>
+            {/each}
+          </ul>
+        {/if}
+      </div>
       <label class="check">
         <input type="checkbox" bind:checked={openNow} />
         Open now
@@ -188,7 +307,7 @@
 
   <div class="listing-grid-split" class:search-grid={externalChrome}>
     {#each results as item}
-      <a class="listing-card" class:search-card={externalChrome} href={path(`/business/${item.slug}`)}>
+      <a class="listing-card" href={path(`/business/${item.slug}`)}>
         <div class="listing-tile">
           <img
             src={cardImageSrc(item.name.charAt(0), "2/3")}
@@ -200,17 +319,10 @@
         </div>
         <div class="body">
           <h3>{item.name}</h3>
-          {#if externalChrome}
-            <p class="meta">{townName(item.town)}</p>
-            <p class="desc">{item.description}</p>
-            <span class="explore">Explore →</span>
-          {:else}
-            <p class="meta">{townName(item.town)} &middot; {categoryName(item)}</p>
-            <p class="desc">{item.description}</p>
-            {#if item.openNow}
-              <span class="open">Open now</span>
-            {/if}
-          {/if}
+          <p class="meta">{townName(item.town)}</p>
+          <p class="cat">{categoryName(item)} in {townName(item.town)}</p>
+          <p class="desc">{item.description}</p>
+          <span class="explore">Explore →</span>
         </div>
       </a>
     {:else}
@@ -260,28 +372,6 @@
   }
   .search-grid {
     gap: var(--size-3);
-  }
-  .search-card {
-    text-decoration: none;
-    color: inherit;
-    background: white;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-3);
-    box-shadow: var(--shadow-card);
-    padding: var(--size-3);
-  }
-  .search-card:hover {
-    border-color: var(--brand-line);
-  }
-  .search-card:hover .explore {
-    text-decoration: underline;
-  }
-  .explore {
-    display: inline-block;
-    margin-top: var(--size-2);
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
   }
   .filter-panel {
     background: white;
@@ -333,6 +423,63 @@
   .search {
     flex: 1 1 220px;
   }
+  .typeahead {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: var(--size-1);
+    min-width: 160px;
+  }
+  .tag-label {
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--brand-ink-soft);
+  }
+  .picked {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.35rem;
+    border: 0;
+    background: var(--brand-teal);
+    color: white;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    border-radius: var(--radius-pill);
+    padding: 0.3rem 0.65rem;
+    cursor: pointer;
+  }
+  .suggest {
+    position: absolute;
+    top: calc(100% + 0.2rem);
+    left: 0;
+    right: 0;
+    z-index: 4;
+    list-style: none;
+    margin: 0;
+    padding: 0.25rem;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    box-shadow: var(--shadow-card-hover);
+  }
+  .suggest button {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    text-align: left;
+    font: inherit;
+    font-size: var(--font-size-1);
+    padding: 0.4rem 0.5rem;
+    cursor: pointer;
+    border-radius: var(--radius-2);
+  }
+  .suggest button:hover {
+    background: var(--brand-sand-dark);
+  }
   .check {
     flex-direction: row;
     align-items: center;
@@ -373,20 +520,24 @@
     color: var(--brand-ink-soft);
     margin-bottom: var(--size-1);
   }
+  .cat {
+    font-size: var(--font-size-1);
+    color: var(--brand-coral);
+    font-weight: var(--font-weight-6);
+    margin-bottom: var(--size-2);
+  }
   .desc {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-  .open {
+  .explore {
     display: inline-block;
-    font-size: var(--font-size-0);
+    margin-top: var(--size-2);
+    font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
-    color: var(--brand-teal);
-    background: var(--brand-teal-soft);
-    border-radius: var(--radius-4);
-    padding: 2px var(--size-2);
+    color: var(--brand-deep);
   }
   .empty {
     color: var(--brand-ink-soft);

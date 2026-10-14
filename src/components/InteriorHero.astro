@@ -2,20 +2,27 @@
 interface Props {
   title: string;
   lede?: string;
+  kicker?: string;
 }
 
-const { title, lede } = Astro.props;
+const { title, lede, kicker } = Astro.props;
 ---
 
 <section class="interior-hero">
   <div class="container interior-hero__inner">
-    <header class="interior-hero__copy">
-      <h1 class="interior-hero__heading">{title}</h1>
-      {lede && <p class="interior-hero__lede">{lede}</p>}
-    </header>
-    <div class="interior-hero__search">
-      <slot />
+    <div class="interior-hero__row">
+      <header class="interior-hero__copy">
+        {kicker && <p class="interior-hero__kicker">{kicker}</p>}
+        <slot name="badges" />
+        <h1 class="interior-hero__heading">{title}</h1>
+        {lede && <p class="interior-hero__lede">{lede}</p>}
+        <slot name="meta" />
+      </header>
+      <div class="interior-hero__actions">
+        <slot name="actions" />
+      </div>
     </div>
+    <slot />
   </div>
 </section>
 
@@ -26,17 +33,32 @@ const { title, lede } = Astro.props;
     padding: var(--size-8) 0 var(--size-7);
   }
   .interior-hero__inner {
-    display: flex;
-    flex-direction: column;
-    align-items: stretch;
+    display: grid;
     gap: var(--size-5);
+  }
+  .interior-hero__row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: var(--size-4);
+    align-items: flex-end;
   }
   .interior-hero__copy {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     gap: 0.65rem;
-    max-width: 40rem;
+    max-width: 46rem;
+    min-width: 0;
+  }
+  .interior-hero__kicker {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--mint);
   }
   .interior-hero__heading {
     margin: 0;
@@ -57,13 +79,104 @@ const { title, lede } = Astro.props;
     line-height: 1.55;
     text-align: left;
   }
-  .interior-hero__search {
-    width: 100%;
-    max-width: 52rem;
+  .interior-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
   }
-  .interior-hero__search :global(.hero-search) {
+  .interior-hero__actions:empty {
+    display: none;
+  }
+  .interior-hero :global(.hero-btn) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 2.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: var(--radius-button);
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    background: var(--brand-teal);
+    color: white;
+    text-decoration: none;
+  }
+  .interior-hero :global(.hero-btn:hover) {
+    background: var(--brand-teal-hover);
+    text-decoration: none;
+  }
+  .interior-hero :global(.hero-btn--ghost) {
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    color: white;
+  }
+  .interior-hero :global(.hero-btn--ghost:hover) {
+    background: rgba(255, 255, 255, 0.08);
+  }
+  .interior-hero :global(.hero-link) {
+    color: var(--mint);
+  }
+  .interior-hero :global(.hero-search) {
     width: 100%;
     max-width: none;
     margin-inline: 0;
+  }
+  .interior-hero :global(.badges),
+  .interior-hero :global(.chips) {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+  .interior-hero :global(.badge),
+  .interior-hero :global(.chip) {
+    display: inline-flex;
+    align-items: center;
+    min-height: 1.75rem;
+    padding: 0.2rem 0.7rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(255, 255, 255, 0.06);
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-6);
+    color: var(--brand-line);
+  }
+  .interior-hero :global(.badge--teal) {
+    background: rgba(0, 137, 123, 0.25);
+    border-color: rgba(133, 246, 229, 0.35);
+    color: var(--mint);
+  }
+  .interior-hero :global(.snapshot),
+  .interior-hero :global(.facts) {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+    gap: var(--size-4);
+    margin: 0;
+    padding-top: var(--size-4);
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+  }
+  .interior-hero :global(.snapshot > div),
+  .interior-hero :global(.facts > div) {
+    display: grid;
+    gap: 0.2rem;
+  }
+  .interior-hero :global(.snapshot .label),
+  .interior-hero :global(.facts dt) {
+    display: block;
+    margin: 0;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--brand-ink-on-navy);
+  }
+  .interior-hero :global(.snapshot strong),
+  .interior-hero :global(.facts dd) {
+    margin: 0;
+    color: white;
+    font-size: var(--font-size-2);
+    font-weight: var(--font-weight-7);
+  }
+  .interior-hero :global(.invite) {
+    color: var(--brand-ink-on-navy);
   }
 </style>

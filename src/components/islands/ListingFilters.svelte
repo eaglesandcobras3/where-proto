@@ -13,6 +13,12 @@
     name: string;
   }
 
+  interface CategoryGroup {
+    slug: string;
+    name: string;
+    leaves: Counted[];
+  }
+
   interface Secondary {
     key: string;
     label: string;
@@ -37,11 +43,15 @@
     towns = [],
     initialTown = "",
     townTotal = 0,
-    primaryLabel,
-    primaryKey,
+    primaryLabel = "Category",
+    primaryKey = "category",
     primaryOptions = [],
-    primaryType = "list",
     initialPrimary = "",
+    categoryGroups = [],
+    tags = [],
+    tagsLabel = "Tags",
+    tagsKey = "tag",
+    initialTag = "",
     secondaries = [],
     initialSecondaries = {},
     note,
@@ -57,47 +67,110 @@
     towns?: Counted[];
     initialTown?: string;
     townTotal?: number;
-    primaryLabel: string;
-    primaryKey: string;
+    primaryLabel?: string;
+    primaryKey?: string;
     primaryOptions?: Counted[];
-    primaryType?: "list" | "chips";
     initialPrimary?: string;
+    categoryGroups?: CategoryGroup[];
+    tags?: Counted[];
+    tagsLabel?: string;
+    tagsKey?: string;
+    initialTag?: string;
     secondaries?: Secondary[];
     initialSecondaries?: Record<string, string>;
     note?: Note;
   } = $props();
 
+  function resolveGroup(value: string) {
+    for (const group of categoryGroups) {
+      if (group.slug === value) return { parent: group.slug, leaf: "" };
+      if (group.leaves.some((leaf) => leaf.slug === value)) return { parent: group.slug, leaf: value };
+    }
+    return { parent: "", leaf: "" };
+  }
+
+  const resolved = resolveGroup(initialPrimary);
+
   let query = $state(initialQuery);
   let guests = $state(initialGuests);
   let from = $state(initialFrom);
   let town = $state(initialTown);
-  let primary = $state(initialPrimary);
+  let primary = $state(categoryGroups.length ? resolved.leaf || resolved.parent : initialPrimary);
+  let parent = $state(resolved.parent);
+  let leaf = $state(resolved.leaf);
+  let tag = $state(initialTag || initialSecondaries[tagsKey] || "");
   let secondaryValues = $state({ ...initialSecondaries });
+  let open = $state(false);
+  let tagQuery = $state("");
+  let tagOpen = $state(false);
+  let tagField = $state<HTMLElement>();
+
+  let selectedGroup = $derived(categoryGroups.find((item) => item.slug === parent));
+  let leaves = $derived(selectedGroup?.leaves ?? []);
+  let selectedTag = $derived(tags.find((item) => item.slug === tag));
+  let tagMatches = $derived.by(() => {
+    const needle = tagQuery.trim().toLowerCase();
+    const available = tags.filter((item) => item.slug !== tag);
+    if (!needle) return available.slice(0, 8);
+    return available
+      .filter(
+        (item) => item.name.toLowerCase().includes(needle) || item.slug.toLowerCase().includes(needle),
+      )
+      .slice(0, 8);
+  });
 
   function secondaryOf(key: string) {
     return secondaryValues[key] ?? "";
   }
 
-  function publish(next: {
-    town?: string;
-    primary?: string;
-    query?: string;
-    guests?: string;
-    from?: string;
-    secondaries?: Record<string, string>;
-  } = {}) {
+  let activeCount = $derived(
+    [
+      query.trim(),
+      town,
+      categoryGroups.length ? parent : primary,
+      leaf,
+      tag,
+      extraSearch === "guests" ? guests : "",
+      extraSearch === "from" ? from : "",
+      ...secondaries.map((group) => secondaryOf(group.key)),
+    ].filter(Boolean).length,
+  );
+
+  function categoryValue() {
+    if (categoryGroups.length) return leaf || parent;
+    return primary;
+  }
+
+  function publish(
+    next: {
+      town?: string;
+      parent?: string;
+      leaf?: string;
+      primary?: string;
+      query?: string;
+      guests?: string;
+      from?: string;
+      tag?: string;
+      secondaries?: Record<string, string>;
+    } = {},
+  ) {
     if (next.town !== undefined) town = next.town;
+    if (next.parent !== undefined) parent = next.parent;
+    if (next.leaf !== undefined) leaf = next.leaf;
     if (next.primary !== undefined) primary = next.primary;
     if (next.query !== undefined) query = next.query;
     if (next.guests !== undefined) guests = next.guests;
     if (next.from !== undefined) from = next.from;
+    if (next.tag !== undefined) tag = next.tag;
     if (next.secondaries) secondaryValues = { ...secondaryValues, ...next.secondaries };
+
+    if (categoryGroups.length) primary = categoryValue();
 
     const params = new URLSearchParams(window.location.search);
     const detail: Record<string, string> = {
       town,
       query,
-      category: surface === "stays" ? guests : surface === "towns" ? primary : primary,
+      category: surface === "stays" ? guests : surface === "towns" ? primary : categoryValue(),
     };
 
     if (surface === "towns") {
@@ -105,10 +178,11 @@
       detail.vibe = secondaryOf("vibe");
       detail.beach = secondaryOf("beach");
     } else if (surface === "search") {
-      detail.tag = secondaryOf("tag");
+      detail.tag = tag;
+      detail.group = parent;
     } else if (surface === "stays") {
       detail.kind = primary;
-      detail.amenity = secondaryOf("amenity");
+      detail.amenity = tagsKey === "amenity" ? tag : secondaryOf("amenity");
       detail.category = guests;
     } else if (surface === "events") {
       detail.from = from;
@@ -116,6 +190,8 @@
     } else if (surface === "guides") {
       detail.source = secondaryOf("source");
     }
+
+    if (tag && !detail[tagsKey]) detail[tagsKey] = tag;
 
     window.dispatchEvent(new CustomEvent(eventName, { detail }));
 
@@ -126,26 +202,42 @@
 
     write("q", query);
     if (surface !== "towns") write("town", town);
-    write(primaryKey, primary);
+    write(primaryKey, categoryValue());
     if (extraSearch === "guests") write("guests", guests);
     if (extraSearch === "from") write("from", from);
+    write(tagsKey, tag);
     for (const group of secondaries) write(group.key, secondaryOf(group.key));
 
     const nextUrl = `${window.location.pathname}${params.size ? `?${params}` : ""}${window.location.hash}`;
     window.history.replaceState({}, "", nextUrl);
   }
 
-  function togglePrimary(slug: string) {
-    publish({ primary: primary === slug ? "" : slug });
+  function onParentChange(event: Event) {
+    const value = (event.currentTarget as HTMLSelectElement).value;
+    publish({ parent: value, leaf: "" });
   }
 
-  function toggleSecondary(key: string, slug: string) {
-    publish({ secondaries: { [key]: secondaryOf(key) === slug ? "" : slug } });
+  function pickTag(slug: string) {
+    publish({ tag: slug });
+    tagQuery = "";
+    tagOpen = false;
   }
 
   function onSearchSubmit(event: Event) {
     event.preventDefault();
     publish();
+  }
+
+  function onTagKeydown(event: KeyboardEvent) {
+    if (event.key === "Escape") {
+      tagOpen = false;
+      return;
+    }
+    if (event.key === "Enter") {
+      event.preventDefault();
+      const first = tagMatches[0];
+      if (first) pickTag(first.slug);
+    }
   }
 
   $effect(() => {
@@ -157,10 +249,20 @@
       if (surface === "towns" && detail.region !== undefined) primary = detail.region;
       else if (surface === "stays" && detail.kind !== undefined) primary = detail.kind;
       else if (detail.category !== undefined && surface !== "stays" && surface !== "towns") {
-        primary = detail.category;
+        if (categoryGroups.length) {
+          const next = resolveGroup(detail.category);
+          parent = next.parent;
+          leaf = next.leaf;
+          primary = next.leaf || next.parent;
+        } else {
+          primary = detail.category;
+        }
       }
-      if (detail.tag !== undefined) secondaryValues = { ...secondaryValues, tag: detail.tag };
-      if (detail.amenity !== undefined) secondaryValues = { ...secondaryValues, amenity: detail.amenity };
+      if (detail[tagsKey] !== undefined) tag = detail[tagsKey];
+      else if (detail.tag !== undefined) tag = detail.tag;
+      if (detail.amenity !== undefined && tagsKey !== "amenity") {
+        secondaryValues = { ...secondaryValues, amenity: detail.amenity };
+      }
       if (detail.vibe !== undefined) secondaryValues = { ...secondaryValues, vibe: detail.vibe };
       if (detail.beach !== undefined) secondaryValues = { ...secondaryValues, beach: detail.beach };
       if (detail.source !== undefined) secondaryValues = { ...secondaryValues, source: detail.source };
@@ -170,138 +272,242 @@
     window.addEventListener(eventName, onFilters);
     return () => window.removeEventListener(eventName, onFilters);
   });
+
+  $effect(() => {
+    if (!tagOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (event.target instanceof Node && tagField?.contains(event.target)) return;
+      tagOpen = false;
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  });
 </script>
 
-<div class="filters" class:inline={placement === "inline"} class:side={placement === "rail"}>
-  <section class="panel">
-    <h2>Search</h2>
-    <form class="search-row" onsubmit={onSearchSubmit}>
-      <label class="search">
-        <span class="sr-only">{SEARCH_PLACEHOLDER[surface]}</span>
-        <input
-          type="search"
-          placeholder={SEARCH_PLACEHOLDER[surface]}
-          bind:value={query}
-          oninput={() => publish({ query })}
-        />
-      </label>
-      {#if extraSearch === "guests"}
+<div class="filters" class:inline={placement === "inline"} class:side={placement === "rail"} class:is-open={open}>
+  <button
+    class="filter-toggle"
+    type="button"
+    aria-expanded={open}
+    aria-controls="listing-filter-body"
+    onclick={() => (open = !open)}
+  >
+    Filters
+    {#if activeCount}
+      <span class="toggle-count">{activeCount}</span>
+    {/if}
+  </button>
+
+  <div class="filter-body" id="listing-filter-body">
+    <section class="panel">
+      <h2>Search</h2>
+      <form class="search-row" onsubmit={onSearchSubmit}>
+        <label class="search">
+          <span class="sr-only">{SEARCH_PLACEHOLDER[surface]}</span>
+          <input
+            type="search"
+            placeholder={SEARCH_PLACEHOLDER[surface]}
+            bind:value={query}
+            oninput={() => publish({ query })}
+          />
+        </label>
+        {#if extraSearch === "guests"}
+          <label>
+            <span class="sr-only">Guests</span>
+            <select bind:value={guests} onchange={() => publish({ guests })}>
+              <option value="">Any guests</option>
+              {#each guestOptions as item (item.slug)}
+                <option value={item.slug}>{item.name}</option>
+              {/each}
+            </select>
+          </label>
+        {/if}
+        {#if extraSearch === "from"}
+          <label>
+            <span class="sr-only">From date</span>
+            <input type="date" bind:value={from} onchange={() => publish({ from })} />
+          </label>
+        {/if}
+      </form>
+    </section>
+
+    {#if towns.length}
+      <section class="panel">
+        <h2>Town</h2>
         <label>
-          <span class="sr-only">Guests</span>
-          <select bind:value={guests} onchange={() => publish({ guests })}>
-            <option value="">Any guests</option>
-            {#each guestOptions as item (item.slug)}
-              <option value={item.slug}>{item.name}</option>
+          <span class="sr-only">Town</span>
+          <select bind:value={town} onchange={() => publish({ town })}>
+            <option value="">All 30A{townTotal ? ` (${townTotal})` : ""}</option>
+            {#each towns as item (item.slug)}
+              <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
             {/each}
           </select>
         </label>
-      {/if}
-      {#if extraSearch === "from"}
-        <label>
-          <span class="sr-only">From date</span>
-          <input type="date" bind:value={from} onchange={() => publish({ from })} />
-        </label>
-      {/if}
-    </form>
-  </section>
-
-  {#if towns.length}
-    <section class="panel">
-      <h2>Town</h2>
-      <ul>
-        <li>
-          <button class:active={!town} type="button" onclick={() => publish({ town: "" })}>
-            All 30A
-            <span class="count">{townTotal}</span>
-          </button>
-        </li>
-        {#each towns as item (item.slug)}
-          <li>
-            <button class:active={town === item.slug} type="button" onclick={() => publish({ town: item.slug })}>
-              {item.name}
-              <span class="count">{item.count}</span>
-            </button>
-          </li>
-        {/each}
-      </ul>
-    </section>
-  {/if}
-
-  <section class="panel">
-    <h2>{primaryLabel}</h2>
-    {#if primaryType === "chips"}
-      <div class="chips">
-        {#each primaryOptions as item (item.slug)}
-          <button
-            class="chip"
-            class:active={primary === item.slug}
-            type="button"
-            onclick={() => togglePrimary(item.slug)}
-          >
-            {item.name}
-            <span class="count">{item.count}</span>
-          </button>
-        {/each}
-      </div>
-    {:else}
-      <ul>
-        <li>
-          <button class:active={!primary} type="button" onclick={() => publish({ primary: "" })}>
-            All
-            <span class="count">{primaryOptions.reduce((sum, item) => sum + item.count, 0)}</span>
-          </button>
-        </li>
-        {#each primaryOptions as item (item.slug)}
-          <li>
-            <button class:active={primary === item.slug} type="button" onclick={() => togglePrimary(item.slug)}>
-              {item.name}
-              <span class="count">{item.count}</span>
-            </button>
-          </li>
-        {/each}
-      </ul>
+      </section>
     {/if}
-  </section>
 
-  {#each secondaries as group (group.key)}
-    <section class="panel">
-      <h2>{group.label}</h2>
-      <div class="chips">
-        {#each group.options as item (item.slug)}
-          <button
-            class="chip"
-            class:active={secondaryOf(group.key) === item.slug}
-            type="button"
-            onclick={() => toggleSecondary(group.key, item.slug)}
+    {#if categoryGroups.length}
+      <section class="panel">
+        <h2>Category</h2>
+        <div class="stack">
+          <label>
+            <span class="field-label">Category</span>
+            <select value={parent} onchange={onParentChange}>
+              <option value="">All categories</option>
+              {#each categoryGroups as item (item.slug)}
+                <option value={item.slug}>{item.name}</option>
+              {/each}
+            </select>
+          </label>
+          <label>
+            <span class="field-label">Subcategory</span>
+            <select bind:value={leaf} disabled={!parent} onchange={() => publish({ leaf })}>
+              {#if parent}
+                <option value="">All in {selectedGroup?.name}</option>
+                {#each leaves as item (item.slug)}
+                  <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+                {/each}
+              {:else}
+                <option value="">Choose a category first</option>
+              {/if}
+            </select>
+          </label>
+        </div>
+      </section>
+    {:else if primaryOptions.length}
+      <section class="panel">
+        <h2>{primaryLabel}</h2>
+        <label>
+          <span class="sr-only">{primaryLabel}</span>
+          <select bind:value={primary} onchange={() => publish({ primary })}>
+            <option value="">All</option>
+            {#each primaryOptions as item (item.slug)}
+              <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+            {/each}
+          </select>
+        </label>
+      </section>
+    {/if}
+
+    {#if tags.length}
+      <section class="panel">
+        <h2>{tagsLabel}</h2>
+        <div class="typeahead" bind:this={tagField}>
+          {#if selectedTag}
+            <button class="picked" type="button" onclick={() => pickTag("")}>
+              {selectedTag.name}
+              <span aria-hidden="true">×</span>
+            </button>
+          {/if}
+          <label>
+            <span class="sr-only">{tagsLabel}</span>
+            <input
+              type="search"
+              placeholder={`Search ${tagsLabel.toLowerCase()}`}
+              bind:value={tagQuery}
+              onfocus={() => (tagOpen = true)}
+              oninput={() => (tagOpen = true)}
+              onkeydown={onTagKeydown}
+              autocomplete="off"
+            />
+          </label>
+          {#if tagOpen && tagMatches.length}
+            <ul class="suggest" role="listbox">
+              {#each tagMatches as item (item.slug)}
+                <li>
+                  <button type="button" onclick={() => pickTag(item.slug)}>
+                    {item.name}
+                    {#if item.count}<span class="count">{item.count}</span>{/if}
+                  </button>
+                </li>
+              {/each}
+            </ul>
+          {/if}
+        </div>
+      </section>
+    {/if}
+
+    {#each secondaries as group (group.key)}
+      <section class="panel">
+        <h2>{group.label}</h2>
+        <label>
+          <span class="sr-only">{group.label}</span>
+          <select
+            value={secondaryOf(group.key)}
+            onchange={(event) =>
+              publish({ secondaries: { [group.key]: (event.currentTarget as HTMLSelectElement).value } })}
           >
-            {item.name}
-            <span class="count">{item.count}</span>
-          </button>
-        {/each}
-      </div>
-    </section>
-  {/each}
+            <option value="">Any</option>
+            {#each group.options as item (item.slug)}
+              <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+            {/each}
+          </select>
+        </label>
+      </section>
+    {/each}
 
-  {#if note}
-    <section class="listing-note">
-      <p class="listing-note__label">{note.label}</p>
-      {#if note.title}<p><strong>{note.title}</strong></p>{/if}
-      <p>{note.body}</p>
-    </section>
-  {/if}
+    {#if note}
+      <section class="listing-note">
+        <p class="listing-note__label">{note.label}</p>
+        {#if note.title}<p><strong>{note.title}</strong></p>{/if}
+        <p>{note.body}</p>
+      </section>
+    {/if}
+  </div>
 </div>
 
 <style>
   .filters {
     display: grid;
-    gap: var(--size-4);
+    gap: var(--size-3);
   }
-  .inline {
+  .filter-toggle {
+    display: none;
+    width: 100%;
+    align-items: center;
+    justify-content: space-between;
+    min-height: 2.5rem;
+    padding: 0.55rem 1.1rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-button);
+    background: white;
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    color: var(--brand-ink);
+    cursor: pointer;
+  }
+  .toggle-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.35rem;
+    border-radius: var(--radius-pill);
+    background: var(--brand-teal);
+    color: white;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-7);
+  }
+  .filter-body {
+    display: grid;
+    gap: var(--size-3);
+  }
+  .inline .filter-body {
     grid-template-columns: 1fr;
   }
   @media (min-width: 720px) {
-    .inline {
+    .inline .filter-body {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 1023px) {
+    .filter-toggle {
+      display: inline-flex;
+    }
+    .filters:not(.is-open) .filter-body {
+      display: none;
     }
   }
   .panel {
@@ -319,9 +525,19 @@
     text-transform: uppercase;
     color: var(--brand-ink-soft);
   }
-  .search-row {
+  .search-row,
+  .stack {
     display: grid;
     gap: 0.5rem;
+  }
+  .field-label {
+    display: block;
+    margin-bottom: 0.3rem;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-7);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-ink-soft);
   }
   input,
   select {
@@ -333,6 +549,10 @@
     border-radius: var(--radius-2);
     background: white;
   }
+  select:disabled {
+    color: var(--brand-ink-soft);
+    background: var(--brand-sand);
+  }
   .sr-only {
     position: absolute;
     width: 1px;
@@ -343,14 +563,43 @@
     clip: rect(0, 0, 0, 0);
     border: 0;
   }
-  ul {
+  .typeahead {
+    position: relative;
+    display: grid;
+    gap: 0.5rem;
+  }
+  .picked {
+    display: inline-flex;
+    width: fit-content;
+    align-items: center;
+    gap: 0.4rem;
+    border: 0;
+    background: var(--brand-teal);
+    color: white;
+    font: inherit;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    border-radius: var(--radius-pill);
+    padding: 0.35rem 0.7rem;
+    cursor: pointer;
+  }
+  .suggest {
+    position: absolute;
+    top: calc(100% + 0.2rem);
+    left: 0;
+    right: 0;
+    z-index: 4;
     list-style: none;
     margin: 0;
-    padding: 0;
+    padding: 0.25rem;
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-2);
+    box-shadow: var(--shadow-card-hover);
     display: grid;
-    gap: 0.25rem;
+    gap: 0.15rem;
   }
-  button {
+  .suggest button {
     width: 100%;
     display: flex;
     align-items: center;
@@ -361,23 +610,13 @@
     text-align: left;
     font: inherit;
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-5);
     color: var(--brand-ink);
-    padding: 0.55rem 0.75rem;
+    padding: 0.45rem 0.55rem;
     cursor: pointer;
     border-radius: var(--radius-2);
   }
-  button:hover {
-    background: #f8fafc;
-  }
-  button.active {
-    background: var(--brand-teal);
-    color: white;
-    font-weight: var(--font-weight-7);
-  }
-  button.active .count {
-    background: rgba(255, 255, 255, 0.2);
-    color: white;
+  .suggest button:hover {
+    background: var(--brand-sand-dark);
   }
   .count {
     font-size: 0.6875rem;
@@ -386,27 +625,5 @@
     background: var(--brand-sand-dark);
     border-radius: var(--radius-pill);
     padding: 0.15rem 0.45rem;
-  }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-  .chip {
-    width: auto;
-    justify-content: center;
-    background: var(--brand-sand-dark);
-    border-radius: var(--radius-pill);
-    padding: 0.4rem 0.7rem;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-  }
-  .chip.active {
-    background: var(--brand-teal-soft);
-    color: var(--brand-teal);
-  }
-  .chip.active .count {
-    background: rgba(0, 150, 136, 0.12);
-    color: var(--brand-teal);
   }
 </style>

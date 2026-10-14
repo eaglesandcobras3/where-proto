@@ -1,6 +1,7 @@
 ---
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
+import Breadcrumbs from "../components/Breadcrumbs.astro";
 import ExploreFilterBar from "../components/islands/ExploreFilterBar.svelte";
 import SearchFilterBar from "../components/islands/SearchFilterBar.svelte";
 import EventsFilterBar from "../components/islands/EventsFilterBar.svelte";
@@ -9,6 +10,7 @@ import ProtoPersonaSwitch from "../components/islands/ProtoPersonaSwitch.svelte"
 import { allLeaves, categories, towns } from "../data/catalog";
 import DashboardFlagBootstrap from "../components/DashboardFlagBootstrap.astro";
 import { absHref, href } from "../lib/href";
+import type { Crumb } from "../lib/crumbs";
 import { isEnabled } from "../config/flags";
 import { envDashboardV1Enabled } from "../lib/dashboard-v1";
 import "../styles/tokens.css";
@@ -55,6 +57,7 @@ interface Props {
   askTopic?: string;
   askQuery?: string;
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
+  crumbs?: Crumb[];
   /** Skip site header/footer (merchant portal shell) */
   bare?: boolean;
   /** Enable business_dashboard_v1 preview bootstrap (merchant surfaces). */
@@ -96,6 +99,7 @@ const {
   askTopic = "",
   askQuery = "",
   jsonLd,
+  crumbs = [],
   bare = false,
   dashboardPreview = false,
   account = false,
@@ -261,6 +265,15 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
           searchAriaLabel="Search questions"
           client:load
         />
+      )
+    }
+    {
+      !bare && crumbs.length > 0 && (
+        <div class="site-crumbs">
+          <div class="container">
+            <Breadcrumbs items={crumbs} />
+          </div>
+        </div>
       )
     }
     <main>

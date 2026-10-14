@@ -6,7 +6,7 @@ import FilterBar from "../components/islands/FilterBar.svelte";
 import ListingFilters from "../components/islands/ListingFilters.svelte";
 import ListingRail from "../components/ListingRail.astro";
 import LocalsPick from "../components/LocalsPick.astro";
-import { townCountsFor } from "../lib/unified-layout";
+import { categoryGroupsFor, townCountsFor } from "../lib/unified-layout";
 import {
   allLeaves,
   categories,
@@ -43,11 +43,12 @@ const mapHref = withViewMap("/search", searchQs);
 const gridHref = withoutViewMap("/search", searchQs);
 
 const allTownCounts = townCountsFor(towns, searchableBusinesses, (biz) => biz.townSlug);
-const unifiedCategoryCounts = unifiedCategories.map((item) => ({
-  slug: item.slug,
-  name: item.name,
-  count: searchableBusinesses.filter((biz) => biz.categorySlug === item.slug).length,
-}));
+const categoryGroups = categoryGroupsFor(
+  unifiedCategories,
+  searchableBusinesses,
+  (biz) => biz.leafSlug,
+);
+const filterGroups = unifiedCategories.map(({ slug, name, leaves }) => ({ slug, name, leaves }));
 const amenityCounts = tags.map((item) => ({
   slug: item.slug,
   name: item.name,
@@ -69,6 +70,7 @@ const mapMarkers = markersFromNames(
   title="30A Local Businesses & Curated Outposts"
   description="Discover coffee, dining, boutiques, and local outposts across Scenic Highway 30A — verified by residents and editorial."
   active="businesses"
+  crumbs={[{ label: "Businesses" }]}
   noindex
   canonicalPath={canonicalPath}
 >
@@ -104,6 +106,7 @@ const mapMarkers = markersFromNames(
             businesses={searchableBusinesses.map(toFilterBusiness)}
             towns={towns}
             categories={filterCategories}
+            categoryGroups={filterGroups}
             tags={tags}
             initialTown={town}
             initialCategory={category}
@@ -127,12 +130,12 @@ const mapMarkers = markersFromNames(
                 towns={allTownCounts}
                 initialTown={town}
                 townTotal={searchableBusinesses.length}
-                primaryLabel="Category"
-                primaryKey="category"
-                primaryOptions={unifiedCategoryCounts}
+                categoryGroups={categoryGroups}
                 initialPrimary={category}
-                secondaries={[{ key: "tag", label: "Amenities", options: amenityCounts }]}
-                initialSecondaries={{ tag }}
+                tags={amenityCounts}
+                tagsLabel="Tags"
+                tagsKey="tag"
+                initialTag={tag}
                 client:load
               />
             </div>
@@ -142,6 +145,7 @@ const mapMarkers = markersFromNames(
             businesses={searchableBusinesses.map(toFilterBusiness)}
             towns={towns}
             categories={filterCategories}
+            categoryGroups={filterGroups}
             tags={tags}
             initialTown={town}
             initialCategory={category}

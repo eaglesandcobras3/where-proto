@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import EntityText from "../../components/EntityText.astro";
 import AskReplyComposer from "../../components/islands/AskReplyComposer.svelte";
 import ReactionBar from "../../components/ReactionBar.astro";
@@ -58,11 +59,18 @@ const jsonLd = {
   description={question.body}
   active="ask"
   jsonLd={jsonLd}
+  crumbs={[
+    { label: "Ask", path: "/ask" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: question.title },
+  ]}
 >
+  <InteriorHero
+    title={question.title}
+    kicker="Ask the locals"
+    lede={town ? `${town.name} · ${formatDate(question.createdAt)}` : formatDate(question.createdAt)}
+  />
   <div class="thread">
-    <p class="back">
-      <a href={href("/ask")}>← Back to Ask</a>
-    </p>
     <article class="card">
       <div class="meta">
         <span class="avatar" aria-hidden="true">{author?.slug.charAt(0) ?? "?"}</span>
@@ -76,7 +84,6 @@ const jsonLd = {
         <span>· {formatDate(question.createdAt)}</span>
         {town && <span class="town">· {town.name}</span>}
       </div>
-      <h1>{question.title}</h1>
       {
         question.body && (
           <p class="body">
@@ -130,13 +137,6 @@ const jsonLd = {
     display: grid;
     gap: var(--size-4);
   }
-  .back {
-    margin: 0;
-  }
-  .back a {
-    color: var(--brand-deep);
-    font-weight: var(--font-weight-6);
-  }
   .card {
     background: white;
     border: 1px solid var(--brand-line);
@@ -162,12 +162,6 @@ const jsonLd = {
     font-size: var(--font-size-0);
     font-weight: var(--font-weight-7);
     flex-shrink: 0;
-  }
-  h1 {
-    margin: 0;
-    font-size: clamp(1.4rem, 3vw, 1.85rem);
-    line-height: 1.25;
-    color: var(--brand-deep);
   }
   h2 {
     margin: var(--size-3) 0 0;

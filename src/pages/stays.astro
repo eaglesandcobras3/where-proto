@@ -121,6 +121,7 @@ const mapMarkers = markersFromNames(
   title="30A Stays & Vacation Rentals"
   description="Curated boutique inns, cottages, and vacation rentals along Scenic Highway 30A."
   active="stays"
+  crumbs={[{ label: "Stays" }]}
 >
   <div class="stays-page">
     <InteriorHero
@@ -170,7 +171,9 @@ const mapMarkers = markersFromNames(
                 primaryKey="kind"
                 primaryOptions={lodgingCounts}
                 initialPrimary={kind}
-                secondaries={[{ key: "amenity", label: "Amenities", options: amenityCounts }]}
+                tags={amenityCounts}
+                tagsLabel="Amenities"
+                tagsKey="amenity"
                 note={{
                   label: "Walton County rules",
                   body: "Short-term rental parking and LSV ordinances are enforced. Beach gear must be cleared nightly under Leave No Trace.",

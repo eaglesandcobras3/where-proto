@@ -35,6 +35,7 @@ const items = [
 
 <section class="featured">
   <div class="container">
+    <div class="scroller">
     <div class="grid">
       {
         items.map((item) => (
@@ -50,6 +51,7 @@ const items = [
         ))
       }
     </div>
+    </div>
   </div>
 </section>
 
@@ -57,10 +59,17 @@ const items = [
   .featured {
     padding-block: var(--size-5) var(--size-6);
   }
+  .scroller {
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    -webkit-overflow-scrolling: touch;
+  }
   .grid {
     display: grid;
-    gap: var(--size-4);
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--size-5);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    min-width: 56rem;
+    width: 100%;
   }
   .card {
     display: grid;
@@ -112,11 +121,5 @@ const items = [
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
     color: var(--brand-deep);
-  }
-  @media (min-width: 900px) {
-    .grid {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: var(--size-5);
-    }
   }
 </style>

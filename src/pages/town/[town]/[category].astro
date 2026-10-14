@@ -1,20 +1,20 @@
 ---
-import PlaceLayout from "../../../layouts/PlaceLayout.astro";
-import TwoPaneMap from "../../../components/TwoPaneMap.astro";
-import Corridor from "../../../components/Corridor.astro";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import InteriorHero from "../../../components/InteriorHero.astro";
+import ListingFilters from "../../../components/islands/ListingFilters.svelte";
+import ListingRail from "../../../components/ListingRail.astro";
 import FilterBar from "../../../components/islands/FilterBar.svelte";
 import {
   allLeaves,
-  businesses,
+  businessesForTown,
   categories,
-  guides,
   tags,
   towns,
 } from "../../../data/catalog";
-import GuideCard from "../../../components/GuideCard.astro";
 import type { Category, CategoryLeaf, Town } from "../../../data/types";
-import { href } from "../../../lib/href";
+import { categoryGroupsFor } from "../../../lib/unified-layout";
 import { toFilterBusiness } from "../../../lib/listing";
+import { withViewMap } from "../../../lib/map-markers";
 
 type LeafWithGroup = CategoryLeaf & { groupSlug: string; groupName: string };
 
@@ -22,13 +22,13 @@ export function getStaticPaths() {
   return towns.flatMap((town) => [
     ...categories.map((group) => ({
       params: { town: town.slug, category: group.slug },
-      props: { town, group, leaf: null as LeafWithGroup | null, showAll: true },
+      props: { town, group, leaf: null as LeafWithGroup | null },
     })),
     ...allLeaves().map((leaf) => {
       const group = categories.find((item) => item.slug === leaf.groupSlug) ?? categories[0];
       return {
         params: { town: town.slug, category: leaf.slug },
-        props: { town, group, leaf, showAll: false },
+        props: { town, group, leaf },
       };
     }),
   ]);
@@ -38,160 +38,107 @@ interface Props {
   town: Town;
   group: Category;
   leaf: LeafWithGroup | null;
-  showAll: boolean;
 }
 
-const { town, group, leaf, showAll } = Astro.props;
-const groupListings = businesses.filter(
-  (item) =>
-    item.townSlug === town.slug &&
-    item.categorySlug === group.slug &&
-    item.entityKind !== "town" &&
-    item.entityKind !== "area",
-);
-const leafCounts = group.leaves
-  .map((item) => ({
-    ...item,
-    count: groupListings.filter((listing) => listing.leafSlug === item.slug).length,
-  }))
-  .filter((item) => item.count > 0);
-const displayListings = showAll ? groupListings : groupListings.filter((item) => item.leafSlug === leaf?.slug);
+const { town, group, leaf } = Astro.props;
+const heading = leaf?.name ?? group.name;
+const townBusinesses = businessesForTown(town.slug);
+const consumerCategories = categories.filter((item) => item.slug !== "community");
+const categoryGroups = categoryGroupsFor(consumerCategories, townBusinesses, (item) => item.leafSlug);
 const filterCategories = [
-  { slug: group.slug, name: group.name },
-  ...group.leaves.map((item) => ({ slug: item.slug, name: item.name })),
+  ...consumerCategories.map((item) => ({ slug: item.slug, name: item.name })),
+  ...allLeaves()
+    .filter((item) => item.groupSlug !== "community")
+    .map((item) => ({ slug: item.slug, name: item.name })),
 ];
-const moreCategories = categories.filter((item) => item.slug !== group.slug);
-const relatedGuides = guides.filter(
-  (item) => item.categorySlug === group.slug || item.townSlug === town.slug,
-);
+const filterGroups = consumerCategories.map(({ slug, name, leaves }) => ({ slug, name, leaves }));
+const amenityCounts = tags.map((item) => ({
+  slug: item.slug,
+  name: item.name,
+  count: townBusinesses.filter((biz) => biz.tagSlugs.includes(item.slug)).length,
+}));
 const base = import.meta.env.BASE_URL;
-const searchHref = href(`/search?town=${town.slug}&category=${leaf?.slug ?? group.slug}`);
+const mapHref = withViewMap("/search", `?town=${town.slug}&category=${leaf?.slug ?? group.slug}`);
 ---
 
-<PlaceLayout
-  title={`${group.name} in ${town.name}`}
-  description={`Find ${group.name.toLowerCase()} in ${town.name}, Florida.`}
+<BaseLayout
+  title={`${heading} in ${town.name}`}
+  description={`Find ${heading.toLowerCase()} in ${town.name}, Florida.`}
   active="towns"
-  showBrowse
-  browseTown={town.name}
-  browseCategory={leaf?.name ?? group.name}
-  browseExpanded
   crumbs={[
     { label: "Towns", path: "/towns" },
     { label: town.name, path: `/town/${town.slug}` },
-    { label: leaf?.name ?? group.name },
+    { label: heading },
   ]}
 >
-  <TwoPaneMap
-    mapLabel={`${town.name} map`}
-    pinCount={Math.max(6, displayListings.length * 2)}
-    searchArea
-    resultLabel={`${displayListings.length} Results in ${town.name}`}
-  >
-    <Corridor currentSlug={town.slug} />
+  <div class="category-page">
+    <InteriorHero title={`${heading} in ${town.name}`} lede={`Businesses in ${town.name} along Scenic Highway 30A.`} />
+    <div class="container layout">
+      <div class="filters-col">
+        <ListingFilters
+          surface="search"
+          eventName="w30a:search-filters"
+          categoryGroups={categoryGroups}
+          initialPrimary={leaf?.slug ?? group.slug}
+          tags={amenityCounts}
+          tagsLabel="Tags"
+          tagsKey="tag"
+          client:load
+        />
+      </div>
 
-    <h1>{leaf?.name ?? group.name} in {town.name}</h1>
+      <div class="main">
+        <FilterBar
+          businesses={townBusinesses.map(toFilterBusiness)}
+          towns={towns}
+          categories={filterCategories}
+          categoryGroups={filterGroups}
+          tags={tags}
+          initialTown={town.slug}
+          initialCategory={leaf?.slug ?? group.slug}
+          externalChrome
+          base={base}
+          client:load
+        />
+      </div>
 
-    <div class="chips">
-      <a class="chip active" href={href(`/town/${town.slug}`)}>
-        {town.name} <span aria-hidden="true">&times;</span>
-      </a>
-      <a class="chip active" href={href(`/town/${town.slug}`)}>
-        {group.name} <span aria-hidden="true">&times;</span>
-      </a>
+      <aside class="rail">
+        <ListingRail
+          mapTitle={`${town.name} map`}
+          mapHref={mapHref}
+          contributeKind="business"
+          current="towns"
+          townSlug={town.slug}
+        />
+      </aside>
     </div>
-
-    {
-      leafCounts.length > 0 && (
-        <section>
-          <p class="eyebrow">Types of {group.name.toLowerCase()} in {town.name}</p>
-          <div class="chips">
-            <a class:list={["chip", showAll && "active"]} href={href(`/town/${town.slug}/${group.slug}`)}>
-              All ({groupListings.length})
-            </a>
-            {leafCounts.map((item) => (
-              <a
-                class:list={["chip", !showAll && item.slug === leaf?.slug && "active"]}
-                href={href(`/town/${town.slug}/${item.slug}`)}
-              >
-                {item.name} ({item.count})
-              </a>
-            ))}
-          </div>
-        </section>
-      )
-    }
-
-    <FilterBar
-      businesses={displayListings.map(toFilterBusiness)}
-      towns={towns}
-      categories={filterCategories}
-      tags={tags}
-      initialTown={town.slug}
-      initialCategory={leaf?.slug ?? group.slug}
-      base={base}
-      searchHref={searchHref}
-      totalCount={groupListings.length}
-      client:load
-    />
-
-    {
-      moreCategories.length > 0 && (
-        <section>
-          <h2 class="section-title">More categories in {town.name}</h2>
-          <div class="chips">
-            {moreCategories.map((item) => (
-              <a class="chip" href={href(`/town/${town.slug}/${item.slug}`)}>
-                {item.name}
-              </a>
-            ))}
-          </div>
-        </section>
-      )
-    }
-
-    {
-      relatedGuides.length > 0 && (
-        <section>
-          <h2 class="section-title">Guides for {group.name}</h2>
-          <div class="listing-grid-split">
-            {relatedGuides.map((guide) => (
-              <GuideCard guide={guide} />
-            ))}
-          </div>
-        </section>
-      )
-    }
-  </TwoPaneMap>
-</PlaceLayout>
+  </div>
+</BaseLayout>
 
 <style>
-  h1 {
-    font-size: var(--font-size-6);
-    margin-top: var(--size-4);
-  }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--size-2);
-    margin-block: var(--size-3);
-  }
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    gap: var(--size-2);
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-4);
-    padding: var(--size-1) var(--size-3);
-    background: white;
+  .category-page {
+    background: var(--brand-sand);
     color: var(--brand-ink);
-    font-size: var(--font-size-1);
   }
-  .chip:hover {
-    text-decoration: none;
-    border-color: var(--brand-teal);
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
   }
-  .chip.active {
-    border-color: var(--brand-teal);
+  .main {
+    min-width: 0;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
+    }
+    .rail {
+      display: grid;
+    }
   }
 </style>

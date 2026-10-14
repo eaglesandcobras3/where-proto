@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
@@ -63,74 +64,55 @@ const claimed = Boolean(business.ownerUserSlug);
 const businessUpdates = updatesForBusiness(business.slug);
 ---
 
-<BaseLayout title={business.name} description={business.summary} active="businesses">
+<BaseLayout
+  title={business.name}
+  description={business.summary}
+  active="businesses"
+  crumbs={[
+    { label: "Businesses", path: "/search" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: business.name },
+  ]}
+>
   <div class="biz-page">
-    <section class="hero">
-      <div class="container hero__inner">
-        <div class="hero__top">
-          <a class="back" href={href("/search")}>← Back to Businesses</a>
-          <nav class="crumbs" aria-label="Breadcrumb">
-            <a href={href("/")}>Home</a>
-            <span>/</span>
-            <a href={href("/search")}>Businesses</a>
-            {
-              town && (
-                <>
-                  <span>/</span>
-                  <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-                </>
-              )
-            }
-            <span>/</span>
-            <span class="current">{business.name}</span>
-          </nav>
-        </div>
-
-        <div class="badges">
-          {town && <span class="badge">{town.name} 30A Merchant</span>}
-          {area && <span class="badge">{area.name}</span>}
-          {business.openNow && <span class="badge badge--teal">Open now</span>}
-          {claimed && <span class="badge badge--teal">Verified owner</span>}
-        </div>
-
-        <div class="hero__row">
-          <div>
-            <h1>{business.name}</h1>
-            <p class="place">
-              {business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}
-              {area && <> · {area.name}</>}
-            </p>
-          </div>
-          <div class="actions">
-            <SaveShare type="business" slug={business.slug} name={business.name} href={href(`/business/${business.slug}`)} client:load />
-            {
-              business.phone && (
-                <a class="btn btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
-                  Call {business.phone}
-                </a>
-              )
-            }
-            {
-              business.website ? (
-                <a class="btn btn--teal" href={business.website} target="_blank" rel="noopener noreferrer">
-                  Visit Official Website →
-                </a>
-              ) : !claimed ? (
-                <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing →</a>
-              ) : null
-            }
-          </div>
-          
-        </div>
-
-        <div class="chips">
-          {chipTags.map((label) => (
-            <span class="chip">{label}</span>
-          ))}
-          {business.priceBand && <span class="chip">{business.priceBand}</span>}
-        </div>
+    <InteriorHero
+      title={business.name}
+      lede={`${business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}${area ? ` · ${area.name}` : ""}`}
+    >
+      <div slot="badges" class="badges">
+        {town && <span class="badge">{town.name} 30A Merchant</span>}
+        {area && <span class="badge">{area.name}</span>}
+        {business.openNow && <span class="badge badge--teal">Open now</span>}
+        {claimed && <span class="badge badge--teal">Verified owner</span>}
       </div>
-    </section>
+      <div slot="actions">
+        <SaveShare type="business" slug={business.slug} name={business.name} href={href(`/business/${business.slug}`)} client:load />
+        {
+          business.phone && (
+            <a class="hero-btn hero-btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
+              Call {business.phone}
+            </a>
+          )
+        }
+        {
+          business.website ? (
+            <a class="hero-btn" href={business.website} target="_blank" rel="noopener noreferrer">
+              Visit Official Website →
+            </a>
+          ) : !claimed ? (
+            <a class="hero-btn" href={href("/dashboard")}>
+              Claim this listing →
+            </a>
+          ) : null
+        }
+      </div>
+      <div class="chips">
+        {chipTags.map((label) => (
+          <span class="chip">{label}</span>
+        ))}
+        {business.priceBand && <span class="chip">{business.priceBand}</span>}
+      </div>
+    </InteriorHero>
 
     <div class="container layout">
       
@@ -218,82 +200,6 @@ const businessUpdates = updatesForBusiness(business.slug);
     background: var(--brand-sand);
     color: var(--brand-ink);
   }
-  .hero {
-    background: var(--brand-deep);
-    color: white;
-    padding: var(--size-6) 0 var(--size-7);
-  }
-  .hero__inner {
-    display: grid;
-    gap: var(--size-4);
-  }
-  .hero__top {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-3);
-    align-items: center;
-  }
-  .back,
-  .crumbs a {
-    color: var(--brand-line);
-    font-size: var(--font-size-1);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs .current {
-    color: white;
-  }
-  .badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .badge {
-    display: inline-flex;
-    align-items: center;
-    min-height: 1.75rem;
-    padding: 0.2rem 0.7rem;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(255, 255, 255, 0.18);
-    background: rgba(255, 255, 255, 0.06);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-line);
-  }
-  .badge--teal {
-    background: rgba(0, 137, 123, 0.25);
-    border-color: rgba(133, 246, 229, 0.35);
-    color: var(--mint);
-  }
-  .hero__row {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-4);
-    align-items: flex-end;
-  }
-  .hero h1 {
-    margin: 0 0 0.4rem;
-    font-size: clamp(2rem, 4.5vw, 3rem);
-    color: white;
-  }
-  .place {
-    margin: 0;
-    color: var(--brand-line);
-    font-size: var(--font-size-2);
-  }
-  .actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-  }
   .btn {
     display: inline-flex;
     align-items: center;
@@ -314,33 +220,11 @@ const businessUpdates = updatesForBusiness(business.slug);
   .btn--teal:hover {
     background: var(--brand-teal-hover);
   }
-  .btn--ghost {
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    color: white;
-    background: transparent;
-  }
-  .btn--ghost:hover {
-    background: rgba(255, 255, 255, 0.08);
-  }
   .btn--deep {
     width: 100%;
     background: var(--brand-deep);
     color: white;
     margin-top: var(--size-3);
-  }
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.45rem;
-  }
-  .chip {
-    display: inline-flex;
-    padding: 0.3rem 0.7rem;
-    border-radius: var(--radius-pill);
-    background: rgba(255, 255, 255, 0.08);
-    border: 1px solid rgba(255, 255, 255, 0.12);
-    font-size: var(--font-size-0);
-    color: var(--brand-line);
   }
   .layout {
     display: grid;

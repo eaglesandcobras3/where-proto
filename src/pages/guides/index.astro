@@ -111,6 +111,7 @@ const mapMarkers = markersFromNames(
   title="Travel Guides"
   description="Curated itineraries, neighborhood guides, and local tips for Scenic Highway 30A."
   active="guides"
+  crumbs={[{ label: "Guides" }]}
 >
   <div class="guides-page">
     <InteriorHero
@@ -137,28 +138,25 @@ const mapMarkers = markersFromNames(
           />
         </TwoPaneMap>
       ) : (
-        <div class="container layout layout--content-forward">
-          
+        <div class="container layout">
+          <div class="filters-col">
+            <ListingFilters
+              surface="guides"
+              eventName="w30a:guides-filters"
+              initialQuery={q}
+              towns={allTownCounts}
+              initialTown={town}
+              townTotal={guides.length}
+              primaryLabel="Topic"
+              primaryKey="topic"
+              primaryOptions={topicCounts}
+              initialPrimary={topic}
+              secondaries={[{ key: "source", label: "Source", options: sourceCounts }]}
+              client:load
+            />
+          </div>
 
           <div class="main">
-            <div>
-              <ListingFilters
-                surface="guides"
-                placement="inline"
-                eventName="w30a:guides-filters"
-                initialQuery={q}
-                towns={allTownCounts}
-                initialTown={town}
-                townTotal={guides.length}
-                primaryLabel="Topic"
-                primaryKey="topic"
-                primaryType="chips"
-                primaryOptions={topicCounts}
-                initialPrimary={topic}
-                secondaries={[{ key: "source", label: "Source", options: sourceCounts }]}
-                client:load
-              />
-            </div>
             <GuidesList
               guides={guideItems}
               initialTown={town}
@@ -298,7 +296,7 @@ const mapMarkers = markersFromNames(
   }
   @media (min-width: 1024px) {
     .layout {
-      grid-template-columns: 16rem minmax(0, 1fr) 17rem;
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
     }
     .rail {
       display: grid;

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import EntityText from "../../components/EntityText.astro";
 import ReactionBar from "../../components/ReactionBar.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
@@ -45,32 +46,30 @@ const sections = [
 ];
 ---
 
-<BaseLayout title={guide.title} description={guide.summary} active="guides">
+<BaseLayout
+  title={guide.title}
+  description={guide.summary}
+  active="guides"
+  crumbs={[
+    { label: "Guides", path: "/guides" },
+    ...(town ? [{ label: town.name, path: `/town/${town.slug}` }] : []),
+    { label: guide.title },
+  ]}
+>
   <div class="guide-page">
-    <section class="crumb-bar">
-      <div class="container crumb-bar__inner">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/guides")}>Guides</a>
-          <span>/</span>
-          <span class="current">{guide.title}</span>
-        </nav>
-        <span class="insider">30A Insider Guide</span>
+    <InteriorHero title={guide.title} lede={guide.summary}>
+      <div slot="badges" class="badges">
+        <span class="badge badge--teal">{town?.name ?? "All 30A Corridor"}</span>
+        <span class="badge">First-Timers</span>
+        {guide.categorySlug && <span class="badge">{guide.categorySlug.replaceAll("_", " ")}</span>}
       </div>
-    </section>
+      <div slot="actions">
+        <SaveShare type="guide" slug={guide.slug} name={guide.title} href={href(`/guide/${guide.slug}`)} client:load />
+      </div>
+    </InteriorHero>
 
     <div class="container layout">
       <article class="article">
-        <div class="badges">
-          <span class="badge badge--teal">{town?.name ?? "All 30A Corridor"}</span>
-          <span class="badge">First-Timers</span>
-          {guide.categorySlug && <span class="badge">{guide.categorySlug.replaceAll("_", " ")}</span>}
-        </div>
-
-        <h1>{guide.title}</h1>
-        <p class="lede">{guide.summary}</p>
-
         <div class="dossier">
           <div class="who">
             <span class="avatar" aria-hidden="true">{isFeatured ? "CD" : "ED"}</span>
@@ -81,9 +80,6 @@ const sections = [
               </p>
               <p class="meta">Published Oct 8, 2026 · {minutes} min read</p>
             </div>
-          </div>
-          <div class="actions">
-            <SaveShare type="guide" slug={guide.slug} name={guide.title} href={href(`/guide/${guide.slug}`)} client:load />
           </div>
         </div>
 
@@ -234,52 +230,6 @@ const sections = [
     background: var(--brand-sand);
     color: var(--brand-ink);
   }
-  .crumb-bar {
-    background: var(--brand-deep);
-    color: white;
-    padding: var(--size-4) 0;
-  }
-  .crumb-bar__inner {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-3);
-    align-items: center;
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a {
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a:hover {
-    color: var(--mint);
-  }
-  .crumbs .current {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
-    max-width: 18rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .insider {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.2rem 0.65rem;
-    border-radius: var(--radius-pill);
-    border: 1px solid rgba(0, 137, 123, 0.4);
-    background: rgba(0, 137, 123, 0.2);
-    color: var(--mint);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-7);
-  }
   .layout {
     display: grid;
     gap: var(--size-5);
@@ -293,39 +243,6 @@ const sections = [
     box-shadow: var(--shadow-card);
     padding: clamp(1.25rem, 3vw, 2rem);
     min-width: 0;
-  }
-  .badges {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-bottom: var(--size-4);
-  }
-  .badge {
-    padding: 0.25rem 0.6rem;
-    border-radius: var(--radius-2);
-    background: var(--brand-sand-dark);
-    border: 1px solid var(--brand-line);
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-ink);
-    text-transform: capitalize;
-  }
-  .badge--teal {
-    background: var(--brand-teal-soft);
-    border-color: var(--mint);
-    color: var(--brand-coral);
-  }
-  h1 {
-    margin: 0 0 var(--size-3);
-    font-size: clamp(1.75rem, 4vw, 2rem);
-    color: var(--brand-deep);
-    letter-spacing: -0.02em;
-  }
-  .lede {
-    margin: 0 0 var(--size-5);
-    font-size: var(--font-size-2);
-    color: var(--brand-ink-soft);
-    line-height: 1.6;
   }
   .dossier {
     display: flex;

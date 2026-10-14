@@ -1,5 +1,6 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import InteriorHero from "../../components/InteriorHero.astro";
 import TownCommunitySections from "../../components/TownCommunitySections.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
 import PhotoGrid from "../../components/PhotoGrid.astro";
@@ -50,60 +51,38 @@ const kindLabel = areaKindLabel(area.kind);
   title={`${area.name} in ${town.name}`}
   description={area.summary}
   active="towns"
+  crumbs={[
+    { label: "Towns", path: "/towns" },
+    { label: town.name, path: `/town/${town.slug}` },
+    { label: area.name },
+  ]}
 >
   <div class="area-page">
-    <section class="hero">
-      <div class="container hero__inner">
-        <nav class="crumbs" aria-label="Breadcrumb">
-          <a href={href("/")}>Home</a>
-          <span>/</span>
-          <a href={href("/towns")}>Towns</a>
-          <span>/</span>
-          <a href={href(`/town/${town.slug}`)}>{town.name}</a>
-          <span>/</span>
-          <span class="current">{area.name}</span>
-        </nav>
-
-        <div class="hero__title">
-          <div>
-            <div class="eyebrow-row">
-              <span class="live-pill">{kindLabel}</span>
-              <span class="tagline">Inside {town.name} · {view.tagline}</span>
-            </div>
-            <h1>{area.name}</h1>
-            <p class="lede">{area.summary}</p>
-            <p class="extends">
-              Extends <a href={href(`/town/${town.slug}`)}>{town.name}</a>. Local posts and events for this
-              {kindLabel.toLowerCase()} come from its area desk listing — same pattern as businesses and stays.
-            </p>
-          </div>
-          <div class="hero__actions">
-            <SaveShare type="area" slug={area.slug} name={area.name} href={href(`/area/${area.slug}`)} client:load />
-            <a class="ghost" href={href(`/town/${town.slug}`)}>View full town</a>
-            <a class="map-btn" href={href(`/town/${town.slug}#map`)}>Town map</a>
-          </div>
+    <InteriorHero title={area.name} kicker={kindLabel} lede={area.summary}>
+      <div slot="actions">
+        <SaveShare type="area" slug={area.slug} name={area.name} href={href(`/area/${area.slug}`)} client:load />
+        <a class="hero-btn hero-btn--ghost" href={href(`/town/${town.slug}`)}>View full town</a>
+        <a class="hero-btn hero-btn--ghost" href={href(`/town/${town.slug}#map`)}>Town map</a>
+      </div>
+      <div class="snapshot">
+        <div>
+          <span class="label">Parent town</span>
+          <strong>{town.name}</strong>
         </div>
-
-        <div class="snapshot">
-          <div>
-            <span class="label">Parent town</span>
-            <strong>{town.name}</strong>
-          </div>
-          <div>
-            <span class="label">Walkability</span>
-            <strong>{town.walkability}</strong>
-          </div>
-          <div>
-            <span class="label">Beach access</span>
-            <strong>{town.beachAccess}</strong>
-          </div>
-          <div>
-            <span class="label">Area type</span>
-            <strong>{kindLabel}</strong>
-          </div>
+        <div>
+          <span class="label">Walkability</span>
+          <strong>{town.walkability}</strong>
+        </div>
+        <div>
+          <span class="label">Beach access</span>
+          <strong>{town.beachAccess}</strong>
+        </div>
+        <div>
+          <span class="label">Area type</span>
+          <strong>{kindLabel}</strong>
         </div>
       </div>
-    </section>
+    </InteriorHero>
 
     <nav class="corridor" aria-label="30A corridor">
       <div class="container corridor__inner">
@@ -247,131 +226,6 @@ const kindLabel = areaKindLabel(area.kind);
   .area-page {
     background: var(--brand-sand);
     color: var(--brand-ink);
-  }
-  .hero {
-    background: var(--brand-deep);
-    color: white;
-    padding: var(--size-6) 0 var(--size-7);
-  }
-  .hero__inner {
-    display: grid;
-    gap: var(--size-5);
-  }
-  .crumbs {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    align-items: center;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a {
-    color: var(--brand-ink-on-navy);
-  }
-  .crumbs a:hover {
-    color: var(--mint);
-  }
-  .crumbs .current {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
-  }
-  .hero__title {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: var(--size-4);
-    align-items: flex-end;
-  }
-  .eyebrow-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.65rem;
-    align-items: center;
-    margin-bottom: 0.5rem;
-  }
-  .live-pill {
-    display: inline-flex;
-    padding: 0.2rem 0.65rem;
-    border-radius: var(--radius-pill);
-    background: rgba(0, 137, 123, 0.22);
-    color: var(--mint);
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  .tagline {
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-    color: var(--brand-line);
-  }
-  h1 {
-    margin: 0 0 0.5rem;
-    font-size: clamp(2rem, 5vw, 2.75rem);
-    color: white;
-  }
-  .lede {
-    margin: 0 0 0.75rem;
-    max-width: 40rem;
-    color: var(--brand-line);
-    font-size: var(--font-size-2);
-    line-height: 1.55;
-  }
-  .extends {
-    margin: 0;
-    max-width: 40rem;
-    font-size: var(--font-size-1);
-    color: var(--brand-ink-on-navy);
-  }
-  .extends a {
-    color: var(--mint);
-    font-weight: var(--font-weight-7);
-  }
-  .hero__actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  .ghost,
-  .map-btn {
-    display: inline-flex;
-    align-items: center;
-    border-radius: var(--radius-2);
-    padding: 0.5rem 0.85rem;
-    font-size: var(--font-size-0);
-    font-weight: var(--font-weight-6);
-    color: white;
-    text-decoration: none;
-  }
-  .ghost {
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.08);
-  }
-  .map-btn {
-    background: var(--brand-teal);
-  }
-  .map-btn:hover {
-    background: var(--brand-teal-hover);
-  }
-  .snapshot {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--size-3);
-    padding-top: var(--size-4);
-    border-top: 1px solid rgba(255, 255, 255, 0.12);
-  }
-  .snapshot .label {
-    display: block;
-    margin-bottom: 0.2rem;
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--brand-ink-on-navy);
-  }
-  .snapshot strong {
-    font-size: var(--font-size-1);
-    color: white;
   }
   .corridor {
     background: var(--brand-sand);
@@ -578,9 +432,6 @@ const kindLabel = areaKindLabel(area.kind);
     color: var(--brand-teal);
   }
   @media (min-width: 800px) {
-    .snapshot {
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
     .glance {
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
