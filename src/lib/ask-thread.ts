@@ -36,9 +36,14 @@ function topicLabel(question: string) {
   return trimmed.length > 72 ? `${trimmed.slice(0, 69).trim()}…` : trimmed;
 }
 
-export function generatedAskAnswers(question: string, tip?: string): AskAnswerView[] {
+export function generatedAskAnswers(question: string, tip?: string, placeName?: string): AskAnswerView[] {
   const topic = topicLabel(question);
-  const lead = tip ? firstSentence(tip) : "Start with a public access or a posted town rule, not a guest-only path.";
+  const place = placeName ? ` at ${placeName}` : "";
+  const lead = tip
+    ? firstSentence(tip)
+    : placeName
+      ? `Start with posted hours, parking, and host guidance${place} — not a guest-only path.`
+      : "Start with a public access or a posted town rule, not a guest-only path.";
   return [
     {
       kind: "ai_instant",
@@ -49,13 +54,13 @@ export function generatedAskAnswers(question: string, tip?: string): AskAnswerVi
       kind: "ai_followup",
       ...KIND_META.ai_followup,
       body: tip
-        ? `Checked a bit more: the local-guide note below is the one to trust if it disagrees with this. Recheck posted signs, seasonal hours, and cart rules the day you go.`
-        : `Checked a bit more on “${topic}”. Corridor rules shift by town and season — confirm posted signs, parking, and LSV guidance the day you go.`,
+        ? `Checked a bit more${place}: the local-guide note below is the one to trust if it disagrees with this. Recheck posted signs, seasonal hours, and cart rules the day you go.`
+        : `Checked a bit more on “${topic}”${place}. Corridor rules shift by town and season — confirm posted signs, parking, and LSV guidance the day you go.`,
     },
     {
       kind: "local_guide",
       ...KIND_META.local_guide,
-      body: tip ?? `A local guide can confirm the latest detail on “${topic}” before you lock the day.`,
+      body: tip ?? `A local guide can confirm the latest detail on “${topic}”${place} before you lock the day.`,
     },
   ];
 }

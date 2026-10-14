@@ -4,7 +4,7 @@ import InteriorHero from "../../../../../components/InteriorHero.astro";
 import EntityGallery from "../../../../../components/EntityGallery.astro";
 import EntityVideos from "../../../../../components/EntityVideos.astro";
 import EntityFeed from "../../../../../components/EntityFeed.astro";
-import CommunityQA from "../../../../../components/CommunityQA.astro";
+import EntityAsk from "../../../../../components/islands/EntityAsk.svelte";
 import RelatedGuides from "../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../components/HappeningHere.astro";
 import StayCard from "../../../../../components/StayCard.astro";
@@ -170,9 +170,13 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
             ))}
           </div>
         </section>
-        <CommunityQA
-          question={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
-          answer={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
+        <EntityAsk
+          placeName={stay.name}
+          placeKind="stay"
+          tip={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
+          sampleQuestion={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
+          askHref={href("/ask")}
+          client:visible
         />
       </div>
 
