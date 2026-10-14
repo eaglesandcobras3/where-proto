@@ -3,9 +3,10 @@ import type { Reaction } from "../data/types";
 
 interface Props {
   reactions?: Reaction[];
+  hideCounts?: boolean;
 }
 
-const { reactions = [] } = Astro.props;
+const { reactions = [], hideCounts = false } = Astro.props;
 
 const icons: Record<Reaction["label"], string> = {
   up: "👍",
@@ -29,9 +30,9 @@ const shown: { label: Reaction["label"]; count: number }[] = [
 <div class="reactions" role="group" aria-label="Reactions">
   {
     shown.map((item) => (
-      <button type="button" class="btn" aria-label={`${names[item.label]}, ${item.count}`}>
+      <button type="button" class="btn" aria-label={hideCounts ? names[item.label] : `${names[item.label]}, ${item.count}`}>
         <span aria-hidden="true">{icons[item.label]}</span>
-        <span>{item.count}</span>
+        {!hideCounts && <span>{item.count}</span>}
       </button>
     ))
   }

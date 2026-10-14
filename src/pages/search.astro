@@ -7,6 +7,10 @@ import TwoPaneMap from "../components/TwoPaneMap.astro";
 import SearchHeroSearch from "../components/islands/SearchHeroSearch.svelte";
 import SearchSidebarFilters from "../components/islands/SearchSidebarFilters.svelte";
 import FilterBar from "../components/islands/FilterBar.svelte";
+import ListingFilters from "../components/islands/ListingFilters.svelte";
+import ListingRail from "../components/ListingRail.astro";
+import LocalsPick from "../components/LocalsPick.astro";
+import { townCountsFor } from "../lib/unified-layout";
 import {
   allLeaves,
   categories,
@@ -30,6 +34,7 @@ const comboCanonical = Boolean(town && category && !tag && !openNow && !q);
 const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
 /** Place desks live under Community — omit from consumer search filters. */
 const searchCategories = categories.filter((item) => item.slug !== "community");
+const unifiedCategories = searchCategories.filter((item) => item.slug !== "stay");
 const filterCategories = [
   ...searchCategories.map((item) => ({ slug: item.slug, name: item.name })),
   ...allLeaves()
@@ -54,6 +59,17 @@ const townCounts = towns
     count: searchableBusinesses.filter((biz) => biz.townSlug === item.slug).length,
   }))
   .filter((item) => item.count > 0);
+const allTownCounts = townCountsFor(towns, searchableBusinesses, (biz) => biz.townSlug);
+const unifiedCategoryCounts = unifiedCategories.map((item) => ({
+  slug: item.slug,
+  name: item.name,
+  count: searchableBusinesses.filter((biz) => biz.categorySlug === item.slug).length,
+}));
+const amenityCounts = tags.map((item) => ({
+  slug: item.slug,
+  name: item.name,
+  count: searchableBusinesses.filter((biz) => biz.tagSlugs.includes(item.slug)).length,
+}));
 
 const heroTowns = towns.map(({ slug, name }) => ({ slug, name }));
 const heroCategories = searchCategories.map(({ slug, name }) => ({ slug, name }));
@@ -80,15 +96,17 @@ const mapMarkers = markersFromNames(
       title="30A Local Businesses & Curated Outposts"
       lede="Discover coffee, dining, boutiques, and neighborhood favorites verified by residents and the WhereTo30A editorial desk."
     >
-      <SearchHeroSearch
-        towns={heroTowns}
-        categories={heroCategories}
-        initialTown={town}
-        initialCategory={category}
-        initialQuery={q}
-        initialTag={tag}
-        client:load
-      />
+      <div data-when="legacy">
+        <SearchHeroSearch
+          towns={heroTowns}
+          categories={heroCategories}
+          initialTown={town}
+          initialCategory={category}
+          initialQuery={q}
+          initialTag={tag}
+          client:load
+        />
+      </div>
     </InteriorHero>
 
     {
@@ -130,16 +148,37 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout">
-          <SearchSidebarFilters
-            categories={categoryCounts}
-            towns={townCounts}
-            tags={tags}
-            initialTown={town}
-            initialCategory={category}
-            initialTag={tag}
-            total={searchableBusinesses.length}
-            client:load
-          />
+          <div class="filters-col">
+            <div data-when="legacy">
+              <SearchSidebarFilters
+                categories={categoryCounts}
+                towns={townCounts}
+                tags={tags}
+                initialTown={town}
+                initialCategory={category}
+                initialTag={tag}
+                total={searchableBusinesses.length}
+                client:load
+              />
+            </div>
+            <div data-when="unified">
+              <ListingFilters
+                surface="search"
+                eventName="w30a:search-filters"
+                initialQuery={q}
+                towns={allTownCounts}
+                initialTown={town}
+                townTotal={searchableBusinesses.length}
+                primaryLabel="Category"
+                primaryKey="category"
+                primaryOptions={unifiedCategoryCounts}
+                initialPrimary={category}
+                secondaries={[{ key: "tag", label: "Amenities", options: amenityCounts }]}
+                initialSecondaries={{ tag }}
+                client:load
+              />
+            </div>
+          </div>
 
           <FilterBar
             businesses={searchableBusinesses.map(toFilterBusiness)}
@@ -157,19 +196,31 @@ const mapMarkers = markersFromNames(
           />
 
           <aside class="rail">
-            <MapToggle title="30A Businesses Map" href={mapHref} />
-            <ContributeCard kind="business" />
-
-            {pick && (
-              <section class="widget pick">
-                <p class="widget__label">Locals’ Morning Pick</p>
-                <p class="pick__quote">
-                  “{pick.name} is the courtyard stop before the square wakes up — cold brew, pastry case, and a bike rack on the Timpoochee.”
-                </p>
-                <p class="pick__by">Caroline L. · WaterColor Resident &amp; Guide</p>
-                <a href={href(`/business/${pick.slug}`)}>Explore {pick.name} →</a>
-              </section>
-            )}
+            <div data-when="legacy">
+              <MapToggle title="30A Businesses Map" href={mapHref} />
+              <ContributeCard kind="business" />
+              {pick && (
+                <section class="widget pick">
+                  <p class="widget__label">Locals’ Morning Pick</p>
+                  <p class="pick__quote">
+                    “{pick.name} is the courtyard stop before the square wakes up — cold brew, pastry case, and a bike rack on the Timpoochee.”
+                  </p>
+                  <p class="pick__by">Caroline L. · WaterColor Resident &amp; Guide</p>
+                  <a href={href(`/business/${pick.slug}`)}>Explore {pick.name} →</a>
+                </section>
+              )}
+            </div>
+            <div data-when="unified">
+              <ListingRail mapTitle="Businesses map" mapHref={mapHref} contributeKind="business" current="businesses">
+                <LocalsPick
+                  slot="discovery"
+                  name={pick?.name ?? "30A"}
+                  quote={`${pick?.name ?? "This courtyard stop"} is the courtyard stop before the square wakes up — cold brew, pastry case, and a bike rack on the Timpoochee.`}
+                  byline="Caroline L. · WaterColor Resident & Guide"
+                  href={pick ? `/business/${pick.slug}` : "/search"}
+                />
+              </ListingRail>
+            </div>
           </aside>
         </div>
       )

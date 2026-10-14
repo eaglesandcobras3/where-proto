@@ -1,0 +1,126 @@
+/* Visibility for the unified listing/detail skeleton. Default OFF. */
+html[data-unified-layout="off"] [data-when="unified"],
+html:not([data-unified-layout]) [data-when="unified"] {
+  display: none !important;
+}
+
+html[data-unified-layout="on"] [data-when="legacy"] {
+  display: none !important;
+}
+
+html[data-unified-layout="on"] .layout.layout--content-forward {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+@media (min-width: 960px) {
+  html[data-unified-layout="on"] .layout.layout--content-forward {
+    grid-template-columns: minmax(0, 1fr) 16rem;
+  }
+}
+
+html[data-unified-layout="on"] .layout.layout--content-forward > .filters-col {
+  display: none !important;
+}
+
+.listing-note {
+  pointer-events: none;
+  opacity: 0.72;
+  background: #f8fafc;
+  border: 1px solid var(--brand-line);
+  border-radius: var(--radius-3);
+  padding: var(--size-3) var(--size-4);
+  color: var(--brand-ink-soft);
+}
+
+.listing-note__label {
+  margin: 0 0 0.25rem;
+  font-size: 0.625rem;
+  font-weight: var(--font-weight-8);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.listing-note p:last-child {
+  margin: 0;
+  font-size: var(--font-size-0);
+  line-height: 1.45;
+}
+
+.listing-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--size-3);
+  margin-bottom: var(--size-4);
+}
+
+.listing-toolbar__count {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: var(--font-size-3);
+  font-weight: var(--font-weight-7);
+  color: var(--brand-ink);
+}
+
+.listing-toolbar__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.listing-sort {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  font-size: var(--font-size-1);
+  color: var(--brand-ink-soft);
+}
+
+.listing-sort label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.listing-sort select {
+  font: inherit;
+  font-weight: var(--font-weight-6);
+  color: var(--brand-ink);
+  border: 1px solid var(--brand-line);
+  border-radius: var(--radius-2);
+  background: white;
+  padding: 0.25rem 0.45rem;
+}
+
+.listing-sort__note {
+  font-size: var(--font-size-0);
+  color: var(--brand-ink-soft);
+}
+
+.quick-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.quick-chips button {
+  border: 0;
+  background: var(--brand-sand-dark);
+  border-radius: var(--radius-pill);
+  padding: 0.35rem 0.75rem;
+  font: inherit;
+  font-size: var(--font-size-0);
+  font-weight: var(--font-weight-6);
+  color: var(--brand-ink-soft);
+  cursor: pointer;
+}
+
+.quick-chips button.active {
+  background: var(--brand-deep);
+  color: white;
+}

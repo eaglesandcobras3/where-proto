@@ -8,6 +8,10 @@ import AskHeroSearch from "../../components/islands/AskHeroSearch.svelte";
 import AskComposer from "../../components/islands/AskComposer.svelte";
 import AskIndex from "../../components/islands/AskIndex.svelte";
 import AskSidebarFilters from "../../components/islands/AskSidebarFilters.svelte";
+import ListingFilters from "../../components/islands/ListingFilters.svelte";
+import ListingRail from "../../components/ListingRail.astro";
+import TopContributors from "../../components/TopContributors.astro";
+import { townCountsFor } from "../../lib/unified-layout";
 import { commentsFor, questions, towns, townBySlug, userBySlug } from "../../data/catalog";
 import { relativeTime } from "../../lib/labels";
 import { href } from "../../lib/href";
@@ -55,6 +59,22 @@ const townCounts = towns
     count: questions.filter((question) => question.townSlug === item.slug).length,
   }))
   .filter((item) => item.count > 0);
+const allTownCounts = townCountsFor(towns, questions, (question) => question.townSlug);
+const topicWords: Record<string, string[]> = {
+  parking: ["parking", "park", "access"],
+  dining: ["eat", "dinner", "food", "restaurant", "dining"],
+  family: ["kids", "family", "children"],
+  "getting-around": ["bike", "cart", "trail", "golf"],
+  "beach-access": ["beach", "access", "parking"],
+};
+const topicCounts = topicOptions.map((item) => ({
+  ...item,
+  count: rows.filter((question) => {
+    const words = topicWords[item.slug] ?? [item.slug];
+    const hay = `${question.title} ${question.body ?? ""}`.toLowerCase();
+    return words.some((word) => hay.includes(word));
+  }).length,
+}));
 
 const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
 const mapMarkers = markersFromNames(
@@ -76,13 +96,15 @@ const mapMarkers = markersFromNames(
       title="Ask the Locals"
       lede="Straight answers on golf carts, walkovers, parking, and dining from residents across Scenic Highway 30A."
     >
-      <AskHeroSearch
-        towns={exploreTowns}
-        initialTown={town}
-        initialTopic={topic}
-        initialQuery={q}
-        client:load
-      />
+      <div data-when="legacy">
+        <AskHeroSearch
+          towns={exploreTowns}
+          initialTown={town}
+          initialTopic={topic}
+          initialQuery={q}
+          client:load
+        />
+      </div>
     </InteriorHero>
 
     {
@@ -104,17 +126,40 @@ const mapMarkers = markersFromNames(
           />
         </TwoPaneMap>
       ) : (
-        <div class="container layout">
-          <AskSidebarFilters
-            towns={townCounts}
-            topics={topicOptions}
-            initialTown={town}
-            initialTopic={topic}
-            total={questions.length}
-            client:load
-          />
+        <div class="container layout layout--content-forward">
+          <div class="filters-col" data-when="legacy">
+            <AskSidebarFilters
+              towns={townCounts}
+              topics={topicOptions}
+              initialTown={town}
+              initialTopic={topic}
+              total={questions.length}
+              client:load
+            />
+          </div>
 
           <div class="main">
+            <div data-when="unified">
+              <ListingFilters
+                surface="ask"
+                placement="inline"
+                eventName="w30a:ask-filters"
+                initialQuery={q}
+                towns={allTownCounts}
+                initialTown={town}
+                townTotal={questions.length}
+                primaryLabel="Topic"
+                primaryKey="topic"
+                primaryType="chips"
+                primaryOptions={topicCounts}
+                initialPrimary={topic}
+                note={{
+                  label: "Leave no trace",
+                  body: "Pack out what you pack in, stay on marked paths, and respect dune fencing along 30A.",
+                }}
+                client:load
+              />
+            </div>
             <AskComposer towns={exploreTowns} topics={topicOptions} client:visible />
             <AskIndex
               questions={rows}
@@ -127,6 +172,7 @@ const mapMarkers = markersFromNames(
           </div>
 
           <aside class="rail">
+            <div data-when="legacy">
             <MapToggle title="30A Ask Map" href={mapHref} />
             <ContributeCard kind="ask" />
 
@@ -175,6 +221,20 @@ const mapMarkers = markersFromNames(
             <li>Leave beaches cleaner than you found them</li>
           </ul>
         </section>
+            </div>
+            <div data-when="unified">
+              <ListingRail mapTitle="Questions map" mapHref={mapHref} contributeKind="ask" current="ask">
+                <TopContributors
+                  slot="discovery"
+                  people={[
+                    { initials: "B", name: "beachlocal", detail: "Seaside" },
+                    { initials: "L", name: "local_owner", detail: "Rosemary" },
+                    { initials: "F", name: "first_timer", detail: "WaterColor" },
+                  ]}
+                  topics={[{ label: "#SeasideParking" }, { label: "#GolfCartRules" }, { label: "#QuietBeaches" }]}
+                />
+              </ListingRail>
+            </div>
           </aside>
         </div>
       )

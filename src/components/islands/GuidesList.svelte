@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ListingToolbar from "./ListingToolbar.svelte";
+
   interface GuideItem {
     slug: string;
     title: string;
@@ -12,6 +14,8 @@
     source: "whereto" | "community";
     minutes: number;
     popularity: number;
+    views?: number;
+    publishedAt?: string;
     featured?: boolean;
   }
 
@@ -32,7 +36,7 @@
   let town = $state(initialTown);
   let category = $state(initialCategory);
   let query = $state(initialQuery);
-  let source = $state<"whereto" | "community">("whereto");
+  let source = $state<"whereto" | "community" | "">("whereto");
   let sort = $state<"latest" | "popular">("latest");
 
   function path(route: string) {
@@ -52,7 +56,7 @@
   let results = $derived(
     [...guides]
       .filter((item) => {
-        if (item.source !== source) return false;
+        if (source && item.source !== source) return false;
         if (town && item.townSlug !== town) return false;
         if (category) {
           const words = topicWords[category] ?? [category];
@@ -66,8 +70,10 @@
         return true;
       })
       .toSorted((a, b) => {
-        if (sort === "popular") return b.popularity - a.popularity || a.title.localeCompare(b.title);
-        return b.minutes - a.minutes || a.title.localeCompare(b.title);
+        const aViews = a.views ?? a.popularity;
+        const bViews = b.views ?? b.popularity;
+        if (sort === "popular") return bViews - aViews || a.title.localeCompare(b.title);
+        return (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "") || b.minutes - a.minutes;
       }),
   );
 
@@ -78,6 +84,8 @@
       town = detail.town;
       category = detail.category;
       query = detail.query;
+      const extra = detail as { source?: string };
+      if (extra.source !== undefined) source = extra.source as typeof source;
     };
     window.addEventListener("w30a:guides-filters", onFilters);
     return () => window.removeEventListener("w30a:guides-filters", onFilters);
@@ -85,7 +93,7 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar">
+  <div class="toolbar" data-when="legacy">
     <div class="source" role="group" aria-label="Guide source">
       <button class:active={source === "whereto"} type="button" onclick={() => (source = "whereto")}>
         WhereTo Guides
@@ -102,6 +110,9 @@
         <button class:active={sort === "popular"} type="button" onclick={() => (sort = "popular")}>Popular</button>
       </div>
     </div>
+  </div>
+  <div data-when="unified">
+    <ListingToolbar surface="guides" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 
   <div class="list">

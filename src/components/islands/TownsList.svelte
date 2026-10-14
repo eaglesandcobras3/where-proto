@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ListingToolbar from "./ListingToolbar.svelte";
+
   interface TownItem {
     slug: string;
     name: string;
@@ -32,6 +34,7 @@
   let region = $state(initialRegion);
   let vibe = $state(initialVibe);
   let beach = $state("");
+  let sort = $state<"west-east" | "az">("west-east");
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -39,16 +42,18 @@
   }
 
   let results = $derived(
-    towns.filter((item) => {
-      if (region && item.region !== region) return false;
-      if (vibe && item.vibeSlug !== vibe) return false;
-      if (beach && item.beachSlug !== beach) return false;
-      if (query.trim()) {
-        const hay = `${item.name} ${item.summary} ${item.tagline} ${item.vibe} ${item.highlights.join(" ")}`.toLowerCase();
-        if (!hay.includes(query.trim().toLowerCase())) return false;
-      }
-      return true;
-    }),
+    towns
+      .filter((item) => {
+        if (region && item.region !== region) return false;
+        if (vibe && item.vibeSlug !== vibe) return false;
+        if (beach && item.beachSlug !== beach) return false;
+        if (query.trim()) {
+          const hay = `${item.name} ${item.summary} ${item.tagline} ${item.vibe} ${item.highlights.join(" ")}`.toLowerCase();
+          if (!hay.includes(query.trim().toLowerCase())) return false;
+        }
+        return true;
+      })
+      .toSorted((a, b) => (sort === "az" ? a.name.localeCompare(b.name) : 0)),
   );
 
   $effect(() => {
@@ -68,9 +73,12 @@
 </script>
 
 <section class="feed">
-  <div class="head">
+  <div class="head" data-when="legacy">
     <h2>Scenic Highway Communities</h2>
     <span aria-live="polite">{results.length} towns</span>
+  </div>
+  <div data-when="unified">
+    <ListingToolbar surface="towns" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 
   <div class="list">

@@ -11,6 +11,8 @@ import { absHref, href } from "../lib/href";
 import "../styles/tokens.css";
 import "../styles/global.css";
 import "../styles/grids.css";
+import "../styles/unified-layout.css";
+import { envUnifiedLayoutEnabled, UNIFIED_FLAG_KEY } from "../lib/unified-layout";
 import "@awesome.me/webawesome/dist/styles/webawesome.css";
 
 interface Props {
@@ -116,6 +118,9 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
   name,
   leaves: leaves.map((leaf) => ({ slug: leaf.slug, name: leaf.name })),
 }));
+const envUnified = envUnifiedLayoutEnabled();
+const posthogKey = import.meta.env.PUBLIC_POSTHOG_KEY ?? "";
+const posthogHost = import.meta.env.PUBLIC_POSTHOG_HOST ?? "https://us.i.posthog.com";
 ---
 
 <!doctype html>
@@ -147,8 +152,76 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
         document.documentElement.dataset.persona = "guest";
       }
     </script>
+    <script is:inline define:vars={{ envUnified, posthogKey, posthogHost, UNIFIED_FLAG_KEY }}>
+      (function () {
+        var on = false;
+        try {
+          var params = new URLSearchParams(location.search);
+          var override = params.get("unified") || params.get(UNIFIED_FLAG_KEY);
+          var stored = localStorage.getItem(UNIFIED_FLAG_KEY);
+          if (override === "1" || override === "true") on = true;
+          else if (override === "0" || override === "false") on = false;
+          else if (stored === "1") on = true;
+          else if (stored === "0") on = false;
+          else on = !!envUnified;
+        } catch (e) {
+          on = !!envUnified;
+        }
+        document.documentElement.dataset.unifiedLayout = on ? "on" : "off";
+        window.__w30aUnifiedLayout = on;
+      })();
+    </script>
+    {
+      posthogKey && (
+        <script is:inline define:vars={{ posthogKey, posthogHost, UNIFIED_FLAG_KEY }}>
+          (function () {
+            var params = new URLSearchParams(location.search);
+            if (params.get("unified") || params.get(UNIFIED_FLAG_KEY)) return;
+            var s = document.createElement("script");
+            s.async = true;
+            s.src = "https://us.i.posthog.com/static/array.js";
+            s.onload = function () {
+              if (!window.posthog) return;
+              window.posthog.init(posthogKey, {
+                api_host: posthogHost,
+                loaded: function (ph) {
+                  ph.onFeatureFlags(function () {
+                    var enabled = ph.isFeatureEnabled(UNIFIED_FLAG_KEY);
+                    document.documentElement.dataset.unifiedLayout = enabled ? "on" : "off";
+                    try {
+                      localStorage.setItem(UNIFIED_FLAG_KEY, enabled ? "1" : "0");
+                    } catch (e) {}
+                    window.dispatchEvent(
+                      new CustomEvent("w30a:unified-layout", { detail: { on: !!enabled } }),
+                    );
+                  });
+                },
+              });
+            };
+            document.head.appendChild(s);
+          })();
+        </script>
+      )
+    }
   </head>
   <body class:list={[bare && "bare-shell"]}>
+    <script is:inline>
+      (function () {
+        function pruneLayoutTrees() {
+          var on = document.documentElement.dataset.unifiedLayout === "on";
+          var selector = on ? '[data-when="legacy"]' : '[data-when="unified"]';
+          document.querySelectorAll(selector).forEach(function (node) {
+            node.remove();
+          });
+        }
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", pruneLayoutTrees);
+        } else {
+          pruneLayoutTrees();
+        }
+        window.addEventListener("w30a:unified-layout", pruneLayoutTrees);
+      })();
+    </script>
     {!bare && <Header active={active} />}
     {
       !bare && showBrowse && (

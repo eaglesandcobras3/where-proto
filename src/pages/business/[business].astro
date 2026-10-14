@@ -4,6 +4,11 @@ import PhotoGrid from "../../components/PhotoGrid.astro";
 import EventCard from "../../components/EventCard.astro";
 import PostCard from "../../components/PostCard.astro";
 import BusinessCard from "../../components/BusinessCard.astro";
+import EntityGallery from "../../components/EntityGallery.astro";
+import CommunityQA from "../../components/CommunityQA.astro";
+import RelatedGuides from "../../components/RelatedGuides.astro";
+import HappeningHere from "../../components/HappeningHere.astro";
+import ExploreLinks from "../../components/ExploreLinks.astro";
 import { isEnabled } from "../../config/flags";
 import {
   areaBySlug,
@@ -16,6 +21,7 @@ import {
   tagBySlug,
   townBySlug,
   updatesForBusiness,
+  guides,
 } from "../../data/catalog";
 import type { Business } from "../../data/types";
 import { href } from "../../lib/href";
@@ -44,6 +50,11 @@ const similar = businesses
       item.slug !== business.slug &&
       (item.townSlug === business.townSlug || item.leafSlug === business.leafSlug),
   )
+  .slice(0, 3);
+const relatedGuides = guides
+  .filter((item) => item.townSlug === business.townSlug || item.categorySlug === business.categorySlug)
+  .concat(guides)
+  .filter((item, index, list) => list.findIndex((row) => row.slug === item.slug) === index)
   .slice(0, 3);
 
 const chipTags = business.tagSlugs
@@ -120,7 +131,11 @@ const faq = [
               {area && <> · {area.name}</>}
             </p>
           </div>
-          <div class="actions">
+          <div class="actions" data-when="unified">
+            <button class="btn btn--ghost" type="button">Save</button>
+            <button class="btn btn--ghost" type="button">Share</button>
+          </div>
+          <div class="actions" data-when="legacy">
             {
               business.phone && (
                 <a class="btn btn--ghost" href={`tel:${business.phone.replace(/[^\d+]/g, "")}`}>
@@ -150,7 +165,7 @@ const faq = [
     </section>
 
     <div class="container layout">
-      <div class="main">
+      <div class="main" data-when="legacy">
         <section class="panel">
           <p class="eyebrow">Insider Profile · Curated by 30A Editorial</p>
           <h2>About {business.name}</h2>
@@ -262,7 +277,45 @@ const faq = [
         </section>
       </div>
 
+      <div class="main" data-when="unified">
+        <section class="panel">
+          <p class="eyebrow">About</p>
+          <h2>About {business.name}</h2>
+          <p>{business.summary}</p>
+        </section>
+        <EntityGallery photos={businessPhotos} fallbackName={business.name} />
+        <section class="panel">
+          <h2>Hours &amp; location</h2>
+          <p>{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          <p class="muted">{business.hours ?? "Hours vary"}</p>
+        </section>
+        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
+        <CommunityQA
+          question={`What should first-timers know before visiting ${business.name}?`}
+          answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
+        />
+        <section class="panel faq">
+          <h2>Good to know</h2>
+          {faq.map((item) => (
+            <details>
+              <summary>{item.q}</summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </section>
+        <RelatedGuides guides={relatedGuides} />
+        <section class="panel">
+          <h2>Similar nearby</h2>
+          <div class="listing-grid">
+            {similar.map((item) => (
+              <BusinessCard business={item} />
+            ))}
+          </div>
+        </section>
+      </div>
+
       <aside class="rail">
+        <div data-when="legacy">
         <section class="widget">
           <p class="widget__label">Location &amp; Access</p>
           <div class="map img-placeholder" aria-hidden="true">
@@ -319,12 +372,31 @@ const faq = [
           <p>Claim this listing to post updates, events, and verified hours.</p>
           <a class="btn btn--teal" href={href("/dashboard")}>Claim this listing</a>
         </section>
+        </div>
+        <div data-when="unified">
+          <section class="widget">
+            <p class="widget__label">Location</p>
+            <div class="map img-placeholder" aria-hidden="true">
+              <span class="map__tag">{town?.name ?? "30A"}</span>
+            </div>
+            <p class="addr">{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
+          </section>
+          <section class="widget">
+            <p class="widget__label">Get directions</p>
+            {town && (
+              <a class="btn btn--deep" href={href(`/town/${town.slug}`)}>
+                Get directions
+              </a>
+            )}
+          </section>
+          <ExploreLinks current="businesses" townSlug={town?.slug} />
+        </div>
       </aside>
     </div>
 
     {
       similar.length > 0 && (
-        <section class="similar">
+        <section class="similar" data-when="legacy">
           <div class="container">
             <h2>Similar Nearby Places</h2>
             <div class="listing-grid">
