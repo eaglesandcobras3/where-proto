@@ -6,7 +6,7 @@ import MapToggle from "../../components/MapToggle.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import EntityVideos from "../../components/EntityVideos.astro";
 import EntityFeed from "../../components/EntityFeed.astro";
-import CommunityQA from "../../components/CommunityQA.astro";
+import EntityAsk from "../../components/islands/EntityAsk.svelte";
 import RelatedGuides from "../../components/RelatedGuides.astro";
 import HappeningHere from "../../components/HappeningHere.astro";
 import TownStays from "../../components/TownStays.astro";
@@ -14,9 +14,11 @@ import CategoriesInTown from "../../components/CategoriesInTown.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
 import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
 import {
+  answersForQuestion,
   communityPhotosForPosts,
   events,
   guides,
+  questionBySlug,
   photosFor,
   stays,
   towns,
@@ -27,6 +29,7 @@ import {
 } from "../../data/catalog";
 import type { Town } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
+import { threadForQuestion } from "../../lib/ask-thread";
 import { href } from "../../lib/href";
 import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
@@ -41,6 +44,13 @@ interface Props {
 
 const { item: town } = Astro.props;
 const view = townView(town);
+const townAskSlug =
+  town.slug === "seaside" ? "parking-near-seaside" : town.slug === "rosemary-beach" ? "golf-carts-rosemary" : undefined;
+const townAsk = townAskSlug ? questionBySlug(townAskSlug) : undefined;
+const townAskAnswers = townAsk ? threadForQuestion(townAsk, answersForQuestion(townAsk.slug)) : [];
+const townAskTip =
+  townAskAnswers.find((item) => item.kind === "local_guide")?.body ??
+  "Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private.";
 const photos = photosFor("town", town.slug);
 const feedPosts = visitorPostsAboutTown(town.slug);
 const communityPhotos = communityPhotosForPosts(feedPosts);
@@ -145,9 +155,14 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
             ))}
           </ul>
         </section>
-        <CommunityQA
-          question={`What's the best public beach access near ${town.name}?`}
-          answer="Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private."
+        <EntityAsk
+          placeName={town.name}
+          placeKind="town"
+          tip={townAskTip}
+          sampleQuestion={townAsk?.title ?? `What's the best public beach access near ${town.name}?`}
+          sampleAnswers={townAskAnswers}
+          askHref={href(townAsk ? `/ask/${townAsk.slug}` : "/ask")}
+          client:visible
         />
       </div>
 

@@ -12,14 +12,14 @@
     askHref = "/ask",
   }: {
     placeName: string;
-    placeKind?: "business" | "stay";
+    placeKind?: "business" | "stay" | "town";
     tip?: string;
     sampleQuestion?: string;
     sampleAnswers?: AskAnswerView[];
     askHref?: string;
   } = $props();
 
-  const noun = $derived(placeKind === "stay" ? "stay" : "place");
+  const noun = $derived(placeKind === "stay" ? "stay" : placeKind === "town" ? "town" : "place");
   const question = $derived(sampleQuestion || `What should first-timers know before visiting ${placeName}?`);
   const shownSample = $derived(sampleAnswers.length > 0 ? sampleAnswers : generatedAskAnswers(question, tip, placeName));
 </script>
