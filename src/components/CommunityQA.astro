@@ -1,25 +1,32 @@
 ---
+import AskAnswerThread from "./islands/AskAnswerThread.svelte";
+import { answersForQuestion, questionBySlug } from "../data/catalog";
+import { generatedAskAnswers, threadForQuestion } from "../lib/ask-thread";
 import { href } from "../lib/href";
 
 interface Props {
   question: string;
   answer: string;
+  questionSlug?: string;
 }
 
-const { question, answer } = Astro.props;
+const { question, answer, questionSlug } = Astro.props;
+const catalogQuestion = questionSlug ? questionBySlug(questionSlug) : undefined;
+const answers = catalogQuestion
+  ? threadForQuestion(catalogQuestion, answersForQuestion(catalogQuestion.slug))
+  : generatedAskAnswers(question, answer);
+const threadHref = catalogQuestion ? href(`/ask/${catalogQuestion.slug}`) : href("/ask");
 ---
 
 <section class="panel community-qa">
   <div class="panel__head">
     <h2>Ask the Locals</h2>
-    <a href={href("/ask")}>Ask a question</a>
+    <a href={threadHref}>{catalogQuestion ? "Open thread" : "Ask a question"}</a>
   </div>
   <article class="qa">
-    <p class="qa__q">{question}</p>
-    <p class="qa__a">
-      <strong>Local tip:</strong>
-      {answer}
-    </p>
+    <p class="qa__q">{catalogQuestion?.title ?? question}</p>
+    <p class="qa__note">Instant AI, a later AI follow-up, a local-guide note, then community replies.</p>
+    <AskAnswerThread {answers} client:visible />
   </article>
 </section>
 
@@ -47,8 +54,9 @@ const { question, answer } = Astro.props;
     margin: 0 0 0.45rem;
     font-weight: var(--font-weight-7);
   }
-  .qa__a {
-    margin: 0;
+  .qa__note {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
   }
 </style>

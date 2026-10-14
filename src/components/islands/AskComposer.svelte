@@ -1,4 +1,6 @@
 <script lang="ts">
+  import AskAnswerThread from "./AskAnswerThread.svelte";
+  import { generatedAskAnswers } from "../../lib/ask-thread";
   import { PERSONA_EVENT, personaSignedIn, readPersona } from "../../lib/proto-persona";
 
   interface Named {
@@ -91,7 +93,10 @@
         <button class="btn btn--solid post" type="submit">+ Post Question</button>
       </div>
       {#if submitted}
-        <p class="hint">Prototype only: this does not send anything.</p>
+        <div class="instant">
+          <p class="hint">Posted in the prototype. Here is the usual answer stack:</p>
+          <AskAnswerThread answers={generatedAskAnswers(body)} />
+        </div>
       {/if}
     </form>
   {/if}
@@ -200,6 +205,13 @@
     margin: 0;
     font-size: var(--font-size-1);
     color: var(--brand-ink-soft);
+  }
+  .instant {
+    display: grid;
+    gap: var(--size-3);
+    margin-top: var(--size-3);
+    padding-top: var(--size-3);
+    border-top: 1px solid var(--ask-line, var(--brand-line));
   }
   .actions {
     display: flex;

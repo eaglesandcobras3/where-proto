@@ -148,6 +148,7 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
         <CommunityQA
           question={`What's the best public beach access near ${town.name}?`}
           answer="Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private."
+          questionSlug={town.slug === "seaside" ? "parking-near-seaside" : undefined}
         />
       </div>
 

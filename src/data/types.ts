@@ -153,6 +153,17 @@ export interface Question {
   createdAt: string;
 }
 
+export type AnswerKind = "ai_instant" | "ai_followup" | "local_guide" | "community";
+
+export interface Answer {
+  slug: Slug;
+  questionSlug: Slug;
+  kind: AnswerKind;
+  body: string;
+  createdAt: string;
+  authorUserSlug?: Slug;
+}
+
 export interface Comment {
   slug: Slug;
   body: string;

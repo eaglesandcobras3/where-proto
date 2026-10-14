@@ -1,4 +1,5 @@
 import type {
+  Answer,
   Area,
   Business,
   Category,
@@ -1330,19 +1331,19 @@ export const questions: Question[] = [
 export const comments: Comment[] = [
   {
     slug: "parking-reply-1",
-    body: "Fake answer: try the county access west of the square, earlier is better.",
+    body: "We used the county access west of the square after 10 and still found a space. Earlier is easier on concert Wednesdays.",
     authorUserSlug: "beachlocal",
     on: { type: "question", slug: "parking-near-seaside" },
   },
   {
     slug: "golf-carts-reply-1",
-    body: "Fake answer: carts are limited on the town streets. Check the Rosemary Beach rules first.",
+    body: "Carts are limited on the town streets. Check the current Rosemary Beach LSV rules before you rent.",
     authorUserSlug: "local_owner",
     on: { type: "question", slug: "golf-carts-rosemary" },
   },
   {
     slug: "golf-carts-reply-2",
-    body: "Fake answer: most visitors walk Barrett Square and skip the cart.",
+    body: "We skipped the cart and walked Barrett Square. Easier than hunting a legal overnight spot.",
     authorUserSlug: "first_timer",
     on: { type: "question", slug: "golf-carts-rosemary" },
   },
@@ -1357,6 +1358,97 @@ export const comments: Comment[] = [
     body: "Fake comment on a feed post.",
     authorUserSlug: "local_owner",
     on: { type: "post", slug: "sunset-on-the-square" },
+  },
+];
+
+export const answers: Answer[] = [
+  {
+    slug: "parking-ai-instant",
+    questionSlug: "parking-near-seaside",
+    kind: "ai_instant",
+    body: "For parking after 10am near Seaside, use a Walton County public access rather than a marked guest-only path. Those lots have restrooms and, in season, lifeguards.",
+    createdAt: "2026-10-06",
+  },
+  {
+    slug: "parking-ai-followup",
+    questionSlug: "parking-near-seaside",
+    kind: "ai_followup",
+    body: "The lots closest to the square fill first. The county access west of the amphitheatre is the more reliable leftover, especially on Wednesday concert nights.",
+    createdAt: "2026-10-06",
+  },
+  {
+    slug: "parking-guide",
+    questionSlug: "parking-near-seaside",
+    kind: "local_guide",
+    body: "Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private.",
+    createdAt: "2026-10-06",
+    authorUserSlug: "site_admin",
+  },
+  {
+    slug: "carts-ai-instant",
+    questionSlug: "golf-carts-rosemary",
+    kind: "ai_instant",
+    body: "Golf carts and LSVs are limited on Rosemary Beach streets. Do not assume a rental can roll the town center or park overnight.",
+    createdAt: "2026-10-04",
+  },
+  {
+    slug: "carts-ai-followup",
+    questionSlug: "golf-carts-rosemary",
+    kind: "ai_followup",
+    body: "Which streets allow carts and where overnight parking is legal changes. Ask the host or town desk before you rent.",
+    createdAt: "2026-10-04",
+  },
+  {
+    slug: "carts-guide",
+    questionSlug: "golf-carts-rosemary",
+    kind: "local_guide",
+    body: "Rosemary Beach treats carts as a privilege, not a default. Walk Barrett Square unless your host has a posted LSV plan.",
+    createdAt: "2026-10-04",
+    authorUserSlug: "site_admin",
+  },
+  {
+    slug: "kids-ai-instant",
+    questionSlug: "kids-dinner-watercolor",
+    kind: "ai_instant",
+    body: "For a 5pm table with kids near WaterColor Town Center, look at the inn lawn and town-center kitchens that open early — not the later dining rooms.",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "kids-ai-followup",
+    questionSlug: "kids-dinner-watercolor",
+    kind: "ai_followup",
+    body: "Walk-in is easier at 5 than 7. If the town center is slammed, the inn and nearby casual spots usually still have a high-top or patio.",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "kids-guide",
+    questionSlug: "kids-dinner-watercolor",
+    kind: "local_guide",
+    body: "Aim for 5pm in the town center or at the inn. Call ahead on weekends — early family tables go first.",
+    createdAt: "2026-10-03",
+    authorUserSlug: "site_admin",
+  },
+  {
+    slug: "bike-ai-instant",
+    questionSlug: "bike-path-grayton",
+    kind: "ai_instant",
+    body: "Yes — the Timpoochee Trail is the easy bike link from Grayton Beach toward Seaside. Stay on the marked path and watch carts at crossings.",
+    createdAt: "2026-10-01",
+  },
+  {
+    slug: "bike-ai-followup",
+    questionSlug: "bike-path-grayton",
+    kind: "ai_followup",
+    body: "The trail is mostly flat. Give yourself extra time around Grayton’s tighter streets before you merge onto the path.",
+    createdAt: "2026-10-01",
+  },
+  {
+    slug: "bike-guide",
+    questionSlug: "bike-path-grayton",
+    kind: "local_guide",
+    body: "The Timpoochee Trail is the right move from Grayton toward Seaside. Rent in town, skip 30A traffic, and stay off the dunes.",
+    createdAt: "2026-10-01",
+    authorUserSlug: "site_admin",
   },
 ];
 
@@ -1629,6 +1721,10 @@ export function reactionsFor(type: Reaction["on"]["type"], slug: string) {
 
 export function commentsFor(type: Comment["on"]["type"], slug: string) {
   return comments.filter((item) => item.on.type === type && item.on.slug === slug);
+}
+
+export function answersForQuestion(slug: string) {
+  return answers.filter((item) => item.questionSlug === slug);
 }
 
 export function currentUser() {
