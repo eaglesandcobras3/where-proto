@@ -15,7 +15,7 @@
 
 **Account:** `/dashboard`, `/dashboard/{business}`, `/dashboard/{business}/listing`, `/dashboard/{business}/feed`, `/dashboard/{business}/events/new`, `/dashboard/{business}/mentions`, `/dashboard/{business}/photos`, `/profile`, `/profile/favorites`, `/profile/posts`, `/profile/settings`, `/u/{user}`
 
-**Admin:** `/admin`, `/admin/review-queue`, `/admin/seo`, `/admin/knowledge`, `/admin/entities`
+**Admin:** `/admin`, `/admin/review-queue`, `/admin/seo`, `/admin/knowledge`, `/admin/entities`, `/admin/videos`
 
 **Auth:** Modal (Indeed-style) via `?auth=login|signup|forgot`, or `/auth/login`, `/auth/signup`, `/auth/forgot-password` (same modal). Also `window` event `w30a:auth`.
 
@@ -30,6 +30,8 @@
 Stories are guides. `/stories` and `/story/{story}` redirect to `/guides`.
 
 Updates are not a route. They only render on `/town/{town}` and `/town/{town}/business/{parent}/{leaf}/{business}`.
+
+Videos are not a route. They only render on `/town/{town}`, `/town/{town}/business/{parent}/{leaf}/{business}`, and `/town/{town}/stay/{category}/{stay}`. Admin attaches YouTube URLs at `/admin/videos`.
 
 `/business/{business}` redirects to `/town/{town}/business/{parent}/{leaf}/{business}`.
 `/town/{town}/{category}` redirects to `/town/{town}/business/{category}` (except `stay`, which is the stay hub).

@@ -136,6 +136,7 @@ const mapMarkers = markersFromNames(
           </div>
 
           <div class="main">
+            <p class="ask-note">Ask anything. You get an instant AI answer, an AI follow-up a few minutes later, a local-guide note, then community replies.</p>
             <AskComposer towns={exploreTowns} topics={topicOptions} client:visible />
             <AskIndex
               questions={rows}
@@ -187,6 +188,11 @@ const mapMarkers = markersFromNames(
     display: grid;
     gap: var(--size-4);
     min-width: 0;
+  }
+  .ask-note {
+    margin: 0;
+    font-size: var(--font-size-1);
+    color: var(--brand-ink-soft);
   }
   .rail {
     display: none;

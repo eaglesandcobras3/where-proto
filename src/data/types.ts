@@ -124,7 +124,7 @@ export interface Post {
   authorUserSlug?: Slug;
   authorBusinessSlug?: Slug;
   postedAs: "user" | "business";
-  on: { type: "town" | "business"; slug: Slug };
+  on: { type: "town" | "business" | "stay"; slug: Slug };
   body: string;
   createdAt: string;
 }
@@ -135,6 +135,15 @@ export interface Photo {
   attachedTo: { type: "town" | "business" | "event" | "post" | "area"; slug: Slug };
 }
 
+export type VideoHost = "town" | "business" | "stay";
+
+export interface Video {
+  slug: Slug;
+  title: string;
+  youtubeUrl: string;
+  attachedTo: { type: VideoHost; slug: Slug };
+}
+
 export interface Question {
   slug: Slug;
   title: string;
@@ -142,6 +151,17 @@ export interface Question {
   authorUserSlug: Slug;
   townSlug?: Slug;
   createdAt: string;
+}
+
+export type AnswerKind = "ai_instant" | "ai_followup" | "local_guide" | "community";
+
+export interface Answer {
+  slug: Slug;
+  questionSlug: Slug;
+  kind: AnswerKind;
+  body: string;
+  createdAt: string;
+  authorUserSlug?: Slug;
 }
 
 export interface Comment {

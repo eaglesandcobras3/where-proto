@@ -1,0 +1,40 @@
+---
+import MediaStrip from "./islands/MediaStrip.svelte";
+import type { Video } from "../data/types";
+import { youtubeEmbedSrc } from "../lib/youtube";
+
+interface Props {
+  videos: Video[];
+}
+
+const { videos } = Astro.props;
+const items = videos.flatMap((video) => {
+  const embed = youtubeEmbedSrc(video.youtubeUrl);
+  return embed
+    ? [{ kind: "video" as const, label: video.title, embed, href: video.youtubeUrl }]
+    : [];
+});
+---
+
+{
+  items.length > 0 && (
+    <section class="panel entity-videos">
+      <h2>Videos</h2>
+      <MediaStrip items={items} scroll client:visible />
+    </section>
+  )
+}
+
+<style>
+  .panel {
+    background: white;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-3);
+    box-shadow: var(--shadow-card);
+    padding: var(--size-5);
+  }
+  h2 {
+    margin: 0 0 var(--size-3);
+    font-size: var(--font-size-3);
+  }
+</style>

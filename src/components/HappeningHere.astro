@@ -6,29 +6,34 @@ interface Props {
   events: EventItem[];
   placeName: string;
   townSlug?: string;
+  persist?: boolean;
 }
 
-const { events, placeName, townSlug } = Astro.props;
+const { events, placeName, townSlug, persist = false } = Astro.props;
 ---
 
 {
-  events.length > 0 && (
+  (events.length > 0 || persist) && (
     <section class="panel happening-here">
       <div class="panel__head">
         <h2>Happening here</h2>
         <a href={href(townSlug ? `/events?town=${townSlug}` : "/events")}>All events</a>
       </div>
-      <ul>
-        {events.map((event) => (
-          <li>
-            <a href={href(`/event/${event.slug}`)}>
-              <span>{event.when}</span>
-              <strong>{event.name}</strong>
-              <em>{event.venue ?? placeName}</em>
-            </a>
-          </li>
-        ))}
-      </ul>
+      {events.length > 0 ? (
+        <ul>
+          {events.map((event) => (
+            <li>
+              <a href={href(`/event/${event.slug}`)}>
+                <span>{event.when}</span>
+                <strong>{event.name}</strong>
+                <em>{event.venue ?? placeName}</em>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="empty">No upcoming events from {placeName}.</p>
+      )}
     </section>
   )
 }
@@ -72,6 +77,11 @@ const { events, placeName, townSlug } = Astro.props;
     font-style: normal;
   }
   strong {
+    font-size: var(--font-size-1);
+  }
+  .empty {
+    margin: 0;
+    color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
   }
 </style>

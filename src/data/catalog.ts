@@ -1,4 +1,5 @@
 import type {
+  Answer,
   Area,
   Business,
   Category,
@@ -9,6 +10,7 @@ import type {
   KnowledgeItem,
   Photo,
   Post,
+  Video,
   Question,
   Reaction,
   ReviewQueueItem,
@@ -851,6 +853,19 @@ export const events: EventItem[] = [
     bucket: "weekend",
   },
   {
+    slug: "pearl-porch-hour",
+    name: "Porch hour at The Pearl",
+    townSlug: "rosemary-beach",
+    businessSlug: "the-pearl-hotel",
+    when: "Friday, 5:00 PM",
+    time: "5:00 PM – 6:00 PM",
+    summary: "Hosted hour on the hotel porch. Fake stay event.",
+    venue: "The Pearl Hotel porch",
+    category: "Food",
+    price: "Free",
+    bucket: "weekend",
+  },
+  {
     slug: "watercolor-inn-sundown",
     name: "Gulf-front sundown at the inn",
     townSlug: "watercolor",
@@ -1055,7 +1070,7 @@ export const posts: Post[] = [
     authorUserSlug: "beachlocal",
     postedAs: "user",
     on: { type: "town", slug: "rosemary-beach" },
-    body: "Posted as a user on the Rosemary Beach town page. Fake feed item.",
+    body: "Barrett Square at sunset. Locals on the green, kids on the paths, and the last light on the cottages. This is the Rosemary I came back for.",
     createdAt: "2026-10-06",
   },
   {
@@ -1071,15 +1086,63 @@ export const posts: Post[] = [
     authorUserSlug: "first_timer",
     postedAs: "user",
     on: { type: "business", slug: "edwards-fine-food-and-wine" },
-    body: "User mention on a business page. Fake feed item for the mentions screen.",
+    body: "Sat in the courtyard at dusk and it felt like a dinner party someone else planned. Get there a little early — the good tables go first.",
     createdAt: "2026-10-04",
+  },
+  {
+    slug: "edwards-date-night",
+    authorUserSlug: "beachlocal",
+    postedAs: "user",
+    on: { type: "business", slug: "edwards-fine-food-and-wine" },
+    body: "Came back for the courtyard, stayed for the wine list. Not a review — just the easiest date-night walk from Barrett Square.",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "latte-before-the-beach",
+    authorUserSlug: "first_timer",
+    postedAs: "user",
+    on: { type: "business", slug: "beachy-bean-coffee" },
+    body: "Grabbed a latte at Beachy Bean before the beach. Patio was already full by 8:30. Worth the wait if you want something besides hotel coffee.",
+    createdAt: "2026-10-05",
+  },
+  {
+    slug: "cowgirl-after-the-beach",
+    authorUserSlug: "beachlocal",
+    postedAs: "user",
+    on: { type: "business", slug: "cowgirl-kitchen" },
+    body: "Sandy feet, cold drinks, and a booth that still had room after the beach rush. Cowgirl Kitchen is the reset after a long morning in the gulf.",
+    createdAt: "2026-10-02",
+  },
+  {
+    slug: "pearl-porch-evening",
+    authorUserSlug: "first_timer",
+    postedAs: "user",
+    on: { type: "stay", slug: "the-pearl-hotel" },
+    body: "Porch at The Pearl at blue hour. Not a review — just the quietest five minutes of the trip before dinner on the square.",
+    createdAt: "2026-10-06",
+  },
+  {
+    slug: "watercolor-lawn-sunset",
+    authorUserSlug: "beachlocal",
+    postedAs: "user",
+    on: { type: "stay", slug: "watercolor-inn" },
+    body: "Watched the light go pink on the WaterColor Inn lawn. Bring a sweater. The gulf breeze picks up fast once the sun drops.",
+    createdAt: "2026-10-05",
+  },
+  {
+    slug: "cottage-bikes-morning",
+    authorUserSlug: "first_timer",
+    postedAs: "user",
+    on: { type: "stay", slug: "seagrove-cottage" },
+    body: "Bikes from the cottage to the trail before anyone else was up. Seagrove Cottage is a home base, not a hotel — pack like you mean it.",
+    createdAt: "2026-10-03",
   },
   {
     slug: "seaside-wednesday",
     authorUserSlug: "beachlocal",
     postedAs: "user",
     on: { type: "town", slug: "seaside" },
-    body: "Posted as a user on the Seaside town page. Fake feed item.",
+    body: "Wednesday concert night on the Seaside green. Bring a blanket and claim a spot early if you want to see the stage.",
     createdAt: "2026-10-01",
   },
 ];
@@ -1145,6 +1208,89 @@ export const photos: Photo[] = [
     caption: "Square edge shops",
     attachedTo: { type: "area", slug: "barrett-square" },
   },
+  {
+    slug: "loved-courtyard-lights",
+    caption: "Courtyard string lights",
+    attachedTo: { type: "post", slug: "loved-the-courtyard" },
+  },
+  {
+    slug: "loved-courtyard-table",
+    caption: "Table in the courtyard",
+    attachedTo: { type: "post", slug: "loved-the-courtyard" },
+  },
+  {
+    slug: "edwards-night-glass",
+    caption: "Wine on the patio",
+    attachedTo: { type: "post", slug: "edwards-date-night" },
+  },
+  {
+    slug: "beachy-bean-to-go",
+    caption: "Latte for the walk",
+    attachedTo: { type: "post", slug: "latte-before-the-beach" },
+  },
+  {
+    slug: "cowgirl-booth-snap",
+    caption: "Booth after the beach",
+    attachedTo: { type: "post", slug: "cowgirl-after-the-beach" },
+  },
+  {
+    slug: "pearl-porch-snap",
+    caption: "Porch at blue hour",
+    attachedTo: { type: "post", slug: "pearl-porch-evening" },
+  },
+  {
+    slug: "watercolor-lawn-snap",
+    caption: "Inn lawn at dusk",
+    attachedTo: { type: "post", slug: "watercolor-lawn-sunset" },
+  },
+  {
+    slug: "cottage-bikes-snap",
+    caption: "Bikes by the cottage",
+    attachedTo: { type: "post", slug: "cottage-bikes-morning" },
+  },
+  {
+    slug: "sunset-square-snap",
+    caption: "Last light on the square",
+    attachedTo: { type: "post", slug: "sunset-on-the-square" },
+  },
+  {
+    slug: "seaside-green-snap",
+    caption: "Blanket on the green",
+    attachedTo: { type: "post", slug: "seaside-wednesday" },
+  },
+];
+
+export const videos: Video[] = [
+  {
+    slug: "rosemary-beach-walk",
+    title: "A walk through Rosemary Beach",
+    youtubeUrl: "https://www.youtube.com/watch?v=30ARosemary",
+    attachedTo: { type: "town", slug: "rosemary-beach" },
+  },
+  {
+    slug: "seaside-square",
+    title: "Seaside town square",
+    youtubeUrl: "https://youtu.be/30ASeaside1",
+    attachedTo: { type: "town", slug: "seaside" },
+  },
+  {
+    slug: "edwards-courtyard-reel",
+    title: "Courtyard dinner at Edward's",
+    youtubeUrl: "https://www.youtube.com/watch?v=Edwards30A1",
+    attachedTo: { type: "business", slug: "edwards-fine-food-and-wine" },
+  },
+  {
+    slug: "pearl-stay-tour",
+    title: "Tour of The Pearl Hotel",
+    youtubeUrl: "https://www.youtube.com/watch?v=PearlStay30",
+    attachedTo: { type: "stay", slug: "the-pearl-hotel" },
+  },
+  {
+    slug: "watercolor-inn-lawn",
+    title: "Sunset on the WaterColor Inn lawn",
+    youtubeUrl: "https://www.youtube.com/watch?v=WaterColr30",
+    attachedTo: { type: "stay", slug: "watercolor-inn" },
+  },
 ];
 
 export const questions: Question[] = [
@@ -1185,19 +1331,19 @@ export const questions: Question[] = [
 export const comments: Comment[] = [
   {
     slug: "parking-reply-1",
-    body: "Fake answer: try the county access west of the square, earlier is better.",
+    body: "We used the county access west of the square after 10 and still found a space. Earlier is easier on concert Wednesdays.",
     authorUserSlug: "beachlocal",
     on: { type: "question", slug: "parking-near-seaside" },
   },
   {
     slug: "golf-carts-reply-1",
-    body: "Fake answer: carts are limited on the town streets. Check the Rosemary Beach rules first.",
+    body: "Carts are limited on the town streets. Check the current Rosemary Beach LSV rules before you rent.",
     authorUserSlug: "local_owner",
     on: { type: "question", slug: "golf-carts-rosemary" },
   },
   {
     slug: "golf-carts-reply-2",
-    body: "Fake answer: most visitors walk Barrett Square and skip the cart.",
+    body: "We skipped the cart and walked Barrett Square. Easier than hunting a legal overnight spot.",
     authorUserSlug: "first_timer",
     on: { type: "question", slug: "golf-carts-rosemary" },
   },
@@ -1215,6 +1361,97 @@ export const comments: Comment[] = [
   },
 ];
 
+export const answers: Answer[] = [
+  {
+    slug: "parking-ai-instant",
+    questionSlug: "parking-near-seaside",
+    kind: "ai_instant",
+    body: "For parking after 10am near Seaside, use a Walton County public access rather than a marked guest-only path. Those lots have restrooms and, in season, lifeguards.",
+    createdAt: "2026-10-06",
+  },
+  {
+    slug: "parking-ai-followup",
+    questionSlug: "parking-near-seaside",
+    kind: "ai_followup",
+    body: "The lots closest to the square fill first. The county access west of the amphitheatre is the more reliable leftover, especially on Wednesday concert nights.",
+    createdAt: "2026-10-06",
+  },
+  {
+    slug: "parking-guide",
+    questionSlug: "parking-near-seaside",
+    kind: "local_guide",
+    body: "Prefer Walton County regional accesses when you need parking, restrooms, and seasonal lifeguards. Guest-only paths may be marked private.",
+    createdAt: "2026-10-06",
+    authorUserSlug: "site_admin",
+  },
+  {
+    slug: "carts-ai-instant",
+    questionSlug: "golf-carts-rosemary",
+    kind: "ai_instant",
+    body: "Golf carts and LSVs are limited on Rosemary Beach streets. Do not assume a rental can roll the town center or park overnight.",
+    createdAt: "2026-10-04",
+  },
+  {
+    slug: "carts-ai-followup",
+    questionSlug: "golf-carts-rosemary",
+    kind: "ai_followup",
+    body: "Which streets allow carts and where overnight parking is legal changes. Ask the host or town desk before you rent.",
+    createdAt: "2026-10-04",
+  },
+  {
+    slug: "carts-guide",
+    questionSlug: "golf-carts-rosemary",
+    kind: "local_guide",
+    body: "Rosemary Beach treats carts as a privilege, not a default. Walk Barrett Square unless your host has a posted LSV plan.",
+    createdAt: "2026-10-04",
+    authorUserSlug: "site_admin",
+  },
+  {
+    slug: "kids-ai-instant",
+    questionSlug: "kids-dinner-watercolor",
+    kind: "ai_instant",
+    body: "For a 5pm table with kids near WaterColor Town Center, look at the inn lawn and town-center kitchens that open early — not the later dining rooms.",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "kids-ai-followup",
+    questionSlug: "kids-dinner-watercolor",
+    kind: "ai_followup",
+    body: "Walk-in is easier at 5 than 7. If the town center is slammed, the inn and nearby casual spots usually still have a high-top or patio.",
+    createdAt: "2026-10-03",
+  },
+  {
+    slug: "kids-guide",
+    questionSlug: "kids-dinner-watercolor",
+    kind: "local_guide",
+    body: "Aim for 5pm in the town center or at the inn. Call ahead on weekends — early family tables go first.",
+    createdAt: "2026-10-03",
+    authorUserSlug: "site_admin",
+  },
+  {
+    slug: "bike-ai-instant",
+    questionSlug: "bike-path-grayton",
+    kind: "ai_instant",
+    body: "Yes — the Timpoochee Trail is the easy bike link from Grayton Beach toward Seaside. Stay on the marked path and watch carts at crossings.",
+    createdAt: "2026-10-01",
+  },
+  {
+    slug: "bike-ai-followup",
+    questionSlug: "bike-path-grayton",
+    kind: "ai_followup",
+    body: "The trail is mostly flat. Give yourself extra time around Grayton’s tighter streets before you merge onto the path.",
+    createdAt: "2026-10-01",
+  },
+  {
+    slug: "bike-guide",
+    questionSlug: "bike-path-grayton",
+    kind: "local_guide",
+    body: "The Timpoochee Trail is the right move from Grayton toward Seaside. Rent in town, skip 30A traffic, and stay off the dunes.",
+    createdAt: "2026-10-01",
+    authorUserSlug: "site_admin",
+  },
+];
+
 export const reactions: Reaction[] = [
   { slug: "r1", label: "up", count: 4, on: { type: "question", slug: "parking-near-seaside" } },
   { slug: "r2", label: "heart", count: 2, on: { type: "question", slug: "parking-near-seaside" } },
@@ -1223,6 +1460,9 @@ export const reactions: Reaction[] = [
   { slug: "r5", label: "heart", count: 1, on: { type: "answer", slug: "parking-reply-1" } },
   { slug: "r6", label: "up", count: 6, on: { type: "guide", slug: "first-timers-guide" } },
   { slug: "r7", label: "heart", count: 3, on: { type: "post", slug: "sunset-on-the-square" } },
+  { slug: "r8", label: "heart", count: 5, on: { type: "post", slug: "loved-the-courtyard" } },
+  { slug: "r9", label: "up", count: 2, on: { type: "post", slug: "loved-the-courtyard" } },
+  { slug: "r10", label: "heart", count: 4, on: { type: "post", slug: "pearl-porch-evening" } },
 ];
 
 export const tags: Tag[] = [
@@ -1395,6 +1635,10 @@ export function updatesForBusiness(businessSlug: string) {
   return updates.filter((item) => item.businessSlug === businessSlug);
 }
 
+export function eventsForBusiness(businessSlug: string) {
+  return events.filter((item) => item.businessSlug === businessSlug);
+}
+
 /** Composer or claim flow scoped to one entity — never a generic /updates destination. */
 export function updateSharePath(kind: "business" | "town" | "area", slug: string) {
   if (kind === "business") {
@@ -1417,8 +1661,47 @@ export function businessesForLeaf(leafSlug: string) {
   return searchableBusinesses.filter((item) => item.leafSlug === leafSlug);
 }
 
-export function postsFor(type: "town" | "business", slug: string) {
+export function postsFor(type: Post["on"]["type"], slug: string) {
   return posts.filter((item) => item.on.type === type && item.on.slug === slug);
+}
+
+function uniqueBySlug<T extends { slug: string }>(list: T[]) {
+  const seen = new Set<string>();
+  return list.filter((item) => {
+    if (seen.has(item.slug)) return false;
+    seen.add(item.slug);
+    return true;
+  });
+}
+
+export function visitorPostsFor(type: Post["on"]["type"], slug: string) {
+  return postsFor(type, slug)
+    .filter((item) => item.postedAs === "user")
+    .sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function visitorPostsAboutBusiness(slug: string) {
+  const linkedStay = stayBySlug(slug) ?? stays.find((item) => item.businessSlug === slug);
+  return uniqueBySlug([
+    ...visitorPostsFor("business", slug),
+    ...(linkedStay ? visitorPostsFor("stay", linkedStay.slug) : []),
+  ]).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function visitorPostsAboutStay(stay: Stay) {
+  return uniqueBySlug([
+    ...visitorPostsFor("stay", stay.slug),
+    ...(stay.businessSlug ? visitorPostsFor("business", stay.businessSlug) : []),
+  ]).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+export function visitorPostsAboutTown(slug: string) {
+  return visitorPostsFor("town", slug);
+}
+
+export function communityPhotosForPosts(list: Post[]) {
+  const slugs = new Set(list.map((item) => item.slug));
+  return photos.filter((item) => item.attachedTo.type === "post" && slugs.has(item.attachedTo.slug));
 }
 
 export function photosFor(
@@ -1428,12 +1711,20 @@ export function photosFor(
   return photos.filter((item) => item.attachedTo.type === type && item.attachedTo.slug === slug);
 }
 
+export function videosFor(type: Video["attachedTo"]["type"], slug: string) {
+  return videos.filter((item) => item.attachedTo.type === type && item.attachedTo.slug === slug);
+}
+
 export function reactionsFor(type: Reaction["on"]["type"], slug: string) {
   return reactions.filter((item) => item.on.type === type && item.on.slug === slug);
 }
 
 export function commentsFor(type: Comment["on"]["type"], slug: string) {
   return comments.filter((item) => item.on.type === type && item.on.slug === slug);
+}
+
+export function answersForQuestion(slug: string) {
+  return answers.filter((item) => item.questionSlug === slug);
 }
 
 export function currentUser() {
@@ -1526,9 +1817,7 @@ export function faqsForBusiness(business: Business) {
 export function mentionsForBusiness(business: Pick<Business, "slug" | "name">) {
   const name = business.name.toLowerCase();
   const first = business.name.split(/\s+/)[0]?.toLowerCase() ?? "";
-  const postHits = posts.filter(
-    (item) => item.on.type === "business" && item.on.slug === business.slug && item.postedAs === "user",
-  );
+  const postHits = visitorPostsAboutBusiness(business.slug);
   const questionHits = questions.filter((item) => {
     const hay = `${item.title} ${item.body}`.toLowerCase();
     return hay.includes(name) || (first.length > 3 && hay.includes(first));

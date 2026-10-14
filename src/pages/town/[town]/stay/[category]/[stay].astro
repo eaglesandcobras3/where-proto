@@ -2,19 +2,23 @@
 import BaseLayout from "../../../../../layouts/BaseLayout.astro";
 import InteriorHero from "../../../../../components/InteriorHero.astro";
 import EntityGallery from "../../../../../components/EntityGallery.astro";
-import CommunityQA from "../../../../../components/CommunityQA.astro";
+import EntityVideos from "../../../../../components/EntityVideos.astro";
+import EntityFeed from "../../../../../components/EntityFeed.astro";
+import EntityAsk from "../../../../../components/islands/EntityAsk.svelte";
 import RelatedGuides from "../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../components/HappeningHere.astro";
-import ExploreLinks from "../../../../../components/ExploreLinks.astro";
 import StayCard from "../../../../../components/StayCard.astro";
 import UpdatesModule from "../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../components/islands/PostedUpdates.svelte";
 import {
   businessBySlug,
-  events,
+  eventsForBusiness,
   faqsForStay,
   guides,
+  communityPhotosForPosts,
   photosFor,
+  videosFor,
+  visitorPostsAboutStay,
   stays,
   townBySlug,
   updateSharePath,
@@ -44,13 +48,12 @@ const { item: stay } = Astro.props;
 const town = townBySlug(stay.townSlug);
 const listing = stay.businessSlug ? businessBySlug(stay.businessSlug) : undefined;
 const related = stays.filter((item) => item.slug !== stay.slug).slice(0, 3);
-const listingEvents = listing ? events.filter((item) => item.businessSlug === listing.slug) : [];
-const nearbyEvents =
-  listingEvents.length > 0
-    ? listingEvents
-    : events.filter((item) => item.townSlug === stay.townSlug).slice(0, 3);
+const stayEvents = listing ? eventsForBusiness(listing.slug) : [];
 const isInn = /hotel|inn/i.test(stay.name);
 const stayPhotos = photosFor("business", stay.businessSlug ?? stay.slug);
+const feedPosts = visitorPostsAboutStay(stay);
+const communityPhotos = communityPhotosForPosts(feedPosts);
+const stayVideos = videosFor("stay", stay.slug);
 const relatedGuides = guides
   .filter((item) => item.townSlug === stay.townSlug)
   .concat(guides)
@@ -119,7 +122,13 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
           <h2>{isInn ? "Boutique grandeur on the dunes" : "A coastal home base"}</h2>
           <p>{stay.summary}</p>
         </section>
-        <EntityGallery photos={stayPhotos} fallbackName={stay.name} />
+        <EntityGallery
+          photos={stayPhotos}
+          communityPhotos={communityPhotos}
+          fallbackName={stay.name}
+          officialLabel="Stay photos"
+        />
+        <EntityVideos videos={stayVideos} />
         <section class="panel">
           <h2>Amenities</h2>
           <div class="perks">
@@ -134,22 +143,15 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
           <p>{listing?.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
           <p class="muted">{listing?.hours ?? "Hours vary"}</p>
         </section>
-        {
-          listing && (
-            <UpdatesModule
-              entityKind="stay"
-              entityName={stay.name}
-              updates={stayUpdates}
-              ctaHref={updateSharePath("business", listing.slug)}
-            />
-          )
-        }
-        {listing && <PostedUpdates businessSlug={listing.slug} client:load />}
-        <HappeningHere events={nearbyEvents} placeName={stay.name} townSlug={stay.townSlug} />
-        <CommunityQA
-          question={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
-          answer={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
+        <UpdatesModule
+          entityKind="stay"
+          entityName={stay.name}
+          updates={stayUpdates}
+          ctaHref={listing ? updateSharePath("business", listing.slug) : "/dashboard"}
         />
+        {listing && <PostedUpdates businessSlug={listing.slug} client:load />}
+        <HappeningHere events={stayEvents} placeName={stay.name} townSlug={stay.townSlug} persist />
+        <EntityFeed posts={feedPosts} placeName={stay.name} />
         <section class="panel faq">
           <h2>Good to know</h2>
           {faq.map((item) => (
@@ -168,6 +170,14 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
             ))}
           </div>
         </section>
+        <EntityAsk
+          placeName={stay.name}
+          placeKind="stay"
+          tip={faq[0]?.a ?? "Ask your host about carts, beach access, and check-in before you lock the day."}
+          sampleQuestion={faq[0]?.q ?? `What should first-timers know before staying at ${stay.name}?`}
+          askHref={href("/ask")}
+          client:visible
+        />
       </div>
 
       <aside class="rail">
@@ -208,7 +218,6 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
               </section>
             )
           }
-          <ExploreLinks current="stays" townSlug={stay.townSlug} />
         </div>
       </aside>
     </div>

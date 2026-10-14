@@ -3,18 +3,22 @@ import BaseLayout from "../../../../../../layouts/BaseLayout.astro";
 import InteriorHero from "../../../../../../components/InteriorHero.astro";
 import BusinessCard from "../../../../../../components/BusinessCard.astro";
 import EntityGallery from "../../../../../../components/EntityGallery.astro";
-import CommunityQA from "../../../../../../components/CommunityQA.astro";
+import EntityVideos from "../../../../../../components/EntityVideos.astro";
+import EntityFeed from "../../../../../../components/EntityFeed.astro";
+import EntityAsk from "../../../../../../components/islands/EntityAsk.svelte";
 import RelatedGuides from "../../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../../components/HappeningHere.astro";
-import ExploreLinks from "../../../../../../components/ExploreLinks.astro";
 import UpdatesModule from "../../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../../components/islands/PostedUpdates.svelte";
 import {
   businesses,
-  events,
   faqsForBusiness,
   leafBySlug,
+  communityPhotosForPosts,
+  eventsForBusiness,
   photosFor,
+  videosFor,
+  visitorPostsAboutBusiness,
   tagBySlug,
   townBySlug,
   guides,
@@ -45,8 +49,11 @@ interface Props {
 const { item: business } = Astro.props;
 const town = townBySlug(business.townSlug);
 const leaf = leafBySlug(business.leafSlug);
-const businessEvents = events.filter((item) => item.businessSlug === business.slug);
+const businessEvents = eventsForBusiness(business.slug);
 const businessPhotos = photosFor("business", business.slug);
+const feedPosts = visitorPostsAboutBusiness(business.slug);
+const communityPhotos = communityPhotosForPosts(feedPosts);
+const businessVideos = videosFor("business", business.slug);
 const similar = businesses
   .filter(
     (item) =>
@@ -129,7 +136,8 @@ const businessUpdates = updatesForBusiness(business.slug);
           <h2>About {business.name}</h2>
           <p>{business.summary}</p>
         </section>
-        <EntityGallery photos={businessPhotos} fallbackName={business.name} />
+        <EntityGallery photos={businessPhotos} communityPhotos={communityPhotos} fallbackName={business.name} />
+        <EntityVideos videos={businessVideos} />
         <section class="panel">
           <h2>Hours &amp; location</h2>
           <p>{business.address ?? (town ? `${town.name}, FL` : "Scenic 30A")}</p>
@@ -142,11 +150,8 @@ const businessUpdates = updatesForBusiness(business.slug);
           ctaHref={updateSharePath("business", business.slug)}
         />
         <PostedUpdates businessSlug={business.slug} client:load />
-        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} />
-        <CommunityQA
-          question={`What should first-timers know before visiting ${business.name}?`}
-          answer={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
-        />
+        <HappeningHere events={businessEvents} placeName={business.name} townSlug={town?.slug} persist />
+        <EntityFeed posts={feedPosts} placeName={business.name} />
         <section class="panel faq">
           <h2>Good to know</h2>
           {faq.map((item) => (
@@ -156,7 +161,6 @@ const businessUpdates = updatesForBusiness(business.slug);
             </details>
           ))}
         </section>
-        <RelatedGuides guides={relatedGuides} />
         <section class="panel">
           <h2>Similar nearby</h2>
           <div class="listing-grid">
@@ -165,6 +169,15 @@ const businessUpdates = updatesForBusiness(business.slug);
             ))}
           </div>
         </section>
+        <RelatedGuides guides={relatedGuides} />
+        <EntityAsk
+          placeName={business.name}
+          placeKind="business"
+          tip={faq[0]?.a ?? "Arrive early for peak hours and follow host guidance for carts and seating."}
+          sampleQuestion={`What should first-timers know before visiting ${business.name}?`}
+          askHref={href("/ask")}
+          client:visible
+        />
       </div>
 
       <aside class="rail">
@@ -194,7 +207,6 @@ const businessUpdates = updatesForBusiness(business.slug);
               </section>
             )
           }
-          <ExploreLinks current="businesses" townSlug={town?.slug} />
         </div>
       </aside>
     </div>
