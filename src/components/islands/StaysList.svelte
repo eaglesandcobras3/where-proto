@@ -15,6 +15,7 @@
     fromPrice: string;
     roomsLabel: string;
     priceValue?: number;
+    href: string;
   }
 
   let {
@@ -137,7 +138,7 @@
   <div class="list">
     {#each results as item (item.slug)}
       <article class="card">
-        <a class="media img-placeholder" href={path(`/stay/${item.slug}`)} aria-hidden="true">
+        <a class="media img-placeholder" href={path(item.href)} aria-hidden="true">
           <span class="pill">{item.badge}</span>
           <span class="pill pill--teal">{item.vibe}</span>
         </a>
@@ -145,7 +146,7 @@
           <div class="title-row">
             <div>
               <p class="town">{item.townName}</p>
-              <h3><a href={path(`/stay/${item.slug}`)}>{item.name}</a></h3>
+              <h3><a href={path(item.href)}>{item.name}</a></h3>
             </div>
             <p class="price">{item.fromPrice}</p>
           </div>
@@ -157,7 +158,7 @@
           </div>
           <div class="footer">
             
-            <a class="explore" href={path(`/stay/${item.slug}`)}>Explore Stay →</a>
+            <a class="explore" href={path(item.href)}>Explore Stay →</a>
           </div>
         </div>
       </article>

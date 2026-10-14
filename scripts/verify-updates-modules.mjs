@@ -56,7 +56,7 @@ if (existsSync(dist)) {
   assert(moduleCount(home) === 0, "homepage has no updates module");
   assert(!/Latest updates|Updates in /.test(home), "homepage has no updates heading");
 
-  const edwards = html("town/rosemary-beach/food-and-drink/restaurants/edwards-fine-food-and-wine/index.html");
+  const edwards = html("town/rosemary-beach/business/food-and-drink/restaurants/edwards-fine-food-and-wine/index.html");
   assert(moduleCount(edwards) === 1, "Edwards business page has one updates module");
   assert(edwards.includes("Latest updates"), "Edwards heading is Latest updates");
   assert(edwards.includes("Own this business? Share an update"), "Edwards has scoped business CTA");
@@ -71,15 +71,15 @@ if (existsSync(dist)) {
   assert(!edwardsSlugs.includes("beachy-bean-cold-brew"), "Edwards does not show Beachy Bean updates");
   assert(!edwards.includes("Summer hours ended"), "expired updates do not render on Edwards");
 
-  const pearl = html("town/rosemary-beach/stay/hotels/the-pearl-hotel/index.html");
+  const pearl = html("town/rosemary-beach/business/stay/hotels/the-pearl-hotel/index.html");
   assert(cardSlugs(pearl).join() === "pearl-pool-closed", "Pearl module is only that business");
   assert(!pearl.includes("Extended weekend hours"), "Pearl does not show Edwards updates");
 
-  const bean = html("town/seaside/food-and-drink/coffee-shops/beachy-bean-coffee/index.html");
+  const bean = html("town/seaside/business/food-and-drink/coffee-shops/beachy-bean-coffee/index.html");
   assert(cardSlugs(bean).join() === "beachy-bean-cold-brew", "Beachy Bean shows only its live update");
   assert(!bean.includes("Summer hours ended"), "expired Beachy Bean update is hidden");
 
-  const rep = html("town/seaside/things-to-do/outdoor/the-rep-theatre/index.html");
+  const rep = html("town/seaside/business/things-to-do/outdoor/the-rep-theatre/index.html");
   assert(moduleCount(rep) === 0, "business with no live updates hides the module");
 
   const seaside = html("town/seaside/index.html");

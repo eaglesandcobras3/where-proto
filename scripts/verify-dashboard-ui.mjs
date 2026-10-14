@@ -28,8 +28,8 @@ const faqs = html("dashboard/edwards-fine-food-and-wine/faqs/index.html");
 const photos = html("dashboard/edwards-fine-food-and-wine/photos/index.html");
 const event = html("dashboard/edwards-fine-food-and-wine/events/new/index.html");
 const mentions = html("dashboard/edwards-fine-food-and-wine/mentions/index.html");
-const listing = html("town/rosemary-beach/food-and-drink/restaurants/edwards-fine-food-and-wine/index.html");
-const pearl = html("town/rosemary-beach/stay/hotels/the-pearl-hotel/index.html");
+const listing = html("town/rosemary-beach/business/food-and-drink/restaurants/edwards-fine-food-and-wine/index.html");
+const pearl = html("town/rosemary-beach/business/stay/hotels/the-pearl-hotel/index.html");
 
 assert(feed.includes("Post update"), "feed uses Post update");
 assert(feed.includes("Post event"), "feed uses Post event");

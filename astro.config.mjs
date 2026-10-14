@@ -30,7 +30,10 @@ const underscoredCombos = {
 
 const comboRedirects = Object.fromEntries(
   townSlugs.flatMap((town) =>
-    Object.entries(underscoredCombos).map(([from, to]) => [`/town/${town}/${from}`, `/town/${town}/${to}`]),
+    Object.entries(underscoredCombos).flatMap(([from, to]) => [
+      [`/town/${town}/${from}`, `/town/${town}/business/${to}`],
+      [`/town/${town}/business/${from}`, `/town/${town}/business/${to}`],
+    ]),
   ),
 );
 

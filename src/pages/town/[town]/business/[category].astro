@@ -1,0 +1,147 @@
+---
+import BaseLayout from "../../../../layouts/BaseLayout.astro";
+import InteriorHero from "../../../../components/InteriorHero.astro";
+import ListingFilters from "../../../../components/islands/ListingFilters.svelte";
+import ListingRail from "../../../../components/ListingRail.astro";
+import FilterBar from "../../../../components/islands/FilterBar.svelte";
+import {
+  allLeaves,
+  businessesForTown,
+  categories,
+  tags,
+  towns,
+} from "../../../../data/catalog";
+import type { Category, CategoryLeaf, Town } from "../../../../data/types";
+import { categoryGroupsFor } from "../../../../lib/unified-layout";
+import { toFilterBusiness } from "../../../../lib/listing";
+import { withViewMap } from "../../../../lib/map-markers";
+
+type LeafWithGroup = CategoryLeaf & { groupSlug: string; groupName: string };
+
+export function getStaticPaths() {
+  return towns.flatMap((town) => [
+    ...categories.map((group) => ({
+      params: { town: town.slug, category: group.slug },
+      props: { town, group, leaf: null as LeafWithGroup | null },
+    })),
+    ...allLeaves().map((leaf) => {
+      const group = categories.find((item) => item.slug === leaf.groupSlug) ?? categories[0];
+      return {
+        params: { town: town.slug, category: leaf.slug },
+        props: { town, group, leaf },
+      };
+    }),
+  ]);
+}
+
+interface Props {
+  town: Town;
+  group: Category;
+  leaf: LeafWithGroup | null;
+}
+
+const { town, group, leaf } = Astro.props;
+const heading = leaf?.name ?? group.name;
+const townBusinesses = businessesForTown(town.slug);
+const consumerCategories = categories.filter((item) => item.slug !== "community");
+const categoryGroups = categoryGroupsFor(consumerCategories, townBusinesses, (item) => item.leafSlug);
+const filterCategories = [
+  ...consumerCategories.map((item) => ({ slug: item.slug, name: item.name })),
+  ...allLeaves()
+    .filter((item) => item.groupSlug !== "community")
+    .map((item) => ({ slug: item.slug, name: item.name })),
+];
+const filterGroups = consumerCategories.map(({ slug, name, leaves }) => ({ slug, name, leaves }));
+const amenityCounts = tags.map((item) => ({
+  slug: item.slug,
+  name: item.name,
+  count: townBusinesses.filter((biz) => biz.tagSlugs.includes(item.slug)).length,
+}));
+const base = import.meta.env.BASE_URL;
+const mapHref = withViewMap("/search", `?town=${town.slug}&category=${leaf?.slug ?? group.slug}`);
+---
+
+<BaseLayout
+  title={`${heading} in ${town.name}`}
+  description={`Find ${heading.toLowerCase()} in ${town.name}, Florida.`}
+  active="towns"
+>
+  <div class="category-page">
+    <InteriorHero
+      title={`${heading} in ${town.name}`}
+      lede={`Businesses in ${town.name} along Scenic Highway 30A.`}
+      crumbs={[
+        { label: "Towns", path: "/towns" },
+        { label: town.name, path: `/town/${town.slug}` },
+        { label: heading },
+      ]}
+    />
+    <div class="container layout">
+      <div class="filters-col">
+        <ListingFilters
+          surface="search"
+          eventName="w30a:search-filters"
+          categoryGroups={categoryGroups}
+          initialPrimary={leaf?.slug ?? group.slug}
+          tags={amenityCounts}
+          tagsLabel="Tags"
+          tagsKey="tag"
+          client:load
+        />
+      </div>
+
+      <div class="main">
+        <FilterBar
+          businesses={townBusinesses.map(toFilterBusiness)}
+          towns={towns}
+          categories={filterCategories}
+          categoryGroups={filterGroups}
+          tags={tags}
+          initialTown={town.slug}
+          initialCategory={leaf?.slug ?? group.slug}
+          externalChrome
+          base={base}
+          client:load
+        />
+      </div>
+
+      <aside class="rail">
+        <ListingRail
+          mapTitle={`${town.name} map`}
+          mapHref={mapHref}
+          contributeKind="business"
+          current="towns"
+          townSlug={town.slug}
+        />
+      </aside>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .category-page {
+    background: var(--brand-sand);
+    color: var(--brand-ink);
+  }
+  .layout {
+    display: grid;
+    gap: var(--size-5);
+    padding-block: var(--size-6) var(--size-10);
+    align-items: start;
+  }
+  .main {
+    min-width: 0;
+  }
+  .rail {
+    display: none;
+    gap: var(--size-4);
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: 15.5rem minmax(0, 1fr) 16.5rem;
+    }
+    .rail {
+      display: grid;
+    }
+  }
+</style>

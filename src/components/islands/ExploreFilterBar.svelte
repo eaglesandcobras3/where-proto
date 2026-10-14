@@ -59,7 +59,7 @@
   // A category with no town lists across the corridor at /towns/[category]
   let exploreHref = $derived.by(() => {
     const segment = leaf || group;
-    if (town && segment) return path(`/town/${town}/${segment}`);
+    if (town && segment) return path(`/town/${town}/business/${segment}`);
     if (town) return path(`/town/${town}`);
     if (segment) return path(`/towns/${segment}`);
     return path("/towns");

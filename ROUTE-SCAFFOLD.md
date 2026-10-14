@@ -7,11 +7,11 @@
 
 ## The scaffold
 
-**Directory:** `/` (homepage), `/towns`, `/town/{town}`, `/town/{town}/{category}`, `/town/{town}/{parent}/{leaf}/{business}`, `/areas`, `/area/{area}`, `/search`
+**Directory:** `/` (homepage), `/towns`, `/town/{town}`, `/town/{town}/business/{category}`, `/town/{town}/business/{parent}/{leaf}/{business}`, `/town/{town}/stay`, `/town/{town}/stay/{category}`, `/town/{town}/stay/{category}/{stay}`, `/areas`, `/area/{area}`, `/search`
 
 **Content:** `/events`, `/event/{event}`, `/guides`, `/guide/{guide}`, `/ask`, `/ask/{question}`, `/posts/{post}`
 
-**Stays:** `/stays`, `/stay/{stay}`
+**Stays:** `/stays`. `/stay/{stay}` redirects to `/town/{town}/stay/{category}/{stay}`.
 
 **Account:** `/dashboard`, `/dashboard/{business}`, `/dashboard/{business}/listing`, `/dashboard/{business}/feed`, `/dashboard/{business}/events/new`, `/dashboard/{business}/mentions`, `/dashboard/{business}/photos`, `/profile`, `/profile/favorites`, `/profile/posts`, `/profile/settings`, `/u/{user}`
 
@@ -29,9 +29,10 @@
 
 Stories are guides. `/stories` and `/story/{story}` redirect to `/guides`.
 
-Updates are not a route. They only render on `/town/{town}` and `/town/{town}/{parent}/{leaf}/{business}`.
+Updates are not a route. They only render on `/town/{town}` and `/town/{town}/business/{parent}/{leaf}/{business}`.
 
-`/business/{business}` redirects to `/town/{town}/{parent}/{leaf}/{business}`.
+`/business/{business}` redirects to `/town/{town}/business/{parent}/{leaf}/{business}`.
+`/town/{town}/{category}` redirects to `/town/{town}/business/{category}` (except `stay`, which is the stay hub).
 
 `/happenings` redirects to `/`.
 
@@ -41,9 +42,9 @@ There is no `/businesses` route.
 
 1. There is no `/businesses` hub and no `/businesses/{category}` leaf.
 2. `/search` is the business finder. Filters: town, category, tag, open now.
-3. Town pages own town-scoped category browsing: a "categories in this town" section linking to `/town/{town}/{category}`.
-4. `/town/{town}/{category}` pages are the indexable category listing pages. Hub pages (`/towns`, `/town/{town}`) never render business cards directly.
-5. `/search` is `noindex, follow`. If the active filters are exactly town + category, canonical points at `/town/{town}/{category}`. Otherwise canonical is the unfiltered `/search`.
+3. Town pages own town-scoped category browsing: businesses at `/town/{town}/business/{category}`, stays at `/town/{town}/stay/{category}`.
+4. `/town/{town}/business/{category}` pages are the indexable business listing pages. Hub pages (`/towns`, `/town/{town}`) never render business cards directly.
+5. `/search` is `noindex, follow`. If the active filters are exactly town + category, canonical points at `/town/{town}/business/{category}`. Otherwise canonical is the unfiltered `/search`.
 6. `/ask` is the community route (not `/community`). Question threads at `/ask/{question}`.
 7. User posts from a town or business page. Business posts from `/dashboard/{business}/feed`.
 8. Updates (formerly happenings) show on the homepage, town pages, and business pages — not as standalone routes or top nav.

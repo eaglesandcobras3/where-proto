@@ -27,7 +27,7 @@ const q = params.get("q") ?? "";
 const openNow = params.get("open") === "1";
 const mapView = params.get("view") === "map";
 const comboCanonical = Boolean(town && category && !tag && !openNow && !q);
-const canonicalPath = comboCanonical ? `/town/${town}/${category}` : "/search";
+const canonicalPath = comboCanonical ? `/town/${town}/business/${category}` : "/search";
 /** Place desks live under Community — omit from consumer search filters. */
 const searchCategories = categories.filter((item) => item.slug !== "community");
 const unifiedCategories = searchCategories.filter((item) => item.slug !== "stay");
@@ -85,8 +85,8 @@ const mapMarkers = markersFromNames(
         <div class="container notice">
           <p>
             Indexable page for this combo:
-            <a href={href(`/town/${town}/${category}`)}>
-              /town/{town}/{category}
+            <a href={href(`/town/${town}/business/${category}`)}>
+              /town/{town}/business/{category}
             </a>
           </p>
         </div>

@@ -21,6 +21,7 @@ import {
 import type { Area } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import { href } from "../../lib/href";
+import { stayTownPath } from "../../lib/listing";
 import { townView } from "../../lib/town-view";
 import { slugPaths } from "../../lib/static-paths";
 
@@ -215,7 +216,7 @@ const kindLabel = areaKindLabel(area.kind);
           <p class="widget__label">Explore {town.name}</p>
           <ul class="links">
             <li><a href={href(`/search?town=${town.slug}`)}>Businesses</a></li>
-            <li><a href={href(`/stays?town=${town.slug}`)}>Stays</a></li>
+            <li><a href={href(stayTownPath(town.slug))}>Stays</a></li>
             <li><a href={href(`/events?town=${town.slug}`)}>Events</a></li>
             <li><a href={href(`/town/${town.slug}`)}>Town page</a></li>
             <li><a href={href("/ask")}>Ask locals</a></li>

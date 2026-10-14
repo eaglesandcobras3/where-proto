@@ -754,11 +754,17 @@ export function areaMerchantForArea(areaSlug: string) {
   return areaMerchantBusinesses.find((item) => item.areaSlug === areaSlug);
 }
 
+export const stayCategories = [
+  { slug: "hotels", name: "Hotels" },
+  { slug: "vacation-rentals", name: "Vacation Rentals" },
+];
+
 export const stays: Stay[] = [
   {
     slug: "the-pearl-hotel",
     name: "The Pearl Hotel",
     townSlug: "rosemary-beach",
+    categorySlug: "hotels",
     summary: "Hotel rooms in the Rosemary Beach town center.",
     sleeps: 4,
     businessSlug: "the-pearl-hotel",
@@ -767,6 +773,7 @@ export const stays: Stay[] = [
     slug: "watercolor-inn",
     name: "WaterColor Inn",
     townSlug: "watercolor",
+    categorySlug: "hotels",
     summary: "Inn rooms on the gulf. Fake stay record.",
     sleeps: 4,
     businessSlug: "watercolor-inn",
@@ -775,6 +782,7 @@ export const stays: Stay[] = [
     slug: "seagrove-cottage",
     name: "Seagrove Cottage",
     townSlug: "watercolor",
+    categorySlug: "vacation-rentals",
     summary: "Fake vacation rental used to scaffold the Stay page type.",
     sleeps: 8,
     businessSlug: "seagrove-cottage",
@@ -1290,6 +1298,14 @@ export function businessBySlug(slug: string) {
 
 export function stayBySlug(slug: string) {
   return stays.find((item) => item.slug === slug);
+}
+
+export function stayCategoryBySlug(slug: string) {
+  return stayCategories.find((item) => item.slug === slug);
+}
+
+export function staysForTown(townSlug: string) {
+  return stays.filter((item) => item.townSlug === townSlug);
 }
 
 export function eventBySlug(slug: string) {

@@ -19,9 +19,9 @@ const pages = {
   guides: "guides/index.html",
   ask: "ask/index.html",
   town: "town/seaside/index.html",
-  townCategory: "town/seaside/restaurants/index.html",
-  business: "town/seaside/food-and-drink/coffee-shops/beachy-bean-coffee/index.html",
-  stay: "stay/watercolor-inn/index.html",
+  townCategory: "town/seaside/business/restaurants/index.html",
+  business: "town/seaside/business/food-and-drink/coffee-shops/beachy-bean-coffee/index.html",
+  stay: "town/watercolor/stay/hotels/watercolor-inn/index.html",
   event: "event/alys-sunset-yoga/index.html",
   guide: "guide/first-timers-guide/index.html",
 };

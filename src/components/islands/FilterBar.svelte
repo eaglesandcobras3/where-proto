@@ -104,7 +104,7 @@
 
   function listingHref(item: Biz) {
     if (item.town && item.category && item.leaf) {
-      return path(`/town/${item.town}/${item.category}/${item.leaf}/${item.slug}`);
+      return path(`/town/${item.town}/business/${item.category}/${item.leaf}/${item.slug}`);
     }
     return path(`/business/${item.slug}`);
   }

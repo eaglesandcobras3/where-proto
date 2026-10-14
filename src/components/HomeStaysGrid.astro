@@ -1,6 +1,7 @@
 ---
 import { href } from "../lib/href";
 import { stays, townBySlug } from "../data/catalog";
+import { stayPath } from "../lib/listing";
 
 const kindFor = (slug: string) => {
   if (slug.includes("pearl") || slug.includes("inn")) return "Boutique Inns";
@@ -13,7 +14,7 @@ const fromCatalog = stays.slice(0, 3).map((stay) => ({
   category: kindFor(stay.slug),
   summary: stay.summary,
   town: townBySlug(stay.townSlug)?.name ?? "30A",
-  href: `/stay/${stay.slug}`,
+  href: stayPath(stay),
 }));
 
 const items = [

@@ -2,6 +2,7 @@
 import { href } from "../lib/href";
 import { townBySlug } from "../data/catalog";
 import type { Stay } from "../data/types";
+import { stayPath } from "../lib/listing";
 import ListingTile from "./ListingTile.astro";
 
 interface Props {
@@ -13,7 +14,7 @@ const { stay, wide = false } = Astro.props;
 const town = townBySlug(stay.townSlug);
 ---
 
-<a class:list={["listing-card", { wide }]} href={href(`/stay/${stay.slug}`)}>
+<a class:list={["listing-card", { wide }]} href={href(stayPath(stay))}>
   <ListingTile label={stay.name.charAt(0)} alt="" wide={wide} />
   <div class="body">
     <h3>{stay.name}</h3>

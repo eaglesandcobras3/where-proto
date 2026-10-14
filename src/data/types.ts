@@ -66,6 +66,7 @@ export interface Stay {
   slug: Slug;
   name: string;
   townSlug: Slug;
+  categorySlug: Slug;
   summary: string;
   sleeps: number;
   businessSlug?: Slug;

@@ -6,13 +6,13 @@ const routes = [
   ["Homepage", "/"],
   ["Towns hub", "/towns"],
   ["Town", "/town/rosemary-beach"],
-  ["Town × category (indexable)", "/town/rosemary-beach/restaurants"],
+  ["Town × business category", "/town/rosemary-beach/business/restaurants"],
   ["Areas hub", "/areas"],
   ["Shopping area", "/area/barrett-square"],
   ["Neighborhood", "/area/east-rosemary"],
   ["Search (business finder)", "/search"],
   ["Search filtered", "/search?town=seaside&category=coffee-shops"],
-  ["Business", "/town/rosemary-beach/food-and-drink/restaurants/edwards-fine-food-and-wine"],
+  ["Business", "/town/rosemary-beach/business/food-and-drink/restaurants/edwards-fine-food-and-wine"],
   ["Events", "/events"],
   ["Event", "/event/sounds-of-seaside"],
   ["Guides", "/guides"],
@@ -20,7 +20,8 @@ const routes = [
   ["Ask", "/ask"],
   ["Question", "/ask/parking-near-seaside"],
   ["Stays", "/stays"],
-  ["Stay", "/stay/the-pearl-hotel"],
+  ["Town stays", "/town/rosemary-beach/stay"],
+  ["Stay", "/town/rosemary-beach/stay/hotels/the-pearl-hotel"],
   ["Post", "/posts/sunset-on-the-square"],
   ["Manage business", "/dashboard"],
   ["Overview", "/dashboard/edwards-fine-food-and-wine"],
@@ -61,7 +62,7 @@ const routes = [
     <ol>
       <li>There is no /businesses hub or /businesses/{"{category}"} leaf.</li>
       <li>/search is the business finder and stays noindex, follow.</li>
-      <li>Town hubs are discovery surfaces with local businesses, plus /town/{"{town}"}/{"{leaf}"} leaves.</li>
+      <li>Town hubs are discovery surfaces. Business leaves live at /town/{"{town}"}/business/{"{category}"}; stays at /town/{"{town}"}/stay/{"{category}"}.</li>
       <li>/ask is the community route. Threads at /ask/{"{question}"}.</li>
       <li>Updates are modules on town, area, and business pages only — never a public /updates rollup or homepage module.</li>
       <li>Areas extend a town: shopping areas and neighborhoods.</li>
