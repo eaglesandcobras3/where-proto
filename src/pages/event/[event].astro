@@ -4,7 +4,6 @@ import InteriorHero from "../../components/InteriorHero.astro";
 import EntityGallery from "../../components/EntityGallery.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
-import ExploreLinks from "../../components/ExploreLinks.astro";
 import { businessBySlug, events, guides, photosFor, townBySlug } from "../../data/catalog";
 import type { EventItem } from "../../data/types";
 import SaveShare from "../../components/islands/SaveShare.svelte";
@@ -163,7 +162,6 @@ const jsonLd = {
               )
             }
           </section>
-          <ExploreLinks current="events" townSlug={event.townSlug} />
         </div>
       </aside>
     </div>

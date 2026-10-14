@@ -8,7 +8,6 @@ import EntityFeed from "../../../../../../components/EntityFeed.astro";
 import CommunityQA from "../../../../../../components/CommunityQA.astro";
 import RelatedGuides from "../../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../../components/HappeningHere.astro";
-import ExploreLinks from "../../../../../../components/ExploreLinks.astro";
 import UpdatesModule from "../../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../../components/islands/PostedUpdates.svelte";
 import {
@@ -204,7 +203,6 @@ const businessUpdates = updatesForBusiness(business.slug);
               </section>
             )
           }
-          <ExploreLinks current="businesses" townSlug={town?.slug} />
         </div>
       </aside>
     </div>

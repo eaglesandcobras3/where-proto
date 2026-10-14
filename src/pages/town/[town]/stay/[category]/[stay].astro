@@ -7,7 +7,6 @@ import EntityFeed from "../../../../../components/EntityFeed.astro";
 import CommunityQA from "../../../../../components/CommunityQA.astro";
 import RelatedGuides from "../../../../../components/RelatedGuides.astro";
 import HappeningHere from "../../../../../components/HappeningHere.astro";
-import ExploreLinks from "../../../../../components/ExploreLinks.astro";
 import StayCard from "../../../../../components/StayCard.astro";
 import UpdatesModule from "../../../../../components/UpdatesModule.astro";
 import PostedUpdates from "../../../../../components/islands/PostedUpdates.svelte";
@@ -215,7 +214,6 @@ const stayUpdates = listing ? updatesForBusiness(listing.slug) : [];
               </section>
             )
           }
-          <ExploreLinks current="stays" townSlug={stay.townSlug} />
         </div>
       </aside>
     </div>

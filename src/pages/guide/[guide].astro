@@ -7,7 +7,6 @@ import EntityGallery from "../../components/EntityGallery.astro";
 import CommunityQA from "../../components/CommunityQA.astro";
 import RelatedGuides from "../../components/RelatedGuides.astro";
 import HappeningHere from "../../components/HappeningHere.astro";
-import ExploreLinks from "../../components/ExploreLinks.astro";
 import GuideSaveSpots from "../../components/islands/GuideSaveSpots.svelte";
 import { businessesForTown, commentsFor, events, guides, photosFor, reactionsFor, townBySlug } from "../../data/catalog";
 import type { Guide } from "../../data/types";
@@ -221,7 +220,6 @@ const sections = [
             <p class="cta__copy">Flags, LSV rules, and top accesses on one page.</p>
             <a class="cta__btn" href={href("/guides")}>Download sheet</a>
           </section>
-          <ExploreLinks current="guides" townSlug={guide.townSlug} />
         </div>
       </aside>
     </div>

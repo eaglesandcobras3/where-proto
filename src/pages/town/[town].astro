@@ -11,7 +11,6 @@ import RelatedGuides from "../../components/RelatedGuides.astro";
 import HappeningHere from "../../components/HappeningHere.astro";
 import TownStays from "../../components/TownStays.astro";
 import CategoriesInTown from "../../components/CategoriesInTown.astro";
-import ExploreLinks from "../../components/ExploreLinks.astro";
 import UpdatesModule from "../../components/UpdatesModule.astro";
 import PostedUpdates from "../../components/islands/PostedUpdates.svelte";
 import {
@@ -161,7 +160,6 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
             <p class="copy">Open the corridor map for {town.name} walkovers, parking, and neighboring towns.</p>
             <a class="map-btn" href="#map">Open map</a>
           </section>
-          <ExploreLinks current="towns" townSlug={town.slug} />
         </div>
       </aside>
     </div>
