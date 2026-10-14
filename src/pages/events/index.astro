@@ -1,11 +1,7 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
-import MapToggle from "../../components/MapToggle.astro";
-import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import EventsHeroSearch from "../../components/islands/EventsHeroSearch.svelte";
-import EventsSidebarFilters from "../../components/islands/EventsSidebarFilters.svelte";
 import EventFilters from "../../components/islands/EventFilters.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
@@ -94,18 +90,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Events & Community Calendar"
       lede="Live music, markets, wellness, and neighborhood gatherings across the corridor."
-    >
-      <div data-when="legacy">
-        <EventsHeroSearch
-          towns={exploreTowns}
-          initialTown={town}
-          initialFrom={from}
-          initialTo={to}
-          initialQuery={q}
-          client:load
-        />
-      </div>
-    </InteriorHero>
+    />
 
     {
       mapView ? (
@@ -128,17 +113,8 @@ const mapMarkers = markersFromNames(
       ) : (
         <div class="container layout">
           <div class="filters-col">
-            <div data-when="legacy">
-              <EventsSidebarFilters
-                towns={townCounts}
-                categories={categoryOptions}
-                initialTown={town}
-                initialCategory={category}
-                total={events.length}
-                client:load
-              />
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingFilters
                 surface="events"
                 eventName="w30a:events-filters"
@@ -173,22 +149,8 @@ const mapMarkers = markersFromNames(
           />
 
           <aside class="rail">
-            <div data-when="legacy">
-              <MapToggle title="30A Events Map" href={mapHref} />
-              <ContributeCard kind="event" />
-              <section class="widget">
-                <p class="widget__label">Trending Venues</p>
-                <ul class="venues">
-                  {venueCounts.map((item) => (
-                    <li>
-                      <span>{item.name}</span>
-                      <span>{item.count}</span>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingRail mapTitle="Events map" mapHref={mapHref} contributeKind="event" current="events">
                 <section class="widget" slot="discovery">
                   <p class="widget__label">Trending venues</p>

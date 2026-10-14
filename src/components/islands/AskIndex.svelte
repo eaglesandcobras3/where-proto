@@ -91,14 +91,8 @@
 </script>
 
 <section class="feed">
-  <div class="sort" aria-label="Sort questions" data-when="legacy">
-    <span class="sort__label">Sort:</span>
-    <button class:active={sort === "trending"} type="button" onclick={() => (sort = "trending")}>Trending</button>
-    <button class:active={sort === "latest"} type="button" onclick={() => (sort = "latest")}>Latest</button>
-    <button class:active={sort === "unanswered"} type="button" onclick={() => (sort = "unanswered")}>Unanswered</button>
-    <button class:active={sort === "top"} type="button" onclick={() => (sort = "trending")}>Top Rated</button>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar surface="ask" count={rows.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
   </div>
 

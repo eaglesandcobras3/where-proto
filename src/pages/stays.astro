@@ -1,11 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import InteriorHero from "../components/InteriorHero.astro";
-import MapToggle from "../components/MapToggle.astro";
-import ContributeCard from "../components/ContributeCard.astro";
 import TwoPaneMap from "../components/TwoPaneMap.astro";
-import StaysHeroSearch from "../components/islands/StaysHeroSearch.svelte";
-import StaysSidebarFilters from "../components/islands/StaysSidebarFilters.svelte";
 import StaysList from "../components/islands/StaysList.svelte";
 import ListingFilters from "../components/islands/ListingFilters.svelte";
 import ListingRail from "../components/ListingRail.astro";
@@ -130,18 +126,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Stays & Vacation Rentals"
       lede="Boutique inns, walkable cottages, and direct-book homes inspected for the corridor — filtered by town, guests, and how you want to move around."
-    >
-      <div data-when="legacy">
-        <StaysHeroSearch
-          towns={exploreTowns}
-          guestOptions={guestOptions}
-          initialTown={town}
-          initialGuests={guests}
-          initialQuery={q}
-          client:load
-        />
-      </div>
-    </InteriorHero>
+    />
 
     {
       mapView ? (
@@ -169,18 +154,8 @@ const mapMarkers = markersFromNames(
       ) : (
         <div class="container layout">
           <div class="filters-col">
-            <div data-when="legacy">
-              <StaysSidebarFilters
-                towns={townCounts}
-                lodgingTypes={lodgingTypes}
-                amenities={amenities}
-                initialTown={town}
-                initialKind={kind}
-                total={stays.length}
-                client:load
-              />
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingFilters
                 surface="stays"
                 eventName="w30a:stays-filters"
@@ -220,18 +195,8 @@ const mapMarkers = markersFromNames(
           )}
 
           <aside class="rail">
-            <div data-when="legacy">
-              <MapToggle title="30A Stays Map" href={mapHref} />
-              <ContributeCard kind="stay" />
-              <section class="widget">
-                <p class="widget__label">Direct Concierge</p>
-                <p class="copy">
-                  Book verified properties with clear town rules, walkability, and host notes — not
-                  anonymous inventory dumps.
-                </p>
-              </section>
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingRail mapTitle="Stays map" mapHref={mapHref} contributeKind="stay" current="stays">
                 <section class="widget" slot="discovery">
                   <p class="widget__label">Concierge</p>

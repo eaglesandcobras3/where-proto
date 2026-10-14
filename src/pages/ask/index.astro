@@ -1,13 +1,9 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import InteriorHero from "../../components/InteriorHero.astro";
-import MapToggle from "../../components/MapToggle.astro";
-import ContributeCard from "../../components/ContributeCard.astro";
 import TwoPaneMap from "../../components/TwoPaneMap.astro";
-import AskHeroSearch from "../../components/islands/AskHeroSearch.svelte";
 import AskComposer from "../../components/islands/AskComposer.svelte";
 import AskIndex from "../../components/islands/AskIndex.svelte";
-import AskSidebarFilters from "../../components/islands/AskSidebarFilters.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
 import TopContributors from "../../components/TopContributors.astro";
@@ -95,17 +91,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="Ask the Locals"
       lede="Straight answers on golf carts, walkovers, parking, and dining from residents across Scenic Highway 30A."
-    >
-      <div data-when="legacy">
-        <AskHeroSearch
-          towns={exploreTowns}
-          initialTown={town}
-          initialTopic={topic}
-          initialQuery={q}
-          client:load
-        />
-      </div>
-    </InteriorHero>
+    />
 
     {
       mapView ? (
@@ -127,19 +113,10 @@ const mapMarkers = markersFromNames(
         </TwoPaneMap>
       ) : (
         <div class="container layout layout--content-forward">
-          <div class="filters-col" data-when="legacy">
-            <AskSidebarFilters
-              towns={townCounts}
-              topics={topicOptions}
-              initialTown={town}
-              initialTopic={topic}
-              total={questions.length}
-              client:load
-            />
-          </div>
+          
 
           <div class="main">
-            <div data-when="unified">
+            <div>
               <ListingFilters
                 surface="ask"
                 placement="inline"
@@ -172,57 +149,8 @@ const mapMarkers = markersFromNames(
           </div>
 
           <aside class="rail">
-            <div data-when="legacy">
-            <MapToggle title="30A Ask Map" href={mapHref} />
-            <ContributeCard kind="ask" />
-
-        <section class="widget">
-          <p class="widget__label">Top Local Guides</p>
-          <ul class="guides">
-            <li>
-              <span class="guides__avatar" aria-hidden="true">B</span>
-              <div>
-                <strong>beachlocal</strong>
-                <span>99% helpful · Seaside</span>
-              </div>
-            </li>
-            <li>
-              <span class="guides__avatar" aria-hidden="true">L</span>
-              <div>
-                <strong>local_owner</strong>
-                <span>97% helpful · Rosemary</span>
-              </div>
-            </li>
-            <li>
-              <span class="guides__avatar" aria-hidden="true">F</span>
-              <div>
-                <strong>first_timer</strong>
-                <span>New voice · WaterColor</span>
-              </div>
-            </li>
-          </ul>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">Trending in South Walton</p>
-          <ul class="trending">
-            <li>#SeasideParking</li>
-            <li>#GolfCartRules</li>
-            <li>#QuietBeaches</li>
-            <li>#FamilyDinner</li>
-          </ul>
-        </section>
-
-        <section class="widget">
-          <p class="widget__label">30A Neighbor Code</p>
-          <ul class="code">
-            <li>Yield to bikes and carts on shared paths</li>
-            <li>Keep music and gatherings respectful after 10</li>
-            <li>Leave beaches cleaner than you found them</li>
-          </ul>
-        </section>
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingRail mapTitle="Questions map" mapHref={mapHref} contributeKind="ask" current="ask">
                 <TopContributors
                   slot="discovery"

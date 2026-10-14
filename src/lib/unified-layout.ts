@@ -1,7 +1,3 @@
-/** PostHog flag key. Default OFF in production. Rollback is flag OFF. */
-export const UNIFIED_FLAG_KEY = "unified_listing_detail_layout";
-export const UNIFIED_CHANGE_EVENT = "w30a:unified-layout";
-
 export type ListingSurface = "towns" | "search" | "stays" | "events" | "guides" | "ask";
 export type ExploreKey = "towns" | "businesses" | "stays" | "events" | "guides" | "ask";
 
@@ -58,29 +54,6 @@ export const SORT_OPTIONS: Record<ListingSurface, { value: string; label: string
     { value: "unanswered", label: "Unanswered" },
   ],
 };
-
-export function envUnifiedLayoutEnabled(): boolean {
-  const value = import.meta.env.PUBLIC_UNIFIED_LISTING_DETAIL_LAYOUT;
-  return value === "true" || value === "1";
-}
-
-export function readDocumentUnifiedFlag(): boolean {
-  if (typeof document === "undefined") return envUnifiedLayoutEnabled();
-  return document.documentElement.dataset.unifiedLayout === "on";
-}
-
-export function applyUnifiedLayoutFlag(on: boolean, persist = true) {
-  if (typeof document === "undefined") return;
-  document.documentElement.dataset.unifiedLayout = on ? "on" : "off";
-  if (persist) {
-    try {
-      localStorage.setItem(UNIFIED_FLAG_KEY, on ? "1" : "0");
-    } catch {
-      /* proto preview may block storage */
-    }
-  }
-  window.dispatchEvent(new CustomEvent(UNIFIED_CHANGE_EVENT, { detail: { on } }));
-}
 
 export function resultsHeader(count: number, surface: ListingSurface) {
   const noun = count === 1 ? ENTITY_NOUN[surface].singular : ENTITY_NOUN[surface].plural;

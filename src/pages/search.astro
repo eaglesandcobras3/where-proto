@@ -1,11 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import InteriorHero from "../components/InteriorHero.astro";
-import MapToggle from "../components/MapToggle.astro";
-import ContributeCard from "../components/ContributeCard.astro";
 import TwoPaneMap from "../components/TwoPaneMap.astro";
-import SearchHeroSearch from "../components/islands/SearchHeroSearch.svelte";
-import SearchSidebarFilters from "../components/islands/SearchSidebarFilters.svelte";
 import FilterBar from "../components/islands/FilterBar.svelte";
 import ListingFilters from "../components/islands/ListingFilters.svelte";
 import ListingRail from "../components/ListingRail.astro";
@@ -46,19 +42,6 @@ const searchQs = Astro.url.search;
 const mapHref = withViewMap("/search", searchQs);
 const gridHref = withoutViewMap("/search", searchQs);
 
-const categoryCounts = searchCategories.map((item) => ({
-  slug: item.slug,
-  name: item.name,
-  count: searchableBusinesses.filter((biz) => biz.categorySlug === item.slug).length,
-}));
-
-const townCounts = towns
-  .map((item) => ({
-    slug: item.slug,
-    name: item.name,
-    count: searchableBusinesses.filter((biz) => biz.townSlug === item.slug).length,
-  }))
-  .filter((item) => item.count > 0);
 const allTownCounts = townCountsFor(towns, searchableBusinesses, (biz) => biz.townSlug);
 const unifiedCategoryCounts = unifiedCategories.map((item) => ({
   slug: item.slug,
@@ -71,8 +54,6 @@ const amenityCounts = tags.map((item) => ({
   count: searchableBusinesses.filter((biz) => biz.tagSlugs.includes(item.slug)).length,
 }));
 
-const heroTowns = towns.map(({ slug, name }) => ({ slug, name }));
-const heroCategories = searchCategories.map(({ slug, name }) => ({ slug, name }));
 const pick =
   searchableBusinesses.find((item) => item.slug === "beachy-bean-coffee") ?? searchableBusinesses[0];
 const mapMarkers = markersFromNames(
@@ -95,19 +76,7 @@ const mapMarkers = markersFromNames(
     <InteriorHero
       title="30A Local Businesses & Curated Outposts"
       lede="Discover coffee, dining, boutiques, and neighborhood favorites verified by residents and the WhereTo30A editorial desk."
-    >
-      <div data-when="legacy">
-        <SearchHeroSearch
-          towns={heroTowns}
-          categories={heroCategories}
-          initialTown={town}
-          initialCategory={category}
-          initialQuery={q}
-          initialTag={tag}
-          client:load
-        />
-      </div>
-    </InteriorHero>
+    />
 
     {
       comboCanonical && (
@@ -149,19 +118,8 @@ const mapMarkers = markersFromNames(
       ) : (
         <div class="container layout">
           <div class="filters-col">
-            <div data-when="legacy">
-              <SearchSidebarFilters
-                categories={categoryCounts}
-                towns={townCounts}
-                tags={tags}
-                initialTown={town}
-                initialCategory={category}
-                initialTag={tag}
-                total={searchableBusinesses.length}
-                client:load
-              />
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingFilters
                 surface="search"
                 eventName="w30a:search-filters"
@@ -196,21 +154,8 @@ const mapMarkers = markersFromNames(
           />
 
           <aside class="rail">
-            <div data-when="legacy">
-              <MapToggle title="30A Businesses Map" href={mapHref} />
-              <ContributeCard kind="business" />
-              {pick && (
-                <section class="widget pick">
-                  <p class="widget__label">Locals’ Morning Pick</p>
-                  <p class="pick__quote">
-                    “{pick.name} is the courtyard stop before the square wakes up — cold brew, pastry case, and a bike rack on the Timpoochee.”
-                  </p>
-                  <p class="pick__by">Caroline L. · WaterColor Resident &amp; Guide</p>
-                  <a href={href(`/business/${pick.slug}`)}>Explore {pick.name} →</a>
-                </section>
-              )}
-            </div>
-            <div data-when="unified">
+            
+            <div>
               <ListingRail mapTitle="Businesses map" mapHref={mapHref} contributeKind="business" current="businesses">
                 <LocalsPick
                   slot="discovery"

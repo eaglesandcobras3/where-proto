@@ -113,16 +113,8 @@
 </script>
 
 <section class="feed">
-  <div class="toolbar" data-when="legacy">
-    <div class="sort" aria-label="Filter stays">
-      <button class:active={view === "all"} type="button" onclick={() => (view = "all")}>All Stays</button>
-      <button class:active={view === "beachfront"} type="button" onclick={() => (view = "beachfront")}>Beachfront</button>
-      <button class:active={view === "lsv"} type="button" onclick={() => (view = "lsv")}>LSV Included</button>
-      <button class:active={view === "inn"} type="button" onclick={() => (view = "inn")}>Boutique Inns</button>
-    </div>
-    <span class="count" aria-live="polite">{results.length} stays · Sort: Recommended</span>
-  </div>
-  <div data-when="unified">
+  
+  <div>
     <ListingToolbar
       surface="stays"
       count={results.length}
@@ -164,7 +156,7 @@
             <span>{item.townName} walkable core</span>
           </div>
           <div class="footer">
-            <span class="rating" data-when="legacy">4.{8 + (item.sleeps % 2)} · local favorites</span>
+            
             <a class="explore" href={path(`/stay/${item.slug}`)}>Explore Stay →</a>
           </div>
         </div>
