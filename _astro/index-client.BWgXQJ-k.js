@@ -1,0 +1,1 @@
+import{z as o,u as t,y as c}from"./template.CuBdIWSm.js";function u(e){throw new Error("https://svelte.dev/e/lifecycle_outside_component")}function r(e){o===null&&u(),t(()=>{const n=c(e);if(typeof n=="function")return n})}export{r as o};
