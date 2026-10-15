@@ -413,19 +413,17 @@
     box-shadow: none;
   }
   .bar select {
-    appearance: none;
     font-weight: var(--font-weight-7);
     cursor: pointer;
-    background-repeat: no-repeat;
-    background-position: right 0.1rem center;
-    background-size: 0.7rem;
+    --select-chevron-inset: 0.1rem;
+    --select-padding-end: 1.35rem;
   }
   .bar > label.entity select {
     width: 7.5rem;
     padding: 0 1.35rem 0 0;
     color: white;
     color-scheme: light;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='white' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --select-chevron: var(--select-chevron-on-dark);
   }
   .bar select option {
     color: var(--brand-ink);
@@ -454,7 +452,7 @@
     width: 100%;
     padding: 0 1.25rem 0 0;
     color: var(--brand-deep);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%230c232e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    --select-padding-end: 1.25rem;
   }
   .query > button.submit {
     flex: 0 0 auto;
@@ -554,19 +552,16 @@
     padding: 0.7rem 0.9rem;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-3);
-    background: var(--brand-sand);
+    background-color: var(--brand-sand);
     color: var(--brand-ink);
     font: inherit;
     font-size: max(16px, 1rem);
   }
   .drawer__field select {
-    appearance: none;
     font-weight: var(--font-weight-6);
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5 6 6.5 11 1.5' fill='none' stroke='%230c232e' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 0.9rem center;
-    background-size: 0.75rem;
-    padding-right: 2.4rem;
+    background-color: var(--brand-sand);
+    --select-chevron-inset: 0.9rem;
+    --select-padding-end: 2.4rem;
   }
   .drawer__submit {
     display: inline-flex;

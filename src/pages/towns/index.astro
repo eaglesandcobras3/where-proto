@@ -9,27 +9,33 @@ import ListingRail from "../../components/ListingRail.astro";
 import LocalsPick from "../../components/LocalsPick.astro";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import {
-  businesses,
   businessesForTown,
+  categories,
   guides,
   questions,
   reactionsFor,
+  searchableBusinesses,
   staysForTown,
   towns,
 } from "../../data/catalog";
 import { townView } from "../../lib/town-view";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
+import { categoryGroupsFor, townCountsFor } from "../../lib/unified-layout";
 
 const params = Astro.url.searchParams;
 const q = params.get("q") ?? "";
-const region = params.get("region") ?? "";
-const vibe = params.get("vibe") ?? "";
+const town = params.get("town") ?? "";
+const category = params.get("category") ?? "";
 const mapView = params.get("view") === "map";
 const base = import.meta.env.BASE_URL;
 const searchQs = Astro.url.search;
 const mapHref = withViewMap("/towns", searchQs);
 const gridHref = withoutViewMap("/towns", searchQs);
+
+const consumerCategories = categories.filter((item) => item.slug !== "community" && item.slug !== "stay");
+const categoryGroups = categoryGroupsFor(consumerCategories, searchableBusinesses, (item) => item.leafSlug);
+const townCounts = townCountsFor(towns, searchableBusinesses, (item) => item.townSlug);
 
 const west = new Set(["sandestin", "santa-rosa-beach", "dune-allen-beach", "gulf-place", "blue-mountain-beach"]);
 const east = new Set(["watersound", "alys-beach", "seacrest-beach", "rosemary-beach", "inlet-beach"]);
@@ -69,7 +75,8 @@ const townItems = towns.map((town) => {
   const beachSlug = beachSlugFor(town.beachAccess);
   const beachLabel =
     beachSlug === "private" ? "Private beach" : beachSlug === "public" ? "Public beach" : "Mixed access";
-  const businessCount = businessesForTown(town.slug).length;
+  const townBusinesses = businessesForTown(town.slug);
+  const businessCount = townBusinesses.length;
   const stayCount = staysForTown(town.slug).length;
   const guideCount = guides.filter((item) => item.townSlug === town.slug).length;
   const threadCount = questions.filter((item) => item.townSlug === town.slug).length;
@@ -79,6 +86,8 @@ const townItems = towns.map((town) => {
     guideCount ? { label: guideCount === 1 ? "guide" : "guides", count: guideCount } : null,
     threadCount ? { label: threadCount === 1 ? "thread" : "threads", count: threadCount } : null,
   ].filter((item): item is { label: string; count: number } => Boolean(item));
+  const categorySlugs = [...new Set(townBusinesses.map((item) => item.categorySlug))];
+  const leafSlugs = [...new Set(townBusinesses.map((item) => item.leafSlug))];
 
   return {
     slug: town.slug,
@@ -91,6 +100,8 @@ const townItems = towns.map((town) => {
     beachSlug,
     beachLabel,
     tags: [meta.vibe, beachLabel, town.walkability, ...view.highlights].filter(Boolean).slice(0, 5),
+    categorySlugs,
+    leafSlugs,
     metrics,
     reactions: reactionsFor("town", town.slug).map((item) => ({
       label: item.label,
@@ -98,34 +109,6 @@ const townItems = towns.map((town) => {
     })),
   };
 });
-
-const vibes = [
-  { slug: "new-urbanism", name: "New Urbanism" },
-  { slug: "old-florida", name: "Old Florida Coastal" },
-  { slug: "planned", name: "Planned Family" },
-  { slug: "resort", name: "Resort & Activity" },
-  { slug: "public-hub", name: "Public Beach Hub" },
-];
-
-const beachTypes = [
-  { slug: "public", name: "Regional public walkovers" },
-  { slug: "private", name: "Guest / private access" },
-  { slug: "mixed", name: "Mixed public & private" },
-];
-
-const regionCounts = [
-  { slug: "west", name: "West 30A", count: townItems.filter((item) => item.region === "west").length },
-  { slug: "central", name: "Central 30A", count: townItems.filter((item) => item.region === "central").length },
-  { slug: "east", name: "East 30A", count: townItems.filter((item) => item.region === "east").length },
-];
-const vibeCounts = vibes.map((item) => ({
-  ...item,
-  count: townItems.filter((town) => town.vibeSlug === item.slug).length,
-}));
-const beachCounts = beachTypes.map((item) => ({
-  ...item,
-  count: townItems.filter((town) => town.beachSlug === item.slug).length,
-}));
 
 const mapMarkers = markersFromNames(
   townItems.map((item) => ({
@@ -147,7 +130,7 @@ const mapMarkers = markersFromNames(
   <div class="towns-page">
     <InteriorHero
       title="30A Towns & Neighborhoods"
-      kicker={`${businesses.length} businesses across ${towns.length} towns`}
+      kicker={`${towns.length} Towns • ${searchableBusinesses.length} Businesses`}
       lede="Discover the distinctive architectural character, beach access rules, and vibrant town centers stretching across Scenic Highway 30A."
       crumbs={[{ label: "Towns" }]}
     >
@@ -177,8 +160,8 @@ const mapMarkers = markersFromNames(
           <TownsList
             towns={townItems}
             initialQuery={q}
-            initialRegion={region}
-            initialVibe={vibe}
+            initialTown={town}
+            initialCategory={category}
             base={base}
             client:load
           />
@@ -192,14 +175,11 @@ const mapMarkers = markersFromNames(
                 surface="towns"
                 eventName="w30a:towns-filters"
                 initialQuery={q}
-                primaryLabel="Region"
-                primaryKey="region"
-                primaryOptions={regionCounts}
-                initialPrimary={region}
-                secondaries={[
-                  { key: "vibe", label: "Vibe", options: vibeCounts },
-                  { key: "beach", label: "Beach access", options: beachCounts },
-                ]}
+                towns={townCounts}
+                initialTown={town}
+                townTotal={searchableBusinesses.length}
+                categoryGroups={categoryGroups}
+                initialPrimary={category}
                 client:load
               />
             </div>
@@ -208,8 +188,8 @@ const mapMarkers = markersFromNames(
           <TownsList
             towns={townItems}
             initialQuery={q}
-            initialRegion={region}
-            initialVibe={vibe}
+            initialTown={town}
+            initialCategory={category}
             base={base}
             client:load
           />

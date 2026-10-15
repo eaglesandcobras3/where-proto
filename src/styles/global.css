@@ -88,8 +88,34 @@ select,
 textarea {
   border: 1px solid var(--brand-line);
   border-radius: var(--radius-button);
-  background: white;
   color: var(--brand-ink);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
+textarea {
+  background: white;
+}
+
+/*
+  Native selects: custom chevron at the design-system root.
+  Local `background: …` shorthand must not erase the arrow — image layers use !important.
+  Override color with `--select-chevron: var(--select-chevron-on-dark)` on inverted surfaces.
+*/
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  background-color: white;
+  background-image: var(--select-chevron) !important;
+  background-repeat: no-repeat !important;
+  background-position: right var(--select-chevron-inset) center !important;
+  background-size: var(--select-chevron-size) !important;
+  padding-inline-end: var(--select-padding-end) !important;
+  cursor: pointer;
+}
+
+select:disabled {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]):focus,

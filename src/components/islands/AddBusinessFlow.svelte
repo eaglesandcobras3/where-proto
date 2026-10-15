@@ -853,7 +853,7 @@
     padding: 0.7rem 0.85rem;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
-    background: white;
+    background-color: white;
     font: inherit;
     color: var(--brand-ink);
   }

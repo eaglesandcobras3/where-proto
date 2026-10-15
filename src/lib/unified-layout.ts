@@ -20,7 +20,7 @@ export const ENTITY_NOUN: Record<ListingSurface, { singular: string; plural: str
 };
 
 export const SEARCH_PLACEHOLDER: Record<ListingSurface, string> = {
-  towns: "Search towns",
+  towns: "Add a keyword",
   search: "Search businesses",
   stays: "Search stays",
   events: "Search events",

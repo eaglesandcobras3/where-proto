@@ -51,10 +51,17 @@ const { title, lede, kicker, crumbs = [] } = Astro.props;
   .interior-hero__copy {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: stretch;
     gap: 0.65rem;
     max-width: 46rem;
     min-width: 0;
+  }
+  .interior-hero__copy :global(.crumbs) {
+    align-self: flex-start;
+    width: auto;
+    max-width: 100%;
+    margin-inline: 0;
+    padding-inline: 0;
   }
   .interior-hero__kicker {
     margin: 0;
@@ -85,6 +92,13 @@ const { title, lede, kicker, crumbs = [] } = Astro.props;
     text-align: left;
   }
   .interior-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    align-items: center;
+  }
+  /* Slot content is often wrapped in a single div — keep actions in one row. */
+  .interior-hero__actions > :global(:only-child) {
     display: flex;
     flex-wrap: wrap;
     gap: 0.65rem;

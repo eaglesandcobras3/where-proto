@@ -22,6 +22,8 @@
     beachSlug: string;
     beachLabel: string;
     tags: string[];
+    categorySlugs: string[];
+    leafSlugs: string[];
     metrics: Metric[];
     reactions?: ReactionView[];
   }
@@ -39,21 +41,20 @@
   let {
     towns = [],
     initialQuery = "",
-    initialRegion = "",
-    initialVibe = "",
+    initialTown = "",
+    initialCategory = "",
     base = "/",
   }: {
     towns: TownItem[];
     initialQuery?: string;
-    initialRegion?: string;
-    initialVibe?: string;
+    initialTown?: string;
+    initialCategory?: string;
     base?: string;
   } = $props();
 
   let query = $state(initialQuery);
-  let region = $state(initialRegion);
-  let vibe = $state(initialVibe);
-  let beach = $state("");
+  let town = $state(initialTown);
+  let category = $state(initialCategory);
   let sort = $state<"west-east" | "az">("west-east");
 
   function path(route: string) {
@@ -61,12 +62,16 @@
     return `${root}${route}`;
   }
 
+  function matchesCategory(item: TownItem, value: string) {
+    if (!value) return true;
+    return item.categorySlugs.includes(value) || item.leafSlugs.includes(value);
+  }
+
   let results = $derived(
     towns
       .filter((item) => {
-        if (region && item.region !== region) return false;
-        if (vibe && item.vibeSlug !== vibe) return false;
-        if (beach && item.beachSlug !== beach) return false;
+        if (town && item.slug !== town) return false;
+        if (!matchesCategory(item, category)) return false;
         if (query.trim()) {
           const hay = `${item.name} ${item.summary} ${item.vibe} ${item.tags.join(" ")}`.toLowerCase();
           if (!hay.includes(query.trim().toLowerCase())) return false;
@@ -80,12 +85,11 @@
     if (typeof window === "undefined") return;
     const onFilters = (event: Event) => {
       const detail = (
-        event as CustomEvent<{ query: string; region: string; vibe: string; beach?: string }>
+        event as CustomEvent<{ query?: string; town?: string; category?: string }>
       ).detail;
-      query = detail.query;
-      region = detail.region;
-      vibe = detail.vibe;
-      if (detail.beach !== undefined) beach = detail.beach;
+      if (detail.query !== undefined) query = detail.query;
+      if (detail.town !== undefined) town = detail.town;
+      if (detail.category !== undefined) category = detail.category;
     };
     window.addEventListener("w30a:towns-filters", onFilters);
     return () => window.removeEventListener("w30a:towns-filters", onFilters);
@@ -125,6 +129,13 @@
             {/if}
           </div>
           <p class="excerpt">{item.summary}</p>
+          {#if item.metrics.length}
+            <div class="stats">
+              {#each item.metrics as metric}
+                <span>{metric.count} {metric.label}</span>
+              {/each}
+            </div>
+          {/if}
           {#if item.tags.length}
             <div class="tags">
               {#each item.tags as tag}
@@ -132,16 +143,7 @@
               {/each}
             </div>
           {/if}
-          <div class="footer">
-            {#if item.metrics.length}
-              <div class="stats">
-                {#each item.metrics as metric}
-                  <span>{metric.count} {metric.label}</span>
-                {/each}
-              </div>
-            {/if}
-            <a class="explore" href={path(`/town/${item.slug}`)}>Explore {item.name} →</a>
-          </div>
+          <a class="explore" href={path(`/town/${item.slug}`)}>Explore {item.name} →</a>
         </div>
       </article>
     {:else}
@@ -270,23 +272,16 @@
     font-weight: var(--font-weight-6);
     color: var(--brand-ink);
   }
-  .footer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-top: 0.35rem;
-    border-top: 1px solid var(--brand-sand-dark);
-    font-size: var(--font-size-1);
-  }
   .stats {
     display: flex;
     flex-wrap: wrap;
     gap: 0.85rem;
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
   }
   .explore {
-    margin-left: auto;
+    justify-self: start;
+    font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
     color: var(--brand-teal);
   }
