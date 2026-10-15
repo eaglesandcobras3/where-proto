@@ -424,7 +424,7 @@
     padding: var(--size-2) var(--size-3);
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
-    background: white;
+    background-color: white;
     min-width: 160px;
   }
   .search {

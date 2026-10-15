@@ -95,7 +95,7 @@
   color: var(--brand-ink);
   border: 1px solid var(--brand-line);
   border-radius: var(--radius-pill);
-  background: white;
+  background-color: white;
   padding: 0.4rem 0.85rem;
   white-space: nowrap;
 }

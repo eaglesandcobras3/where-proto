@@ -52,40 +52,30 @@
   <section class="panel">
     <label class="field">
       <span>Town vibe</span>
-      <span class="control">
-        <select
-          aria-label="Town vibe"
-          value={vibe}
-          onchange={(event) => publish((event.currentTarget as HTMLSelectElement).value, beach)}
-        >
-          <option value="">Any vibe</option>
-          {#each vibes as item (item.slug)}
-            <option value={item.slug}>{item.name}</option>
-          {/each}
-        </select>
-        <svg class="chevron" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-          <path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      </span>
+      <select
+        aria-label="Town vibe"
+        value={vibe}
+        onchange={(event) => publish((event.currentTarget as HTMLSelectElement).value, beach)}
+      >
+        <option value="">Any vibe</option>
+        {#each vibes as item (item.slug)}
+          <option value={item.slug}>{item.name}</option>
+        {/each}
+      </select>
     </label>
 
     <label class="field">
       <span>Beach access</span>
-      <span class="control">
-        <select
-          aria-label="Beach access"
-          value={beach}
-          onchange={(event) => publish(vibe, (event.currentTarget as HTMLSelectElement).value)}
-        >
-          <option value="">Any beach access</option>
-          {#each beachTypes as item (item.slug)}
-            <option value={item.slug}>{item.name}</option>
-          {/each}
-        </select>
-        <svg class="chevron" viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
-          <path d="M5 7.5 10 12.5 15 7.5" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"></path>
-        </svg>
-      </span>
+      <select
+        aria-label="Beach access"
+        value={beach}
+        onchange={(event) => publish(vibe, (event.currentTarget as HTMLSelectElement).value)}
+      >
+        <option value="">Any beach access</option>
+        {#each beachTypes as item (item.slug)}
+          <option value={item.slug}>{item.name}</option>
+        {/each}
+      </select>
     </label>
   </section>
 </aside>
@@ -115,22 +105,16 @@
     text-transform: uppercase;
     color: var(--brand-ink-soft);
   }
-  .control {
-    position: relative;
-    display: block;
-  }
   select {
     width: 100%;
-    appearance: none;
     border: 1px solid var(--brand-line);
     border-radius: var(--radius-2);
-    background: white;
-    padding: 0.7rem 2.4rem 0.7rem 0.8rem;
+    background-color: white;
+    padding: 0.7rem 0.8rem;
     font: inherit;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-6);
     color: var(--brand-ink);
-    cursor: pointer;
   }
   select:hover {
     border-color: #cbd5e1;
@@ -138,13 +122,5 @@
   select:focus-visible {
     outline: 2px solid var(--brand-teal);
     outline-offset: 2px;
-  }
-  .chevron {
-    position: absolute;
-    top: 50%;
-    right: 0.7rem;
-    transform: translateY(-50%);
-    color: var(--brand-deep);
-    pointer-events: none;
   }
 </style>
