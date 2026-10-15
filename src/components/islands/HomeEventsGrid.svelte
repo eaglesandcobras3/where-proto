@@ -49,19 +49,34 @@
 </script>
 
 <div class="wrap">
-  <div class="pills" role="group" aria-label="Event types">
-    {#each filters as filter (filter.slug)}
-      <button
-        type="button"
-        class:active={active === filter.slug}
-        onclick={() => (active = filter.slug)}
+  <div class="filter">
+    <label class="select-wrap" for="home-event-type">
+      <span class="sr-only">Event type</span>
+      <select
+        id="home-event-type"
+        bind:value={active}
+        aria-label="Event types"
       >
-        {filter.label}
-      </button>
-    {/each}
+        {#each filters as filter (filter.slug)}
+          <option value={filter.slug}>{filter.label}</option>
+        {/each}
+      </select>
+    </label>
+
+    <div class="pills" role="group" aria-label="Event types">
+      {#each filters as filter (filter.slug)}
+        <button
+          type="button"
+          class:active={active === filter.slug}
+          onclick={() => (active = filter.slug)}
+        >
+          {filter.label}
+        </button>
+      {/each}
+    </div>
   </div>
 
-  <div class="grid">
+  <div class="grid h-scroll">
     {#each visible as item (item.slug)}
       {@const reaction = reactionView(item.reactions)}
       <article class="card">
@@ -101,12 +116,37 @@
     display: grid;
     gap: var(--size-5);
   }
+  .filter {
+    min-width: 0;
+  }
+  .select-wrap {
+    display: block;
+    width: 100%;
+  }
+  .select-wrap select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.65rem 2.5rem 0.65rem 0.9rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-pill);
+    background-color: var(--brand-sand);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%230C232E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.75rem;
+    color: var(--brand-deep);
+    font-weight: var(--font-weight-6);
+    appearance: none;
+    cursor: pointer;
+  }
   .pills {
-    display: flex;
+    display: none;
     flex-wrap: wrap;
     gap: 0.4rem;
   }
   .pills button {
+    flex: 0 0 auto;
+    white-space: nowrap;
     border: 0;
     border-radius: var(--radius-pill);
     background: var(--brand-sand);
@@ -125,12 +165,19 @@
     color: white;
     font-weight: var(--font-weight-7);
   }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
   .grid {
-    display: grid;
     gap: var(--size-4);
-    grid-template-columns: 1fr;
   }
   .card {
+    flex: 0 0 min(20rem, 85vw);
+    width: min(20rem, 85vw);
     display: grid;
     align-content: start;
     gap: 0.35rem;
@@ -234,20 +281,26 @@
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
   }
-  @media (min-width: 700px) {
-    .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
   @media (min-width: 1000px) {
     .wrap {
       gap: var(--size-4);
     }
+    .select-wrap {
+      display: none;
+    }
     .pills {
-      justify-content: flex-start;
+      display: flex;
     }
     .grid {
+      display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: visible;
+      scroll-snap-type: none;
+      padding-bottom: 0;
+    }
+    .card {
+      flex: none;
+      width: auto;
     }
   }
 </style>
