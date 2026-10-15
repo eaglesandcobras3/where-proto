@@ -129,6 +129,13 @@
             {/if}
           </div>
           <p class="excerpt">{item.summary}</p>
+          {#if item.metrics.length}
+            <div class="stats">
+              {#each item.metrics as metric}
+                <span>{metric.count} {metric.label}</span>
+              {/each}
+            </div>
+          {/if}
           {#if item.tags.length}
             <div class="tags">
               {#each item.tags as tag}
@@ -136,16 +143,7 @@
               {/each}
             </div>
           {/if}
-          <div class="footer">
-            {#if item.metrics.length}
-              <div class="stats">
-                {#each item.metrics as metric}
-                  <span>{metric.count} {metric.label}</span>
-                {/each}
-              </div>
-            {/if}
-            <a class="explore" href={path(`/town/${item.slug}`)}>Explore {item.name} →</a>
-          </div>
+          <a class="explore" href={path(`/town/${item.slug}`)}>Explore {item.name} →</a>
         </div>
       </article>
     {:else}
@@ -274,23 +272,16 @@
     font-weight: var(--font-weight-6);
     color: var(--brand-ink);
   }
-  .footer {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.75rem;
-    padding-top: 0.35rem;
-    border-top: 1px solid var(--brand-sand-dark);
-    font-size: var(--font-size-1);
-  }
   .stats {
     display: flex;
     flex-wrap: wrap;
     gap: 0.85rem;
+    font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
   }
   .explore {
-    margin-left: auto;
+    justify-self: start;
+    font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
     color: var(--brand-teal);
   }
