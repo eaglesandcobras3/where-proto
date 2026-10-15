@@ -9,6 +9,7 @@ import ListingRail from "../../components/ListingRail.astro";
 import LocalsPick from "../../components/LocalsPick.astro";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import {
+  businesses,
   businessesForTown,
   guides,
   questions,
@@ -146,6 +147,7 @@ const mapMarkers = markersFromNames(
   <div class="towns-page">
     <InteriorHero
       title="30A Towns & Neighborhoods"
+      kicker={`${businesses.length} businesses across ${towns.length} towns`}
       lede="Discover the distinctive architectural character, beach access rules, and vibrant town centers stretching across Scenic Highway 30A."
       crumbs={[{ label: "Towns" }]}
     >
