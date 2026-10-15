@@ -41,7 +41,7 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.35rem 0.5rem;
+    gap: 0.35rem 0;
     list-style: none;
     margin: 0;
     padding: 0;
@@ -49,11 +49,11 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
   li {
     display: inline-flex;
     align-items: center;
-    gap: 0.5rem;
     min-width: 0;
   }
   li + li::before {
-    content: "/";
+    content: "|";
+    padding-inline: 0.5rem;
     color: var(--brand-line);
   }
   a {

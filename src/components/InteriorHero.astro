@@ -14,9 +14,9 @@ const { title, lede, kicker, crumbs = [] } = Astro.props;
 
 <section class="interior-hero">
   <div class="container interior-hero__inner">
-    {crumbs.length > 0 && <Breadcrumbs items={crumbs} tone="hero" />}
     <div class="interior-hero__row">
       <header class="interior-hero__copy">
+        {crumbs.length > 0 && <Breadcrumbs items={crumbs} tone="hero" />}
         {kicker && <p class="interior-hero__kicker">{kicker}</p>}
         <slot name="badges" />
         <h1 class="interior-hero__heading">{title}</h1>

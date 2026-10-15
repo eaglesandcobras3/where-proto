@@ -7,7 +7,16 @@ import TownsList from "../../components/islands/TownsList.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
 import LocalsPick from "../../components/LocalsPick.astro";
-import { businessesForTown, towns } from "../../data/catalog";
+import SaveShare from "../../components/islands/SaveShare.svelte";
+import {
+  businesses,
+  businessesForTown,
+  guides,
+  questions,
+  reactionsFor,
+  staysForTown,
+  towns,
+} from "../../data/catalog";
 import { townView } from "../../lib/town-view";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
@@ -23,7 +32,6 @@ const mapHref = withViewMap("/towns", searchQs);
 const gridHref = withoutViewMap("/towns", searchQs);
 
 const west = new Set(["sandestin", "santa-rosa-beach", "dune-allen-beach", "gulf-place", "blue-mountain-beach"]);
-const central = new Set(["grayton-beach", "watercolor", "seaside", "seagrove-beach"]);
 const east = new Set(["watersound", "alys-beach", "seacrest-beach", "rosemary-beach", "inlet-beach"]);
 
 const vibeMap: Record<string, { vibe: string; vibeSlug: string }> = {
@@ -45,25 +53,49 @@ const beachSlugFor = (access: string) => {
   return "mixed";
 };
 
-const townItems = towns.map((town, index) => {
+const regionLabel = {
+  west: "West 30A",
+  central: "Central 30A",
+  east: "East 30A",
+} as const;
+
+const townItems = towns.map((town) => {
   const view = townView(town);
   const meta = vibeMap[town.slug] ?? { vibe: "Coastal Town", vibeSlug: "coastal" };
+  const region = (west.has(town.slug) ? "west" : east.has(town.slug) ? "east" : "central") as
+    | "west"
+    | "central"
+    | "east";
+  const beachSlug = beachSlugFor(town.beachAccess);
+  const beachLabel =
+    beachSlug === "private" ? "Private beach" : beachSlug === "public" ? "Public beach" : "Mixed access";
+  const businessCount = businessesForTown(town.slug).length;
+  const stayCount = staysForTown(town.slug).length;
+  const guideCount = guides.filter((item) => item.townSlug === town.slug).length;
+  const threadCount = questions.filter((item) => item.townSlug === town.slug).length;
+  const metrics = [
+    businessCount ? { label: businessCount === 1 ? "business" : "businesses", count: businessCount } : null,
+    stayCount ? { label: stayCount === 1 ? "stay" : "stays", count: stayCount } : null,
+    guideCount ? { label: guideCount === 1 ? "guide" : "guides", count: guideCount } : null,
+    threadCount ? { label: threadCount === 1 ? "thread" : "threads", count: threadCount } : null,
+  ].filter((item): item is { label: string; count: number } => Boolean(item));
+
   return {
     slug: town.slug,
     name: town.name,
     summary: town.summary,
-    tagline: view.tagline,
     vibe: meta.vibe,
     vibeSlug: meta.vibeSlug,
-    region: (west.has(town.slug) ? "west" : east.has(town.slug) ? "east" : "central") as
-      | "west"
-      | "central"
-      | "east",
-    beachSlug: beachSlugFor(town.beachAccess),
-    walkScore: 70 + ((town.name.length * 3 + index * 5) % 28),
-    highlights: view.highlights,
-    eateries: Math.max(2, businessesForTown(town.slug).length),
-    accesses: 2 + (index % 4),
+    region,
+    regionLabel: regionLabel[region],
+    beachSlug,
+    beachLabel,
+    tags: [meta.vibe, beachLabel, town.walkability, ...view.highlights].filter(Boolean).slice(0, 5),
+    metrics,
+    reactions: reactionsFor("town", town.slug).map((item) => ({
+      label: item.label,
+      count: item.count,
+    })),
   };
 });
 
@@ -99,7 +131,9 @@ const mapMarkers = markersFromNames(
   townItems.map((item) => ({
     name: item.name,
     href: href(`/town/${item.slug}`),
-    detail: `${item.vibe} · Walk ${item.walkScore}`,
+    detail: item.metrics.length
+      ? item.metrics.map((metric) => `${metric.count} ${metric.label}`).join(" · ")
+      : item.vibe,
   })),
   8,
 );
@@ -113,11 +147,23 @@ const mapMarkers = markersFromNames(
   <div class="towns-page">
     <InteriorHero
       title="30A Towns & Neighborhoods"
+      kicker={`${businesses.length} businesses across ${towns.length} towns`}
       lede="Discover the distinctive architectural character, beach access rules, and vibrant town centers stretching across Scenic Highway 30A."
       crumbs={[{ label: "Towns" }]}
-    />
+    >
+      <div slot="actions">
+        <SaveShare
+          type="town"
+          slug="seaside"
+          name="30A Towns & Neighborhoods"
+          href={href("/towns")}
+          client:load
+        />
+        <a class="hero-btn hero-btn--ghost" href={href(mapHref)}>Map</a>
+      </div>
+    </InteriorHero>
 
-    <Corridor />
+    <Corridor centerSlug="seaside" />
 
     {
       mapView ? (
