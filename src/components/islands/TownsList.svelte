@@ -6,22 +6,23 @@
     count: number;
   }
 
+  interface Metric {
+    label: string;
+    count: number;
+  }
+
   interface TownItem {
     slug: string;
     name: string;
     summary: string;
-    tagline: string;
     vibe: string;
     vibeSlug: string;
     region: "west" | "central" | "east";
     regionLabel: string;
     beachSlug: string;
     beachLabel: string;
-    walkScore: number;
-    highlights: string[];
     tags: string[];
-    eateries: number;
-    accesses: number;
+    metrics: Metric[];
     reactions?: ReactionView[];
   }
 
@@ -67,7 +68,7 @@
         if (vibe && item.vibeSlug !== vibe) return false;
         if (beach && item.beachSlug !== beach) return false;
         if (query.trim()) {
-          const hay = `${item.name} ${item.summary} ${item.tagline} ${item.vibe} ${item.tags.join(" ")}`.toLowerCase();
+          const hay = `${item.name} ${item.summary} ${item.vibe} ${item.tags.join(" ")}`.toLowerCase();
           if (!hay.includes(query.trim().toLowerCase())) return false;
         }
         return true;
@@ -108,14 +109,10 @@
         <a class="media img-placeholder" href={path(`/town/${item.slug}`)} aria-hidden="true">
           <span class="media__letter">{item.name.charAt(0)}</span>
           <span class="pill">{item.regionLabel}</span>
-          <span class="pill pill--teal">{item.vibe}</span>
         </a>
         <div class="body">
           <div class="title-row">
-            <div>
-              <h3><a href={path(`/town/${item.slug}`)}>{item.name}</a></h3>
-              <p class="tagline">{item.tagline}</p>
-            </div>
+            <h3><a href={path(`/town/${item.slug}`)}>{item.name}</a></h3>
             {#if reaction.total > 0}
               <span class="reactions" aria-label="{reaction.total} reactions">
                 <span class="faces" aria-hidden="true">
@@ -128,17 +125,21 @@
             {/if}
           </div>
           <p class="excerpt">{item.summary}</p>
-          <div class="tags">
-            {#each item.tags as tag}
-              <span>{tag}</span>
-            {/each}
-          </div>
-          <div class="footer">
-            <div class="stats">
-              <span>{item.accesses} accesses</span>
-              <span>{item.eateries} eateries</span>
-              <span>Walk {item.walkScore}</span>
+          {#if item.tags.length}
+            <div class="tags">
+              {#each item.tags as tag}
+                <span>{tag}</span>
+              {/each}
             </div>
+          {/if}
+          <div class="footer">
+            {#if item.metrics.length}
+              <div class="stats">
+                {#each item.metrics as metric}
+                  <span>{metric.count} {metric.label}</span>
+                {/each}
+              </div>
+            {/if}
             <a class="explore" href={path(`/town/${item.slug}`)}>Explore {item.name} →</a>
           </div>
         </div>
@@ -197,12 +198,6 @@
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
-  .pill--teal {
-    left: auto;
-    right: 0.75rem;
-    background: var(--brand-teal-soft);
-    color: var(--brand-teal);
-  }
   .body {
     padding: var(--size-5);
     display: grid;
@@ -225,12 +220,6 @@
   }
   h3 a:hover {
     text-decoration: none;
-  }
-  .tagline {
-    margin: 0.2rem 0 0;
-    font-size: var(--font-size-1);
-    color: var(--brand-teal);
-    font-weight: var(--font-weight-6);
   }
   .reactions {
     flex-shrink: 0;
@@ -297,6 +286,7 @@
     color: var(--brand-ink-soft);
   }
   .explore {
+    margin-left: auto;
     font-weight: var(--font-weight-7);
     color: var(--brand-teal);
   }
