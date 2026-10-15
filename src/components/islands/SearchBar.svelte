@@ -59,7 +59,7 @@
   let root = $state<HTMLElement>();
   let drawer = $state<HTMLDialogElement>();
   let input = $state<HTMLInputElement>();
-  let drawerInput = $state<HTMLInputElement>();
+  let drawerEntity = $state<HTMLSelectElement>();
 
   let current = $derived(entities.find((item) => item.slug === entity) ?? entities[0]);
 
@@ -68,13 +68,13 @@
     return route === "/" ? `${rootPath}/` : `${rootPath}${route}`;
   }
 
-  function focusField(node?: HTMLInputElement) {
+  function focusField(node?: HTMLElement) {
     queueMicrotask(() => node?.focus());
   }
 
   function openDrawer() {
     drawer?.showModal();
-    focusField(drawerInput);
+    focusField(drawerEntity);
   }
 
   function closeDrawer() {
@@ -193,7 +193,7 @@
   {#if variant === "inline"}
     <button class="mobile-launch" type="button" aria-haspopup="dialog" aria-controls={drawerId} onclick={openSearch}>
       {@render searchIconMarkup()}
-      <span>Search 30A…</span>
+      <span>Search</span>
     </button>
 
     <div class="desktop-inline">
@@ -236,7 +236,7 @@
       <form class="drawer__form" role="search" onsubmit={submit}>
         <label class="drawer__field">
           <span>Looking for</span>
-          <select bind:value={entity} aria-label="What to search">
+          <select bind:this={drawerEntity} bind:value={entity} aria-label="What to search">
             {#each entities as item (item.slug)}
               <option value={item.slug}>{item.name}</option>
             {/each}
@@ -254,7 +254,6 @@
         <label class="drawer__field">
           <span>Search</span>
           <input
-            bind:this={drawerInput}
             type="search"
             name="q"
             placeholder={current.placeholder}
@@ -283,24 +282,27 @@
   }
   .mobile-launch {
     display: none;
-    width: 100%;
-    min-height: 3.25rem;
+    width: auto;
+    min-height: 2.85rem;
     align-items: center;
-    justify-content: flex-start;
-    gap: 0.7rem;
-    padding: 0 1.1rem;
-    border: 1px solid #cbd5e1;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0 1.25rem;
+    border: 0;
     border-radius: 999px;
-    background: white;
-    color: var(--brand-ink-soft);
+    background: var(--brand-teal);
+    color: white;
     font: inherit;
     font-size: var(--font-size-1);
-    font-weight: var(--font-weight-5);
-    box-shadow: var(--shadow-card-hover);
+    font-weight: var(--font-weight-7);
+    box-shadow: var(--shadow-card);
     cursor: pointer;
   }
+  .mobile-launch:hover {
+    background: #00796b;
+  }
   .mobile-launch .icon {
-    color: var(--brand-deep);
+    color: white;
   }
   .desktop-inline {
     display: block;
@@ -593,6 +595,11 @@
     clip: rect(0 0 0 0);
   }
   @media (max-width: 720px) {
+    .search.inline {
+      width: auto;
+      display: flex;
+      justify-content: center;
+    }
     .mobile-launch {
       display: inline-flex;
     }
