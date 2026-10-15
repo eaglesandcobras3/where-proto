@@ -37,6 +37,30 @@
   padding-bottom: var(--size-2);
 }
 
+/* Keep a single horizontal row on small screens; swipe instead of wrapping/stacking. */
+.h-scroll {
+  display: flex;
+  gap: var(--size-4);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  padding-bottom: 0.15rem;
+}
+
+.h-scroll > * {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  min-width: 0;
+}
+
+/* Preserve a wide desktop composition and let the whole row scroll sideways. */
+.h-scroll-pane {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
 .listing-tile {
   position: relative;
   flex: 0 0 112px;

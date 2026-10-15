@@ -49,7 +49,7 @@
 </script>
 
 <div class="wrap">
-  <div class="pills" role="group" aria-label="Event types">
+  <div class="pills h-scroll" role="group" aria-label="Event types">
     {#each filters as filter (filter.slug)}
       <button
         type="button"
@@ -61,7 +61,7 @@
     {/each}
   </div>
 
-  <div class="grid">
+  <div class="grid h-scroll">
     {#each visible as item (item.slug)}
       {@const reaction = reactionView(item.reactions)}
       <article class="card">
@@ -102,11 +102,12 @@
     gap: var(--size-5);
   }
   .pills {
-    display: flex;
-    flex-wrap: wrap;
     gap: 0.4rem;
+    scroll-snap-type: x proximity;
   }
   .pills button {
+    flex: 0 0 auto;
+    white-space: nowrap;
     border: 0;
     border-radius: var(--radius-pill);
     background: var(--brand-sand);
@@ -126,11 +127,11 @@
     font-weight: var(--font-weight-7);
   }
   .grid {
-    display: grid;
     gap: var(--size-4);
-    grid-template-columns: 1fr;
   }
   .card {
+    flex: 0 0 min(20rem, 85vw);
+    width: min(20rem, 85vw);
     display: grid;
     align-content: start;
     gap: 0.35rem;
@@ -234,20 +235,26 @@
     color: var(--brand-ink-soft);
     font-size: var(--font-size-1);
   }
-  @media (min-width: 700px) {
-    .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-  }
   @media (min-width: 1000px) {
     .wrap {
       gap: var(--size-4);
     }
     .pills {
-      justify-content: flex-start;
+      flex-wrap: wrap;
+      overflow: visible;
+      scroll-snap-type: none;
+      padding-bottom: 0;
     }
     .grid {
+      display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
+      overflow: visible;
+      scroll-snap-type: none;
+      padding-bottom: 0;
+    }
+    .card {
+      flex: none;
+      width: auto;
     }
   }
 </style>

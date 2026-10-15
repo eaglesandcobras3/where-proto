@@ -57,50 +57,52 @@ const shots = [
       </p>
     </header>
 
-    <div class="mosaic">
-      <button
-        class="shot shot--featured"
-        type="button"
-        data-gallery-shot
-        data-src={featured.src}
-        data-alt={featured.alt}
-        data-town={featured.town}
-        data-heart={featured.heart}
-        data-up={featured.up}
-        data-wow={featured.wow}
-        aria-label={`${featured.town} photo`}
-      >
-        <img class="shot__img" src={featured.src} alt="" loading="lazy" />
-        <div class="shot__veil" aria-hidden="true"></div>
-        <div class="shot__top">
-          <span class="pill">{featured.town}</span>
-        </div>
-      </button>
+    <div class="h-scroll-pane">
+      <div class="mosaic">
+        <button
+          class="shot shot--featured"
+          type="button"
+          data-gallery-shot
+          data-src={featured.src}
+          data-alt={featured.alt}
+          data-town={featured.town}
+          data-heart={featured.heart}
+          data-up={featured.up}
+          data-wow={featured.wow}
+          aria-label={`${featured.town} photo`}
+        >
+          <img class="shot__img" src={featured.src} alt="" loading="lazy" />
+          <div class="shot__veil" aria-hidden="true"></div>
+          <div class="shot__top">
+            <span class="pill">{featured.town}</span>
+          </div>
+        </button>
 
-      <div class="mosaic__grid">
-        {
-          shots.map((shot) => (
-            <button
-              class:list={["shot", shot.frame && `shot--${shot.frame}`]}
-              type="button"
-              data-gallery-shot
-              data-src={shot.src}
-              data-alt={shot.alt}
-              data-town={shot.town}
-              data-frame={shot.frame}
-              data-heart={shot.heart}
-              data-up={shot.up}
-              data-wow={shot.wow}
-              aria-label={`${shot.town} photo`}
-            >
-              <img class="shot__img" src={shot.src} alt="" loading="lazy" />
-              <div class="shot__veil shot__veil--soft" aria-hidden="true"></div>
-              <div class="shot__top">
-                <span class="pill">{shot.town}</span>
-              </div>
-            </button>
-          ))
-        }
+        <div class="mosaic__grid">
+          {
+            shots.map((shot) => (
+              <button
+                class:list={["shot", shot.frame && `shot--${shot.frame}`]}
+                type="button"
+                data-gallery-shot
+                data-src={shot.src}
+                data-alt={shot.alt}
+                data-town={shot.town}
+                data-frame={shot.frame}
+                data-heart={shot.heart}
+                data-up={shot.up}
+                data-wow={shot.wow}
+                aria-label={`${shot.town} photo`}
+              >
+                <img class="shot__img" src={shot.src} alt="" loading="lazy" />
+                <div class="shot__veil shot__veil--soft" aria-hidden="true"></div>
+                <div class="shot__top">
+                  <span class="pill">{shot.town}</span>
+                </div>
+              </button>
+            ))
+          }
+        </div>
       </div>
     </div>
   </div>
@@ -215,20 +217,29 @@ const shots = [
     color: var(--brand-ink-soft);
     line-height: 1.5;
   }
+  /* Keep the desktop bento (featured 5 + 2×2 grid 7) and scroll sideways on small screens. */
   .mosaic {
     display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
     gap: 1rem;
+    align-items: stretch;
+    min-width: 56rem;
+    width: 100%;
   }
   .mosaic__grid {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    grid-template-rows: minmax(10rem, 1fr) minmax(10rem, 1fr);
     gap: 1rem;
+    min-height: 26rem;
   }
   button.shot {
     position: relative;
     display: block;
     width: 100%;
-    height: auto;
+    height: 100%;
+    min-width: 0;
+    min-height: 10rem;
     margin: 0;
     padding: 0;
     border: 0;
@@ -240,13 +251,10 @@ const shots = [
     white-space: normal;
     cursor: pointer;
     font: inherit;
-    aspect-ratio: 16 / 9;
+    aspect-ratio: auto;
   }
-  .shot--featured {
-    aspect-ratio: 2 / 1;
-  }
-  .mosaic__grid .shot {
-    aspect-ratio: 16 / 9;
+  button.shot.shot--featured {
+    min-height: 26rem;
   }
   .shot__img {
     position: absolute;
@@ -311,35 +319,6 @@ const shots = [
     font-size: 0.6875rem;
     font-weight: var(--font-weight-7);
     color: white;
-  }
-  @media (min-width: 640px) {
-    .mosaic__grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    }
-  }
-  @media (min-width: 900px) {
-    .mosaic {
-      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-      align-items: stretch;
-    }
-    button.shot.shot--featured {
-      height: auto;
-      min-height: 26rem;
-      aspect-ratio: 4 / 3;
-    }
-    .mosaic__grid {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      grid-template-rows: minmax(10rem, 1fr) minmax(10rem, 1fr);
-      height: 100%;
-      min-height: 26rem;
-    }
-    .mosaic__grid button.shot {
-      width: 100%;
-      height: 100%;
-      min-width: 0;
-      min-height: 10rem;
-      aspect-ratio: auto;
-    }
   }
   .lightbox {
     width: min(48rem, calc(100vw - 2rem));

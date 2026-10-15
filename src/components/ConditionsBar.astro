@@ -9,23 +9,25 @@ const sunset = "6:18 PM";
 ---
 
 <div class="conditions" aria-label="Beach and weather conditions">
-  <div class="container conditions__inner">
-    <div class="conditions__left">
-      <a class="conditions__flag" href={flagHref} target="_blank" rel="noopener noreferrer">
-        <span class="dot" aria-hidden="true"></span>
-        {flag}
-      </a>
-      <p class="conditions__temps">
-        <span>Low {low}</span>
+  <div class="container conditions__frame">
+    <div class="conditions__inner h-scroll">
+      <div class="conditions__left">
+        <a class="conditions__flag" href={flagHref} target="_blank" rel="noopener noreferrer">
+          <span class="dot" aria-hidden="true"></span>
+          {flag}
+        </a>
+        <p class="conditions__temps">
+          <span>Low {low}</span>
+          <span class="sep" aria-hidden="true">·</span>
+          <span>High {high}</span>
+        </p>
+      </div>
+      <p class="conditions__sun">
+        <span>Sunrise {sunrise}</span>
         <span class="sep" aria-hidden="true">·</span>
-        <span>High {high}</span>
+        <span>Sunset {sunset}</span>
       </p>
     </div>
-    <p class="conditions__sun">
-      <span>Sunrise {sunrise}</span>
-      <span class="sep" aria-hidden="true">·</span>
-      <span>Sunset {sunset}</span>
-    </p>
   </div>
 </div>
 
@@ -37,14 +39,15 @@ const sunset = "6:18 PM";
     color: var(--brand-ink-soft);
     min-height: var(--conditions-h);
   }
-  .conditions__inner {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.35rem 1.25rem;
-    align-items: center;
+  .conditions__frame {
     min-height: var(--conditions-h);
     padding-block: 0.4rem;
+  }
+  .conditions__inner {
+    gap: 0.35rem 1.25rem;
+    align-items: center;
+    min-height: calc(var(--conditions-h) - 0.8rem);
+    scroll-snap-type: x proximity;
   }
   .conditions__left,
   .conditions__temps,
@@ -52,12 +55,14 @@ const sunset = "6:18 PM";
   .conditions__flag {
     margin: 0;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: center;
     gap: 0.35rem 0.45rem;
+    white-space: nowrap;
   }
   .conditions__left {
     gap: 0.35rem 1rem;
+    flex: 0 0 auto;
   }
   .conditions__flag {
     font-weight: var(--font-weight-7);
@@ -68,6 +73,7 @@ const sunset = "6:18 PM";
   }
   .conditions__sun {
     margin-left: auto;
+    flex: 0 0 auto;
   }
   .dot {
     width: 0.55rem;
@@ -78,5 +84,13 @@ const sunset = "6:18 PM";
   }
   .sep {
     color: var(--brand-ink-on-navy);
+  }
+  @media (min-width: 720px) {
+    .conditions__inner {
+      justify-content: space-between;
+      overflow: visible;
+      scroll-snap-type: none;
+      padding-bottom: 0;
+    }
   }
 </style>
