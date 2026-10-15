@@ -1,6 +1,11 @@
 <script lang="ts">
   import ListingToolbar from "./ListingToolbar.svelte";
 
+  interface ReactionView {
+    label: "up" | "heart" | "wow";
+    count: number;
+  }
+
   interface TownItem {
     slug: string;
     name: string;
@@ -9,11 +14,25 @@
     vibe: string;
     vibeSlug: string;
     region: "west" | "central" | "east";
+    regionLabel: string;
     beachSlug: string;
+    beachLabel: string;
     walkScore: number;
     highlights: string[];
+    tags: string[];
     eateries: number;
     accesses: number;
+    reactions?: ReactionView[];
+  }
+
+  const emoji = { heart: "❤️", up: "👍", wow: "😮" } as const;
+
+  function reactionView(reactions: ReactionView[] = []) {
+    const list = reactions.filter((item) => item.count > 0).sort((a, b) => b.count - a.count);
+    return {
+      faces: list.map((item) => emoji[item.label]),
+      total: list.reduce((sum, item) => sum + item.count, 0),
+    };
   }
 
   let {
@@ -48,7 +67,7 @@
         if (vibe && item.vibeSlug !== vibe) return false;
         if (beach && item.beachSlug !== beach) return false;
         if (query.trim()) {
-          const hay = `${item.name} ${item.summary} ${item.tagline} ${item.vibe} ${item.highlights.join(" ")}`.toLowerCase();
+          const hay = `${item.name} ${item.summary} ${item.tagline} ${item.vibe} ${item.tags.join(" ")}`.toLowerCase();
           if (!hay.includes(query.trim().toLowerCase())) return false;
         }
         return true;
@@ -73,25 +92,44 @@
 </script>
 
 <section class="feed">
-  
   <div>
-    <ListingToolbar surface="towns" count={results.length} sortValue={sort} onSort={(value) => (sort = value as typeof sort)} />
+    <ListingToolbar
+      surface="towns"
+      count={results.length}
+      sortValue={sort}
+      onSort={(value) => (sort = value as typeof sort)}
+    />
   </div>
 
   <div class="list">
     {#each results as item (item.slug)}
+      {@const reaction = reactionView(item.reactions)}
       <article class="card">
+        <a class="media img-placeholder" href={path(`/town/${item.slug}`)} aria-hidden="true">
+          <span class="media__letter">{item.name.charAt(0)}</span>
+          <span class="pill">{item.regionLabel}</span>
+          <span class="pill pill--teal">{item.vibe}</span>
+        </a>
         <div class="body">
           <div class="title-row">
             <div>
               <h3><a href={path(`/town/${item.slug}`)}>{item.name}</a></h3>
               <p class="tagline">{item.tagline}</p>
             </div>
-            <span class="vibe">{item.vibe}</span>
+            {#if reaction.total > 0}
+              <span class="reactions" aria-label="{reaction.total} reactions">
+                <span class="faces" aria-hidden="true">
+                  {#each reaction.faces as face}
+                    <span class="face">{face}</span>
+                  {/each}
+                </span>
+                {reaction.total}
+              </span>
+            {/if}
           </div>
           <p class="excerpt">{item.summary}</p>
           <div class="tags">
-            {#each item.highlights.slice(0, 3) as tag}
+            {#each item.tags as tag}
               <span>{tag}</span>
             {/each}
           </div>
@@ -99,6 +137,7 @@
             <div class="stats">
               <span>{item.accesses} accesses</span>
               <span>{item.eateries} eateries</span>
+              <span>Walk {item.walkScore}</span>
             </div>
             <a class="explore" href={path(`/town/${item.slug}`)}>Explore {item.name} →</a>
           </div>
@@ -116,23 +155,6 @@
     gap: var(--size-4);
     min-width: 0;
   }
-  .head {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    gap: 0.5rem;
-    align-items: baseline;
-  }
-  .head h2 {
-    margin: 0;
-    font-family: var(--font-display);
-    font-size: var(--font-size-4);
-    color: var(--brand-deep);
-  }
-  .head span {
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-soft);
-  }
   .list {
     display: grid;
     gap: var(--size-4);
@@ -147,6 +169,39 @@
   .card:hover {
     box-shadow: var(--shadow-card-hover);
     border-color: var(--brand-line);
+  }
+  .media {
+    position: relative;
+    display: grid;
+    place-items: center;
+    aspect-ratio: 16 / 9;
+    text-decoration: none;
+    font-size: clamp(2.5rem, 8vw, 3.5rem);
+    color: var(--brand-teal);
+  }
+  .media__letter {
+    font-family: var(--font-display);
+    font-weight: var(--font-weight-8);
+    line-height: 1;
+  }
+  .pill {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: rgba(12, 35, 46, 0.9);
+    color: white;
+    font-size: 0.625rem;
+    font-weight: var(--font-weight-8);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .pill--teal {
+    left: auto;
+    right: 0.75rem;
+    background: var(--brand-teal-soft);
+    color: var(--brand-teal);
   }
   .body {
     padding: var(--size-5);
@@ -177,16 +232,35 @@
     color: var(--brand-teal);
     font-weight: var(--font-weight-6);
   }
-  .vibe {
+  .reactions {
     flex-shrink: 0;
-    padding: 0.2rem 0.55rem;
-    border-radius: var(--radius-pill);
-    background: var(--brand-teal-soft);
-    color: var(--brand-teal);
-    font-size: 0.625rem;
-    font-weight: var(--font-weight-8);
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-5);
+    color: var(--brand-ink-soft);
+    line-height: 1.4;
+  }
+  .faces {
+    display: inline-flex;
+    align-items: center;
+  }
+  .face {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+    margin-left: -0.28rem;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 0 0 1px white;
+    font-size: 0.72rem;
+    line-height: 1;
+  }
+  .face:first-child {
+    margin-left: 0;
   }
   .excerpt {
     margin: 0;
@@ -218,6 +292,7 @@
   }
   .stats {
     display: flex;
+    flex-wrap: wrap;
     gap: 0.85rem;
     color: var(--brand-ink-soft);
   }

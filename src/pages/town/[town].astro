@@ -79,7 +79,7 @@ const nearbyTowns = [towns[townIndex - 1], towns[townIndex + 1]].filter(
     >
       <div slot="actions">
         <SaveShare type="town" slug={town.slug} name={town.name} href={href(`/town/${town.slug}`)} client:load />
-        <a class="hero-btn hero-btn--ghost" href="#map">Corridor map</a>
+        <a class="hero-btn hero-btn--ghost" href={href(`/search?town=${town.slug}&view=map`)}>Map</a>
       </div>
       <div class="snapshot">
         <div>

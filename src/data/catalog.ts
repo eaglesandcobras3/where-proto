@@ -1552,6 +1552,22 @@ export const reactions: Reaction[] = [
   { slug: "r38", label: "up", count: 2, on: { type: "event", slug: "seaside-storytime" } },
   { slug: "r39", label: "heart", count: 4, on: { type: "event", slug: "alys-sunset-yoga" } },
   { slug: "r40", label: "wow", count: 1, on: { type: "event", slug: "alys-sunset-yoga" } },
+  { slug: "r41", label: "heart", count: 14, on: { type: "town", slug: "seaside" } },
+  { slug: "r42", label: "up", count: 6, on: { type: "town", slug: "seaside" } },
+  { slug: "r43", label: "wow", count: 2, on: { type: "town", slug: "seaside" } },
+  { slug: "r44", label: "heart", count: 11, on: { type: "town", slug: "rosemary-beach" } },
+  { slug: "r45", label: "up", count: 4, on: { type: "town", slug: "rosemary-beach" } },
+  { slug: "r46", label: "heart", count: 9, on: { type: "town", slug: "alys-beach" } },
+  { slug: "r47", label: "wow", count: 3, on: { type: "town", slug: "alys-beach" } },
+  { slug: "r48", label: "up", count: 7, on: { type: "town", slug: "grayton-beach" } },
+  { slug: "r49", label: "heart", count: 5, on: { type: "town", slug: "grayton-beach" } },
+  { slug: "r50", label: "heart", count: 8, on: { type: "town", slug: "watercolor" } },
+  { slug: "r51", label: "up", count: 3, on: { type: "town", slug: "watercolor" } },
+  { slug: "r52", label: "heart", count: 6, on: { type: "town", slug: "seagrove-beach" } },
+  { slug: "r53", label: "up", count: 2, on: { type: "town", slug: "watersound" } },
+  { slug: "r54", label: "heart", count: 4, on: { type: "town", slug: "inlet-beach" } },
+  { slug: "r55", label: "up", count: 5, on: { type: "town", slug: "sandestin" } },
+  { slug: "r56", label: "heart", count: 3, on: { type: "town", slug: "blue-mountain-beach" } },
 ];
 
 export const tags: Tag[] = [

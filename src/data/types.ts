@@ -175,7 +175,10 @@ export interface Reaction {
   slug: Slug;
   label: "up" | "heart" | "wow";
   count: number;
-  on: { type: "post" | "question" | "guide" | "answer" | "business" | "stay" | "event"; slug: Slug };
+  on: {
+    type: "post" | "question" | "guide" | "answer" | "business" | "stay" | "event" | "town";
+    slug: Slug;
+  };
 }
 
 export interface Tag {

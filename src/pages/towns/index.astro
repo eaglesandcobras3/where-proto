@@ -7,7 +7,8 @@ import TownsList from "../../components/islands/TownsList.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
 import LocalsPick from "../../components/LocalsPick.astro";
-import { businessesForTown, towns } from "../../data/catalog";
+import SaveShare from "../../components/islands/SaveShare.svelte";
+import { businessesForTown, reactionsFor, towns } from "../../data/catalog";
 import { townView } from "../../lib/town-view";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
@@ -23,7 +24,6 @@ const mapHref = withViewMap("/towns", searchQs);
 const gridHref = withoutViewMap("/towns", searchQs);
 
 const west = new Set(["sandestin", "santa-rosa-beach", "dune-allen-beach", "gulf-place", "blue-mountain-beach"]);
-const central = new Set(["grayton-beach", "watercolor", "seaside", "seagrove-beach"]);
 const east = new Set(["watersound", "alys-beach", "seacrest-beach", "rosemary-beach", "inlet-beach"]);
 
 const vibeMap: Record<string, { vibe: string; vibeSlug: string }> = {
@@ -45,9 +45,22 @@ const beachSlugFor = (access: string) => {
   return "mixed";
 };
 
+const regionLabel = {
+  west: "West 30A",
+  central: "Central 30A",
+  east: "East 30A",
+} as const;
+
 const townItems = towns.map((town, index) => {
   const view = townView(town);
   const meta = vibeMap[town.slug] ?? { vibe: "Coastal Town", vibeSlug: "coastal" };
+  const region = (west.has(town.slug) ? "west" : east.has(town.slug) ? "east" : "central") as
+    | "west"
+    | "central"
+    | "east";
+  const beachSlug = beachSlugFor(town.beachAccess);
+  const beachLabel =
+    beachSlug === "private" ? "Private beach" : beachSlug === "public" ? "Public beach" : "Mixed access";
   return {
     slug: town.slug,
     name: town.name,
@@ -55,15 +68,19 @@ const townItems = towns.map((town, index) => {
     tagline: view.tagline,
     vibe: meta.vibe,
     vibeSlug: meta.vibeSlug,
-    region: (west.has(town.slug) ? "west" : east.has(town.slug) ? "east" : "central") as
-      | "west"
-      | "central"
-      | "east",
-    beachSlug: beachSlugFor(town.beachAccess),
+    region,
+    regionLabel: regionLabel[region],
+    beachSlug,
+    beachLabel,
     walkScore: 70 + ((town.name.length * 3 + index * 5) % 28),
     highlights: view.highlights,
+    tags: [meta.vibe, regionLabel[region], beachLabel, ...view.highlights].slice(0, 5),
     eateries: Math.max(2, businessesForTown(town.slug).length),
     accesses: 2 + (index % 4),
+    reactions: reactionsFor("town", town.slug).map((item) => ({
+      label: item.label,
+      count: item.count,
+    })),
   };
 });
 
@@ -115,9 +132,20 @@ const mapMarkers = markersFromNames(
       title="30A Towns & Neighborhoods"
       lede="Discover the distinctive architectural character, beach access rules, and vibrant town centers stretching across Scenic Highway 30A."
       crumbs={[{ label: "Towns" }]}
-    />
+    >
+      <div slot="actions">
+        <SaveShare
+          type="town"
+          slug="seaside"
+          name="30A Towns & Neighborhoods"
+          href={href("/towns")}
+          client:load
+        />
+        <a class="hero-btn hero-btn--ghost" href={href(mapHref)}>Map</a>
+      </div>
+    </InteriorHero>
 
-    <Corridor />
+    <Corridor centerSlug="seaside" />
 
     {
       mapView ? (
