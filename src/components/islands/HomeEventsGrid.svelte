@@ -49,16 +49,31 @@
 </script>
 
 <div class="wrap">
-  <div class="pills h-scroll" role="group" aria-label="Event types">
-    {#each filters as filter (filter.slug)}
-      <button
-        type="button"
-        class:active={active === filter.slug}
-        onclick={() => (active = filter.slug)}
+  <div class="filter">
+    <label class="select-wrap" for="home-event-type">
+      <span class="sr-only">Event type</span>
+      <select
+        id="home-event-type"
+        bind:value={active}
+        aria-label="Event types"
       >
-        {filter.label}
-      </button>
-    {/each}
+        {#each filters as filter (filter.slug)}
+          <option value={filter.slug}>{filter.label}</option>
+        {/each}
+      </select>
+    </label>
+
+    <div class="pills" role="group" aria-label="Event types">
+      {#each filters as filter (filter.slug)}
+        <button
+          type="button"
+          class:active={active === filter.slug}
+          onclick={() => (active = filter.slug)}
+        >
+          {filter.label}
+        </button>
+      {/each}
+    </div>
   </div>
 
   <div class="grid h-scroll">
@@ -101,9 +116,33 @@
     display: grid;
     gap: var(--size-5);
   }
+  .filter {
+    min-width: 0;
+  }
+  .select-wrap {
+    display: block;
+    width: 100%;
+  }
+  .select-wrap select {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.65rem 2.5rem 0.65rem 0.9rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--radius-pill);
+    background-color: var(--brand-sand);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%230C232E' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 0.75rem;
+    color: var(--brand-deep);
+    font-weight: var(--font-weight-6);
+    appearance: none;
+    cursor: pointer;
+  }
   .pills {
+    display: none;
+    flex-wrap: wrap;
     gap: 0.4rem;
-    scroll-snap-type: x proximity;
   }
   .pills button {
     flex: 0 0 auto;
@@ -125,6 +164,13 @@
     background: var(--brand-teal);
     color: white;
     font-weight: var(--font-weight-7);
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
   .grid {
     gap: var(--size-4);
@@ -239,11 +285,11 @@
     .wrap {
       gap: var(--size-4);
     }
+    .select-wrap {
+      display: none;
+    }
     .pills {
-      flex-wrap: wrap;
-      overflow: visible;
-      scroll-snap-type: none;
-      padding-bottom: 0;
+      display: flex;
     }
     .grid {
       display: grid;
