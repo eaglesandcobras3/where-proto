@@ -170,13 +170,13 @@
     const detail: Record<string, string> = {
       town,
       query,
-      category: surface === "stays" ? guests : surface === "towns" ? primary : categoryValue(),
+      category: surface === "stays" ? guests : categoryValue(),
     };
 
     if (surface === "towns") {
-      detail.region = primary;
-      detail.vibe = secondaryOf("vibe");
-      detail.beach = secondaryOf("beach");
+      detail.group = parent;
+      detail.leaf = leaf;
+      for (const group of secondaries) detail[group.key] = secondaryOf(group.key);
     } else if (surface === "search") {
       detail.tag = tag;
       detail.group = parent;
@@ -201,7 +201,7 @@
     };
 
     write("q", query);
-    if (surface !== "towns") write("town", town);
+    write("town", town);
     write(primaryKey, categoryValue());
     if (extraSearch === "guests") write("guests", guests);
     if (extraSearch === "from") write("from", from);
@@ -245,10 +245,9 @@
     const onFilters = (event: Event) => {
       const detail = (event as CustomEvent<Record<string, string>>).detail;
       if (detail.query !== undefined) query = detail.query;
-      if (detail.town !== undefined && surface !== "towns") town = detail.town;
-      if (surface === "towns" && detail.region !== undefined) primary = detail.region;
-      else if (surface === "stays" && detail.kind !== undefined) primary = detail.kind;
-      else if (detail.category !== undefined && surface !== "stays" && surface !== "towns") {
+      if (detail.town !== undefined) town = detail.town;
+      if (surface === "stays" && detail.kind !== undefined) primary = detail.kind;
+      else if (detail.category !== undefined && surface !== "stays") {
         if (categoryGroups.length) {
           const next = resolveGroup(detail.category);
           parent = next.parent;
@@ -320,9 +319,13 @@
     {/if}
   </button>
 
-  <div class="filter-body" id="listing-filter-body">
-    <section class="panel">
-      <h2>Search</h2>
+  <div
+    class="filter-body"
+    class:filter-body--town-first={surface === "towns" && categoryGroups.length > 0}
+    id="listing-filter-body"
+  >
+    <section class="panel panel--search">
+      <h2>{surface === "towns" && categoryGroups.length ? "Keyword" : "Search"}</h2>
       <form class="search-row" onsubmit={onSearchSubmit}>
         <label class="search">
           <span class="sr-only">{SEARCH_PLACEHOLDER[surface]}</span>
@@ -354,7 +357,7 @@
     </section>
 
     {#if towns.length}
-      <section class="panel">
+      <section class="panel panel--town">
         <h2>Town</h2>
         <label>
           <span class="sr-only">Town</span>
@@ -369,7 +372,7 @@
     {/if}
 
     {#if categoryGroups.length}
-      <section class="panel">
+      <section class="panel panel--category">
         <h2>Category</h2>
         <div class="stack">
           <label>
@@ -536,6 +539,18 @@
   .filter-body {
     display: grid;
     gap: var(--size-3);
+  }
+  .filter-body--town-first .panel--town {
+    order: 1;
+  }
+  .filter-body--town-first .panel--category {
+    order: 2;
+  }
+  .filter-body--town-first .panel--search {
+    order: 3;
+  }
+  .filter-body--town-first .panel:not(.panel--town):not(.panel--category):not(.panel--search) {
+    order: 4;
   }
   .inline .filter-body {
     grid-template-columns: 1fr;
