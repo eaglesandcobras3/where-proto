@@ -292,9 +292,31 @@
     aria-controls="listing-filter-body"
     onclick={() => (open = !open)}
   >
-    Filters
+    <span class="toggle-label">
+      <svg class="toggle-icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+        <path
+          d="M4 7h16M7 12h10M10 17h4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.85"
+          stroke-linecap="round"
+        ></path>
+      </svg>
+      Filters
+    </span>
     {#if activeCount}
       <span class="toggle-count">{activeCount}</span>
+    {:else}
+      <svg class="toggle-chevron" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
+        <path
+          d="m6 9 6 6 6-6"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.85"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        ></path>
+      </svg>
     {/if}
   </button>
 
@@ -466,16 +488,37 @@
     width: 100%;
     align-items: center;
     justify-content: space-between;
-    min-height: 2.5rem;
-    padding: 0.55rem 1.1rem;
-    border: 1px solid var(--brand-line);
-    border-radius: var(--radius-button);
-    background: white;
+    gap: 0.75rem;
+    min-height: 2.85rem;
+    padding: 0.65rem 1.1rem;
+    border: 0;
+    border-radius: var(--radius-pill);
+    background: var(--brand-teal);
     font: inherit;
     font-size: var(--font-size-1);
     font-weight: var(--font-weight-7);
-    color: var(--brand-ink);
+    color: white;
+    box-shadow: var(--shadow-card);
     cursor: pointer;
+  }
+  .filter-toggle:hover {
+    background: #00796b;
+  }
+  .filters.is-open .filter-toggle {
+    background: var(--brand-deep);
+  }
+  .toggle-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .toggle-icon,
+  .toggle-chevron {
+    display: block;
+    flex-shrink: 0;
+  }
+  .filters.is-open .toggle-chevron {
+    transform: rotate(180deg);
   }
   .toggle-count {
     display: inline-flex;
@@ -485,8 +528,8 @@
     height: 1.35rem;
     padding: 0 0.35rem;
     border-radius: var(--radius-pill);
-    background: var(--brand-teal);
-    color: white;
+    background: white;
+    color: var(--brand-teal);
     font-size: 0.6875rem;
     font-weight: var(--font-weight-7);
   }
