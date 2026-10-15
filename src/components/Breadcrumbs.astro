@@ -18,10 +18,9 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
         const last = index === trail.length - 1;
         return (
           <li>
+            {index > 0 && <span class="sep" aria-hidden="true">|</span>}
             {last || !item.path ? (
-              <span class="current" aria-current={last ? "page" : undefined}>
-                {item.label}
-              </span>
+              <span class="current" aria-current={last ? "page" : undefined}>{item.label}</span>
             ) : (
               <a href={href(item.path)}>{item.label}</a>
             )}
@@ -33,6 +32,15 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
 </nav>
 
 <style>
+  .crumbs,
+  ol,
+  li,
+  a,
+  .current,
+  .sep {
+    margin: 0;
+    padding: 0;
+  }
   .crumbs {
     font-size: var(--font-size-0);
     color: var(--brand-ink-soft);
@@ -41,20 +49,19 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.35rem 0;
+    gap: 0.5rem;
     list-style: none;
-    margin: 0;
-    padding: 0;
   }
   li {
     display: inline-flex;
     align-items: center;
+    gap: 0.5rem;
     min-width: 0;
   }
-  li + li::before {
-    content: "|";
-    padding-inline: 0.5rem;
+  .sep {
+    flex: 0 0 auto;
     color: var(--brand-line);
+    line-height: 1;
   }
   a {
     color: var(--brand-ink-soft);
@@ -79,7 +86,7 @@ const trail = items[0]?.label === "Home" ? items : [{ label: "Home", path: "/" }
   .crumbs--hero a:hover {
     color: var(--mint);
   }
-  .crumbs--hero li + li::before {
+  .crumbs--hero .sep {
     color: rgba(255, 255, 255, 0.35);
   }
   .crumbs--hero .current {
