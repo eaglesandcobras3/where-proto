@@ -1,4 +1,5 @@
 <script lang="ts">
+  import CardFacts from "./CardFacts.svelte";
   import ListingToolbar from "./ListingToolbar.svelte";
 
   interface ReactionView {
@@ -7,6 +8,7 @@
   }
 
   interface Metric {
+    kind: "business" | "stay" | "guide" | "thread";
     label: string;
     count: number;
   }
@@ -56,6 +58,7 @@
   let town = $state(initialTown);
   let category = $state(initialCategory);
   let sort = $state<"west-east" | "az">("west-east");
+  let didReadQuery = false;
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -80,6 +83,13 @@
       })
       .toSorted((a, b) => (sort === "az" ? a.name.localeCompare(b.name) : 0)),
   );
+
+  $effect(() => {
+    if (didReadQuery || typeof window === "undefined") return;
+    didReadQuery = true;
+    const posted = new URLSearchParams(window.location.search).get("q")?.trim() ?? "";
+    if (posted) query = posted;
+  });
 
   $effect(() => {
     if (typeof window === "undefined") return;
@@ -129,13 +139,7 @@
             {/if}
           </div>
           <p class="excerpt">{item.summary}</p>
-          {#if item.metrics.length}
-            <div class="stats">
-              {#each item.metrics as metric}
-                <span>{metric.count} {metric.label}</span>
-              {/each}
-            </div>
-          {/if}
+          <CardFacts facts={item.metrics} />
           {#if item.tags.length}
             <div class="tags">
               {#each item.tags as tag}
@@ -271,13 +275,6 @@
     font-size: 0.6875rem;
     font-weight: var(--font-weight-6);
     color: var(--brand-ink);
-  }
-  .stats {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.85rem;
-    font-size: var(--font-size-0);
-    color: var(--brand-ink-soft);
   }
   .explore {
     justify-self: start;

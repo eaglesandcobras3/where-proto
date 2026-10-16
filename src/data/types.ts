@@ -83,7 +83,10 @@ export interface EventItem {
   time?: string;
   summary: string;
   venue?: string;
+  /** Primary category label shown on cards. */
   category?: string;
+  /** Category slugs. An event can belong to more than one. */
+  categories?: string[];
   ticketUrl?: string;
   price?: string;
   bucket: EventBucket;

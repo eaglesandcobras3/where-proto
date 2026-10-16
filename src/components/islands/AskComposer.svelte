@@ -30,6 +30,7 @@
   let town = $state("");
   let topic = $state("");
   let submitted = $state("");
+  let didHydrate = false;
 
   function openAuth(next: "login" | "signup") {
     window.dispatchEvent(new CustomEvent("w30a:auth", { detail: { mode: next } }));
@@ -49,6 +50,19 @@
     sync();
     window.addEventListener(PERSONA_EVENT, sync);
     return () => window.removeEventListener(PERSONA_EVENT, sync);
+  });
+
+  $effect(() => {
+    if (didHydrate || typeof window === "undefined") return;
+    didHydrate = true;
+    const params = new URLSearchParams(window.location.search);
+    const posted = params.get("post")?.trim() ?? "";
+    const townParam = params.get("town") ?? "";
+    if (townParam) town = townParam;
+    if (posted) {
+      body = posted;
+      submitted = posted;
+    }
   });
 </script>
 

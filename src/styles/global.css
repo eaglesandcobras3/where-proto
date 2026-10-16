@@ -105,12 +105,48 @@ select {
   appearance: none;
   -webkit-appearance: none;
   background-color: white;
-  background-image: var(--select-chevron) !important;
-  background-repeat: no-repeat !important;
-  background-position: right var(--select-chevron-inset) center !important;
-  background-size: var(--select-chevron-size) !important;
+  background-image: none;
   padding-inline-end: var(--select-padding-end) !important;
   cursor: pointer;
+}
+
+/*
+  Chrome does not paint background-image on a native select, so the chevron
+  sits on a wrapper added beside every closed select.
+*/
+.select-chevron {
+  position: relative;
+  display: flex;
+  width: fit-content;
+  max-width: 100%;
+  min-width: 0;
+  vertical-align: middle;
+}
+.select-chevron--fill {
+  width: 100%;
+}
+.select-chevron > select {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+.select-chevron::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: var(--select-chevron-inset);
+  z-index: 1;
+  width: 0.75rem;
+  height: 0.5rem;
+  transform: translateY(-50%);
+  background-image: var(--select-chevron);
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  pointer-events: none;
+}
+.select-chevron:has(select:disabled)::after {
+  opacity: 0.45;
 }
 
 select:disabled {

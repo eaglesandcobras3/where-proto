@@ -35,7 +35,7 @@
       slug: "ask",
       name: "Ask",
       path: "/ask",
-      placeholder: "Ask about carts, parking, dining…",
+      placeholder: "Ask the locals anything about 30A…",
     },
   ];
 
@@ -58,10 +58,11 @@
   let isMobile = $state(false);
   let root = $state<HTMLElement>();
   let drawer = $state<HTMLDialogElement>();
-  let input = $state<HTMLInputElement>();
+  let input = $state<HTMLElement>();
   let drawerEntity = $state<HTMLSelectElement>();
 
   let current = $derived(entities.find((item) => item.slug === entity) ?? entities[0]);
+  let asking = $derived(entity === "ask");
 
   function path(route: string) {
     const rootPath = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -98,7 +99,9 @@
     event.preventDefault();
     const target = entities.find((item) => item.slug === entity) ?? entities[0];
     const params = new URLSearchParams();
-    if (query.trim()) params.set("q", query.trim());
+    const text = query.trim();
+    if (entity === "ask" && !text) return;
+    if (text) params.set(entity === "ask" ? "post" : "q", text);
     if (town) params.set("town", town);
     const qs = params.toString();
     window.location.assign(`${path(target.path)}${qs ? `?${qs}` : ""}`);
@@ -148,15 +151,31 @@
 {/snippet}
 
 {#snippet desktopBar()}
-  <form class="bar" role="search" onsubmit={submit}>
+  <form class="bar" class:bar--ask={asking} role={asking ? "form" : "search"} onsubmit={submit}>
     <label class="entity">
-      <span class="visually-hidden">What to search</span>
-      <select bind:value={entity} aria-label="What to search">
+      <span class="visually-hidden">{asking ? "What to post" : "What to search"}</span>
+      <select bind:value={entity} aria-label={asking ? "What to post" : "What to search"}>
         {#each entities as item (item.slug)}
           <option value={item.slug}>{item.name}</option>
         {/each}
       </select>
     </label>
+
+    {#if asking}
+      <div class="composer">
+        <span class="avatar" aria-hidden="true">You</span>
+        <label class="field">
+          <span class="visually-hidden">Your question</span>
+          <textarea
+            bind:this={input}
+            name="post"
+            rows="2"
+            placeholder={current.placeholder}
+            bind:value={query}
+          ></textarea>
+        </label>
+      </div>
+    {/if}
 
     <label class="town">
       <span class="visually-hidden">Town</span>
@@ -168,24 +187,28 @@
       </select>
     </label>
 
-    <div class="query">
-      <label class="field">
-        <span class="visually-hidden">Search query</span>
-        <input
-          bind:this={input}
-          type="search"
-          name="q"
-          placeholder={current.placeholder}
-          autocomplete="off"
-          bind:value={query}
-        />
-      </label>
+    {#if asking}
+      <button class="submit" type="submit">Ask</button>
+    {:else}
+      <div class="query">
+        <label class="field">
+          <span class="visually-hidden">Search query</span>
+          <input
+            bind:this={input}
+            type="search"
+            name="q"
+            placeholder={current.placeholder}
+            autocomplete="off"
+            bind:value={query}
+          />
+        </label>
 
-      <button class="submit" type="submit">
-        {@render searchIconMarkup()}
-        <span class="submit__label">Search</span>
-      </button>
-    </div>
+        <button class="submit" type="submit">
+          {@render searchIconMarkup()}
+          <span class="submit__label">Search</span>
+        </button>
+      </div>
+    {/if}
   </form>
 {/snippet}
 
@@ -223,20 +246,20 @@
     class="drawer"
     id={drawerId}
     bind:this={drawer}
-    aria-label="Search 30A"
+    aria-label={asking ? "Ask 30A" : "Search 30A"}
     onclick={(event) => {
       if (event.target === drawer) closeDrawer();
     }}
   >
     <div class="drawer__panel">
       <div class="drawer__head">
-        <p class="drawer__title">Search</p>
+        <p class="drawer__title">{asking ? "Ask" : "Search"}</p>
         <button class="drawer__close" type="button" onclick={closeDrawer}>Close</button>
       </div>
-      <form class="drawer__form" role="search" onsubmit={submit}>
+      <form class="drawer__form" role={asking ? "form" : "search"} onsubmit={submit}>
         <label class="drawer__field">
-          <span>Looking for</span>
-          <select bind:this={drawerEntity} bind:value={entity} aria-label="What to search">
+          <span>{asking ? "Posting" : "Looking for"}</span>
+          <select bind:this={drawerEntity} bind:value={entity} aria-label={asking ? "What to post" : "What to search"}>
             {#each entities as item (item.slug)}
               <option value={item.slug}>{item.name}</option>
             {/each}
@@ -252,18 +275,29 @@
           </select>
         </label>
         <label class="drawer__field">
-          <span>Search</span>
-          <input
-            type="search"
-            name="q"
-            placeholder={current.placeholder}
-            autocomplete="off"
-            bind:value={query}
-          />
+          <span>{asking ? "Your question" : "Search"}</span>
+          {#if asking}
+            <textarea
+              name="post"
+              rows="3"
+              placeholder={current.placeholder}
+              bind:value={query}
+            ></textarea>
+          {:else}
+            <input
+              type="search"
+              name="q"
+              placeholder={current.placeholder}
+              autocomplete="off"
+              bind:value={query}
+            />
+          {/if}
         </label>
         <button class="drawer__submit" type="submit">
-          {@render searchIconMarkup()}
-          Search
+          {#if !asking}
+            {@render searchIconMarkup()}
+          {/if}
+          {asking ? "Ask" : "Search"}
         </button>
       </form>
     </div>
@@ -342,6 +376,17 @@
     overflow: hidden;
     box-shadow: var(--shadow-card-hover);
   }
+  .bar.bar--ask {
+    display: grid;
+    height: auto;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-areas:
+      "composer composer composer"
+      "entity town action";
+    gap: 0.75rem;
+    align-items: center;
+    padding: 0.9rem 0.9rem 0.8rem;
+  }
   .bar:focus-within {
     border-color: var(--brand-teal);
     box-shadow: 0 0 0 3px rgba(0, 137, 123, 0.18);
@@ -376,12 +421,11 @@
   .query {
     flex: 1 1 auto;
     min-width: 0;
-    order: 2;
+    border-left: 1px solid var(--brand-line);
   }
   .bar > label.entity {
     flex: 0 0 auto;
     width: auto;
-    order: 1;
     background: var(--brand-deep);
     color: white;
     padding: 0 0.7rem 0 0.85rem;
@@ -389,9 +433,6 @@
   .bar > label.entity:hover,
   .bar > label.entity:focus-within {
     background: #163545;
-  }
-  .bar > label.town {
-    order: 3;
   }
   .bar input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="file"]),
   .bar select {
@@ -417,6 +458,9 @@
     cursor: pointer;
     --select-chevron-inset: 0.1rem;
     --select-padding-end: 1.35rem;
+  }
+  .bar > label.entity {
+    --select-chevron: var(--select-chevron-on-dark);
   }
   .bar > label.entity select {
     width: 7.5rem;
@@ -447,6 +491,83 @@
     width: 12.25rem;
     border-left: 1px solid var(--brand-line);
     padding: 0 0.7rem 0 0.85rem;
+  }
+  .composer {
+    grid-area: composer;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+    min-width: 0;
+  }
+  .composer .field {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+  .avatar {
+    width: 2.4rem;
+    height: 2.4rem;
+    border-radius: 50%;
+    background: var(--brand-teal-soft);
+    color: var(--brand-deep);
+    display: grid;
+    place-items: center;
+    font-size: var(--font-size-0);
+    font-weight: var(--font-weight-7);
+    flex-shrink: 0;
+  }
+  .bar.bar--ask > label.entity {
+    grid-area: entity;
+    height: 2.5rem;
+    border-radius: 0.55rem;
+  }
+  .bar.bar--ask > label.town {
+    grid-area: town;
+    width: auto;
+    max-width: 16rem;
+    height: 2.5rem;
+    border: 1px solid var(--brand-line);
+    border-radius: 0.55rem;
+    background: var(--brand-sand);
+  }
+  .bar.bar--ask > button.submit {
+    grid-area: action;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 0.55rem;
+    background: var(--brand-teal);
+    color: white;
+    padding: 0 1.15rem;
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    cursor: pointer;
+  }
+  .bar.bar--ask > button.submit:hover {
+    background: #00796b;
+  }
+  .bar textarea {
+    width: 100%;
+    min-height: 3.25rem;
+    margin: 0;
+    padding: 0.15rem 0 0;
+    border: 0;
+    border-radius: 0;
+    outline: none;
+    box-shadow: none;
+    resize: none;
+    background: transparent;
+    color: var(--brand-ink);
+    font: inherit;
+    font-size: var(--font-size-1);
+    line-height: 1.45;
+  }
+  .bar textarea:focus {
+    border: 0;
+    outline: none;
+    box-shadow: none;
+  }
+  .bar textarea::placeholder {
+    color: var(--brand-ink-soft);
   }
   .bar > label.town select {
     width: 100%;
@@ -545,7 +666,8 @@
     text-transform: uppercase;
   }
   .drawer__field select,
-  .drawer__field input {
+  .drawer__field input,
+  .drawer__field textarea {
     width: 100%;
     min-height: 3rem;
     margin: 0;
@@ -562,6 +684,12 @@
     background-color: var(--brand-sand);
     --select-chevron-inset: 0.9rem;
     --select-padding-end: 2.4rem;
+  }
+  .drawer__field textarea {
+    min-height: 6.5rem;
+    padding: 0.75rem 0.9rem;
+    resize: vertical;
+    line-height: 1.45;
   }
   .drawer__submit {
     display: inline-flex;

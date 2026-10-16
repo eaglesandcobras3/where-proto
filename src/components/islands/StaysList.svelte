@@ -42,6 +42,7 @@
   let view = $state<"all" | "beachfront" | "lsv" | "inn">("all");
   let sort = $state<"recommended" | "price-asc" | "price-desc" | "sleeps">("recommended");
   let chip = $state("");
+  let didHydrate = false;
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -95,6 +96,17 @@
         return 0;
       }),
   );
+
+  $effect(() => {
+    if (didHydrate || typeof window === "undefined") return;
+    didHydrate = true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("town")) town = params.get("town") ?? "";
+    if (params.has("guests")) guests = params.get("guests") ?? "";
+    if (params.has("kind")) kind = params.get("kind") ?? "";
+    if (params.has("amenity")) amenity = params.get("amenity") ?? "";
+    if (params.has("q")) query = params.get("q") ?? "";
+  });
 
   $effect(() => {
     if (typeof window === "undefined") return;

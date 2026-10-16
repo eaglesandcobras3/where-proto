@@ -7,6 +7,7 @@ import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
 import { townCountsFor } from "../../lib/unified-layout";
 import { businessBySlug, events, towns, townBySlug } from "../../data/catalog";
+import { eventCategories, eventHasCategory } from "../../data/event-categories";
 import { href } from "../../lib/href";
 import { markersFromNames, withoutViewMap, withViewMap } from "../../lib/map-markers";
 
@@ -22,14 +23,7 @@ const searchQs = Astro.url.search;
 const mapHref = withViewMap("/events", searchQs);
 const gridHref = withoutViewMap("/events", searchQs);
 
-const categoryOptions = [
-  { slug: "Music", name: "Live Music" },
-  { slug: "Wellness", name: "Wellness & Yoga" },
-  { slug: "Market", name: "Farmers Markets" },
-  { slug: "Food", name: "Food & Wine" },
-  { slug: "Arts", name: "Arts & Culture" },
-  { slug: "Family", name: "Family Friendly" },
-];
+const categoryOptions = eventCategories.map((item) => ({ slug: item.slug, name: item.name }));
 
 const rows = events.map((event) => {
   const townRow = event.townSlug ? townBySlug(event.townSlug) : undefined;
@@ -43,6 +37,7 @@ const rows = events.map((event) => {
     time: event.time,
     venue: event.venue,
     category: event.category,
+    categories: event.categories ?? [],
     price: event.price,
     summary: event.summary,
     host: host ?? (townRow ? `${townRow.name} Events` : "Community host"),
@@ -58,10 +53,12 @@ const townCounts = towns
   }))
   .filter((item) => item.count > 0);
 const allTownCounts = townCountsFor(towns, events, (event) => event.townSlug);
-const categoryCounts = categoryOptions.map((item) => ({
-  ...item,
-  count: events.filter((event) => (event.category ?? "").toLowerCase() === item.slug.toLowerCase()).length,
-}));
+const categoryCounts = categoryOptions
+  .map((item) => ({
+    ...item,
+    count: events.filter((event) => eventHasCategory(event, item.slug)).length,
+  }))
+  .filter((item) => item.count > 0);
 
 const exploreTowns = towns.map(({ slug, name }) => ({ slug, name }));
 

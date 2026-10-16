@@ -6,7 +6,6 @@ import TwoPaneMap from "../../components/TwoPaneMap.astro";
 import TownsList from "../../components/islands/TownsList.svelte";
 import ListingFilters from "../../components/islands/ListingFilters.svelte";
 import ListingRail from "../../components/ListingRail.astro";
-import LocalsPick from "../../components/LocalsPick.astro";
 import SaveShare from "../../components/islands/SaveShare.svelte";
 import {
   businessesForTown,
@@ -27,7 +26,6 @@ const params = Astro.url.searchParams;
 const q = params.get("q") ?? "";
 const town = params.get("town") ?? "";
 const category = params.get("category") ?? "";
-const mapView = params.get("view") === "map";
 const base = import.meta.env.BASE_URL;
 const searchQs = Astro.url.search;
 const mapHref = withViewMap("/towns", searchQs);
@@ -81,11 +79,19 @@ const townItems = towns.map((town) => {
   const guideCount = guides.filter((item) => item.townSlug === town.slug).length;
   const threadCount = questions.filter((item) => item.townSlug === town.slug).length;
   const metrics = [
-    businessCount ? { label: businessCount === 1 ? "business" : "businesses", count: businessCount } : null,
-    stayCount ? { label: stayCount === 1 ? "stay" : "stays", count: stayCount } : null,
-    guideCount ? { label: guideCount === 1 ? "guide" : "guides", count: guideCount } : null,
-    threadCount ? { label: threadCount === 1 ? "thread" : "threads", count: threadCount } : null,
-  ].filter((item): item is { label: string; count: number } => Boolean(item));
+    businessCount
+      ? { kind: "business" as const, count: businessCount, label: businessCount === 1 ? "business" : "businesses" }
+      : null,
+    stayCount ? { kind: "stay" as const, count: stayCount, label: stayCount === 1 ? "stay" : "stays" } : null,
+    guideCount
+      ? { kind: "guide" as const, count: guideCount, label: guideCount === 1 ? "guide" : "guides" }
+      : null,
+    threadCount
+      ? { kind: "thread" as const, count: threadCount, label: threadCount === 1 ? "thread" : "threads" }
+      : null,
+  ].filter((item): item is { kind: "business" | "stay" | "guide" | "thread"; label: string; count: number } =>
+    Boolean(item),
+  );
   const categorySlugs = [...new Set(townBusinesses.map((item) => item.categorySlug))];
   const leafSlugs = [...new Set(townBusinesses.map((item) => item.leafSlug))];
 
@@ -148,25 +154,31 @@ const mapMarkers = markersFromNames(
 
     <Corridor centerSlug="seaside" />
 
-    {
-      mapView ? (
-        <TwoPaneMap
-          mapLabel="30A towns map"
-          resultLabel={`${towns.length} Towns along Scenic 30A`}
-          gridHref={href(gridHref)}
-          markers={mapMarkers}
-          searchArea
-        >
-          <TownsList
-            towns={townItems}
-            initialQuery={q}
-            initialTown={town}
-            initialCategory={category}
-            base={base}
-            client:load
-          />
-        </TwoPaneMap>
-      ) : (
+    <script is:inline>
+      if (new URLSearchParams(location.search).get("view") === "map") {
+        document.documentElement.dataset.view = "map";
+      }
+    </script>
+
+    <div class="view-map">
+      <TwoPaneMap
+        mapLabel="30A towns map"
+        resultLabel={`${towns.length} Towns along Scenic 30A`}
+        gridHref={href(gridHref)}
+        markers={mapMarkers}
+        searchArea
+      >
+        <TownsList
+          towns={townItems}
+          initialQuery={q}
+          initialTown={town}
+          initialCategory={category}
+          base={base}
+          client:load
+        />
+      </TwoPaneMap>
+    </div>
+    <div class="view-grid">
         <div class="container layout">
           <div class="filters-col">
             
@@ -197,24 +209,27 @@ const mapMarkers = markersFromNames(
           <aside class="rail">
             
             <div>
-              <ListingRail mapTitle="Towns map" mapHref={mapHref} contributeKind="business" current="towns">
-                <LocalsPick
-                  slot="discovery"
-                  name="Seaside"
-                  quote="Start on the square, then walk a town in each direction before you lock a stay."
-                  byline="Capt. Dave · Seagrove Resident"
-                  href="/town/seaside"
-                />
-              </ListingRail>
+              <ListingRail
+                mapTitle="Towns map"
+                mapHref={mapHref}
+                contributeKind="business"
+                current="towns"
+                showExplore={false}
+              />
             </div>
           </aside>
         </div>
-      )
-    }
+    </div>
   </div>
 </BaseLayout>
 
 <style>
+  :global(html:not([data-view="map"])) .view-map {
+    display: none;
+  }
+  :global(html[data-view="map"]) .view-grid {
+    display: none;
+  }
   .towns-page {
     background: var(--brand-sand);
     color: var(--brand-ink);

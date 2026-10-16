@@ -287,6 +287,61 @@ const exploreCategories = categories.map(({ slug, name, leaves }) => ({
       client:load
     />
     <ProtoPersonaSwitch client:load />
+    <script is:inline>
+      (function () {
+        if (window.__w30aSelectChevrons) return;
+        window.__w30aSelectChevrons = true;
+
+        function wrap(select) {
+          if (!(select instanceof HTMLSelectElement)) return;
+          if (select.multiple || select.size > 1) return;
+          if (select.closest(".select-chevron")) return;
+          var parent = select.parentElement;
+          if (!parent) return;
+          var display = getComputedStyle(parent).display;
+          var box = document.createElement("span");
+          box.className = "select-chevron";
+          if (
+            display === "flex" ||
+            display === "inline-flex" ||
+            display === "grid" ||
+            display === "inline-grid" ||
+            display === "block" ||
+            display === "flow-root"
+          ) {
+            box.classList.add("select-chevron--fill");
+          }
+          select.before(box);
+          box.appendChild(select);
+        }
+
+        function scan(root) {
+          if (!root || typeof root.querySelectorAll !== "function") return;
+          root.querySelectorAll("select").forEach(wrap);
+        }
+
+        function start() {
+          scan(document);
+          if (window.__w30aSelectChevronObserver) return;
+          window.__w30aSelectChevronObserver = new MutationObserver(function (records) {
+            records.forEach(function (record) {
+              record.addedNodes.forEach(function (node) {
+                if (node instanceof HTMLSelectElement) wrap(node);
+                else if (node instanceof Element) scan(node);
+              });
+            });
+          });
+          window.__w30aSelectChevronObserver.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+          });
+        }
+
+        window.addEventListener("astro:page-load", start);
+        if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", start);
+        else start();
+      })();
+    </script>
   </body>
 </html>
 

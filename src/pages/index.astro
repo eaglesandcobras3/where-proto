@@ -28,22 +28,18 @@ const homeEvents = [
   {
     event: events.find((item) => item.slug === "grayton-farmers-market") ?? events[0]!,
     whenLabel: "Sat · 8:00 AM",
-    types: ["weekend", "market"],
   },
   {
     event: events.find((item) => item.slug === "sounds-of-seaside") ?? events[1]!,
     whenLabel: "Wed · 5:00 PM",
-    types: ["music", "weekend"],
   },
   {
     event: events.find((item) => item.slug === "seaside-storytime") ?? events[2]!,
     whenLabel: "Today · 10:00 AM",
-    types: ["family"],
   },
   {
     event: events.find((item) => item.slug === "alys-sunset-yoga") ?? events[3]!,
     whenLabel: "Today · 5:30 PM",
-    types: ["weekend", "family"],
   },
 ];
 
@@ -58,7 +54,6 @@ const askRows = questions.slice(0, 3).map((question) => {
 <BaseLayout title="WhereTo30A — Scenic 30A Chronicle & Field Guide">
   <div class="home">
     <HomeHero towns={heroTowns} base={base} />
-
     <LocalSpotlight href={businessPathBySlug("cafe-thirty-a")} />
     <HomeFeaturedGrid />
     <BeachTownsStrip />

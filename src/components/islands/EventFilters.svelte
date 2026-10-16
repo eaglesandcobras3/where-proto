@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { eventCategories, eventHasCategory } from "../../data/event-categories";
   import ListingToolbar from "./ListingToolbar.svelte";
 
   interface Row {
@@ -10,6 +11,7 @@
     time?: string;
     venue?: string;
     category?: string;
+    categories?: string[];
     price?: string;
     summary?: string;
     host?: string;
@@ -36,24 +38,22 @@
   let from = $state("");
   let view = $state<"all" | "weekend" | "free" | "family">("all");
   let chip = $state("");
+  let didHydrate = false;
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
     return `${root}${route}`;
   }
 
-  const eventChips = [
-    { slug: "Music", name: "Live Music" },
-    { slug: "Wellness", name: "Wellness & Yoga" },
-    { slug: "Market", name: "Farmers Markets" },
-    { slug: "Family", name: "Family Friendly" },
-  ];
+  const eventChips = eventCategories.filter((category) =>
+    events.some((item) => eventHasCategory(item, category.slug)),
+  );
 
   let results = $derived(
     events.filter((item) => {
       if (town && item.town !== town) return false;
       const activeCategory = chip || category;
-      if (activeCategory && (item.category ?? "").toLowerCase() !== activeCategory.toLowerCase()) return false;
+      if (activeCategory && !eventHasCategory(item, activeCategory)) return false;
       if (from && item.when && item.when < from) return false;
       if (query.trim()) {
         const hay = `${item.name} ${item.venue ?? ""} ${item.townName ?? ""} ${item.category ?? ""} ${item.when}`.toLowerCase();
@@ -61,7 +61,7 @@
       }
       if (view === "weekend" && item.bucket !== "weekend") return false;
       if (view === "free" && !(item.price ?? "").toLowerCase().includes("free")) return false;
-      if (view === "family" && !(item.category ?? "").toLowerCase().includes("family")) return false;
+      if (view === "family" && !eventHasCategory(item, "family-kids")) return false;
       return true;
     }),
   );
@@ -71,6 +71,16 @@
     { key: ["weekend"], label: "This Weekend" },
     { key: ["month"], label: "Next 30 Days" },
   ];
+
+  $effect(() => {
+    if (didHydrate || typeof window === "undefined") return;
+    didHydrate = true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("town")) town = params.get("town") ?? "";
+    if (params.has("category")) category = params.get("category") ?? "";
+    if (params.has("q")) query = params.get("q") ?? "";
+    if (params.has("from")) from = params.get("from") ?? "";
+  });
 
   $effect(() => {
     if (typeof window === "undefined") return;

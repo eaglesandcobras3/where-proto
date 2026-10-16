@@ -38,6 +38,7 @@
   let query = $state(initialQuery);
   let source = $state<"whereto" | "community" | "">("whereto");
   let sort = $state<"latest" | "popular">("latest");
+  let didHydrate = false;
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -76,6 +77,17 @@
         return (b.publishedAt ?? "").localeCompare(a.publishedAt ?? "") || b.minutes - a.minutes;
       }),
   );
+
+  $effect(() => {
+    if (didHydrate || typeof window === "undefined") return;
+    didHydrate = true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("town")) town = params.get("town") ?? "";
+    if (params.has("topic")) category = params.get("topic") ?? "";
+    if (params.has("q")) query = params.get("q") ?? "";
+    const postedSource = params.get("source");
+    if (postedSource === "whereto" || postedSource === "community" || postedSource === "") source = postedSource;
+  });
 
   $effect(() => {
     if (typeof window === "undefined") return;

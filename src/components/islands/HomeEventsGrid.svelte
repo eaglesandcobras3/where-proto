@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { eventCategories } from "../../data/event-categories";
+
   interface Card {
     slug: string;
     name: string;
@@ -6,7 +8,7 @@
     town: string;
     venue: string;
     whenLabel: string;
-    types: string[];
+    categories?: string[];
     reactions?: { label: "up" | "heart" | "wow"; count: number }[];
   }
 
@@ -20,14 +22,6 @@
     };
   }
 
-  const filters = [
-    { slug: "all", label: "All" },
-    { slug: "weekend", label: "This Weekend" },
-    { slug: "music", label: "Live Music" },
-    { slug: "market", label: "Farmer's Markets" },
-    { slug: "family", label: "Family & Kids" },
-  ] as const;
-
   let {
     items = [],
     base = "/",
@@ -36,10 +30,17 @@
     base?: string;
   } = $props();
 
-  let active = $state<(typeof filters)[number]["slug"]>("all");
+  const filters = $derived([
+    { slug: "all", label: "All" },
+    ...eventCategories
+      .filter((category) => items.some((item) => item.categories?.includes(category.slug)))
+      .map((category) => ({ slug: category.slug, label: category.name })),
+  ]);
+
+  let active = $state("all");
 
   const visible = $derived(
-    active === "all" ? items : items.filter((item) => item.types.includes(active)),
+    active === "all" ? items : items.filter((item) => item.categories?.includes(active)),
   );
 
   function path(route: string) {

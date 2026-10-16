@@ -39,10 +39,8 @@ const links = [
     </nav>
 
     <div class="header-actions">
-      <a class="add-business" data-proto="add-business" href={href("/add-business")}>Add your business</a>
-      <button class="sign-in" data-proto="sign-in" type="button" id="header-sign-in">Sign in</button>
       <SearchBar towns={townOptions} base={base} client:load />
-      <div class="profile" data-proto="profile">
+      <div class="profile">
         <button
           class="icon-btn"
           type="button"
@@ -58,10 +56,12 @@ const links = [
           </svg>
         </button>
         <div class="profile-menu" id="profile-menu" role="menu">
-          <a role="menuitem" href={href("/profile")}>Profile</a>
+          <a role="menuitem" data-proto="add-business" href={href("/merchants")}>Add your business</a>
+          <button role="menuitem" class="menu-action" data-proto="sign-in" type="button" id="header-sign-in">Sign in</button>
+          <a role="menuitem" data-proto="account" href={href("/profile")}>Profile</a>
           <a role="menuitem" data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
           <a role="menuitem" data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
-          <button role="menuitem" type="button" data-proto="sign-out" id="menu-sign-out">Sign out</button>
+          <button role="menuitem" class="menu-action" type="button" data-proto="sign-out" id="menu-sign-out">Sign out</button>
         </div>
       </div>
       <button
@@ -88,9 +88,9 @@ const links = [
     </form>
     <nav class="mobile-nav">
       {links.map((link) => <a href={href(link.path)}>{link.label}</a>)}
-      <a data-proto="add-business" href={href("/add-business")}>Add your business</a>
+      <a data-proto="add-business" href={href("/merchants")}>Add your business</a>
       <button type="button" data-proto="sign-in" class="mobile-sign-in" id="mobile-sign-in">Sign in</button>
-      <a data-proto="profile" href={href("/profile")}>Profile</a>
+      <a data-proto="account" href={href("/profile")}>Profile</a>
       <a data-proto="manage-business" href={href("/dashboard")}>Manage business</a>
       <a data-proto="town-desk" href={href("/dashboard")}>Manage town</a>
       <button type="button" data-proto="sign-out" class="mobile-sign-in" id="mobile-sign-out">Sign out</button>
@@ -120,6 +120,7 @@ const links = [
   });
 
   function openAuth() {
+    setProfileOpen(false);
     window.dispatchEvent(new CustomEvent("w30a:auth", { detail: { mode: "login" } }));
     if (drawer instanceof HTMLDialogElement && drawer.open) drawer.close();
   }
@@ -227,27 +228,6 @@ const links = [
     min-width: 0;
     justify-content: flex-end;
   }
-  .add-business,
-  .sign-in {
-    display: none;
-    margin-right: 0.35rem;
-    font-size: var(--font-size-1);
-    font-weight: var(--font-weight-5);
-    color: var(--brand-ink-soft);
-    white-space: nowrap;
-  }
-  .add-business:hover,
-  .sign-in:hover {
-    color: var(--brand-ink);
-    text-decoration: none;
-  }
-  .sign-in {
-    border: 0;
-    background: none;
-    padding: 0;
-    cursor: pointer;
-    font: inherit;
-  }
   .mobile-sign-in {
     display: block;
     width: 100%;
@@ -263,7 +243,7 @@ const links = [
   }
 
   /* Prototype persona visibility — set on <html data-persona> */
-  :global(html[data-persona="guest"]) [data-proto="profile"],
+  :global(html[data-persona="guest"]) [data-proto="account"],
   :global(html[data-persona="guest"]) [data-proto="manage-business"],
   :global(html[data-persona="guest"]) [data-proto="town-desk"],
   :global(html[data-persona="town-manager"]) [data-proto="add-business"] {
@@ -291,12 +271,15 @@ const links = [
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    border: 0;
+    padding: 0;
     border-radius: 50%;
     background: white;
     color: var(--brand-ink);
     box-shadow: 0 0 0 1px var(--brand-line);
     flex-shrink: 0;
     line-height: 0;
+    cursor: pointer;
   }
   .icon-btn svg {
     display: block;
@@ -430,9 +413,7 @@ const links = [
       margin-left: 0;
       flex: none;
     }
-    .desktop-nav,
-    .add-business,
-    .sign-in {
+    .desktop-nav {
       display: flex;
       align-items: center;
     }

@@ -11,16 +11,17 @@ interface Props {
   contributeKind: ContributeKind;
   current: ExploreKey;
   townSlug?: string;
+  showExplore?: boolean;
 }
 
-const { mapTitle, mapHref, contributeKind, current, townSlug } = Astro.props;
+const { mapTitle, mapHref, contributeKind, current, townSlug, showExplore = true } = Astro.props;
 ---
 
 <aside class="listing-rail">
   <MapToggle title={mapTitle} href={mapHref} showRatings={false} />
   <ContributeCard kind={contributeKind} />
   <slot name="discovery" />
-  <ExploreLinks current={current} townSlug={townSlug} />
+  {showExplore && <ExploreLinks current={current} townSlug={townSlug} />}
 </aside>
 
 <style>

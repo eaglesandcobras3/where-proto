@@ -1,47 +1,51 @@
 ---
 /** Site-wide beach flag + weather strip (wireframe static values). */
-const flagLabel = "Yellow Flag";
+const flagShort = "Yellow Flag";
 const flagFull = "Yellow Flag: Moderate Surf";
 const flagHref = "https://www.visitsouthwalton.com/beach-safety/";
 const low = "68°";
 const high = "79°";
-const sunrise = "6:48a";
-const sunset = "6:18p";
-const sunriseFull = "Sunrise 6:48 AM";
-const sunsetFull = "Sunset 6:18 PM";
+const sunriseShort = "6:48a";
+const sunsetShort = "6:18p";
+const sunriseFull = "6:48 AM";
+const sunsetFull = "6:18 PM";
 ---
 
 <div class="conditions" aria-label="Beach and weather conditions">
   <div class="container conditions__inner">
-    <a
-      class="conditions__flag"
-      href={flagHref}
-      target="_blank"
-      rel="noopener noreferrer"
-      title={flagFull}
-      aria-label={flagFull}
-    >
-      <span class="dot" aria-hidden="true"></span>
-      <span class="flag-text">{flagLabel}</span>
-    </a>
+    <div class="conditions__left">
+      <a
+        class="conditions__flag"
+        href={flagHref}
+        target="_blank"
+        rel="noopener noreferrer"
+        title={flagFull}
+        aria-label={flagFull}
+      >
+        <span class="dot" aria-hidden="true"></span>
+        <span class="flag-short">{flagShort}</span>
+        <span class="flag-full">{flagFull}</span>
+      </a>
 
-    <span class="sep" aria-hidden="true">·</span>
+      <span class="sep sep--group" aria-hidden="true">·</span>
 
-    <p class="conditions__temps">
-      <span title={`Low ${low}`}>
-        <span class="icon" aria-hidden="true">↓</span>
-        <span class="sr-only">Low </span>{low}
-      </span>
-      <span title={`High ${high}`}>
-        <span class="icon" aria-hidden="true">↑</span>
-        <span class="sr-only">High </span>{high}
-      </span>
-    </p>
+      <p class="conditions__temps">
+        <span title={`Low ${low}`}>
+          <span class="icon" aria-hidden="true">↓</span>
+          <span class="word">Low </span>{low}
+        </span>
+        <span class="sep sep--pair" aria-hidden="true">·</span>
+        <span title={`High ${high}`}>
+          <span class="icon" aria-hidden="true">↑</span>
+          <span class="word">High </span>{high}
+        </span>
+      </p>
+    </div>
 
-    <span class="sep" aria-hidden="true">·</span>
+    <span class="sep sep--group" aria-hidden="true">·</span>
 
     <p class="conditions__sun">
-      <span title={sunriseFull}>
+      <span title={`Sunrise ${sunriseFull}`}>
         <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
           <path
             fill="none"
@@ -52,9 +56,12 @@ const sunsetFull = "Sunset 6:18 PM";
             d="M4 18h16M8 18a4 4 0 0 1 8 0M12 4v3M6.5 8.5 8 10M17.5 8.5 16 10"
           ></path>
         </svg>
-        <span class="sr-only">Sunrise </span>{sunrise}
+        <span class="word">Sunrise </span>
+        <span class="time-short">{sunriseShort}</span>
+        <span class="time-full">{sunriseFull}</span>
       </span>
-      <span title={sunsetFull}>
+      <span class="sep sep--pair" aria-hidden="true">·</span>
+      <span title={`Sunset ${sunsetFull}`}>
         <svg class="sun-icon" viewBox="0 0 24 24" width="13" height="13" aria-hidden="true">
           <path
             fill="none"
@@ -65,7 +72,9 @@ const sunsetFull = "Sunset 6:18 PM";
             d="M4 18h16M8 18a4 4 0 0 1 8 0M12 12V9M6.5 13.5 8 12M17.5 13.5 16 12"
           ></path>
         </svg>
-        <span class="sr-only">Sunset </span>{sunset}
+        <span class="word">Sunset </span>
+        <span class="time-short">{sunsetShort}</span>
+        <span class="time-full">{sunsetFull}</span>
       </span>
     </p>
   </div>
@@ -95,6 +104,9 @@ const sunsetFull = "Sunset 6:18 PM";
   .conditions__inner::-webkit-scrollbar {
     display: none;
   }
+  .conditions__left {
+    display: contents;
+  }
   .conditions__temps,
   .conditions__sun,
   .conditions__flag {
@@ -107,18 +119,23 @@ const sunsetFull = "Sunset 6:18 PM";
     flex: 0 0 auto;
   }
   .conditions__flag {
-    gap: 0.35rem;
     font-weight: var(--font-weight-7);
     color: var(--brand-deep);
   }
   .conditions__flag:hover {
     color: var(--brand-teal);
   }
-  .conditions__temps > span,
-  .conditions__sun > span {
+  .conditions__temps > span:not(.sep),
+  .conditions__sun > span:not(.sep) {
     display: inline-flex;
     align-items: center;
     gap: 0.12rem;
+  }
+  .word,
+  .flag-full,
+  .time-full,
+  .sep--pair {
+    display: none;
   }
   .icon {
     font-size: 0.75em;
@@ -142,17 +159,37 @@ const sunsetFull = "Sunset 6:18 PM";
     color: var(--brand-ink-on-navy);
     flex: 0 0 auto;
   }
-  .sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip: rect(0 0 0 0);
-  }
-  @media (min-width: 720px) {
+  @media (min-width: 960px) {
     .conditions__inner {
-      gap: 0.55rem;
+      justify-content: space-between;
+      gap: 1rem;
       overflow: visible;
+    }
+    .conditions__left {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      min-width: 0;
+    }
+    .conditions__sun {
+      margin-left: auto;
+      gap: 0.45rem;
+    }
+    .conditions__temps {
+      gap: 0.45rem;
+    }
+    .sep--group,
+    .icon,
+    .sun-icon,
+    .flag-short,
+    .time-short {
+      display: none;
+    }
+    .word,
+    .flag-full,
+    .time-full,
+    .sep--pair {
+      display: inline;
     }
   }
 </style>

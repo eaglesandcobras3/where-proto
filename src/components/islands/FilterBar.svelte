@@ -75,6 +75,7 @@
   let openNow = $state(initialOpenNow);
   let query = $state(initialQuery);
   let sort = $state<"recommended" | "az">("recommended");
+  let didReadQuery = false;
   let tagQuery = $state("");
   let tagOpen = $state(false);
   let tagField = $state<HTMLElement>();
@@ -91,6 +92,25 @@
         (item) => item.name.toLowerCase().includes(needle) || item.slug.toLowerCase().includes(needle),
       )
       .slice(0, 8);
+  });
+
+  $effect(() => {
+    if (didReadQuery || typeof window === "undefined") return;
+    didReadQuery = true;
+    const params = new URLSearchParams(window.location.search);
+    const posted = params.get("q")?.trim() ?? "";
+    if (posted) query = posted;
+    if (params.has("town")) town = params.get("town") ?? "";
+    const postedCategory = params.get("category");
+    if (postedCategory) {
+      category = postedCategory;
+      if (categoryGroups.length) {
+        const next = resolveGroup(postedCategory);
+        parent = next.parent;
+        leaf = next.leaf;
+      }
+    }
+    if (params.has("tag")) tag = params.get("tag") ?? "";
   });
 
   function syncCategory(nextParent = parent, nextLeaf = leaf) {

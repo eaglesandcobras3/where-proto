@@ -1,6 +1,6 @@
 ---
 import { href } from "../lib/href";
-import { guides, reactionsFor, townBySlug } from "../data/catalog";
+import { commentsFor, guides, reactionsFor, townBySlug } from "../data/catalog";
 import ReactionCluster from "./ReactionCluster.astro";
 import SectionIntro from "./SectionIntro.astro";
 
@@ -11,9 +11,9 @@ const notebook = guides.filter((item) => item.slug !== cover?.slug).slice(0, 3);
 <section class="guides-note">
   <div class="container">
     <SectionIntro
-      eyebrow="Field Journal"
-      title="Guides & Stories"
-      lede="Cover story and morning notes from the corridor — towns, beach access, and how 30A actually works."
+      eyebrow="Local Guides"
+      title="Local Guides"
+      lede="Insider tips, thoughtfully curated recommendations, and practical advice to help you experience the best of 30A."
       linkHref="/guides"
       link="Browse all guides →"
     />
@@ -34,7 +34,22 @@ const notebook = guides.filter((item) => item.slug !== cover?.slug).slice(0, 3);
                 <a href={href(`/guide/${cover.slug}`)}>{cover.title}</a>
               </h3>
               <p class="quote">“{cover.summary}”</p>
-              <ReactionCluster reactions={reactionsFor("guide", cover.slug)} />
+              <div class="engage">
+                <ReactionCluster reactions={reactionsFor("guide", cover.slug)} />
+                <span class="comments">
+                  <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                    <path
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="1.75"
+                      stroke-linejoin="round"
+                      d="M6 16.5 4 20l4.2-1.6A8 8 0 1 0 6 16.5Z"
+                    />
+                  </svg>
+                  {commentsFor("guide", cover.slug).length}
+                  <span class="sr-only">comments</span>
+                </span>
+              </div>
               <a class="read" href={href(`/guide/${cover.slug}`)}>Read full guide →</a>
             </div>
           </article>
@@ -58,7 +73,23 @@ const notebook = guides.filter((item) => item.slug !== cover?.slug).slice(0, 3);
                       </p>
                       <p class="title">{guide.title}</p>
                       <p class="summary">{guide.summary}</p>
-                      <ReactionCluster reactions={reactionsFor("guide", guide.slug)} />
+                      <div class="engage">
+                        <ReactionCluster reactions={reactionsFor("guide", guide.slug)} />
+                        <span class="comments">
+                          <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                            <path
+                              fill="none"
+                              stroke="currentColor"
+                              stroke-width="1.75"
+                              stroke-linejoin="round"
+                              d="M6 16.5 4 20l4.2-1.6A8 8 0 1 0 6 16.5Z"
+                            />
+                          </svg>
+                          {commentsFor("guide", guide.slug).length}
+                          <span class="sr-only">comments</span>
+                        </span>
+                      </div>
+                      <span class="read">Read guide →</span>
                     </div>
                   </a>
                 </li>
@@ -157,11 +188,35 @@ const notebook = guides.filter((item) => item.slug !== cover?.slug).slice(0, 3);
     color: var(--brand-ink-soft);
     line-height: 1.45;
   }
-  .cover__body :global(.reactions) {
-    margin: 0 0 0.65rem;
+  .engage {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 0.45rem;
   }
-  .copy :global(.reactions) {
-    margin-top: 0.35rem;
+  .comments {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.28rem;
+    font-size: 0.6875rem;
+    font-weight: var(--font-weight-5);
+    color: var(--brand-ink-soft);
+    line-height: 1.4;
+  }
+  .comments svg {
+    display: block;
+    flex-shrink: 0;
+  }
+  .read {
+    display: block;
+    margin-top: 0.55rem;
+  }
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
   }
   .read {
     font-size: var(--font-size-0);

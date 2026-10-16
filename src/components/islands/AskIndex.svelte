@@ -33,6 +33,7 @@
   let topic = $state(initialTopic);
   let query = $state(initialQuery);
   let sort = $state<"trending" | "latest" | "unanswered">("trending");
+  let didHydrate = false;
 
   function path(route: string) {
     const root = base.endsWith("/") ? base.slice(0, -1) : base;
@@ -77,6 +78,15 @@
         return b.createdAt.localeCompare(a.createdAt);
       }),
   );
+
+  $effect(() => {
+    if (didHydrate || typeof window === "undefined") return;
+    didHydrate = true;
+    const params = new URLSearchParams(window.location.search);
+    if (params.has("town")) town = params.get("town") ?? "";
+    if (params.has("topic")) topic = params.get("topic") ?? "";
+    if (params.has("q")) query = params.get("q") ?? "";
+  });
 
   $effect(() => {
     if (typeof window === "undefined") return;

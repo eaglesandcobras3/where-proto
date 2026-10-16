@@ -3,6 +3,7 @@ import { reactionsFor } from "../data/catalog";
 import { href } from "../lib/href";
 import { businessPathBySlug } from "../lib/listing";
 import ReactionCluster from "./ReactionCluster.astro";
+import SectionIntro from "./SectionIntro.astro";
 
 const items = [
   {
@@ -46,6 +47,11 @@ const items = [
 
 <section class="featured">
   <div class="container">
+    <SectionIntro
+      eyebrow="Featured Section"
+      title="The 30A Edit"
+      lede="A curated look at the local businesses, noteworthy places, and experiences we're highlighting along 30A."
+    />
     <div class="h-scroll-pane">
       <div class="grid">
         {

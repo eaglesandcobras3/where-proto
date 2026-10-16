@@ -130,6 +130,7 @@ const active = pins.find((pin) => pin.active) ?? pins[0];
       root.dataset.mobileView = view;
       toggle.textContent = view === "list" ? "Map" : "List";
     };
+    if (new URLSearchParams(location.search).get("view") === "map") setView("map");
     toggle.addEventListener("click", () => {
       setView(root.dataset.mobileView === "map" ? "list" : "map");
     });
@@ -422,6 +423,14 @@ const active = pins.find((pin) => pin.active) ?? pins[0];
   }
   .two-pane[data-mobile-view="map"] .map {
     display: block;
+  }
+  @media (max-width: 959px) {
+    :global(html[data-view="map"]) .two-pane .list {
+      display: none;
+    }
+    :global(html[data-view="map"]) .two-pane .map {
+      display: block;
+    }
   }
   @media (min-width: 960px) {
     .two-pane {

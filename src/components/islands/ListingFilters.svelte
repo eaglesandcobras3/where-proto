@@ -141,6 +141,29 @@
     return primary;
   }
 
+  void townTotal;
+
+  function applyTowns() {
+    const category = categoryValue();
+    const params = new URLSearchParams();
+    if (query.trim()) params.set("q", query.trim());
+    const qs = params.size ? `?${params}` : "";
+    let route = "/towns";
+    if (town && category) route = `/town/${town}/business/${category}`;
+    else if (town) route = `/town/${town}`;
+    else if (category) route = `/towns/${category}`;
+    const root = String(import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
+    window.location.assign(`${root}${route}${qs}`);
+  }
+
+  function apply() {
+    if (surface === "towns") {
+      applyTowns();
+      return;
+    }
+    publish();
+  }
+
   function publish(
     next: {
       town?: string;
@@ -214,19 +237,60 @@
 
   function onParentChange(event: Event) {
     const value = (event.currentTarget as HTMLSelectElement).value;
-    publish({ parent: value, leaf: "" });
+    parent = value;
+    leaf = "";
+    primary = value;
   }
 
   function pickTag(slug: string) {
-    publish({ tag: slug });
+    tag = slug;
     tagQuery = "";
     tagOpen = false;
   }
 
   function onSearchSubmit(event: Event) {
     event.preventDefault();
-    publish();
+    apply();
   }
+
+  let didHydrate = false;
+
+  $effect(() => {
+    if (didHydrate || typeof window === "undefined") return;
+    didHydrate = true;
+    const params = new URLSearchParams(window.location.search);
+    if (surface === "towns") {
+      const posted = params.get("q");
+      const postedTown = params.get("town");
+      const postedCategory = params.get(primaryKey);
+      if (posted) query = posted;
+      if (postedTown) town = postedTown;
+      if (postedCategory) {
+        const next = resolveGroup(postedCategory);
+        parent = next.parent;
+        leaf = next.leaf;
+        primary = next.leaf || next.parent || postedCategory;
+      }
+      return;
+    }
+    if (params.has("q")) query = params.get("q") ?? "";
+    if (params.has("town")) town = params.get("town") ?? "";
+    if (params.has("guests")) guests = params.get("guests") ?? "";
+    if (params.has("from")) from = params.get("from") ?? "";
+    if (params.has(tagsKey)) tag = params.get(tagsKey) ?? "";
+    const postedCategory = params.get(primaryKey);
+    if (postedCategory) {
+      const next = resolveGroup(postedCategory);
+      parent = next.parent;
+      leaf = next.leaf;
+      primary = next.leaf || next.parent || postedCategory;
+    }
+    const postedSecondaries = { ...secondaryValues };
+    for (const group of secondaries) {
+      if (params.has(group.key)) postedSecondaries[group.key] = params.get(group.key) ?? "";
+    }
+    secondaryValues = postedSecondaries;
+  });
 
   function onTagKeydown(event: KeyboardEvent) {
     if (event.key === "Escape") {
@@ -333,13 +397,12 @@
             type="search"
             placeholder={SEARCH_PLACEHOLDER[surface]}
             bind:value={query}
-            oninput={() => publish({ query })}
           />
         </label>
         {#if extraSearch === "guests"}
           <label>
             <span class="sr-only">Guests</span>
-            <select bind:value={guests} onchange={() => publish({ guests })}>
+            <select bind:value={guests}>
               <option value="">Any guests</option>
               {#each guestOptions as item (item.slug)}
                 <option value={item.slug}>{item.name}</option>
@@ -350,7 +413,7 @@
         {#if extraSearch === "from"}
           <label>
             <span class="sr-only">From date</span>
-            <input type="date" bind:value={from} onchange={() => publish({ from })} />
+            <input type="date" bind:value={from} />
           </label>
         {/if}
       </form>
@@ -361,10 +424,10 @@
         <h2>Town</h2>
         <label>
           <span class="sr-only">Town</span>
-          <select bind:value={town} onchange={() => publish({ town })}>
-            <option value="">All 30A{townTotal ? ` (${townTotal})` : ""}</option>
+          <select bind:value={town}>
+            <option value="">All 30A</option>
             {#each towns as item (item.slug)}
-              <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+              <option value={item.slug}>{item.name}</option>
             {/each}
           </select>
         </label>
@@ -386,11 +449,11 @@
           </label>
           <label>
             <span class="field-label">Subcategory</span>
-            <select bind:value={leaf} disabled={!parent} onchange={() => publish({ leaf })}>
+            <select bind:value={leaf} disabled={!parent}>
               {#if parent}
                 <option value="">All in {selectedGroup?.name}</option>
                 {#each leaves as item (item.slug)}
-                  <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+                  <option value={item.slug}>{item.name}</option>
                 {/each}
               {:else}
                 <option value="">Choose a category first</option>
@@ -404,10 +467,10 @@
         <h2>{primaryLabel}</h2>
         <label>
           <span class="sr-only">{primaryLabel}</span>
-          <select bind:value={primary} onchange={() => publish({ primary })}>
+          <select bind:value={primary}>
             <option value="">All</option>
             {#each primaryOptions as item (item.slug)}
-              <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+              <option value={item.slug}>{item.name}</option>
             {/each}
           </select>
         </label>
@@ -442,7 +505,6 @@
                 <li>
                   <button type="button" onclick={() => pickTag(item.slug)}>
                     {item.name}
-                    {#if item.count}<span class="count">{item.count}</span>{/if}
                   </button>
                 </li>
               {/each}
@@ -459,12 +521,16 @@
           <span class="sr-only">{group.label}</span>
           <select
             value={secondaryOf(group.key)}
-            onchange={(event) =>
-              publish({ secondaries: { [group.key]: (event.currentTarget as HTMLSelectElement).value } })}
+            onchange={(event) => {
+              secondaryValues = {
+                ...secondaryValues,
+                [group.key]: (event.currentTarget as HTMLSelectElement).value,
+              };
+            }}
           >
             <option value="">Any</option>
             {#each group.options as item (item.slug)}
-              <option value={item.slug}>{item.name}{item.count ? ` (${item.count})` : ""}</option>
+              <option value={item.slug}>{item.name}</option>
             {/each}
           </select>
         </label>
@@ -478,6 +544,8 @@
         <p>{note.body}</p>
       </section>
     {/if}
+
+    <button class="apply" type="button" onclick={apply}>Apply filter</button>
   </div>
 </div>
 
@@ -551,6 +619,27 @@
   }
   .filter-body--town-first .panel:not(.panel--town):not(.panel--category):not(.panel--search) {
     order: 4;
+  }
+  .filter-body--town-first .listing-note {
+    order: 5;
+  }
+  .filter-body--town-first .apply {
+    order: 6;
+  }
+  .apply {
+    width: 100%;
+    min-height: 2.75rem;
+    border: 0;
+    border-radius: var(--radius-2);
+    background: var(--brand-teal);
+    color: white;
+    font: inherit;
+    font-size: var(--font-size-1);
+    font-weight: var(--font-weight-7);
+    cursor: pointer;
+  }
+  .apply:hover {
+    background: #00796b;
   }
   .inline .filter-body {
     grid-template-columns: 1fr;

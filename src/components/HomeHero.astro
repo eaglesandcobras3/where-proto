@@ -18,10 +18,10 @@ const { towns, base = "/" } = Astro.props;
   <div class="home-hero__media img-placeholder" aria-hidden="true"></div>
   <div class="home-hero__veil" aria-hidden="true"></div>
   <div class="container home-hero__inner">
-    <h1>Finding What You're Looking for on 30A Should Be Easier</h1>
+    <h1>A Better Way to Explore 30A</h1>
     <p class="lede">
-      Sixteen towns along Scenic Highway 30A — beaches, dune lakes, and local favorites from Sandestin
-      to Inlet Beach.
+      Less searching, more discovering. Easily find places to eat, shop, stay, and explore, plus local
+      events, guides, and everything you need to make the most of 30A.
     </p>
     <SearchBar towns={towns} base={base} variant="inline" client:load />
   </div>
@@ -62,12 +62,13 @@ const { towns, base = "/" } = Astro.props;
   h1 {
     margin: 0;
     font-family: var(--font-display);
-    font-size: clamp(2rem, 5vw, 3.25rem);
+    font-size: clamp(1.35rem, 4.6vw, 3.25rem);
     font-weight: var(--font-weight-8);
     line-height: 1.12;
     letter-spacing: -0.02em;
     color: var(--brand-deep);
-    max-width: 20ch;
+    max-width: 100%;
+    white-space: nowrap;
   }
   .lede {
     margin: 0;

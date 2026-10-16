@@ -7,7 +7,6 @@ import type { EventItem } from "../data/types";
 interface Item {
   event: EventItem;
   whenLabel: string;
-  types: string[];
 }
 
 interface Props {
@@ -26,7 +25,7 @@ const cards = items.map((item) => {
     town: town?.name ?? "30A",
     venue: item.event.venue ?? "",
     whenLabel: item.whenLabel,
-    types: item.types,
+    categories: item.event.categories ?? [],
     reactions: reactionsFor("event", item.event.slug),
   };
 });
@@ -35,9 +34,9 @@ const cards = items.map((item) => {
 <section class="events-home">
   <div class="container">
     <SectionIntro
-      eyebrow="Community Calendar"
-      title="30A Events & Latest Happenings"
-      lede="Live acoustic sets on the lawn, open-air farmer markets, and dune lake excursions."
+      eyebrow="Events & Happenings"
+      title="What's Happening on 30A"
+      lede="From local events and seasonal celebrations to live music and community gatherings, see what's coming up along 30A."
       linkHref="/events"
       link="Full calendar →"
     />
